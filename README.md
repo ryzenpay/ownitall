@@ -12,3 +12,7 @@ this script is to be ran weekly right when a new discover weekly gets dropped
 ### spotify_token
 this can be found on your spotify application (developer.spotify.com) under:  
     basic information -> "view client secret"
+
+
+# used packages
+spotipy: https://github.com/spotipy-dev/spotipy
