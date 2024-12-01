@@ -12,6 +12,8 @@ this script is to be ran weekly right when a new discover weekly gets dropped
 ### spotify_token
 this can be found on your spotify application (developer.spotify.com) under:  
     basic information -> "view client secret"
+### spotify_radar
+in this, use comma seperated list of all the radar playlists u would want to save, including your discover weekly
 
 
 # used packages
