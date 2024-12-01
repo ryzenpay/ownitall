@@ -3,19 +3,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 from dotenv import load_dotenv
 
-def get_all_playlist_tracks(sp, playlist_id):
-    tracks = []
-    offset = 0
-    while True:
-        results = sp.playlist_tracks(playlist_id, offset=offset, limit=50)
-        for item in results['items']:
-            if item['track'] is not None:
-                track = item['track']
-                tracks.append(f"{track['name']} - {track['artists'][0]['name']}")
-        if len(results['items']) < 50:
-            break
-        offset += 50
-    return tracks
+import util
 
 def get_all_liked_songs(sp):
     liked_songs = []
@@ -74,7 +62,7 @@ def main():
         for playlist in playlists['items']:
             if playlist is not None:
                 playlist_name = playlist['name'].replace(' ', '_')
-                playlists_dict[playlist_name] = get_all_playlist_tracks(sp, playlist['id'])
+                playlists_dict[playlist_name] = util.get_discover_weekly_tracks(sp, playlist['id'])
                 print(f"    Fetched {len(playlists_dict[playlist_name])} tracks from playlist: {playlist_name}")
         if len(playlists['items']) < limit:
             break
