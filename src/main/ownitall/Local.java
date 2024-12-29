@@ -1,4 +1,4 @@
-package classes;
+package ownitall;
 
 public class Local {
 
