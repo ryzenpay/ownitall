@@ -26,3 +26,4 @@ replay_pid*
 #ownitall specific
 albums/*
 playlists/*
+.env
