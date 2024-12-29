@@ -24,6 +24,6 @@ hs_err_pid*
 replay_pid*
 
 #ownitall specific
-albums/*
-playlists/*
+albums/**
+playlists/**
 .env
