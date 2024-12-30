@@ -9,21 +9,23 @@ import java.util.Set;
 import java.util.ArrayList;
 
 public class main {
+    private static String DATAFOLDER = "data"; // TODO: user choice?
     private static Set<Album> albums;
     private static Set<Playlist> playlists;
 
     public static void main(String[] args) {
         albums = new LinkedHashSet<>();
+        playlists = new LinkedHashSet<>();
+        Sync sync = new Sync(DATAFOLDER);
         Scanner scanner = new Scanner(System.in);
-        boolean hasLocalLibrary = checkLocalLibrary();
 
-        if (!hasLocalLibrary) {
+        if (!checkDataFolder()) {
             promptForImport(scanner);
         } else {
             while (true) {
                 System.out.println("Choose an option: ");
                 System.out.println("[1] import");
-                System.out.println("[2] convert");
+                System.out.println("[2] export");
                 System.out.println("[3] save");
                 System.out.println("[0] exit");
                 System.out.print("Enter your choice: ");
@@ -35,13 +37,13 @@ public class main {
                         promptForImport(scanner);
                         break;
                     case 2:
-                        // TODO: Implement convert functionality
+                        // TODO: Implement export functionality
                         break;
                     case 3:
-                        exportData();
+                        saveData(sync);
                         break;
                     case 0:
-                        exportData();
+                        saveData(sync);
                         System.out.println("Exiting program. Goodbye!");
                         scanner.close();
                         System.exit(0);
@@ -52,8 +54,8 @@ public class main {
         }
     }
 
-    private static boolean checkLocalLibrary() {
-        File dataFolder = new File("data");
+    private static boolean checkDataFolder() {
+        File dataFolder = new File(DATAFOLDER);
         return dataFolder.exists() && dataFolder.isDirectory() && dataFolder.list().length > 0;
     }
 
@@ -94,9 +96,8 @@ public class main {
         }
     }
 
-    private static void exportData() {
+    private static void saveData(Sync sync) {
         System.out.println("Beginning to save all data");
-        Sync sync = new Sync("data");
         sync.exportAlbums(new ArrayList<>(albums));
         sync.exportPlaylists(new ArrayList<>(playlists));
         System.out.println("Succesfully saved all data");
