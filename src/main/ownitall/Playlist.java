@@ -1,8 +1,9 @@
 package ownitall;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Playlist {
+public class Playlist implements Serializable {
     private String name;
     private ArrayList<Song> songs;
     // TODO: coverart

@@ -1,13 +1,13 @@
+# Disclaimer:
+big disclaimer, it is still in works and no where near close to finished
+another note i want to add before i forget: use of this program is at your own risk and can be agains the TOS of certain platforms, use at your own caution
+
 # ownitall 
-spotify -> youtube -> mp3
-
-## init.py
-this script is to fetch all the current playlists in your spotify library and conver them into youtube and mp3 playlists
-
-## weekly.py
-this script is to be ran weekly right when a new discover weekly gets dropped  
+have full control over your music no matter the playform (whichever is currently supported),  
+OwnItAll hopes to ease the movement of your music library between playforms including local in supported formats
 
 
+# Requirements:
 ## .env
 ### spotify_token
 this can be found on your spotify application (developer.spotify.com) under:  
