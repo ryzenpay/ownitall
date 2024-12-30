@@ -1,5 +1,5 @@
 plugins {
-    application
+    id("application")
 }
 
 repositories {
@@ -13,9 +13,6 @@ dependencies {
     
     // Add Hamcrest for additional assertions
     testImplementation("org.hamcrest:hamcrest:2.2")
-    
-    // Add Spotify Web API Java library
-    implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
 }
 
 java {
