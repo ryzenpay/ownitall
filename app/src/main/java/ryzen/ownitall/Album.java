@@ -1,4 +1,4 @@
-package ownitall;
+package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

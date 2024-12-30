@@ -1,4 +1,4 @@
-package ownitall;
+package ryzen.ownitall;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ownitall;
+package ryzen.ownitall;
 
 import java.io.File;
 import java.io.FileInputStream;

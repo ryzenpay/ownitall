@@ -1,5 +1,5 @@
 
-package ownitall;
+package ryzen.ownitall;
 
 import java.util.Scanner;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-public class main {
+public class Main {
     private static String DATAFOLDER = "data"; // TODO: user choice?
     private static Set<Album> albums;
     private static Set<Playlist> playlists;

@@ -1,4 +1,4 @@
-package ownitall;
+package ryzen.ownitall;
 
 public class Local {
 
