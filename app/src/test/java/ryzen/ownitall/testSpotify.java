@@ -2,10 +2,9 @@ package ryzen.ownitall;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 class testSpotify {
@@ -14,9 +13,10 @@ class testSpotify {
 
     @BeforeEach
     void setUp() {
-        String client_id = "TESTING CLIENT ID";
-        String client_secret = "TESTING CLIENT SECRET";
-        spotify = new Spotify(client_id, client_secret);
+        String client_id = "8cf63653de3c45bf9155a0cb39e06c8a";
+        String client_secret = "bda899cfb1e1441daec73eb6b5ce44aa";
+        String redirect_url = "https://ryzen.rip";
+        spotify = new Spotify(client_id, client_secret, redirect_url);
     }
 
     @Test

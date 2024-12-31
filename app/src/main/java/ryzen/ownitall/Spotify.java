@@ -10,10 +10,13 @@ import java.time.Duration;
 import java.util.stream.Collectors;
 
 import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.SpotifyHttpManager;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import org.apache.hc.core5.http.ParseException;
 
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
@@ -30,6 +33,7 @@ import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.io.IOException;
+import java.net.URI;
 
 public class Spotify {
     private SpotifyApi spotifyApi;
@@ -44,8 +48,10 @@ public class Spotify {
         String client_id = scanner.nextLine();
         System.out.println("Please provide your client secret: ");
         String client_secret = scanner.nextLine();
+        System.out.println("Please provide redirect url:");
+        URI redirect_url = SpotifyHttpManager.makeUri(scanner.nextLine());
         scanner.close();
-        this.setToken(client_id, client_secret);
+        this.setToken(client_id, client_secret, redirect_url);
     }
 
     /**
@@ -53,23 +59,27 @@ public class Spotify {
      * 
      * @param client_id     - provided spotify developer app client id
      * @param client_secret - provided spotify developer app client secret
+     * @param redirect_url  - provided spotify developer app redirect url
      */
-    public Spotify(String client_id, String client_secret) {
-        this.setToken(client_id, client_secret);
+    public Spotify(String client_id, String client_secret, String redirect_url) {
+        URI redirect_url_uri = SpotifyHttpManager.makeUri(redirect_url);
+        this.setToken(client_id, client_secret, redirect_url_uri);
     }
 
-    private void setToken(String client_id, String client_secret) {
+    private void setToken(String client_id, String client_secret, URI redirect_url) {
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(client_id)
                 .setClientSecret(client_secret)
+                .setRedirectUri(redirect_url)
                 .build();
-        ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
-                .build();
+        AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode("").build();
         try {
-            ClientCredentials clientCredentials = clientCredentialsRequest.execute();
-            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
-            System.out.println("Token Expires in: " + clientCredentials.getExpiresIn()); // TODO: track time and check
-                                                                                         // this?
+            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+            System.out.println("Token Expires in: " + authorizationCodeCredentials.getExpiresIn()); // TODO: track time
+                                                                                                    // and check
+            // this?
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             System.err.println("Error logging in: " + e);
         }
