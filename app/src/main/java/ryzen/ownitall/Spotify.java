@@ -1,9 +1,9 @@
 package ryzen.ownitall;
 
+//https://developer.spotify.com/documentation/web-api
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-//https://developer.spotify.com/documentation/web-api
 
 import java.util.Scanner;
 import java.time.Duration;
@@ -17,9 +17,17 @@ import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
+import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.SavedAlbum;
+import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.io.IOException;
 
@@ -52,6 +60,51 @@ public class Spotify {
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             System.err.println("Error logging in: " + e);
         }
+    }
+
+    private ArrayList<Song> getLikedSongs() {
+        ArrayList<Song> likedSongs = new ArrayList<>();
+        int limit = 50;
+        int offset = 0;
+        boolean hasMore = true;
+
+        while (hasMore) {
+            GetUsersSavedTracksRequest getUsersSavedTracksRequest = spotifyApi.getUsersSavedTracks()
+                    .limit(limit)
+                    .offset(offset)
+                    .build();
+
+            try {
+                final Paging<SavedTrack> savedTrackPaging = getUsersSavedTracksRequest.execute();
+                SavedTrack[] items = savedTrackPaging.getItems();
+
+                if (items.length == 0) {
+                    hasMore = false;
+                } else {
+                    for (SavedTrack savedTrack : items) {
+                        Track track = savedTrack.getTrack();
+                        String songName = track.getName();
+                        ArrayList<String> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> artist.getName())
+                                .collect(Collectors.toCollection(ArrayList::new));
+                        Duration duration = Duration.ofMillis(track.getDurationMs());
+
+                        likedSongs.add(new Song(songName, artists, duration));
+                    }
+
+                    offset += limit;
+                }
+
+                if (offset >= savedTrackPaging.getTotal()) {
+                    hasMore = false;
+                }
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                System.out.println("Error fetching liked songs: " + e.getMessage());
+                hasMore = false;
+            }
+        }
+
+        return likedSongs;
     }
 
     public ArrayList<Album> getAlbums() {
@@ -135,6 +188,93 @@ public class Spotify {
                 }
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 System.out.println("Error fetching songs for album " + albumId + ": " + e.getMessage());
+                hasMore = false;
+            }
+        }
+
+        return songs;
+    }
+
+    private ArrayList<Playlist> getPlaylists() {
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        int limit = 50;
+        int offset = 0;
+        boolean hasMore = true;
+
+        while (hasMore) {
+            GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = spotifyApi
+                    .getListOfCurrentUsersPlaylists()
+                    .limit(limit)
+                    .offset(offset)
+                    .build();
+
+            try {
+                final Paging<PlaylistSimplified> playlistSimplifiedPaging = getListOfCurrentUsersPlaylistsRequest
+                        .execute();
+                PlaylistSimplified[] items = playlistSimplifiedPaging.getItems();
+
+                if (items.length == 0) {
+                    hasMore = false;
+                } else {
+                    for (PlaylistSimplified playlist : items) {
+                        String playlistName = playlist.getName();
+                        ArrayList<Song> playlistSongs = getPlaylistSongs(playlist.getId());
+                        playlists.add(new Playlist(playlistName, playlistSongs));
+                    }
+
+                    offset += limit;
+                }
+
+                if (offset >= playlistSimplifiedPaging.getTotal()) {
+                    hasMore = false;
+                }
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                System.out.println("Error fetching playlists: " + e.getMessage());
+                hasMore = false;
+            }
+        }
+
+        return playlists;
+    }
+
+    private ArrayList<Song> getPlaylistSongs(String playlistId) {
+        ArrayList<Song> songs = new ArrayList<>();
+        int limit = 100;
+        int offset = 0;
+        boolean hasMore = true;
+
+        while (hasMore) {
+            GetPlaylistsItemsRequest getPlaylistsItemsRequest = spotifyApi.getPlaylistsItems(playlistId)
+                    .limit(limit)
+                    .offset(offset)
+                    .build();
+
+            try {
+                final Paging<PlaylistTrack> playlistTrackPaging = getPlaylistsItemsRequest.execute();
+                PlaylistTrack[] items = playlistTrackPaging.getItems();
+
+                if (items.length == 0) {
+                    hasMore = false;
+                } else {
+                    for (PlaylistTrack playlistTrack : items) {
+                        Track track = (Track) playlistTrack.getTrack();
+                        String songName = track.getName();
+                        ArrayList<String> artists = Arrays.stream(track.getArtists())
+                                .map(ArtistSimplified::getName)
+                                .collect(Collectors.toCollection(ArrayList::new));
+                        Duration duration = Duration.ofMillis(track.getDurationMs());
+
+                        songs.add(new Song(songName, artists, duration));
+                    }
+
+                    offset += limit;
+                }
+
+                if (offset >= playlistTrackPaging.getTotal()) {
+                    hasMore = false;
+                }
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                System.out.println("Error fetching playlist tracks: " + e.getMessage());
                 hasMore = false;
             }
         }
