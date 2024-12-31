@@ -13,6 +13,9 @@ dependencies {
     
     // Add Hamcrest for additional assertions
     testImplementation("org.hamcrest:hamcrest:2.2")
+
+    // spotify wrapper
+    implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
 }
 
 java {
