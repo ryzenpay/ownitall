@@ -34,11 +34,10 @@ import java.io.IOException;
 public class Spotify {
     private SpotifyApi spotifyApi;
 
+    /**
+     * Default spotify constructor asking for user input
+     */
     public Spotify() {
-        this.setToken();
-    }
-
-    private void setToken() {
         Scanner scanner = new Scanner(System.in); // TODO: save these creds?
         System.out.println("The following details can be obtained here: https://developer.spotify.com/dashboard");
         System.out.println("Please provide your client id: ");
@@ -46,6 +45,20 @@ public class Spotify {
         System.out.println("Please provide your client secret: ");
         String client_secret = scanner.nextLine();
         scanner.close();
+        this.setToken(client_id, client_secret);
+    }
+
+    /**
+     * Defaulkt spotify constructor without needing user input
+     * 
+     * @param client_id     - provided spotify developer app client id
+     * @param client_secret - provided spotify developer app client secret
+     */
+    public Spotify(String client_id, String client_secret) {
+        this.setToken(client_id, client_secret);
+    }
+
+    private void setToken(String client_id, String client_secret) {
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(client_id)
                 .setClientSecret(client_secret)
@@ -62,7 +75,7 @@ public class Spotify {
         }
     }
 
-    private ArrayList<Song> getLikedSongs() {
+    public ArrayList<Song> getLikedSongs() {
         ArrayList<Song> likedSongs = new ArrayList<>();
         int limit = 50;
         int offset = 0;
@@ -195,7 +208,7 @@ public class Spotify {
         return songs;
     }
 
-    private ArrayList<Playlist> getPlaylists() {
+    public ArrayList<Playlist> getPlaylists() {
         ArrayList<Playlist> playlists = new ArrayList<>();
         int limit = 50;
         int offset = 0;
@@ -237,7 +250,7 @@ public class Spotify {
         return playlists;
     }
 
-    private ArrayList<Song> getPlaylistSongs(String playlistId) {
+    public ArrayList<Song> getPlaylistSongs(String playlistId) {
         ArrayList<Song> songs = new ArrayList<>();
         int limit = 100;
         int offset = 0;

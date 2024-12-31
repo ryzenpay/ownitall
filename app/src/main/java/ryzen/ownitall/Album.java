@@ -171,4 +171,13 @@ public class Album implements Serializable {
     public ArrayList<Song> getSongs() {
         return new ArrayList<>(this.songs);
     }
+
+    /**
+     * get number of tracks in album
+     * 
+     * @return - integer of number of tracks in album
+     */
+    public int getSize() {
+        return this.songs.size();
+    }
 }

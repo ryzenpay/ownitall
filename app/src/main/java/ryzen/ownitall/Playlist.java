@@ -104,4 +104,13 @@ public class Playlist implements Serializable {
     public ArrayList<Song> getSongs() {
         return new ArrayList<>(this.songs);
     }
+
+    /**
+     * get number of tracks in playlist
+     * 
+     * @return - integer of number of tracks in playlist
+     */
+    public int getSize() {
+        return this.songs.size();
+    }
 }
