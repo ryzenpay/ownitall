@@ -77,7 +77,10 @@ public class Main {
                         // TODO: import from youtube
                         return;
                     case 2:
-                        // TODO: import from spotify
+                        Spotify spotify = new Spotify(); // TODO: check for existing credentials
+                        playlists = new LinkedHashSet<>(spotify.getPlaylists());
+                        playlists.add(new Playlist("liked songs", spotify.getLikedSongs()));
+                        albums = new LinkedHashSet<>(spotify.getAlbums());
                         return;
                     case 3:
                         // TODO: import from local
