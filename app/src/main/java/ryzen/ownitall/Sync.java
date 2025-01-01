@@ -45,6 +45,7 @@ public class Sync {
             System.out.println("Successfully imported " + albums.size() + " albums");
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error Importing Albums: " + e);
+            System.err.println("If this persists, delete: " + this.getDataFolder().getAbsolutePath());
             albums = new LinkedHashMap<>();
         }
         return albums;
@@ -68,6 +69,7 @@ public class Sync {
             System.out.println("Successfully imported " + playlists.size() + " playlists");
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error Importing Playlists: " + e);
+            System.err.println("If this persists, delete: " + this.getDataFolder().getAbsolutePath());
             playlists = new LinkedHashMap<>();
         }
         return playlists;

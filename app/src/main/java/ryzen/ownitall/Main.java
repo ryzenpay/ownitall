@@ -5,8 +5,10 @@ import java.util.Scanner;
 import java.io.File;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.time.Duration;
 
 public class Main {
     private static String DATAFOLDER = "data"; // TODO: user choice?
@@ -44,7 +46,7 @@ public class Main {
                         // TODO: Implement export functionality
                         break;
                     case 3:
-                        printInventory();
+                        printInventory(2);
                     case 4:
                         saveData(sync);
                         break;
@@ -98,7 +100,7 @@ public class Main {
                                                                                  // append?
                         playlists.put(new Playlist("liked songs"), spotify.getLikedSongs());
                         albums = new LinkedHashMap<>(spotify.getAlbums());
-                        printInventory();
+                        printInventory(1);
                         return;
                     case 3:
                         // TODO: import from local
@@ -124,7 +126,13 @@ public class Main {
         System.out.println("Succesfully saved all data");
     }
 
-    private static void printInventory() {
+    /**
+     * print the inventory depending on its "depth"
+     * 
+     * @param recursion - 1 = number count, 2 = album and playlist names, 3 =
+     *                  albums, playlist and song names
+     */
+    private static void printInventory(int recursion) {
         int trackCount = 0;
         for (ArrayList<Song> songs : playlists.values()) {
             trackCount += songs.size();
@@ -132,8 +140,72 @@ public class Main {
         for (ArrayList<Song> songs : albums.values()) {
             trackCount += songs.size();
         }
-        System.out.println("Total playlists fetched: " + playlists.size());
-        System.out.println("Total albums fetched: " + albums.size());
-        System.out.println("With a total of " + trackCount + " songs");
+        int i = 1;
+        int y = 1;
+        switch (recursion) {
+            case 1:
+                System.out.println("Total playlists: " + playlists.size());
+                System.out.println("Total albums: " + albums.size());
+                System.out.println("With a total of " + trackCount + " songs");
+            case 2:
+                System.out.println("Playlists (" + playlists.size() + "): ");
+                i = 1;
+                for (Playlist playlist : playlists.keySet()) {
+                    ArrayList<Song> songs = playlists.get(playlist);
+                    System.out
+                            .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
+                                    + " - " + totalDuration(songs));
+                    i++;
+                }
+                i = 1;
+                System.out.println("Albums (" + albums.size() + "): ");
+                for (Album album : albums.keySet()) {
+                    ArrayList<Song> songs = albums.get(album);
+                    System.out
+                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
+                                    + " - " + totalDuration(songs));
+                    System.out.println("    - Artists: " + album.getArtists().toString());
+                    i++;
+                }
+            case 3:
+                System.out.println("Playlists (" + playlists.size() + "): ");
+                i = 1;
+                y = 1;
+                for (Playlist playlist : playlists.keySet()) {
+                    ArrayList<Song> songs = playlists.get(playlist);
+                    System.out
+                            .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
+                                    + " - " + totalDuration(songs));
+                    i++;
+                    for (Song song : songs) {
+                        System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                                + song.getDuration().toString());
+                        System.out.println("        - Artists: " + song.getArtists().toString());
+                    }
+                }
+                i = 1;
+                y = 1;
+                System.out.println("Albums (" + albums.size() + "): ");
+                for (Album album : albums.keySet()) {
+                    ArrayList<Song> songs = albums.get(album);
+                    System.out
+                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
+                                    + " - " + totalDuration(songs));
+                    i++;
+                    for (Song song : songs) {
+                        System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                                + song.getDuration().toString());
+                        System.out.println("        - Artists: " + song.getArtists().toString());
+                    }
+                }
+        }
+    }
+
+    private static Duration totalDuration(ArrayList<Song> songs) {
+        Duration totalDuration = Duration.ZERO;
+        for (Song song : songs) {
+            totalDuration = totalDuration.plus(song.getDuration());
+        }
+        return totalDuration;
     }
 }
