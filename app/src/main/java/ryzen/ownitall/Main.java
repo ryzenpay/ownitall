@@ -170,8 +170,8 @@ public class Main {
             case 3:
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
-                y = 1;
                 for (Playlist playlist : playlists.keySet()) {
+                    y = 1;
                     ArrayList<Song> songs = playlists.get(playlist);
                     System.out
                             .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
@@ -179,15 +179,15 @@ public class Main {
                     i++;
                     for (Song song : songs) {
                         System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
-                                + song.getDuration().toString());
+                                + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
                     }
                 }
                 i = 1;
-                y = 1;
                 System.out.println("Albums (" + albums.size() + "): ");
                 for (Album album : albums.keySet()) {
+                    y = 1;
                     ArrayList<Song> songs = albums.get(album);
                     System.out
                             .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
@@ -195,7 +195,7 @@ public class Main {
                     i++;
                     for (Song song : songs) {
                         System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
-                                + song.getDuration().toString());
+                                + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
                     }
