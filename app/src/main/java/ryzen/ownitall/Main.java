@@ -79,7 +79,9 @@ public class Main {
                         Spotify spotify = new Spotify(); // TODO: check for existing credentials
                         playlists = new LinkedHashSet<>(spotify.getPlaylists());
                         playlists.add(new Playlist("liked songs", spotify.getLikedSongs()));
+                        System.out.println("Total playlists fetched: " + playlists.size());
                         albums = new LinkedHashSet<>(spotify.getAlbums());
+                        System.out.println("Total albums fetched: " + albums.size());
                         scanner.nextLine(); // TODO: this is fucking stupid, why do i have to do this each time
                         return;
                     case 3:
@@ -93,7 +95,7 @@ public class Main {
                         System.out.println("Invalid option. Please enter a number between 1-4.");
                 }
             } catch (Exception e) {
-                System.err.println("Invalid input. Please enter a numerical value." + e);
+                System.err.println("Invalid input. or an error occured:\n" + e);
                 scanner.nextLine(); // Clear invalid input
             }
         }

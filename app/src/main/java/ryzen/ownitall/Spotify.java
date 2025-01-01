@@ -202,15 +202,11 @@ public class Spotify {
 
                     offset += limit;
                 }
-
-                System.out.println("Fetched " + albums.size() + " albums so far.");
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 System.out.println("Error: " + e.getMessage());
                 hasMore = false;
             }
         }
-
-        System.out.println("Total albums fetched: " + albums.size());
         return albums;
     }
 
@@ -307,7 +303,6 @@ public class Spotify {
                 hasMore = false;
             }
         }
-
         return playlists;
     }
 
@@ -337,14 +332,19 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
-                        Track track = (Track) playlistTrack.getTrack();
-                        String songName = track.getName();
-                        ArrayList<String> artists = Arrays.stream(track.getArtists())
-                                .map(ArtistSimplified::getName)
-                                .collect(Collectors.toCollection(ArrayList::new));
-                        Duration duration = Duration.ofMillis(track.getDurationMs());
+                        try {
+                            Track track = (Track) playlistTrack.getTrack();
+                            String songName = track.getName();
+                            ArrayList<String> artists = Arrays.stream(track.getArtists())
+                                    .map(ArtistSimplified::getName)
+                                    .collect(Collectors.toCollection(ArrayList::new));
+                            Duration duration = Duration.ofMillis(track.getDurationMs());
 
-                        songs.add(new Song(songName, artists, duration));
+                            songs.add(new Song(songName, artists, duration));
+                        } catch (ClassCastException e) {
+                            // TODO: handle episodes (people use to prevent copyright)
+                            System.out.println("Skipped a non-Track item in the playlist");
+                        }
                     }
 
                     offset += limit;
