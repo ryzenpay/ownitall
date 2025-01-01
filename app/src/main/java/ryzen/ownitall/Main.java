@@ -154,7 +154,7 @@ public class Main {
                     ArrayList<Song> songs = playlists.get(playlist);
                     System.out
                             .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
-                                    + " - " + totalDuration(songs));
+                                    + " - " + musicTime(totalDuration(songs)));
                     i++;
                 }
                 i = 1;
@@ -163,7 +163,7 @@ public class Main {
                     ArrayList<Song> songs = albums.get(album);
                     System.out
                             .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
-                                    + " - " + totalDuration(songs));
+                                    + " - " + musicTime(totalDuration(songs)));
                     System.out.println("    - Artists: " + album.getArtists().toString());
                     i++;
                 }
@@ -175,12 +175,13 @@ public class Main {
                     ArrayList<Song> songs = playlists.get(playlist);
                     System.out
                             .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
-                                    + " - " + totalDuration(songs));
+                                    + " - " + musicTime(totalDuration(songs)));
                     i++;
                     for (Song song : songs) {
                         System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
                                 + song.getDuration().toString());
                         System.out.println("        - Artists: " + song.getArtists().toString());
+                        y++;
                     }
                 }
                 i = 1;
@@ -190,12 +191,13 @@ public class Main {
                     ArrayList<Song> songs = albums.get(album);
                     System.out
                             .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
-                                    + " - " + totalDuration(songs));
+                                    + " - " + musicTime(totalDuration(songs)));
                     i++;
                     for (Song song : songs) {
                         System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
                                 + song.getDuration().toString());
                         System.out.println("        - Artists: " + song.getArtists().toString());
+                        y++;
                     }
                 }
         }
@@ -207,5 +209,17 @@ public class Main {
             totalDuration = totalDuration.plus(song.getDuration());
         }
         return totalDuration;
+    }
+
+    private static String musicTime(Duration duration) {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
     }
 }
