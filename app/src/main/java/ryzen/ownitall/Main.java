@@ -60,6 +60,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
+                scanner.nextLine();
             }
         }
 
@@ -115,6 +116,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
+                scanner.nextLine();
             }
         }
     }
@@ -143,10 +145,6 @@ public class Main {
         int i = 1;
         int y = 1;
         switch (recursion) {
-            case 1:
-                System.out.println("Total playlists: " + playlists.size());
-                System.out.println("Total albums: " + albums.size());
-                System.out.println("With a total of " + trackCount + " songs");
             case 2:
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
@@ -200,6 +198,10 @@ public class Main {
                         y++;
                     }
                 }
+            default:
+                System.out.println("Total playlists: " + playlists.size());
+                System.out.println("Total albums: " + albums.size());
+                System.out.println("With a total of " + trackCount + " songs");
         }
     }
 
