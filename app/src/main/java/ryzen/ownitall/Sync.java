@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class Sync {
     private File dataFolder;
@@ -26,7 +27,7 @@ public class Sync {
         return this.dataFolder;
     }
 
-    public void exportAlbums(ArrayList<Album> albums) {
+    public void exportAlbums(LinkedHashMap<Album, ArrayList<Song>> albums) {
         try (ObjectOutputStream albumOutput = new ObjectOutputStream(
                 new FileOutputStream(this.getDataFolder().getAbsolutePath() + "/albums.ser"))) {
             albumOutput.writeObject(albums);
@@ -36,20 +37,20 @@ public class Sync {
         }
     }
 
-    public ArrayList<Album> importAlbums() {
-        ArrayList<Album> albums;
+    public LinkedHashMap<Album, ArrayList<Song>> importAlbums() {
+        LinkedHashMap<Album, ArrayList<Song>> albums;
         try (ObjectInputStream albumInput = new ObjectInputStream(
                 new FileInputStream(this.getDataFolder().getAbsolutePath() + "/albums.ser"))) {
-            albums = (ArrayList<Album>) albumInput.readObject();
+            albums = (LinkedHashMap<Album, ArrayList<Song>>) albumInput.readObject();
             System.out.println("Successfully imported " + albums.size() + " albums");
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error Importing Albums: " + e);
-            albums = new ArrayList<>();
+            albums = new LinkedHashMap<>();
         }
         return albums;
     }
 
-    public void exportPlaylists(ArrayList<Playlist> playlists) {
+    public void exportPlaylists(LinkedHashMap<Playlist, ArrayList<Song>> playlists) {
         try (ObjectOutputStream playlistOutput = new ObjectOutputStream(
                 new FileOutputStream(this.getDataFolder().getAbsolutePath() + "/playlists.ser"))) {
             playlistOutput.writeObject(playlists);
@@ -59,15 +60,15 @@ public class Sync {
         }
     }
 
-    public ArrayList<Playlist> importPlaylists() {
-        ArrayList<Playlist> playlists;
+    public LinkedHashMap<Playlist, ArrayList<Song>> importPlaylists() {
+        LinkedHashMap<Playlist, ArrayList<Song>> playlists;
         try (ObjectInputStream playlistInput = new ObjectInputStream(
                 new FileInputStream(this.getDataFolder().getAbsolutePath() + "/playlists.ser"))) {
-            playlists = (ArrayList<Playlist>) playlistInput.readObject();
+            playlists = (LinkedHashMap<Playlist, ArrayList<Song>>) playlistInput.readObject();
             System.out.println("Successfully imported " + playlists.size() + " playlists");
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error Importing Playlists: " + e);
-            playlists = new ArrayList<>();
+            playlists = new LinkedHashMap<>();
         }
         return playlists;
     }

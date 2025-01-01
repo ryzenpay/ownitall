@@ -8,24 +8,10 @@ import java.util.ArrayList;
 public class Album implements Serializable {
     private String name;
     private Set<String> artists; // the first being the main, Set because no duplicates
-    private ArrayList<Song> songs;
     // TODO: coverimage
 
     /**
-     * Default constructor of album with songs
-     * 
-     * @param name    - album name
-     * @param artists - arraylist of all artists
-     * @param songs   - constructed arraylist of Song
-     */
-    public Album(String name, ArrayList<String> artists, ArrayList<Song> songs) {
-        this.setName(name);
-        this.setArtists(artists);
-        this.setSongs(songs);
-    }
-
-    /**
-     * Default constructor of album without songs
+     * Default constructor of album
      * 
      * @param name    - album name
      * @param artists - arraylist of all artists
@@ -33,7 +19,6 @@ public class Album implements Serializable {
     public Album(String name, ArrayList<String> artists) {
         this.setName(name);
         this.setArtists(artists);
-        this.setSongs(new ArrayList<>());
     }
 
     /**
@@ -117,67 +102,4 @@ public class Album implements Serializable {
         return new ArrayList<>(this.artists);
     }
 
-    /**
-     * set the songs of the album
-     * 
-     * @param songs - arraylist of constructed Song's
-     */
-    private void setSongs(ArrayList<Song> songs) {
-        if (songs == null) {
-            return;
-        }
-        this.songs = new ArrayList<>(songs);
-    }
-
-    /**
-     * adds constructed Song to the album
-     * 
-     * @param song - constructed Song class
-     */
-    public void addSong(Song song) {
-        if (song == null) {
-            return;
-        }
-        /*
-         * for (String artist : song.getArtists()) { // TODO: is this needed? (checks if
-         * song artists are in album artists)
-         * if (this.getArtists().contains(artist)) {
-         * this.songs.add(song);
-         * return;
-         * }
-         * }
-         */
-        this.songs.add(song);
-    }
-
-    /**
-     * remove song from the album
-     * note: this is only the first occurence
-     * 
-     * @param song - desired constructed Song to be removed
-     */
-    public void remSong(Song song) {
-        if (song == null) {
-            return;
-        }
-        this.songs.remove(song); // TODO: does this require Song.equals()? only removes first occurence
-    }
-
-    /**
-     * get all songs in the album
-     * 
-     * @return arraylist of constructed Song's
-     */
-    public ArrayList<Song> getSongs() {
-        return new ArrayList<>(this.songs);
-    }
-
-    /**
-     * get number of tracks in album
-     * 
-     * @return - integer of number of tracks in album
-     */
-    public int getSize() {
-        return this.songs.size();
-    }
 }

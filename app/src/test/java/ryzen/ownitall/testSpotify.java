@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 class testSpotify {
@@ -17,7 +18,9 @@ class testSpotify {
         String client_id = "8cf63653de3c45bf9155a0cb39e06c8a";
         String client_secret = "";
         String redirect_url = "https://ryzen.rip/ownitall";
-        spotify = new Spotify(client_id, client_secret, redirect_url);
+        Scanner scanner = new Scanner(System.in);
+        spotify = new Spotify(scanner, client_id, client_secret, redirect_url);
+        scanner.close();
     }
 
     @Test
@@ -30,7 +33,7 @@ class testSpotify {
 
     @Test
     void testGetAlbums() {
-        ArrayList<Album> albums = spotify.getAlbums();
+        LinkedHashMap<Album, ArrayList<Song>> albums = spotify.getAlbums();
         assertNotNull(albums);
         assertFalse(albums.isEmpty());
         // Add more specific assertions about the albums
@@ -47,18 +50,9 @@ class testSpotify {
 
     @Test
     void testGetPlaylists() {
-        ArrayList<Playlist> playlists = spotify.getPlaylists();
+        LinkedHashMap<Playlist, ArrayList<Song>> playlists = spotify.getPlaylists();
         assertNotNull(playlists);
         assertFalse(playlists.isEmpty());
         // Add more specific assertions about the playlists
-    }
-
-    @Test
-    void testGetPlaylistSongs() {
-        String testPlaylistId = "test_playlist_id"; // Replace with a real playlist ID
-        ArrayList<Song> playlistSongs = spotify.getPlaylistSongs(testPlaylistId);
-        assertNotNull(playlistSongs);
-        assertFalse(playlistSongs.isEmpty());
-        // Add more specific assertions about the playlist songs
     }
 }

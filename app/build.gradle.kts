@@ -28,6 +28,10 @@ application {
     mainClass = "ryzen.ownitall.Main"
 }
 
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in` //to allow scanner
+}
+
 tasks.named<Test>("test") {
     useJUnitPlatform()
     ignoreFailures = true

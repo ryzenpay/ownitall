@@ -3,8 +3,9 @@ package ryzen.ownitall;
 //https://developer.spotify.com/documentation/web-api
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Arrays;
-
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.time.Duration;
 import java.util.stream.Collectors;
@@ -40,8 +41,7 @@ public class Spotify {
     /**
      * Default spotify constructor asking for user input
      */
-    public Spotify() {
-        Scanner scanner = new Scanner(System.in);
+    public Spotify(Scanner scanner) {
         System.out.println("The following details can be obtained here: https://developer.spotify.com/dashboard");
         System.out.println("Please provide your client id: ");
         String client_id = scanner.nextLine();
@@ -54,9 +54,8 @@ public class Spotify {
                 .setClientSecret(client_secret)
                 .setRedirectUri(redirect_url)
                 .build();
-        String code = this.getCode();
+        String code = this.getCode(scanner);
         this.setToken(code);
-        scanner.close();
     }
 
     /**
@@ -66,14 +65,14 @@ public class Spotify {
      * @param client_secret - provided spotify developer app client secret
      * @param redirect_url  - provided spotify developer app redirect url
      */
-    public Spotify(String client_id, String client_secret, String redirect_url) {
+    public Spotify(Scanner scanner, String client_id, String client_secret, String redirect_url) {
         URI redirect_url_uri = SpotifyHttpManager.makeUri(redirect_url);
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(client_id)
                 .setClientSecret(client_secret)
                 .setRedirectUri(redirect_url_uri)
                 .build();
-        String code = this.getCode();
+        String code = this.getCode(scanner);
         this.setToken(code);
     }
 
@@ -101,8 +100,7 @@ public class Spotify {
      * 
      * @return - the oauth code with permissions
      */
-    private String getCode() {
-        Scanner scanner = new Scanner(System.in);
+    private String getCode(Scanner scanner) {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
                 .show_dialog(true)
@@ -111,7 +109,6 @@ public class Spotify {
         System.out.println("Open this link:\n" + auth_uri.toString());
         System.out.println("Please provide the code it provides (in url)");
         String code = scanner.nextLine(); // TODO: gui would help this so much
-        scanner.close();
         return code;
     }
 
@@ -170,8 +167,8 @@ public class Spotify {
      * 
      * @return - arraylist of constructed albums
      */
-    public ArrayList<Album> getAlbums() {
-        ArrayList<Album> albums = new ArrayList<>();
+    public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
+        LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -197,7 +194,7 @@ public class Spotify {
                                 .collect(Collectors.toCollection(ArrayList::new));
                         ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
 
-                        albums.add(new Album(albumName, artists, songs));
+                        albums.put(new Album(albumName, artists), songs);
                     }
 
                     offset += limit;
@@ -265,8 +262,8 @@ public class Spotify {
      * 
      * @return - arraylist of constructed Playlists
      */
-    public ArrayList<Playlist> getPlaylists() {
-        ArrayList<Playlist> playlists = new ArrayList<>();
+    public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
+        LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -289,7 +286,7 @@ public class Spotify {
                     for (PlaylistSimplified playlist : items) {
                         String playlistName = playlist.getName();
                         ArrayList<Song> playlistSongs = getPlaylistSongs(playlist.getId());
-                        playlists.add(new Playlist(playlistName, playlistSongs));
+                        playlists.put(new Playlist(playlistName), playlistSongs);
                     }
 
                     offset += limit;
@@ -343,7 +340,7 @@ public class Spotify {
                             songs.add(new Song(songName, artists, duration));
                         } catch (ClassCastException e) {
                             // TODO: handle episodes (people use to prevent copyright)
-                            System.out.println("Skipped a non-Track item in the playlist");
+                            System.out.println("Skipped a non-Track item in the playlist: " + playlistId);
                         }
                     }
 
