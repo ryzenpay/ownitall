@@ -41,7 +41,7 @@ public class Spotify {
      * Default spotify constructor asking for user input
      */
     public Spotify() {
-        Scanner scanner = new Scanner(System.in); // TODO: save these creds?, GUI
+        Scanner scanner = new Scanner(System.in);
         System.out.println("The following details can be obtained here: https://developer.spotify.com/dashboard");
         System.out.println("Please provide your client id: ");
         String client_id = scanner.nextLine();
@@ -49,7 +49,6 @@ public class Spotify {
         String client_secret = scanner.nextLine();
         System.out.println("Please provide redirect url:");
         URI redirect_url = SpotifyHttpManager.makeUri(scanner.nextLine());
-        scanner.close();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(client_id)
                 .setClientSecret(client_secret)
@@ -57,6 +56,7 @@ public class Spotify {
                 .build();
         String code = this.getCode();
         this.setToken(code);
+        scanner.close();
     }
 
     /**
@@ -102,15 +102,16 @@ public class Spotify {
      * @return - the oauth code with permissions
      */
     private String getCode() {
+        Scanner scanner = new Scanner(System.in);
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
                 .show_dialog(true)
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please open this link:\n" + auth_uri.toString());
+        System.out.println("Open this link:\n" + auth_uri.toString());
         System.out.println("Please provide the code it provides (in url)");
         String code = scanner.nextLine(); // TODO: gui would help this so much
+        scanner.close();
         return code;
     }
 

@@ -30,7 +30,7 @@ public class Main {
                 System.out.println("[0] exit");
                 System.out.print("Enter your choice: ");
                 int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
 
                 switch (choice) {
                     case 1:
@@ -48,7 +48,7 @@ public class Main {
                         scanner.close();
                         System.exit(0);
                     default:
-                        System.out.println("Invalid option. Please try again.");
+                        System.err.println("Invalid option. Please try again.");
                 }
             }
         }
@@ -70,8 +70,7 @@ public class Main {
 
             try {
                 int importChoice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-
+                scanner.nextLine();
                 switch (importChoice) {
                     case 1:
                         // TODO: import from youtube
@@ -81,6 +80,7 @@ public class Main {
                         playlists = new LinkedHashSet<>(spotify.getPlaylists());
                         playlists.add(new Playlist("liked songs", spotify.getLikedSongs()));
                         albums = new LinkedHashSet<>(spotify.getAlbums());
+                        scanner.nextLine(); // TODO: this is fucking stupid, why do i have to do this each time
                         return;
                     case 3:
                         // TODO: import from local
@@ -93,7 +93,7 @@ public class Main {
                         System.out.println("Invalid option. Please enter a number between 1-4.");
                 }
             } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a numerical value.");
+                System.err.println("Invalid input. Please enter a numerical value." + e);
                 scanner.nextLine(); // Clear invalid input
             }
         }

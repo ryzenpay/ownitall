@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 class testSpotify {
 
