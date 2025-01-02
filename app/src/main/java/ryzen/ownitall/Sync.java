@@ -2,6 +2,7 @@ package ryzen.ownitall;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -23,6 +24,12 @@ public class Sync {
         }
     }
 
+    private void setDataFolder() {
+        if (!this.dataFolder.exists()) { // create folder if it does not exist
+            this.dataFolder.mkdirs();
+        }
+    }
+
     public File getDataFolder() {
         return this.dataFolder;
     }
@@ -32,6 +39,8 @@ public class Sync {
                 new FileOutputStream(this.getDataFolder().getAbsolutePath() + "/albums.ser"))) {
             albumOutput.writeObject(albums);
             System.out.println("Successfully saved " + albums.size() + " albums");
+        } catch (FileNotFoundException e) {
+            this.setDataFolder();
         } catch (IOException e) {
             System.err.println("Error Saving Albums: " + e);
         }
@@ -56,6 +65,9 @@ public class Sync {
                 new FileOutputStream(this.getDataFolder().getAbsolutePath() + "/playlists.ser"))) {
             playlistOutput.writeObject(playlists);
             System.out.println("Successfully saved " + playlists.size() + " playlists");
+
+        } catch (FileNotFoundException e) {
+            this.setDataFolder(); // since they are being exported its gotta exist
         } catch (IOException e) {
             System.err.println("Error Saving Playlists: " + e);
         }

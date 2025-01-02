@@ -9,14 +9,9 @@ import java.util.Scanner;
 import java.time.Duration;
 import java.util.stream.Collectors;
 
-import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.SpotifyHttpManager;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import org.apache.hc.core5.http.ParseException;
 
-import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
@@ -35,27 +30,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Spotify {
-    private SpotifyApi spotifyApi;
+public class Spotify extends SpotifyCredentials {
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify(Scanner scanner) {
-        System.out.println("The following details can be obtained here: https://developer.spotify.com/dashboard");
-        System.out.println("Please provide your client id: ");
-        String client_id = scanner.nextLine();
-        System.out.println("Please provide your client secret: ");
-        String client_secret = scanner.nextLine();
-        System.out.println("Please provide redirect url:");
-        URI redirect_url = SpotifyHttpManager.makeUri(scanner.nextLine());
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(client_id)
-                .setClientSecret(client_secret)
-                .setRedirectUri(redirect_url)
-                .build();
-        String code = this.getCode(scanner);
-        this.setToken(code);
+        super(scanner);
     }
 
     /**
@@ -66,50 +47,7 @@ public class Spotify {
      * @param redirect_url  - provided spotify developer app redirect url
      */
     public Spotify(Scanner scanner, String client_id, String client_secret, String redirect_url) {
-        URI redirect_url_uri = SpotifyHttpManager.makeUri(redirect_url);
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(client_id)
-                .setClientSecret(client_secret)
-                .setRedirectUri(redirect_url_uri)
-                .build();
-        String code = this.getCode(scanner);
-        this.setToken(code);
-    }
-
-    /**
-     * set the SpotifyAPI access token
-     * 
-     * @param code - the authentication code provided in the oauth
-     */
-    private void setToken(String code) {
-        AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-        try {
-            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-            System.out.println("Token Expires in: " + authorizationCodeCredentials.getExpiresIn()); // TODO: track time
-                                                                                                    // and check
-            // this?
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
-            System.err.println("Error logging in: " + e);
-        }
-    }
-
-    /**
-     * obtaining the oauth code to set the token
-     * 
-     * @return - the oauth code with permissions
-     */
-    private String getCode(Scanner scanner) {
-        AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
-                .scope("user-library-read,playlist-read-private")
-                .show_dialog(true)
-                .build();
-        URI auth_uri = authorizationCodeUriRequest.execute();
-        System.out.println("Open this link:\n" + auth_uri.toString());
-        System.out.println("Please provide the code it provides (in url)");
-        String code = scanner.nextLine(); // TODO: gui would help this so much
-        return code;
+        super(scanner, client_secret, client_id, redirect_url);
     }
 
     /**
@@ -124,7 +62,7 @@ public class Spotify {
         boolean hasMore = true;
 
         while (hasMore) {
-            GetUsersSavedTracksRequest getUsersSavedTracksRequest = spotifyApi.getUsersSavedTracks()
+            GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
                     .limit(limit)
                     .offset(offset)
                     .build();
@@ -227,7 +165,7 @@ public class Spotify {
         boolean hasMore = true;
 
         while (hasMore) {
-            GetAlbumsTracksRequest getAlbumsTracksRequest = spotifyApi.getAlbumsTracks(albumId)
+            GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
                     .limit(limit)
                     .offset(offset)
                     .build();
@@ -276,7 +214,7 @@ public class Spotify {
         boolean hasMore = true;
 
         while (hasMore) {
-            GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = spotifyApi
+            GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
                     .limit(limit)
                     .offset(offset)
@@ -327,7 +265,7 @@ public class Spotify {
         boolean hasMore = true;
 
         while (hasMore) {
-            GetPlaylistsItemsRequest getPlaylistsItemsRequest = spotifyApi.getPlaylistsItems(playlistId)
+            GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
                     .limit(limit)
                     .offset(offset)
                     .build();
