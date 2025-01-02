@@ -1,12 +1,11 @@
 package ryzen.ownitall;
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-public class Song implements Serializable {
+public class Song {
     private String name;
     private Set<String> artists; // the first being the main
     private Duration duration;
