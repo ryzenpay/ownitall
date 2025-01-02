@@ -1,16 +1,29 @@
 package ryzen.ownitall;
 
+import java.net.URI;
+
 public class Playlist {
     private String name;
-    // TODO: coverart
+    private URI coverart;
 
     /**
-     * Default constructor
+     * Default playlist constructor without coverart
      * 
      * @param name - name of the playlist
      */
     public Playlist(String name) {
         this.setName(name);
+    }
+
+    /**
+     * Default playlist constructor with coverart
+     * 
+     * @param name     - name of playlist
+     * @param coverart - constructed URI
+     */
+    public Playlist(String name, URI coverart) {
+        this.setName(name);
+        this.coverart = coverart;
     }
 
     /**
@@ -32,5 +45,14 @@ public class Playlist {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * get coverart of current playlist class
+     * 
+     * @return - constructed URI
+     */
+    public URI getCoverart() {
+        return this.coverart;
     }
 }

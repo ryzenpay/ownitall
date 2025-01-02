@@ -33,6 +33,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Spotify {
     private SpotifyApi spotifyApi;
@@ -193,7 +194,14 @@ public class Spotify {
                                 .collect(Collectors.toCollection(ArrayList::new));
                         ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
 
-                        albums.put(new Album(albumName, artists), songs);
+                        try {
+                            URI coverart = new URI(savedAlbum.getAlbum().getImages()[0].getUrl()); // TODO:
+                                                                                                   // documentation says
+                                                                                                   // its per size?
+                            albums.put(new Album(albumName, artists, coverart), songs);
+                        } catch (URISyntaxException e) {
+                            albums.put(new Album(albumName, artists), songs);
+                        }
                     }
 
                     offset += limit;
@@ -285,9 +293,13 @@ public class Spotify {
                     for (PlaylistSimplified playlist : items) {
                         String playlistName = playlist.getName();
                         ArrayList<Song> playlistSongs = getPlaylistSongs(playlist.getId());
-                        playlists.put(new Playlist(playlistName), playlistSongs);
+                        try {
+                            URI coverart = new URI(playlist.getImages()[0].getUrl());
+                            playlists.put(new Playlist(playlistName, coverart), playlistSongs);
+                        } catch (URISyntaxException e) {
+                            playlists.put(new Playlist(playlistName), playlistSongs);
+                        }
                     }
-
                     offset += limit;
                 }
 

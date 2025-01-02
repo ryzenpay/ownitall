@@ -3,14 +3,15 @@ package ryzen.ownitall;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.ArrayList;
+import java.net.URI;
 
 public class Album {
     private String name;
     private Set<String> artists; // the first being the main, Set because no duplicates
-    // TODO: coverimage
+    private URI coverimage;
 
     /**
-     * Default constructor of album
+     * Default constructor of album without album cover
      * 
      * @param name    - album name
      * @param artists - arraylist of all artists
@@ -18,6 +19,19 @@ public class Album {
     public Album(String name, ArrayList<String> artists) {
         this.setName(name);
         this.setArtists(artists);
+    }
+
+    /**
+     * Default constructor of album with album cover
+     * 
+     * @param name       - album name
+     * @param artists    - arraylist of all artists
+     * @param coverimage - coverimage of album
+     */
+    public Album(String name, ArrayList<String> artists, URI coverimage) {
+        this.setName(name);
+        this.setArtists(artists);
+        this.coverimage = coverimage;
     }
 
     /**
@@ -39,6 +53,15 @@ public class Album {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * get the album cover image
+     * 
+     * @return - URI cover image
+     */
+    public URI getCoverImage() {
+        return this.coverimage;
     }
 
     /**
