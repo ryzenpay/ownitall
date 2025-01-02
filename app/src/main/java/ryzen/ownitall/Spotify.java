@@ -5,7 +5,6 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.time.Duration;
 import java.util.stream.Collectors;

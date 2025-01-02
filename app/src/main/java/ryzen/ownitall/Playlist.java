@@ -1,9 +1,6 @@
 package ryzen.ownitall;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
-public class Playlist implements Serializable {
+public class Playlist {
     private String name;
     // TODO: coverart
 
