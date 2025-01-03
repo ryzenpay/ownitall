@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
-class testSpotify {
+class testSpotify { // TODO: write tests fuck face
 
     private Spotify spotify;
 
