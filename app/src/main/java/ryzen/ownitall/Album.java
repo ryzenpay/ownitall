@@ -3,9 +3,10 @@ package ryzen.ownitall;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.ArrayList;
+import java.io.Serializable;
 import java.net.URI;
 
-public class Album {
+public class Album implements Serializable {
     private String name;
     private Set<String> artists; // the first being the main, Set because no duplicates
     private URI coverimage;

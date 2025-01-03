@@ -52,8 +52,6 @@ public class Sync {
                 new FileOutputStream(this.albumFile))) {
             albumOutput.writeObject(albums);
             System.out.println("Successfully saved " + albums.size() + " albums");
-        } catch (NotSerializableException e) {
-            System.out.println("Not saving albums, as they are empty");
         } catch (FileNotFoundException e) {
             this.setDataFolder();
         } catch (IOException e) {
@@ -86,8 +84,6 @@ public class Sync {
 
         } catch (FileNotFoundException e) {
             this.setDataFolder(); // since they are being exported its gotta exist
-        } catch (NotSerializableException e) {
-            System.out.println("Not saving playlists, as they are empty");
         } catch (IOException e) {
             System.err.println("Error Saving Playlists: " + e);
         }

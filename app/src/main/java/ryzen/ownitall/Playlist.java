@@ -1,8 +1,9 @@
 package ryzen.ownitall;
 
+import java.io.Serializable;
 import java.net.URI;
 
-public class Playlist {
+public class Playlist implements Serializable {
     private String name;
     private URI coverart;
 
