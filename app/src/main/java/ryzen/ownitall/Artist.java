@@ -11,17 +11,17 @@ public class Artist implements Serializable {
         this.name = name;
     }
 
-    public Artist(String name, String profilePicture) { // TODO: spotify artist pfp
+    public Artist(String name, URI profilePicture) { // TODO: spotify artist pfp
         this.name = name;
-        try {
-            this.profilePicture = new URI(profilePicture);
-        } catch (Exception e) {
-            System.err.println("Error converting artist profile picture: " + e);
-        }
+        this.profilePicture = profilePicture;
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public void setProfilePicture(URI profilePicrture) {
+        this.profilePicture = profilePicrture;
     }
 
     @Override
