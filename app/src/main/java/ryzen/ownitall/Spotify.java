@@ -36,8 +36,8 @@ public class Spotify extends SpotifyCredentials {
     /**
      * Default spotify constructor asking for user input
      */
-    public Spotify(Scanner scanner) {
-        super(scanner);
+    public Spotify() {
+        super();
     }
 
     /**
@@ -47,23 +47,12 @@ public class Spotify extends SpotifyCredentials {
      * @param client_secret - provided spotify developer app client secret
      * @param redirect_url  - provided spotify developer app redirect url
      */
-    public Spotify(Scanner scanner, String client_id, String client_secret, String redirect_url) {
-        super(scanner, client_secret, client_id, redirect_url);
+    public Spotify(String client_id, String client_secret, String redirect_url) {
+        super(client_secret, client_id, redirect_url);
     }
 
-    /**
-     * Spotify API credential constructor with known values including token, used
-     * for importing
-     * 
-     * @param clientId       - spotify api client id
-     * @param clientSecret   - spotify api client secret
-     * @param redirectUrl    - spotify api redirect url
-     * @param code           - temporary oauth code
-     * @param codeExpiration - LocalDateTime of code expiration
-     */
-    public Spotify(String clientId, String clientSecret, String redirectUrl, String code,
-            LocalDateTime codeExpiration) {
-        super(clientId, clientSecret, redirectUrl, code, codeExpiration);
+    public Spotify(SpotifyCredentials spotifyCredentials) { // TODO: such an ugly way, recheck when no tired asf
+        super(spotifyCredentials);
     }
 
     /**

@@ -15,13 +15,12 @@ public class Main {
 
     public static void main(String[] args) {
         Sync sync = new Sync(DATAFOLDER);
-        Scanner scanner = new Scanner(System.in);
 
         if (!checkDataFolder()) {
             System.out.println("First time import");
             albums = new LinkedHashMap<>();
             playlists = new LinkedHashMap<>();
-            promptForImport(scanner);
+            promptForImport();
         } else {
             albums = new LinkedHashMap<>(sync.importAlbums());
             playlists = new LinkedHashMap<>(sync.importPlaylists());
@@ -35,11 +34,10 @@ public class Main {
             System.out.println("[0] exit");
             System.out.print("Enter your choice: ");
             try {
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                int choice = Input.getInstance().getInt();
                 switch (choice) {
                     case 1:
-                        promptForImport(scanner);
+                        promptForImport();
                     case 2:
                         // TODO: Implement export functionality
                         break;
@@ -51,14 +49,12 @@ public class Main {
                     case 0:
                         saveData(sync);
                         System.out.println("Exiting program. Goodbye!");
-                        scanner.close();
                         System.exit(0);
                     default:
                         System.err.println("Invalid option. Please try again.");
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
-                scanner.nextLine();
             }
         }
 
@@ -76,7 +72,7 @@ public class Main {
         return false;
     }
 
-    private static void promptForImport(Scanner scanner) {
+    private static void promptForImport() {
         while (true) {
             System.out.println("Choose an import option:");
             System.out.println("[1] YouTube");
@@ -86,8 +82,7 @@ public class Main {
             System.out.print("Enter your choice: ");
 
             try {
-                int importChoice = scanner.nextInt();
-                scanner.nextLine();
+                int importChoice = Input.getInstance().getInt();
                 switch (importChoice) {
                     case 1:
                         // TODO: import from youtube
@@ -95,16 +90,11 @@ public class Main {
                         break;
                     case 2:
                         Sync sync = new Sync(DATAFOLDER);
-                        SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
                         Spotify spotify;
-                        if (spotifyCredentials.getClientId() != null) { // check if import worked, TODO: more robust?
-                            spotify = new Spotify(spotifyCredentials.getClientId(),
-                                    spotifyCredentials.getClientSecret(), spotifyCredentials.getRedirectUrl(),
-                                    spotifyCredentials.getCode(), spotifyCredentials.getCodeExpiration());
-                        } else {
-                            spotify = new Spotify(scanner);
-                        }
-                        sync.exportSpotifyCredentials(spotifyCredentials);
+                        SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
+                        spotify = new Spotify(spotifyCredentials);
+                        sync.exportSpotifyCredentials(spotify.getClientId(), spotify.getClientSecret(),
+                                spotify.getRedirectUrl()); // with refreshed token
                         playlists = new LinkedHashMap<>(spotify.getPlaylists()); // TODO: this overwrites, should it
                                                                                  // append?
                         playlists.put(new Playlist("liked songs"), spotify.getLikedSongs());
@@ -124,7 +114,6 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
-                scanner.nextLine();
             }
         }
     }

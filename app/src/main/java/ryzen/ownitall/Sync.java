@@ -122,11 +122,9 @@ public class Sync {
             String clientId = reader.readLine();
             String clientSecret = reader.readLine();
             String redirectUrl = reader.readLine();
-            String code = reader.readLine();
-            LocalDateTime codeExpiration = LocalDateTime.parse(reader.readLine());
-            spotifyCredentials = new SpotifyCredentials(clientId, clientSecret, redirectUrl, code, codeExpiration);
+            spotifyCredentials = new SpotifyCredentials(clientId, clientSecret, redirectUrl);
         } catch (IOException e) {
-            System.err.println("Error importing spotify credentials: " + e);
+            System.err.println("Error importing spotify credentials, creating new ones: " + e);
             System.err
                     .println("If this persists, delete: " + this.spotifyFile);
             spotifyCredentials = new SpotifyCredentials();
@@ -134,14 +132,12 @@ public class Sync {
         return spotifyCredentials;
     }
 
-    public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
+    public void exportSpotifyCredentials(String clientId, String clientSecret, String redirectUrl) {
         try (PrintWriter writer = new PrintWriter(
                 new FileWriter(this.spotifyFile))) {
-            writer.println(spotifyCredentials.getClientId());
-            writer.println(spotifyCredentials.getClientSecret());
-            writer.println(spotifyCredentials.getRedirectUrl());
-            writer.println(spotifyCredentials.getCode());
-            writer.println(spotifyCredentials.getCodeExpiration().toString());
+            writer.println(clientId);
+            writer.println(clientSecret);
+            writer.println(redirectUrl);
             System.out.println("Successfully saved Spotify credentials");
         } catch (FileNotFoundException e) {
             this.setDataFolder(); // since they are being exported its gotta exist
