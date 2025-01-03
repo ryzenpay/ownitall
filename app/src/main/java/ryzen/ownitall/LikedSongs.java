@@ -5,36 +5,36 @@ import java.util.LinkedHashSet;
 
 public class LikedSongs extends Playlist {
 
-    private LinkedHashSet<Song> liked_songs;
+    private LinkedHashSet<Song> likedSongs;
 
     public LikedSongs(LinkedHashSet<Song> songs) {
         super("Liked Songs");
-        this.liked_songs = new LinkedHashSet<>(songs);
+        this.likedSongs = new LinkedHashSet<>(songs);
     }
 
     public LikedSongs() {
         super("Liked Songs");
-        this.liked_songs = new LinkedHashSet<>();
+        this.likedSongs = new LinkedHashSet<>();
     }
 
     public ArrayList<Song> getSongs() {
-        return new ArrayList<Song>(this.liked_songs);
+        return new ArrayList<Song>(this.likedSongs);
     }
 
     public void addSongs(LinkedHashSet<Song> songs) {
-        this.liked_songs.addAll(songs);
+        this.likedSongs.addAll(songs);
     }
 
     public int getSize() {
-        return this.liked_songs.size();
+        return this.likedSongs.size();
     }
 
     public boolean checkLiked(Song song) {
-        if (this.liked_songs.isEmpty()) {
+        if (this.likedSongs.isEmpty()) {
             return false;
         }
-        for (Song liked_song : this.liked_songs) {
-            if (liked_song.equals(song)) { // TODO: song equals overwrite? (excluding the cover and duration)
+        for (Song likedSong : this.likedSongs) {
+            if (likedSong.equals(song)) { // TODO: song equals overwrite? (excluding the cover and duration)
                 return true;
             }
         }

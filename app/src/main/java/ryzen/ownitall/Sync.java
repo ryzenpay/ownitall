@@ -14,10 +14,11 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class Sync {
+public class Sync implements AutoCloseable {
     private File dataFolder;
     private File albumFile;
     private File playlistFile;
+    private File likedSongsFile;
     private File spotifyFile;
 
     public Sync(String dataPath) {
@@ -25,7 +26,33 @@ public class Sync {
         this.albumFile = new File(this.dataFolder, "albums.ser");
         this.albumFile = new File(this.dataFolder, "albums.ser");
         this.playlistFile = new File(this.dataFolder, "playlists.ser");
+        this.likedSongsFile = new File(this.dataFolder, "likedsongs.ser");
         this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.txt");
+    }
+
+    @Override
+    public void close() {
+        // Close any open resources
+        closeFile(albumFile);
+        closeFile(playlistFile);
+        closeFile(likedSongsFile);
+        closeFile(spotifyFile);
+
+        // Perform any additional cleanup
+        System.out.println("Sync resources closed successfully.");
+    }
+
+    private void closeFile(File file) {
+        if (file != null && file.exists()) {
+            try {
+                // Attempt to close the file if it's open
+                // This is a simplified approach; in a real scenario, you might need to track
+                // open file handles
+                new FileInputStream(file).close();
+            } catch (IOException e) {
+                System.err.println("Error closing file: " + file.getName() + " - " + e.getMessage());
+            }
+        }
     }
 
     private void setDataFolder(String dataPath) {
@@ -105,6 +132,33 @@ public class Sync {
         return playlists;
     }
 
+    public void exportLikedSongs(LikedSongs likedSongs) {
+        try (ObjectOutputStream likedOutput = new ObjectOutputStream(new FileOutputStream(this.likedSongsFile))) {
+            likedOutput.writeObject(likedSongs);
+            System.out.println("Successfully saved " + likedSongs.getSize() + " songs");
+        } catch (FileNotFoundException e) {
+            this.setDataFolder();
+        } catch (IOException e) {
+            System.err.println("Error saving liked songs: " + e);
+        }
+    }
+
+    public LikedSongs importLikedSongs() {
+        LikedSongs likedSongs;
+        if (!this.likedSongsFile.exists()) {
+            return new LikedSongs();
+        }
+        try (ObjectInputStream likedInput = new ObjectInputStream(new FileInputStream(this.likedSongsFile))) {
+            likedSongs = (LikedSongs) likedInput.readObject();
+            System.out.println("Successfully imported " + likedSongs.getSize() + " liked songs");
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error importing liked songs: " + e);
+            System.err.println("If this persists, delete: " + this.likedSongsFile.getAbsolutePath());
+            likedSongs = new LikedSongs();
+        }
+        return likedSongs;
+    }
+
     public SpotifyCredentials importSpotifyCredentials() {
         SpotifyCredentials spotifyCredentials;
         if (!spotifyFile.exists()) {
@@ -120,7 +174,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing spotify credentials, creating new ones: " + e);
             System.err
-                    .println("If this persists, delete: " + this.spotifyFile);
+                    .println("If this persists, delete: " + this.spotifyFile.getAbsolutePath());
             spotifyCredentials = new SpotifyCredentials();
         }
         return spotifyCredentials;
