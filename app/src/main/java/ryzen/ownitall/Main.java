@@ -1,7 +1,6 @@
 
 package ryzen.ownitall;
 
-import java.util.Scanner;
 import java.io.File;
 
 import java.util.LinkedHashMap;
@@ -38,11 +37,13 @@ public class Main {
                 switch (choice) {
                     case 1:
                         promptForImport();
+                        break;
                     case 2:
                         // TODO: Implement export functionality
                         break;
                     case 3:
                         printInventory(2);
+                        break;
                     case 4:
                         saveData(sync);
                         break;
@@ -52,6 +53,7 @@ public class Main {
                         System.exit(0);
                     default:
                         System.err.println("Invalid option. Please try again.");
+                        break;
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
@@ -146,6 +148,7 @@ public class Main {
                 System.out.println("Total playlists: " + playlists.size());
                 System.out.println("Total albums: " + albums.size());
                 System.out.println("With a total of " + trackCount + " songs");
+                break;
             case 2:
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
@@ -166,6 +169,7 @@ public class Main {
                     System.out.println("    - Artists: " + album.getArtists().toString());
                     i++;
                 }
+                break;
             case 3:
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
@@ -199,8 +203,10 @@ public class Main {
                         y++;
                     }
                 }
+                break;
             default:
                 System.err.println("Invalid recursion option.");
+                break;
         }
     }
 
