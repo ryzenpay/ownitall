@@ -22,7 +22,6 @@ import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
@@ -176,8 +175,8 @@ public class Spotify extends SpotifyCredentials {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
                         String songName = track.getName();
-                        ArrayList<String> artists = Arrays.stream(track.getArtists())
-                                .map(artist -> artist.getName())
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
                                 .collect(Collectors.toCollection(ArrayList::new));
                         Duration duration = Duration.ofMillis(track.getDurationMs());
 
@@ -230,11 +229,10 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (SavedAlbum savedAlbum : items) {
                         String albumName = savedAlbum.getAlbum().getName();
-                        ArrayList<String> artists = Arrays.stream(savedAlbum.getAlbum().getArtists())
-                                .map(artist -> artist.getName())
+                        ArrayList<Artist> artists = Arrays.stream(savedAlbum.getAlbum().getArtists())
+                                .map(artist -> new Artist(artist.getName()))
                                 .collect(Collectors.toCollection(ArrayList::new));
                         ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
-
                         try {
                             URI coverart = new URI(savedAlbum.getAlbum().getImages()[0].getUrl()); // TODO:
                                                                                                    // documentation says
@@ -286,8 +284,8 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (TrackSimplified track : items) {
                         String songName = track.getName();
-                        ArrayList<String> artists = Arrays.stream(track.getArtists())
-                                .map(artist -> artist.getName())
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
                                 .collect(Collectors.toCollection(ArrayList::new));
                         Duration duration = Duration.ofMillis(track.getDurationMs());
 
@@ -396,11 +394,10 @@ public class Spotify extends SpotifyCredentials {
                         try {
                             Track track = (Track) playlistTrack.getTrack();
                             String songName = track.getName();
-                            ArrayList<String> artists = Arrays.stream(track.getArtists())
-                                    .map(ArtistSimplified::getName)
+                            ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                    .map(artist -> new Artist(artist.getName()))
                                     .collect(Collectors.toCollection(ArrayList::new));
                             Duration duration = Duration.ofMillis(track.getDurationMs());
-
                             songs.add(new Song(songName, artists, duration));
                         } catch (ClassCastException e) {
                             // TODO: handle episodes (people use to prevent copyright)

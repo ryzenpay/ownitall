@@ -3,12 +3,11 @@ package ryzen.ownitall;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.ArrayList;
 
 public class Song implements Serializable {
     private String name;
-    private Set<String> artists; // the first being the main
+    private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
     // TODO: cover image
 
@@ -19,9 +18,9 @@ public class Song implements Serializable {
      * @param artists  - arraylist of artists (converted to set for no duplicates)
      * @param duration - java.Duration on the song's duration
      */
-    public Song(String name, ArrayList<String> artists, Duration duration) {
+    public Song(String name, ArrayList<Artist> artists, Duration duration) {
         this.setName(name);
-        this.setArtists(artists);
+        this.addArtists(artists);
         this.setDuration(duration);
     }
 
@@ -47,23 +46,11 @@ public class Song implements Serializable {
     }
 
     /**
-     * set song class artists
-     * 
-     * @param artists - LinkedHashSet of artists
-     */
-    private void setArtists(ArrayList<String> artists) {
-        if (artists == null) {
-            return;
-        }
-        this.artists = new LinkedHashSet<>(artists);
-    }
-
-    /**
      * add artist to songs artists
      * 
      * @param artist - artist object/string ;)
      */
-    public void addArtist(String artist) {
+    public void addArtist(Artist artist) {
         if (artist == null) {
             return;
         }
@@ -71,18 +58,16 @@ public class Song implements Serializable {
     }
 
     /**
-     * add arraylist of artists to the song artists
+     * set song artists
      * 
-     * @param artists - arraylist of artists
+     * @param artists - LinkedHashSet of artists
      */
-    public void addArtists(ArrayList<String> artists) {
-        if (artists == null) {
+    private void addArtists(ArrayList<Artist> artists) {
+        if (this.artists == null) {
+            this.artists = new LinkedHashSet<>(artists);
             return;
         }
-        if (artists.isEmpty()) {
-            return;
-        }
-        this.artists.addAll(artists);
+        this.artists.addAll(new LinkedHashSet<Artist>(artists));
     }
 
     /**
@@ -90,7 +75,7 @@ public class Song implements Serializable {
      * 
      * @param artist - desired artist to be removed
      */
-    public void remArtist(String artist) {
+    public void remArtist(Artist artist) {
         if (artist == null) {
             return;
         }
@@ -102,7 +87,7 @@ public class Song implements Serializable {
      * 
      * @return - arraylist of artists
      */
-    public ArrayList<String> getArtists() {
+    public ArrayList<Artist> getArtists() {
         return new ArrayList<>(this.artists);
     }
 

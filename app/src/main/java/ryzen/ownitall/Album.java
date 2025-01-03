@@ -1,14 +1,13 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.ArrayList;
 import java.io.Serializable;
 import java.net.URI;
 
 public class Album implements Serializable {
     private String name;
-    private Set<String> artists; // the first being the main, Set because no duplicates
+    private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
     private URI coverimage;
 
     /**
@@ -17,9 +16,9 @@ public class Album implements Serializable {
      * @param name    - album name
      * @param artists - arraylist of all artists
      */
-    public Album(String name, ArrayList<String> artists) {
-        this.setName(name);
-        this.setArtists(artists);
+    public Album(String name, ArrayList<Artist> artists) {
+        this.name = name;
+        this.addArtists(artists);
     }
 
     /**
@@ -29,22 +28,10 @@ public class Album implements Serializable {
      * @param artists    - arraylist of all artists
      * @param coverimage - coverimage of album
      */
-    public Album(String name, ArrayList<String> artists, URI coverimage) {
-        this.setName(name);
-        this.setArtists(artists);
-        this.coverimage = coverimage;
-    }
-
-    /**
-     * set the name of album class
-     * 
-     * @param name - desired name
-     */
-    private void setName(String name) {
-        if (name == null) {
-            return;
-        }
+    public Album(String name, ArrayList<Artist> artists, URI coverimage) {
         this.name = name;
+        this.addArtists(artists);
+        this.coverimage = coverimage;
     }
 
     /**
@@ -70,11 +57,12 @@ public class Album implements Serializable {
      * 
      * @param artists - LinkedHashSet of artists
      */
-    private void setArtists(ArrayList<String> artists) {
-        if (artists == null) {
+    private void addArtists(ArrayList<Artist> artists) {
+        if (this.artists == null) {
+            this.artists = new LinkedHashSet<>(artists);
             return;
         }
-        this.artists = new LinkedHashSet<>(artists);
+        this.artists.addAll(new LinkedHashSet<Artist>(artists));
     }
 
     /**
@@ -82,7 +70,7 @@ public class Album implements Serializable {
      * 
      * @param artist - artist object/string ;)
      */
-    public void addArtist(String artist) {
+    public void addArtist(Artist artist) {
         if (artist == null) {
             return;
         }
@@ -90,26 +78,11 @@ public class Album implements Serializable {
     }
 
     /**
-     * add arraylist of artists to the album artists
-     * 
-     * @param artists - arraylist of artists
-     */
-    public void addArtists(ArrayList<String> artists) {
-        if (artists == null) {
-            return;
-        }
-        if (artists.isEmpty()) {
-            return;
-        }
-        this.artists.addAll(artists);
-    }
-
-    /**
      * remove artist from album artists array
      * 
      * @param artist - desired artist to be removed
      */
-    public void remArtist(String artist) {
+    public void remArtist(Artist artist) {
         if (artist == null) {
             return;
         }
@@ -121,8 +94,8 @@ public class Album implements Serializable {
      * 
      * @return - arraylist of artists
      */
-    public ArrayList<String> getArtists() {
-        return new ArrayList<>(this.artists);
+    public LinkedHashSet<Artist> getArtists() {
+        return new LinkedHashSet<>(this.artists);
     }
 
     @Override
@@ -132,7 +105,7 @@ public class Album implements Serializable {
         if (object == null || getClass() != object.getClass())
             return false;
         Album album = (Album) object;
-        if (this.name.equals(album.name)) { // TODO: check with artists
+        if (this.name.toLowerCase().equals(album.name.toLowerCase())) { // TODO: check with artists
             return true;
         }
         return false;
