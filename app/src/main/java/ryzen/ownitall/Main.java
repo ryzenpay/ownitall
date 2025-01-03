@@ -106,10 +106,9 @@ public class Main {
                             spotify = new Spotify(spotifyCredentials);
                         }
                         sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
-                        playlists = new LinkedHashMap<>(spotify.getPlaylists()); // TODO: this overwrites, should it
-                                                                                 // append?
+                        playlists.putAll(spotify.getPlaylists());
                         liked_songs.addSongs(spotify.getLikedSongs());
-                        albums = new LinkedHashMap<>(spotify.getAlbums());
+                        albums.putAll(spotify.getAlbums());
                         printInventory(1);
                         return;
                     case 3:
