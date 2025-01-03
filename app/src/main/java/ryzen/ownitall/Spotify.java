@@ -8,14 +8,19 @@ import java.util.Arrays;
 import java.time.Duration;
 import java.util.stream.Collectors;
 
+import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import org.apache.hc.core5.http.ParseException;
 
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
@@ -30,12 +35,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Spotify extends SpotifyCredentials {
+    private SpotifyApi spotifyApi;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
         super();
+        this.spotifyApi = new SpotifyApi.Builder()
+                .setClientId(this.getClientId())
+                .setClientSecret(this.getClientSecret())
+                .setRedirectUri(this.getRedirectUrl())
+                .build();
+        this.requestCode();
+        this.setToken();
     }
 
     /**
@@ -47,10 +60,81 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify(String client_id, String client_secret, String redirect_url) {
         super(client_secret, client_id, redirect_url);
+        this.spotifyApi = new SpotifyApi.Builder()
+                .setClientId(this.getClientId())
+                .setClientSecret(this.getClientSecret())
+                .setRedirectUri(this.getRedirectUrl())
+                .build();
+        this.requestCode();
+        this.setToken();
     }
 
-    public Spotify(SpotifyCredentials spotifyCredentials) { // TODO: such an ugly way, recheck when no tired asf
-        super(spotifyCredentials);
+    /**
+     * default spotify constructor taking in constructed spotify credentials (for
+     * importing)
+     * 
+     * @param spotifyCredentials - constructed SpotifyCredentials class with
+     *                           variables
+     */
+    public Spotify(SpotifyCredentials spotifyCredentials) {
+        super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
+                spotifyCredentials.getRedirectUrlString());
+    }
+
+    /**
+     * obtaining the oauth code to set the token
+     * 
+     * @return - the oauth code with permissions
+     */
+    private void requestCode() {
+        AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
+                .scope("user-library-read,playlist-read-private")
+                .show_dialog(true)
+                .build();
+        URI auth_uri = authorizationCodeUriRequest.execute();
+        System.out.println("Open this link:\n" + auth_uri.toString());
+        System.out.println("Please provide the code it provides (in url)");
+        this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+    }
+
+    /**
+     * set the spotifyApi access token
+     * 
+     * @param code - the authentication code provided in the oauth
+     */
+    private void setToken() {
+        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.getCode()).build();
+        try {
+            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
+            this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+            this.setCodeExpiration(authorizationCodeCredentials.getExpiresIn());
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.err.println("Error logging in: " + e);
+        }
+    }
+
+    /**
+     * refresh the spotify api token incase of expiring
+     * 
+     * @return - true if succesfully refreshed, false if not
+     */
+    public boolean refreshToken() {
+        AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = this.spotifyApi.authorizationCodeRefresh()
+                .build();
+        try {
+            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            this.setCodeExpiration(authorizationCodeCredentials.getExpiresIn());
+            return true;
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.err.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public SpotifyCredentials getSpotifyCredentials() {
+        return new SpotifyCredentials(this.getClientId(), this.getClientSecret(), this.getRedirectUrlString());
     }
 
     /**

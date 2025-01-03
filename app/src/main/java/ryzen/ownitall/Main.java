@@ -92,11 +92,9 @@ public class Main {
                         break;
                     case 2:
                         Sync sync = new Sync(DATAFOLDER);
-                        Spotify spotify;
                         SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
-                        spotify = new Spotify(spotifyCredentials);
-                        sync.exportSpotifyCredentials(spotify.getClientId(), spotify.getClientSecret(),
-                                spotify.getRedirectUrl()); // with refreshed token
+                        Spotify spotify = new Spotify(spotifyCredentials);
+                        sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
                         playlists = new LinkedHashMap<>(spotify.getPlaylists()); // TODO: this overwrites, should it
                                                                                  // append?
                         playlists.put(new Playlist("liked songs"), spotify.getLikedSongs());

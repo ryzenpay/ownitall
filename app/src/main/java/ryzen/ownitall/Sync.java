@@ -126,12 +126,12 @@ public class Sync {
         return spotifyCredentials;
     }
 
-    public void exportSpotifyCredentials(String clientId, String clientSecret, String redirectUrl) {
+    public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
         try (PrintWriter writer = new PrintWriter(
                 new FileWriter(this.spotifyFile))) {
-            writer.println(clientId);
-            writer.println(clientSecret);
-            writer.println(redirectUrl);
+            writer.println(spotifyCredentials.getClientId());
+            writer.println(spotifyCredentials.getClientSecret());
+            writer.println(spotifyCredentials.getRedirectUrlString());
             System.out.println("Successfully saved Spotify credentials");
         } catch (FileNotFoundException e) {
             this.setDataFolder(); // since they are being exported its gotta exist
