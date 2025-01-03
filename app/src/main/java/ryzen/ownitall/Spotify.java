@@ -79,6 +79,13 @@ public class Spotify extends SpotifyCredentials {
     public Spotify(SpotifyCredentials spotifyCredentials) {
         super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
                 spotifyCredentials.getRedirectUrlString());
+        this.spotifyApi = new SpotifyApi.Builder()
+                .setClientId(this.getClientId())
+                .setClientSecret(this.getClientSecret())
+                .setRedirectUri(this.getRedirectUrl())
+                .build();
+        this.requestCode();
+        this.setToken();
     }
 
     /**
