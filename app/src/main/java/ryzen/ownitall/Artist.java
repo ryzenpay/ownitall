@@ -28,4 +28,9 @@ public class Artist implements Serializable {
     public String toString() {
         return this.name;
     }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
 }

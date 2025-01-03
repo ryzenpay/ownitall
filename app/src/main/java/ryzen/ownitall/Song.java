@@ -9,7 +9,7 @@ public class Song implements Serializable {
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
-    // TODO: cover image
+    // TODO: cover image <- problem with api requests
 
     /**
      * Default Song constructor

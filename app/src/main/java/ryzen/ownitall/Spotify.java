@@ -5,9 +5,7 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Arrays;
 import java.time.Duration;
-import java.util.stream.Collectors;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -38,6 +36,17 @@ import java.net.URISyntaxException;
 
 public class Spotify extends SpotifyCredentials {
     private SpotifyApi spotifyApi;
+    /**
+     * this variable is to limit the spotify api requests by using known artists
+     * format: <Artist name, constructed artist class>
+     */
+    private LinkedHashMap<String, Artist> artists;
+
+    /**
+     * this variable is to limit the spotify api requests by using known songs
+     * format: <SpotifyApi track hash, Song>
+     */
+    private LinkedHashMap<String, Song> songs; // TODO: song cover (fix api limit first)
 
     /**
      * Default spotify constructor asking for user input
@@ -51,6 +60,7 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
+        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -69,6 +79,7 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
+        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -88,6 +99,7 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
+        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -417,6 +429,10 @@ public class Spotify extends SpotifyCredentials {
         ArrayList<Artist> artists = new ArrayList<>();
         for (ArtistSimplified artist : raw_artists) {
             String artistName = artist.getName();
+            if (this.artists.containsKey(artistName)) { // if already exists, dont get again
+                artists.add(this.artists.get(artistName));
+                break;
+            }
             try {
                 GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(artist.getId()).build();
                 URI profilePicture = new URI(getArtistRequest.execute().getImages()[0].getUrl());
@@ -427,5 +443,4 @@ public class Spotify extends SpotifyCredentials {
         }
         return artists;
     }
-
 }
