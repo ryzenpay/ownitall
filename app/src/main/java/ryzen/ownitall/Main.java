@@ -188,7 +188,9 @@ public class Main {
                 }
                 break;
             case 3:
-                System.out.println("Liked Songs (" + likedSongs.getSize() + "): ");
+                System.out.println("Liked Songs (" + likedSongs.getSize() + "): "); // TODO: redesign: star any song in
+                                                                                    // an existing playlist and then
+                                                                                    // print the rest
                 i = 1;
                 for (Song likedSong : likedSongs.getSongs()) {
                     System.out.println("    " + y + "/" + likedSongs.getSize() + " = " + likedSong.getName() + " | "

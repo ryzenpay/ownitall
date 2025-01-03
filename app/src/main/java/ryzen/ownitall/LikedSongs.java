@@ -17,8 +17,8 @@ public class LikedSongs extends Playlist {
         this.likedSongs = new LinkedHashSet<>();
     }
 
-    public ArrayList<Song> getSongs() {
-        return new ArrayList<Song>(this.likedSongs);
+    public LinkedHashSet<Song> getSongs() {
+        return new LinkedHashSet<Song>(this.likedSongs);
     }
 
     public void addSongs(LinkedHashSet<Song> songs) {

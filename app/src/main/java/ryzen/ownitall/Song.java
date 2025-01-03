@@ -126,4 +126,22 @@ public class Song implements Serializable {
     public Duration getDuration() {
         return this.duration;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Song song = (Song) o;
+        if (this.name.equals(song.name)) { // TODO: % check
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() + artists.hashCode() + duration.hashCode(); // TODO: similarity search (% check)
+    }
 }

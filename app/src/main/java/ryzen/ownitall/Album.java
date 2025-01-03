@@ -125,4 +125,22 @@ public class Album implements Serializable {
         return new ArrayList<>(this.artists);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        Album album = (Album) object;
+        if (this.name.equals(album.name)) { // TODO: check with artists
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode(); // TODO: check with artists
+    }
+
 }

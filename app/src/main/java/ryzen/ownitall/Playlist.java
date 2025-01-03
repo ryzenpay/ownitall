@@ -56,4 +56,22 @@ public class Playlist implements Serializable {
     public URI getCoverart() {
         return this.coverart;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        Playlist playlist = (Playlist) object;
+        if (this.name.equals(playlist.name)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode(); // TODO: similarity search (% check)
+    }
 }

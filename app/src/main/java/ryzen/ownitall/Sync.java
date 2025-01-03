@@ -21,7 +21,7 @@ public class Sync implements AutoCloseable {
     private File likedSongsFile;
     private File spotifyFile;
 
-    public Sync(String dataPath) {
+    public Sync(String dataPath) { // TODO: archiving and unarchiving
         this.setDataFolder(dataPath);
         this.albumFile = new File(this.dataFolder, "albums.ser");
         this.albumFile = new File(this.dataFolder, "albums.ser");
@@ -135,7 +135,7 @@ public class Sync implements AutoCloseable {
     public void exportLikedSongs(LikedSongs likedSongs) {
         try (ObjectOutputStream likedOutput = new ObjectOutputStream(new FileOutputStream(this.likedSongsFile))) {
             likedOutput.writeObject(likedSongs);
-            System.out.println("Successfully saved " + likedSongs.getSize() + " songs");
+            System.out.println("Successfully saved " + likedSongs.getSize() + " liked songs");
         } catch (FileNotFoundException e) {
             this.setDataFolder();
         } catch (IOException e) {
