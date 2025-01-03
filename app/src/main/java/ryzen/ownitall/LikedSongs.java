@@ -34,7 +34,7 @@ public class LikedSongs extends Playlist {
             return false;
         }
         for (Song likedSong : this.likedSongs) {
-            if (likedSong.equals(song)) { // TODO: song equals overwrite? (excluding the cover and duration)
+            if (likedSong.hashCode() == song.hashCode()) {
                 return true;
             }
         }

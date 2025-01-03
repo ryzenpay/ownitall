@@ -42,7 +42,7 @@ public class Main {
                         // TODO: Implement export functionality
                         break;
                     case 3:
-                        printInventory(2);
+                        printInventory(3);
                         break;
                     case 4:
                         exportData();
@@ -208,7 +208,12 @@ public class Main {
                                     + " - " + musicTime(totalDuration(songs)));
                     i++;
                     for (Song song : songs) {
-                        System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                        if (likedSongs.checkLiked(song)) {
+                            System.out.print("*");
+                        } else {
+                            System.out.print(" ");
+                        }
+                        System.out.println("   " + y + "/" + songs.size() + " = " + song.getName() + " | "
                                 + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
@@ -224,7 +229,12 @@ public class Main {
                                     + " - " + musicTime(totalDuration(songs)));
                     i++;
                     for (Song song : songs) {
-                        System.out.println("    " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                        if (likedSongs.checkLiked(song)) {
+                            System.out.print("*");
+                        } else {
+                            System.out.print(" ");
+                        }
+                        System.out.println("   " + y + "/" + songs.size() + " = " + song.getName() + " | "
                                 + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
