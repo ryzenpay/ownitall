@@ -84,4 +84,16 @@ public class SpotifyCredentials {
         }
         return false;
     }
+
+    /**
+     * true if spotify credentials is empty
+     * 
+     * @return
+     */
+    public boolean isNull() {
+        if (this.getClientId() == null || this.getClientSecret() == null || this.getRedirectUrl() == null) {
+            return true;
+        }
+        return false;
+    }
 }

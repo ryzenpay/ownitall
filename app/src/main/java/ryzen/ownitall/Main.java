@@ -4,13 +4,18 @@ package ryzen.ownitall;
 import java.io.File;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.time.Duration;
 
 public class Main {
     private static String DATAFOLDER = "data"; // TODO: user choice?
     private static LinkedHashMap<Album, ArrayList<Song>> albums;
     private static LinkedHashMap<Playlist, ArrayList<Song>> playlists;
+    private static LikedSongs liked_songs;
 
     public static void main(String[] args) {
         Sync sync = new Sync(DATAFOLDER);
@@ -19,6 +24,7 @@ public class Main {
             System.out.println("First time import");
             albums = new LinkedHashMap<>();
             playlists = new LinkedHashMap<>();
+            liked_songs = new LikedSongs();
             promptForImport();
         } else {
             albums = new LinkedHashMap<>(sync.importAlbums());
@@ -93,11 +99,16 @@ public class Main {
                     case 2:
                         Sync sync = new Sync(DATAFOLDER);
                         SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
-                        Spotify spotify = new Spotify(spotifyCredentials);
+                        Spotify spotify;
+                        if (spotifyCredentials.isNull()) { // check if import worked
+                            spotify = new Spotify();
+                        } else {
+                            spotify = new Spotify(spotifyCredentials);
+                        }
                         sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
                         playlists = new LinkedHashMap<>(spotify.getPlaylists()); // TODO: this overwrites, should it
                                                                                  // append?
-                        playlists.put(new Playlist("liked songs"), spotify.getLikedSongs());
+                        liked_songs.addSongs(spotify.getLikedSongs());
                         albums = new LinkedHashMap<>(spotify.getAlbums());
                         printInventory(1);
                         return;
@@ -145,9 +156,11 @@ public class Main {
             case 1:
                 System.out.println("Total playlists: " + playlists.size());
                 System.out.println("Total albums: " + albums.size());
+                System.out.println("Total liked songs: " + liked_songs.getSize());
                 System.out.println("With a total of " + trackCount + " songs");
                 break;
             case 2:
+                System.out.println("Liked Songs (" + liked_songs.getSize() + ")");
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
                 for (Playlist playlist : playlists.keySet()) {
@@ -169,6 +182,14 @@ public class Main {
                 }
                 break;
             case 3:
+                System.out.println("Liked Songs (" + liked_songs.getSize() + "): ");
+                i = 1;
+                for (Song liked_song : liked_songs.getSongs()) {
+                    System.out.println("    " + y + "/" + liked_songs.getSize() + " = " + liked_song.getName() + " | "
+                            + musicTime(liked_song.getDuration()));
+                    System.out.println("        - Artists: " + liked_song.getArtists().toString());
+                    i++;
+                }
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
                 for (Playlist playlist : playlists.keySet()) {

@@ -4,6 +4,7 @@ package ryzen.ownitall;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Arrays;
 import java.time.Duration;
 import java.util.stream.Collectors;
@@ -149,8 +150,8 @@ public class Spotify extends SpotifyCredentials {
      * 
      * @return - arraylist of constructed songs
      */
-    public ArrayList<Song> getLikedSongs() {
-        ArrayList<Song> likedSongs = new ArrayList<>();
+    public LinkedHashSet<Song> getLikedSongs() {
+        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
         if (this.checkExpiration()) { // TODO: use an interceptor or proxy to check token validity
             System.err.println("Logged out of spotify, please restart to log in again");
             return likedSongs;
