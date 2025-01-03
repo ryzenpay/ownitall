@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -40,7 +41,7 @@ public class Spotify extends SpotifyCredentials {
     }
 
     /**
-     * Default spotify constructor without needing user input
+     * Default spotify constructor with known values excluding token
      * 
      * @param client_id     - provided spotify developer app client id
      * @param client_secret - provided spotify developer app client secret
@@ -51,12 +52,31 @@ public class Spotify extends SpotifyCredentials {
     }
 
     /**
+     * Spotify API credential constructor with known values including token, used
+     * for importing
+     * 
+     * @param clientId       - spotify api client id
+     * @param clientSecret   - spotify api client secret
+     * @param redirectUrl    - spotify api redirect url
+     * @param code           - temporary oauth code
+     * @param codeExpiration - LocalDateTime of code expiration
+     */
+    public Spotify(String clientId, String clientSecret, String redirectUrl, String code,
+            LocalDateTime codeExpiration) {
+        super(clientId, clientSecret, redirectUrl, code, codeExpiration);
+    }
+
+    /**
      * Get all liked songs from current spotify account
      * 
      * @return - arraylist of constructed songs
      */
     public ArrayList<Song> getLikedSongs() {
         ArrayList<Song> likedSongs = new ArrayList<>();
+        if (this.checkExpiration()) { // TODO: use an interceptor or proxy to check token validity
+            System.err.println("Logged out of spotify, please restart to log in again");
+            return likedSongs;
+        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -107,6 +127,10 @@ public class Spotify extends SpotifyCredentials {
      */
     public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
         LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
+        if (this.checkExpiration()) {
+            System.err.println("Logged out of spotify, please restart to log in again");
+            return albums;
+        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -160,6 +184,10 @@ public class Spotify extends SpotifyCredentials {
      */
     public ArrayList<Song> getAlbumSongs(String albumId) {
         ArrayList<Song> songs = new ArrayList<>();
+        if (this.checkExpiration()) {
+            System.err.println("Logged out of spotify, please restart to log in again");
+            return songs;
+        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -209,6 +237,10 @@ public class Spotify extends SpotifyCredentials {
      */
     public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
         LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
+        if (this.checkExpiration()) {
+            System.err.println("Logged out of spotify, please restart to log in again");
+            return playlists;
+        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -260,6 +292,10 @@ public class Spotify extends SpotifyCredentials {
      */
     public ArrayList<Song> getPlaylistSongs(String playlistId) {
         ArrayList<Song> songs = new ArrayList<>();
+        if (this.checkExpiration()) {
+            System.err.println("Logged out of spotify, please restart to log in again");
+            return songs;
+        }
         int limit = 100;
         int offset = 0;
         boolean hasMore = true;

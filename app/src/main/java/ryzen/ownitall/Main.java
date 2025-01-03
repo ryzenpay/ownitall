@@ -94,7 +94,17 @@ public class Main {
                         System.out.println("This function is yet to be added");
                         break;
                     case 2:
-                        Spotify spotify = new Spotify(scanner); // TODO: check for existing credentials
+                        Sync sync = new Sync(DATAFOLDER);
+                        SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
+                        Spotify spotify;
+                        if (spotifyCredentials.getClientId() != null) { // check if import worked, TODO: more robust?
+                            spotify = new Spotify(spotifyCredentials.getClientId(),
+                                    spotifyCredentials.getClientSecret(), spotifyCredentials.getRedirectUrl(),
+                                    spotifyCredentials.getCode(), spotifyCredentials.getCodeExpiration());
+                        } else {
+                            spotify = new Spotify(scanner);
+                        }
+                        sync.exportSpotifyCredentials(spotifyCredentials);
                         playlists = new LinkedHashMap<>(spotify.getPlaylists()); // TODO: this overwrites, should it
                                                                                  // append?
                         playlists.put(new Playlist("liked songs"), spotify.getLikedSongs());
@@ -106,7 +116,7 @@ public class Main {
                         System.out.println("This function is yet to be added");
                         break;
                     case 0:
-                        System.out.println("Exiting import. Goodbye!");
+                        System.out.println("Exiting import.");
                         return;
                     default:
                         System.out.println("Invalid option. Please enter a number between 1-4.");
@@ -143,6 +153,10 @@ public class Main {
         int i = 1;
         int y = 1;
         switch (recursion) {
+            case 1:
+                System.out.println("Total playlists: " + playlists.size());
+                System.out.println("Total albums: " + albums.size());
+                System.out.println("With a total of " + trackCount + " songs");
             case 2:
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
@@ -197,9 +211,7 @@ public class Main {
                     }
                 }
             default:
-                System.out.println("Total playlists: " + playlists.size());
-                System.out.println("Total albums: " + albums.size());
-                System.out.println("With a total of " + trackCount + " songs");
+                System.err.println("Invalid recursion option.");
         }
     }
 
