@@ -21,3 +21,11 @@ to get the clienit id and secret:
     5. save the client id and client secret  
   
 When doing this, read every TOS as you are using them at the risk of your own spotify account  
+
+## Local
+the current format to importing your local music library is currently strict  
+    - if you have a "liked songs" folder, name it "liked songs"  
+    - if all songs in folder have the same "album" metadata, that folder becomes an album  
+        - default is playlist
+    - cover image of an album needs to be a file called "cover.jpg" in the folder  
+    - "loose" songs in the music library folder (root of folder) are added to "liked songs"

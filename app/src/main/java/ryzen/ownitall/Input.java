@@ -1,5 +1,6 @@
 package ryzen.ownitall;
 
+import java.io.File;
 import java.util.Scanner;
 
 public class Input {
@@ -28,6 +29,18 @@ public class Input {
                 return result;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+    }
+
+    public File getFile() {
+        while (true) {
+            String path = getString();
+            File file = new File(path);
+            if (file.exists()) {
+                return file;
+            } else {
+                System.out.println("The specified file or folder does not exist. Please try again.");
             }
         }
     }
