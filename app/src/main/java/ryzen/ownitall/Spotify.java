@@ -5,9 +5,7 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
