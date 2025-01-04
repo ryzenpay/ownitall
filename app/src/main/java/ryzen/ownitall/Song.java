@@ -19,21 +19,19 @@ public class Song implements Serializable {
      * @param duration - java.Duration on the song's duration
      */
     public Song(String name, ArrayList<Artist> artists, Duration duration) {
-        this.setName(name);
+        this.name = name;
         this.addArtists(artists);
-        this.setDuration(duration);
+        this.duration = duration;
     }
 
     /**
-     * set the name of song class
+     * song constructor only knowing the name
      * 
-     * @param name - desired name
+     * @return
      */
-    private void setName(String name) {
-        if (name == null) {
-            return;
-        }
+    public Song(String name, Duration duration) {
         this.name = name;
+        this.duration = duration;
     }
 
     /**
@@ -52,7 +50,7 @@ public class Song implements Serializable {
      */
     public void addArtist(Artist artist) {
         if (artist == null) {
-            return;
+            this.artists = new LinkedHashSet<>();
         }
         this.artists.add(artist);
     }
@@ -64,8 +62,7 @@ public class Song implements Serializable {
      */
     private void addArtists(ArrayList<Artist> artists) {
         if (this.artists == null) {
-            this.artists = new LinkedHashSet<>(artists);
-            return;
+            this.artists = new LinkedHashSet<>();
         }
         this.artists.addAll(new LinkedHashSet<Artist>(artists));
     }
@@ -88,19 +85,10 @@ public class Song implements Serializable {
      * @return - arraylist of artists
      */
     public ArrayList<Artist> getArtists() {
-        return new ArrayList<>(this.artists);
-    }
-
-    /**
-     * set songs duration
-     * 
-     * @param duration - constructed Duration class
-     */
-    public void setDuration(Duration duration) {
-        if (duration == null) {
-            return;
+        if (this.artists == null) {
+            return new ArrayList<Artist>();
         }
-        this.duration = duration;
+        return new ArrayList<>(this.artists);
     }
 
     /**
@@ -109,6 +97,9 @@ public class Song implements Serializable {
      * @return - constructed Duration class
      */
     public Duration getDuration() {
+        if (this.duration == null) {
+            return Duration.ZERO;
+        }
         return this.duration;
     }
 
@@ -119,7 +110,7 @@ public class Song implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         Song song = (Song) o;
-        if (this.name.equals(song.name)) { // TODO: % check
+        if (this.name.equalsIgnoreCase(song.name)) { // TODO: % check
             return true;
         }
         return false;
@@ -127,6 +118,9 @@ public class Song implements Serializable {
 
     @Override
     public int hashCode() {
+        if (this.artists == null) {
+            return name.hashCode() + duration.hashCode();
+        }
         return name.hashCode() + artists.hashCode() + duration.hashCode(); // TODO: similarity search (% check)
     }
 }

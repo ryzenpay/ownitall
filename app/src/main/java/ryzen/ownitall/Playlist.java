@@ -64,7 +64,7 @@ public class Playlist implements Serializable {
         if (object == null || getClass() != object.getClass())
             return false;
         Playlist playlist = (Playlist) object;
-        if (this.name.equals(playlist.name)) {
+        if (this.name.equalsIgnoreCase(playlist.name)) {
             return true;
         }
         return false;

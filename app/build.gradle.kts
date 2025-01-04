@@ -16,6 +16,7 @@ dependencies {
 
     // spotify wrapper
     implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
+    implementation("com.mpatric:mp3agic:0.9.1")
 }
 
 java {
