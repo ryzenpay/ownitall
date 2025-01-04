@@ -23,7 +23,8 @@ to get the clienit id and secret:
 When doing this, read every TOS as you are using them at the risk of your own spotify account  
 
 ## Youtube
-when attempting to import or export to youtube, you will need the 3 following things:  
+when attempting to import or export to youtube, you will need the following things:  
+    - application name  
     - API key  
     - oauth client id  
     - oauth client secret  

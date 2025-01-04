@@ -16,7 +16,13 @@ dependencies {
 
     // spotify wrapper
     implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
+    // audio metadata
     implementation("net.jthink:jaudiotagger:3.0.1")
+
+    //google api
+    implementation("com.google.api-client:google-api-client:1.23.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.23.0")
+    implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
 }
 
 java {
