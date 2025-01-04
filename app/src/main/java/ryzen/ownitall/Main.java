@@ -100,15 +100,22 @@ public class Main {
                             spotify = new Spotify(spotifyCredentials);
                         }
                         sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
-                        playlists.putAll(spotify.getPlaylists());
+                        sync.close();
+                        System.out.println(
+                                "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
                         likedSongs.addSongs(spotify.getLikedSongs());
+                        playlists.putAll(spotify.getPlaylists());
                         albums.putAll(spotify.getAlbums());
                         printInventory(1);
                         return;
                     case 3:
-                        // TODO: import from local
-                        System.out.println("This function is yet to be added");
-                        break;
+                        Local local = new Local();
+                        System.out.println("Getting all music from your local library");
+                        likedSongs.addSongs(local.getLikedSongs());
+                        playlists.putAll(local.getPlaylists());
+                        albums.putAll(local.getAlbums());
+                        printInventory(1);
+                        return;
                     case 0:
                         System.out.println("Exiting import.");
                         return;

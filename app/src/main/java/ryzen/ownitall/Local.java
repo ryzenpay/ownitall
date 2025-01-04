@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -17,9 +22,9 @@ import java.time.Duration;
 
 public class Local {
     private File localLibrary;
-    private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3")); // TODO: support more
-                                                                                          // formats (have to
-                                                                                          // be lower case)
+    private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "mp4", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
+    // formats (have to
+    // be lower case)
 
     public Local() {
         System.out.println("Provide absolute path to local music library (folder): ");
@@ -32,16 +37,15 @@ public class Local {
 
     public LinkedHashSet<Song> getLikedSongs() {
         LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
-        for (File file : this.localLibrary.listFiles()) {
+        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
             if (file.isFile() && extensions.contains(getExtension(file))) {
-                Song song = this.getMP3Song(file);
+                Song song = this.getSong(file);
                 if (song != null) {
                     likedSongs.add(song);
                 }
-                break;
             }
             if (file.isDirectory() && file.toString().equalsIgnoreCase("liked songs")) {
-                // TODO: go through each song and get their metadata
+                likedSongs.addAll(new LinkedHashSet<>(this.getSongs(file)));
             }
         }
         return likedSongs;
@@ -49,13 +53,28 @@ public class Local {
 
     public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
         LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
-        // TODO: go through each folder, ensure its not an album
+        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
+            if (file.isDirectory()) {
+                if (!isAlbum(file)) {
+                    ArrayList<Song> songs = this.getSongs(file);
+                    if (songs.size() > 1) {
+                        playlists.put(new Playlist(file.toString()), songs);
+                    }
+                }
+            }
+        }
         return playlists;
     }
 
     public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
         LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
-        // TODO: go through each folder, ensure its an album
+        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
+            if (file.isDirectory()) {
+                if (isAlbum(file)) {
+                    albums.put(this.getAlbum(file), this.getSongs(file));
+                }
+            }
+        }
         return albums;
     }
 
@@ -71,33 +90,51 @@ public class Local {
      * @param file
      * @return
      */
-    public Song getMP3Song(File file) {
+    public Song getSong(File file) {
         String name;
         ArrayList<Artist> artists = new ArrayList<>();
         Duration duration;
         try {
-            Mp3File mp3File = new Mp3File(file);
-            duration = Duration.ofSeconds(mp3File.getLengthInSeconds());
-            if (mp3File.hasId3v1Tag()) {
-                ID3v1 id3v1Tag = mp3File.getId3v1Tag();
-                name = id3v1Tag.getTitle();
-                artists.add(new Artist(id3v1Tag.getArtist())); // TODO: multiple artists
+            AudioFile audioFile = AudioFileIO.read(file);
+            Tag tag = audioFile.getTag();
+            AudioHeader audioHeader = audioFile.getAudioHeader();
+            duration = Duration.ofSeconds(audioHeader.getTrackLength());
+            name = tag.getFirst(FieldKey.TITLE);
+            List<String> artistList = tag.getAll(FieldKey.ARTIST);
+            for (String artistName : artistList) {
+                artists.add(new Artist(artistName));
+            }
+            if (artists.isEmpty() || name == null) { // no metadata found
+                return new Song(file.toString(), duration);
+            } else {
                 return new Song(name, artists, duration);
             }
-            if (mp3File.hasId3v2Tag()) {
-                ID3v2 id3v2Tag = mp3File.getId3v2Tag();
-                name = id3v2Tag.getTitle();
-                artists.add(new Artist(id3v2Tag.getArtist()));
-                return new Song(name, artists, duration);
-            }
-            return new Song(file.toString(), duration);
-        } catch (UnsupportedTagException e) {
-            System.err.println("The file: " + file.getAbsolutePath() + " is unsupported: " + e);
+        } catch (InvalidAudioFrameException | TagException e) {
+            System.err.println("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
             return null;
-        } catch (IOException | InvalidDataException e) {
+        } catch (IOException | CannotReadException | ReadOnlyFileException e) {
             System.err.println("Error processing file: " + file.getAbsolutePath() + " error: " + e);
             return null;
         }
+    }
+
+    public ArrayList<Song> getSongs(File folder) { // TODO: only returns one playlist
+        ArrayList<Song> songs = new ArrayList<>();
+        if (folder.isFile() || !folder.exists()) {
+            return songs;
+        }
+        if (folder.list().length == 0) {
+            return songs;
+        }
+        for (File file : folder.listFiles()) {
+            if (file.isFile() && extensions.contains(getExtension(file))) {
+                Song song = getSong(file);
+                if (song != null) {
+                    songs.add(song);
+                }
+            }
+        }
+        return songs;
     }
 
     /**
@@ -118,16 +155,10 @@ public class Local {
         for (File file : folder.listFiles()) {
             String foundAlbum = null;
             try {
-                Mp3File mp3File = new Mp3File(file);
-                if (mp3File.hasId3v1Tag()) {
-                    ID3v1 id3v1Tag = mp3File.getId3v1Tag();
-                    foundAlbum = id3v1Tag.getAlbum();
-                }
-                if (mp3File.hasId3v2Tag()) {
-                    ID3v2 id3v2Tag = mp3File.getId3v2Tag();
-                    foundAlbum = id3v2Tag.getAlbum();
-                }
-            } catch (IOException | InvalidDataException | UnsupportedTagException e) {
+                AudioFile audioFile = AudioFileIO.read(file);
+                Tag tag = audioFile.getTag();
+                foundAlbum = tag.getFirst(FieldKey.ALBUM);
+            } catch (Exception e) {
                 break;
             }
             if (foundAlbum != null && album != null) {
@@ -143,5 +174,24 @@ public class Local {
         } else {
             return false;
         }
+    }
+
+    public Album getAlbum(File folder) {
+        String albumName = folder.toString(); // default album name incase of error
+        LinkedHashSet<Artist> artists = new LinkedHashSet<>();
+        for (File file : folder.listFiles()) {
+            try {
+                AudioFile audioFile = AudioFileIO.read(file);
+                Tag tag = audioFile.getTag();
+                albumName = tag.getFirst(FieldKey.ALBUM);
+                List<String> artistList = tag.getAll(FieldKey.ARTIST);
+                for (String artistName : artistList) {
+                    artists.add(new Artist(artistName));
+                }
+            } catch (Exception e) {
+                break;
+            }
+        }
+        return new Album(albumName, new ArrayList<>(artists));
     }
 }

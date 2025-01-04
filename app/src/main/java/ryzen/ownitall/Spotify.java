@@ -158,6 +158,14 @@ public class Spotify extends SpotifyCredentials {
         return new SpotifyCredentials(this.getClientId(), this.getClientSecret(), this.getRedirectUrlString());
     }
 
+    private void sleep(long msec) {
+        try {
+            Thread.sleep(msec);
+        } catch (Exception e) {
+            System.err.println("Error in spotify sleep: " + e);
+        }
+    }
+
     /**
      * Get all liked songs from current spotify account
      * 
@@ -204,6 +212,7 @@ public class Spotify extends SpotifyCredentials {
                 System.out.println("Error fetching liked songs: " + e.getMessage());
                 hasMore = false;
             }
+            this.sleep(1000);
         }
 
         return likedSongs;
@@ -258,6 +267,7 @@ public class Spotify extends SpotifyCredentials {
                 System.out.println("Error: " + e.getMessage());
                 hasMore = false;
             }
+            this.sleep(1000);
         }
         return albums;
     }
@@ -309,6 +319,7 @@ public class Spotify extends SpotifyCredentials {
                 System.out.println("Error fetching songs for album " + albumId + ": " + e.getMessage());
                 hasMore = false;
             }
+            this.sleep(1000);
         }
 
         return songs;
@@ -364,6 +375,7 @@ public class Spotify extends SpotifyCredentials {
                 System.out.println("Error fetching playlists: " + e.getMessage());
                 hasMore = false;
             }
+            this.sleep(1000);
         }
         return playlists;
     }
@@ -420,6 +432,7 @@ public class Spotify extends SpotifyCredentials {
                 System.out.println("Error fetching playlist tracks: " + e.getMessage());
                 hasMore = false;
             }
+            this.sleep(1000);
         }
 
         return songs;
