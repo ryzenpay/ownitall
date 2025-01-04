@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -29,10 +31,12 @@ public class Local {
     public Local() {
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
+        Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
 
     public Local(String localFolderPath) {
         this.localLibrary = new File(localFolderPath);
+        Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
 
     public LinkedHashSet<Song> getLikedSongs() {
