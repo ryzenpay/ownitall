@@ -16,11 +16,9 @@ public class Main {
     public static void main(String[] args) {
 
         if (!checkDataFolder()) {
-            System.out.println("First time import");
             albums = new LinkedHashMap<>();
             playlists = new LinkedHashMap<>();
             likedSongs = new LikedSongs();
-            promptForImport();
         } else {
             importData();
         }
@@ -39,6 +37,7 @@ public class Main {
                         promptForImport();
                         break;
                     case 2:
+                        System.out.println("This is currently not supported");
                         // TODO: Implement export functionality
                         break;
                     case 3:
@@ -67,7 +66,8 @@ public class Main {
         if (dataFolder.exists() && dataFolder.isDirectory()) {
             File albumFile = new File(DATAFOLDER + "/albums.ser");
             File playlistFile = new File(DATAFOLDER + "/playlists.ser");
-            if (albumFile.exists() && playlistFile.exists()) {
+            File likedSongsFile = new File(DATAFOLDER + "/likedsongs.ser");
+            if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
                 return true;
             }
         }

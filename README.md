@@ -22,6 +22,27 @@ to get the clienit id and secret:
   
 When doing this, read every TOS as you are using them at the risk of your own spotify account  
 
+## Youtube
+when attempting to import or export to youtube, you will need the 3 following things:  
+    - API key  
+    - oauth client id  
+    - oauth client secret  
+Youtube will provide you with all by doing the following:  (can also be done following step 1: https://developers.google.com/youtube/v3/quickstart/java)  
+    1. log in and enable API services (if not already done)  
+        - can be found on the front page: https://console.cloud.google.com/ -> API and services -> "Enable APIS and Services"  
+    2. in the "library" tab after clicking on API, search for "YouTube Data API v3"  
+    3. Click on it and click "enable"  
+    4. click "oauth consent screen" (left side)  
+    5. create new app with the following scopes enabled:  
+        - https://www.googleapis.com/auth/youtube.readonly  
+        - https://www.googleapis.com/auth/youtube.force-ssl  
+    6. click "credentials" (left side)  
+    7. click "create credentials" -> "APi key" and save this key  
+    8. click "create credentials" -> "oauth client id"  
+        - application type: desktop app  
+    9. save the client id and secret  
+
+When doing this, read every TOS as you are using them at the risk of your own spotify account  
 ## Local
 the current format to importing your local music library is currently strict  
     - if you have a "liked songs" folder, name it "liked songs"  

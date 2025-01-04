@@ -122,7 +122,7 @@ public class Local {
         }
     }
 
-    public ArrayList<Song> getSongs(File folder) { // TODO: only returns one playlist
+    public ArrayList<Song> getSongs(File folder) {
         ArrayList<Song> songs = new ArrayList<>();
         if (folder.isFile() || !folder.exists()) {
             return songs;
@@ -169,7 +169,7 @@ public class Local {
                 if (!album.equals(foundAlbum)) {
                     return false;
                 }
-            } else if (album == null) {
+            } else if (album == null && foundAlbum != "") {
                 album = foundAlbum;
             }
         }
@@ -180,7 +180,7 @@ public class Local {
         }
     }
 
-    public Album getAlbum(File folder) {
+    public Album getAlbum(File folder) { // TODO: get album cover (need to translate to url)
         String albumName = folder.toString(); // default album name incase of error
         LinkedHashSet<Artist> artists = new LinkedHashSet<>();
         for (File file : folder.listFiles()) {
