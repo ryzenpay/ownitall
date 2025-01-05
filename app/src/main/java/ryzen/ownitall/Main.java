@@ -106,6 +106,9 @@ public class Main {
                         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
                         likedSongs.addSongs(youtubeLikedSongs.getSongs());
                         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
+                        albums.putAll(youtube.getAlbums());
+                        System.out.println("Getting youtube music playlists");
+                        playlists.putAll(youtube.getPlaylists());
                         printInventory(1);
                         return;
                     case 2:

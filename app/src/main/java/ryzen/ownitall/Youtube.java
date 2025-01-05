@@ -12,6 +12,9 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.time.Duration;
@@ -140,6 +144,115 @@ public class Youtube extends YoutubeCredentials {
             e.printStackTrace();
         }
         return songs;
+    }
+
+    public LinkedHashMap<Album, ArrayList<Song>> getAlbums() { // TODO: currently not supported (no youtube music API)
+        LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
+        return albums;
+    }
+
+    public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
+        LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
+        String nextPageToken = null;
+        try {
+            do {
+                YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
+                        .list("snippet,contentDetails")
+                        .setMine(true)
+                        .setMaxResults(50L)
+                        .setPageToken(nextPageToken);
+
+                PlaylistListResponse playlistResponse = playlistRequest.execute();
+
+                for (com.google.api.services.youtube.model.Playlist playlist : playlistResponse.getItems()) {
+                    String playlistId = playlist.getId();
+                    String playlistTitle = playlist.getSnippet().getTitle();
+                    Playlist currentPlaylist = new Playlist(playlistTitle);
+                    ArrayList<Song> playlistSongs = getPlaylistSongs(playlistId, currentPlaylist);
+
+                    if (!playlistSongs.isEmpty()) {
+                        playlists.put(currentPlaylist, playlistSongs);
+                    }
+                }
+
+                nextPageToken = playlistResponse.getNextPageToken();
+            } while (nextPageToken != null);
+        } catch (IOException e) {
+            System.err.println("Error retrieving playlists: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return playlists;
+    }
+
+    private ArrayList<Song> getPlaylistSongs(String playlistId, Playlist playlist) {
+        ArrayList<Song> songs = new ArrayList<>();
+        String nextPageToken = playlist.getYoutubePageToken();
+        try {
+            do {
+                YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
+                        .list("snippet,contentDetails")
+                        .setPlaylistId(playlistId)
+                        .setMaxResults(50L)
+                        .setPageToken(nextPageToken);
+
+                PlaylistItemListResponse itemResponse = itemRequest.execute();
+
+                for (PlaylistItem item : itemResponse.getItems()) {
+                    String videoId = item.getContentDetails().getVideoId();
+                    if (isMusicVideo(videoId)) {
+                        PlaylistItemSnippet snippet = item.getSnippet();
+                        String title = snippet.getTitle();
+                        String channelTitle = snippet.getChannelTitle();
+                        Duration duration = getDuration(videoId);
+
+                        ArrayList<Artist> artists = new ArrayList<>();
+                        artists.add(new Artist(channelTitle));
+                        songs.add(new Song(title, artists, duration));
+                    }
+                }
+
+                nextPageToken = itemResponse.getNextPageToken();
+                playlist.setYoutubePageToken(nextPageToken);
+            } while (nextPageToken != null);
+        } catch (IOException e) {
+            System.err.println("Error retrieving playlist songs: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return songs;
+    }
+
+    private boolean isMusicVideo(String videoId) {
+        try {
+            YouTube.Videos.List videoRequest = youtubeApi.videos()
+                    .list("snippet")
+                    .setId(videoId);
+
+            VideoListResponse videoResponse = videoRequest.execute();
+            if (!videoResponse.getItems().isEmpty()) {
+                Video video = videoResponse.getItems().get(0);
+                return "10".equals(video.getSnippet().getCategoryId());
+            }
+        } catch (IOException e) {
+            System.err.println("Error checking if video is music: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private Duration getDuration(String videoId) {
+        try {
+            YouTube.Videos.List videoRequest = youtubeApi.videos()
+                    .list("contentDetails")
+                    .setId(videoId);
+
+            VideoListResponse videoResponse = videoRequest.execute();
+            if (!videoResponse.getItems().isEmpty()) {
+                Video video = videoResponse.getItems().get(0);
+                return Duration.parse(video.getContentDetails().getDuration());
+            }
+        } catch (IOException e) {
+            System.err.println("Error getting video duration: " + e.getMessage());
+        }
+        return Duration.ZERO;
     }
 
 }

@@ -7,7 +7,7 @@ public class Playlist implements Serializable {
     private String name;
     private URI coverart;
 
-    private String youtubePageToken; // TODO: create "update" method to save API requests
+    private String youtubePageToken = null; // TODO: create "update" method to save API requests
     private int spotifyPageOffset = -1;
 
     /**
