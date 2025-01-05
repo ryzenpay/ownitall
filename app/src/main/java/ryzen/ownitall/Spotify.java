@@ -5,7 +5,6 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.time.Duration;
 
@@ -223,7 +222,7 @@ public class Spotify extends SpotifyCredentials {
             System.err.println("Logged out of spotify, please restart to log in again");
             return albums;
         }
-        int limit = 50;
+        int limit = 20;
         int offset = 0;
         boolean hasMore = true;
 
@@ -281,7 +280,7 @@ public class Spotify extends SpotifyCredentials {
             System.err.println("Logged out of spotify, please restart to log in again");
             return songs;
         }
-        int limit = 50;
+        int limit = 20;
         int offset = 0;
         boolean hasMore = true;
 
@@ -337,7 +336,7 @@ public class Spotify extends SpotifyCredentials {
             System.err.println("Logged out of spotify, please restart to log in again");
             return playlists;
         }
-        int limit = 50;
+        int limit = 20;
         int offset = 0;
         boolean hasMore = true;
 
@@ -398,7 +397,7 @@ public class Spotify extends SpotifyCredentials {
             System.err.println("Logged out of spotify, please restart to log in again");
             return songs;
         }
-        int limit = 100;
+        int limit = 50;
         int offset = 0;
         boolean hasMore = true;
 
