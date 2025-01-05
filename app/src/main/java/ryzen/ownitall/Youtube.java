@@ -22,12 +22,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class Youtube {
-    private com.google.api.services.youtube.Youtube YoutubeApi;
     private String application_name;
     private String client_id;
     private String client_secret;
     private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
-    private Youtube youtubeApi;
+    private com.google.api.services.youtube.YouTube youtubeApi;
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     public Youtube() {
@@ -44,6 +43,7 @@ public class Youtube {
         this.application_name = application_name;
         this.client_id = client_id;
         this.client_secret = client_secret;
+        this.youtubeApi = this.getService();
     }
 
     /**
@@ -71,13 +71,29 @@ public class Youtube {
      * Build and return an authorized API client service.
      *
      * @return an authorized API client service
-     * @throws GeneralSecurityException, IOException
      */
-    public YouTube getService() throws GeneralSecurityException, IOException {
-        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        Credential credential = authorize(httpTransport);
-        return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
-                .setApplicationName(this.application_name)
-                .build();
+    public com.google.api.services.youtube.YouTube getService() {
+        try {
+            final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            Credential credential = authorize(httpTransport);
+            return new com.google.api.services.youtube.YouTube.Builder(httpTransport, JSON_FACTORY, credential)
+                    .setApplicationName(this.application_name)
+                    .build();
+        } catch (IOException | GeneralSecurityException e) {
+            System.err.println("Error logging in with youtube api: " + e);
+            return null;
+        }
+    }
+
+    /**
+     * check if youtubeapi successfully set up
+     * 
+     * @return - true if working and logged in, false if not working
+     */
+    public boolean checkLogin() {
+        if (this.youtubeApi == null) {
+            return false;
+        }
+        return true;
     }
 }

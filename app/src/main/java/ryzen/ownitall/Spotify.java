@@ -3,12 +3,16 @@ package ryzen.ownitall;
 //https://developer.spotify.com/documentation/web-api
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 import java.time.Duration;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.exceptions.detailed.TooManyRequestsException;
+
 import org.apache.hc.core5.http.ParseException;
 
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
@@ -20,7 +24,6 @@ import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
@@ -28,7 +31,6 @@ import se.michaelthelin.spotify.model_objects.specification.SavedAlbum;
 import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Track;
-import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,17 +38,6 @@ import java.net.URISyntaxException;
 
 public class Spotify extends SpotifyCredentials {
     private SpotifyApi spotifyApi;
-    /**
-     * this variable is to limit the spotify api requests by using known artists
-     * format: <Artist name, constructed artist class>
-     */
-    private LinkedHashMap<String, Artist> artists;
-
-    /**
-     * this variable is to limit the spotify api requests by using known songs
-     * format: <SpotifyApi track hash, Song>
-     */
-    private LinkedHashMap<String, Song> songs; // TODO: song cover (fix api limit first)
 
     /**
      * Default spotify constructor asking for user input
@@ -60,7 +51,6 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
-        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -79,7 +69,6 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
-        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -99,7 +88,6 @@ public class Spotify extends SpotifyCredentials {
                 .build();
         this.requestCode();
         this.setToken();
-        this.artists = new LinkedHashMap<>();
     }
 
     /**
@@ -158,7 +146,8 @@ public class Spotify extends SpotifyCredentials {
         return new SpotifyCredentials(this.getClientId(), this.getClientSecret(), this.getRedirectUrlString());
     }
 
-    private void sleep(long msec) {
+    private void sleep(long seconds) {
+        long msec = seconds * 1000;
         try {
             Thread.sleep(msec);
         } catch (Exception e) {
@@ -198,7 +187,9 @@ public class Spotify extends SpotifyCredentials {
                         Track track = savedTrack.getTrack();
                         String songName = track.getName();
                         Duration duration = Duration.ofMillis(track.getDurationMs());
-                        ArrayList<Artist> artists = getArtists(track.getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         likedSongs.add(new Song(songName, artists, duration));
                     }
 
@@ -208,11 +199,13 @@ public class Spotify extends SpotifyCredentials {
                 if (offset >= savedTrackPaging.getTotal()) {
                     hasMore = false;
                 }
+            } catch (TooManyRequestsException e) {
+                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.out.println("Error fetching liked songs: " + e.getMessage());
+                System.err.println("Error fetching liked songs: " + e.getMessage());
                 hasMore = false;
             }
-            this.sleep(1000);
         }
 
         return likedSongs;
@@ -249,7 +242,9 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (SavedAlbum savedAlbum : items) {
                         String albumName = savedAlbum.getAlbum().getName();
-                        ArrayList<Artist> artists = getArtists(savedAlbum.getAlbum().getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(savedAlbum.getAlbum().getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
                         try {
                             URI coverart = new URI(savedAlbum.getAlbum().getImages()[0].getUrl()); // TODO:
@@ -260,14 +255,15 @@ public class Spotify extends SpotifyCredentials {
                             albums.put(new Album(albumName, artists), songs);
                         }
                     }
-
                     offset += limit;
                 }
+            } catch (TooManyRequestsException e) {
+                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.out.println("Error: " + e.getMessage());
+                System.err.println("Error: " + e.getMessage());
                 hasMore = false;
             }
-            this.sleep(1000);
         }
         return albums;
     }
@@ -303,7 +299,9 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (TrackSimplified track : items) {
                         String songName = track.getName();
-                        ArrayList<Artist> artists = getArtists(track.getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         Duration duration = Duration.ofMillis(track.getDurationMs());
 
                         songs.add(new Song(songName, artists, duration));
@@ -315,11 +313,13 @@ public class Spotify extends SpotifyCredentials {
                 if (offset >= trackSimplifiedPaging.getTotal()) {
                     hasMore = false;
                 }
+            } catch (TooManyRequestsException e) {
+                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.out.println("Error fetching songs for album " + albumId + ": " + e.getMessage());
+                System.err.println("Error fetching songs for album: " + albumId + ": " + e.getMessage());
                 hasMore = false;
             }
-            this.sleep(1000);
         }
 
         return songs;
@@ -371,11 +371,13 @@ public class Spotify extends SpotifyCredentials {
                 if (offset >= playlistSimplifiedPaging.getTotal()) {
                     hasMore = false;
                 }
+            } catch (TooManyRequestsException e) {
+                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.out.println("Error fetching playlists: " + e.getMessage());
+                System.err.println("Error fetching playlists: " + e.getMessage());
                 hasMore = false;
             }
-            this.sleep(1000);
         }
         return playlists;
     }
@@ -413,12 +415,14 @@ public class Spotify extends SpotifyCredentials {
                         try {
                             Track track = (Track) playlistTrack.getTrack();
                             String songName = track.getName();
-                            ArrayList<Artist> artists = getArtists(track.getArtists());
+                            ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                    .map(artist -> new Artist(artist.getName()))
+                                    .collect(Collectors.toCollection(ArrayList::new));
                             Duration duration = Duration.ofMillis(track.getDurationMs());
                             songs.add(new Song(songName, artists, duration));
                         } catch (ClassCastException e) {
                             // TODO: handle episodes (people use to prevent copyright)
-                            System.out.println("Skipped a non-Track item in the playlist: " + playlistId);
+                            System.err.println("Skipped a non-Track item in the playlist: " + playlistId);
                         }
                     }
 
@@ -428,32 +432,15 @@ public class Spotify extends SpotifyCredentials {
                 if (offset >= playlistTrackPaging.getTotal()) {
                     hasMore = false;
                 }
+            } catch (TooManyRequestsException e) {
+                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.out.println("Error fetching playlist tracks: " + e.getMessage());
+                System.err.println("Error fetching playlist tracks: " + e.getMessage());
                 hasMore = false;
             }
-            this.sleep(1000);
         }
 
         return songs;
-    }
-
-    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
-        ArrayList<Artist> artists = new ArrayList<>();
-        for (ArtistSimplified artist : raw_artists) {
-            String artistName = artist.getName();
-            if (this.artists.containsKey(artistName)) { // if already exists, dont get again
-                artists.add(this.artists.get(artistName));
-                break;
-            }
-            try {
-                GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(artist.getId()).build();
-                URI profilePicture = new URI(getArtistRequest.execute().getImages()[0].getUrl());
-                artists.add(new Artist(artistName, profilePicture));
-            } catch (Exception e) {
-                artists.add(new Artist(artistName));
-            }
-        }
-        return artists;
     }
 }
