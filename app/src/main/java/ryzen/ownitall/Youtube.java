@@ -13,37 +13,43 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistListResponse;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoContentDetails;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.model.VideoSnippet;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.time.Duration;
+import java.util.List;
 
-public class Youtube {
-    private String application_name;
-    private String client_id;
-    private String client_secret;
+public class Youtube extends YoutubeCredentials {
     private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private com.google.api.services.youtube.YouTube youtubeApi;
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     public Youtube() {
-        System.out.println("Enter youtube application name: ");
-        this.application_name = Input.getInstance().getString();
-        System.out.println("Enter youtube client id: ");
-        this.client_id = Input.getInstance().getString();
-        System.out.println("Enter youtube client secret: ");
-        this.client_secret = Input.getInstance().getString();
+        super();
         this.youtubeApi = this.getService();
     }
 
-    public Youtube(String application_name, String client_id, String client_secret) {
-        this.application_name = application_name;
-        this.client_id = client_id;
-        this.client_secret = client_secret;
+    public Youtube(String applicationName, String clientId, String clientSecret) {
+        super(applicationName, clientId, clientSecret);
         this.youtubeApi = this.getService();
+    }
+
+    public Youtube(YoutubeCredentials youtubeCredentials) {
+        super(youtubeCredentials.getApplicationName(), youtubeCredentials.getClientId(),
+                youtubeCredentials.getClientSecret());
+        this.youtubeApi = this.getService();
+    }
+
+    public YoutubeCredentials getYoutubeCredentials() {
+        return new YoutubeCredentials(this.getApplicationName(), this.getClientId(), this.getClientSecret());
     }
 
     /**
@@ -56,8 +62,8 @@ public class Youtube {
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()
-                        .setClientId(this.client_id)
-                        .setClientSecret(this.client_secret));
+                        .setClientId(this.getClientId())
+                        .setClientSecret(this.getClientSecret()));
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
@@ -77,7 +83,7 @@ public class Youtube {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = authorize(httpTransport);
             return new com.google.api.services.youtube.YouTube.Builder(httpTransport, JSON_FACTORY, credential)
-                    .setApplicationName(this.application_name)
+                    .setApplicationName(this.getApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             System.err.println("Error logging in with youtube api: " + e);
@@ -96,4 +102,40 @@ public class Youtube {
         }
         return true;
     }
+
+    public LinkedHashSet<Song> getLikedSongs() {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        String pageToken = null;
+        try {
+            do {
+                YouTube.Videos.List request = youtubeApi.videos()
+                        .list("snippet,contentDetails");
+                VideoListResponse response = request.setMyRating("like")
+                        .setVideoCategoryId("10")
+                        .setMaxResults(50L)
+                        .setPageToken(pageToken)
+                        .execute();
+
+                List<Video> items = response.getItems();
+                for (Video video : items) {
+                    VideoSnippet snippet = video.getSnippet();
+                    VideoContentDetails contentDetails = video.getContentDetails();
+                    if (snippet != null && contentDetails != null) {
+                        Duration duration = Duration.parse(contentDetails.getDuration());
+                        ArrayList<Artist> artists = new ArrayList<>();
+                        artists.add(new Artist(snippet.getChannelTitle()));
+                        songs.add(new Song(snippet.getTitle(), artists, duration));
+                    }
+                }
+
+                pageToken = response.getNextPageToken();
+            } while (pageToken != null);
+
+        } catch (IOException e) {
+            System.err.println("Error obtaining liked songs: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return songs;
+    }
+
 }

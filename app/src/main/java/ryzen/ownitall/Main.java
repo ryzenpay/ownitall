@@ -76,6 +76,7 @@ public class Main {
 
     private static void promptForImport() {
         while (true) {
+            Sync sync = new Sync(DATAFOLDER);
             System.out.println("Choose an import option:");
             System.out.println("[1] YouTube");
             System.out.println("[2] Spotify");
@@ -87,14 +88,32 @@ public class Main {
                 int importChoice = Input.getInstance().getInt();
                 switch (importChoice) {
                     case 1:
-                        // TODO: import from youtube
-                        System.out.println("This function is yet to be added");
-                        break;
+                        YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
+                        Youtube youtube;
+                        if (youtubeCredentials == null) {
+                            System.out.println("No saved youtube credential records");
+                            youtube = new Youtube();
+                        } else if (youtubeCredentials.isNull()) {
+                            System.out.println("Incorrect youtube credentials found");
+                            youtube = new Youtube();
+                        } else {
+                            youtube = new Youtube(youtubeCredentials);
+                        }
+                        sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
+                        sync.close();
+                        System.out.println(
+                                "Getting all Youtube liked songs");
+                        likedSongs.addSongs(youtube.getLikedSongs());
+                        printInventory(1);
+                        return;
                     case 2:
-                        Sync sync = new Sync(DATAFOLDER);
                         SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
                         Spotify spotify;
-                        if (spotifyCredentials.isNull()) { // check if import worked
+                        if (spotifyCredentials == null) {
+                            System.out.println("No saved spotify credential records");
+                            spotify = new Spotify();
+                        } else if (spotifyCredentials.isNull()) {
+                            System.out.println("Incorrect spotify credentials found");
                             spotify = new Spotify();
                         } else {
                             spotify = new Spotify(spotifyCredentials);
@@ -115,9 +134,11 @@ public class Main {
                         playlists.putAll(local.getPlaylists());
                         albums.putAll(local.getAlbums());
                         printInventory(1);
+                        sync.close();
                         return;
                     case 0:
                         System.out.println("Exiting import.");
+                        sync.close();
                         return;
                     default:
                         System.out.println("Invalid option. Please enter a number between 1-4.");
@@ -143,8 +164,17 @@ public class Main {
         Sync sync = new Sync(DATAFOLDER);
         System.out.println("Beginning to import all data");
         albums = sync.importAlbums();
+        if (albums == null) {
+            albums = new LinkedHashMap<>();
+        }
         playlists = sync.importPlaylists();
+        if (playlists == null) {
+            playlists = new LinkedHashMap<>();
+        }
         likedSongs = sync.importLikedSongs();
+        if (likedSongs == null) {
+            likedSongs = new LikedSongs();
+        }
         System.out.println("Succesfully imported all data");
         sync.close();
     }

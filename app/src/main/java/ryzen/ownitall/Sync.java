@@ -20,6 +20,7 @@ public class Sync implements AutoCloseable {
     private File playlistFile;
     private File likedSongsFile;
     private File spotifyFile;
+    private File youtubeFile;
 
     public Sync(String dataPath) { // TODO: archiving and unarchiving
         this.setDataFolder(dataPath);
@@ -28,15 +29,17 @@ public class Sync implements AutoCloseable {
         this.playlistFile = new File(this.dataFolder, "playlists.ser");
         this.likedSongsFile = new File(this.dataFolder, "likedsongs.ser");
         this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.txt");
+        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials.txt");
     }
 
     @Override
     public void close() {
         // Close any open resources
-        closeFile(albumFile);
-        closeFile(playlistFile);
-        closeFile(likedSongsFile);
-        closeFile(spotifyFile);
+        closeFile(this.albumFile);
+        closeFile(this.playlistFile);
+        closeFile(this.likedSongsFile);
+        closeFile(this.spotifyFile);
+        closeFile(this.youtubeFile);
 
         // Perform any additional cleanup
         System.out.println("Sync resources closed successfully.");
@@ -87,7 +90,7 @@ public class Sync implements AutoCloseable {
     public LinkedHashMap<Album, ArrayList<Song>> importAlbums() {
         LinkedHashMap<Album, ArrayList<Song>> albums;
         if (!albumFile.exists()) {
-            return new LinkedHashMap<>();
+            return null;
         }
         try (ObjectInputStream albumInput = new ObjectInputStream(
                 new FileInputStream(this.albumFile))) {
@@ -96,7 +99,7 @@ public class Sync implements AutoCloseable {
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error Importing Albums: " + e);
             System.err.println("If this persists, delete: " + this.albumFile.getAbsolutePath());
-            albums = new LinkedHashMap<>();
+            return null;
         }
         return albums;
     }
@@ -117,7 +120,7 @@ public class Sync implements AutoCloseable {
     public LinkedHashMap<Playlist, ArrayList<Song>> importPlaylists() {
         LinkedHashMap<Playlist, ArrayList<Song>> playlists;
         if (!playlistFile.exists()) {
-            return new LinkedHashMap<>();
+            return null;
         }
         try (ObjectInputStream playlistInput = new ObjectInputStream(
                 new FileInputStream(this.playlistFile))) {
@@ -127,7 +130,7 @@ public class Sync implements AutoCloseable {
             System.err.println("Error Importing Playlists: " + e);
             System.err
                     .println("If this persists, delete: " + this.playlistFile.getAbsolutePath());
-            playlists = new LinkedHashMap<>();
+            return null;
         }
         return playlists;
     }
@@ -146,7 +149,7 @@ public class Sync implements AutoCloseable {
     public LikedSongs importLikedSongs() {
         LikedSongs likedSongs;
         if (!this.likedSongsFile.exists()) {
-            return new LikedSongs();
+            return null;
         }
         try (ObjectInputStream likedInput = new ObjectInputStream(new FileInputStream(this.likedSongsFile))) {
             likedSongs = (LikedSongs) likedInput.readObject();
@@ -154,7 +157,7 @@ public class Sync implements AutoCloseable {
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error importing liked songs: " + e);
             System.err.println("If this persists, delete: " + this.likedSongsFile.getAbsolutePath());
-            likedSongs = new LikedSongs();
+            return null;
         }
         return likedSongs;
     }
@@ -162,7 +165,7 @@ public class Sync implements AutoCloseable {
     public SpotifyCredentials importSpotifyCredentials() {
         SpotifyCredentials spotifyCredentials;
         if (!spotifyFile.exists()) {
-            return new SpotifyCredentials();
+            return null;
         }
         try (BufferedReader reader = new BufferedReader(
                 new FileReader(this.spotifyFile))) {
@@ -175,7 +178,7 @@ public class Sync implements AutoCloseable {
             System.err.println("Error importing spotify credentials, creating new ones: " + e);
             System.err
                     .println("If this persists, delete: " + this.spotifyFile.getAbsolutePath());
-            spotifyCredentials = new SpotifyCredentials();
+            return null;
         }
         return spotifyCredentials;
     }
@@ -191,6 +194,41 @@ public class Sync implements AutoCloseable {
             this.setDataFolder(); // since they are being exported its gotta exist
         } catch (IOException e) {
             System.err.println("Error Saving Spotify Credentials: " + e);
+        }
+    }
+
+    public YoutubeCredentials importYoutubeCredentials() {
+        YoutubeCredentials youtubeCredentials;
+        if (!youtubeFile.exists()) {
+            return null;
+        }
+        try (BufferedReader reader = new BufferedReader(
+                new FileReader(this.youtubeFile))) {
+
+            String applicationName = reader.readLine();
+            String clientId = reader.readLine();
+            String clientSecret = reader.readLine();
+            youtubeCredentials = new YoutubeCredentials(applicationName, clientId, clientSecret);
+        } catch (IOException e) {
+            System.err.println("Error importing Youtube credentials, creating new ones: " + e);
+            System.err
+                    .println("If this persists, delete: " + this.youtubeFile.getAbsolutePath());
+            return null;
+        }
+        return youtubeCredentials;
+    }
+
+    public void exportYoutubeCredentials(YoutubeCredentials youtubeCredentials) {
+        try (PrintWriter writer = new PrintWriter(
+                new FileWriter(this.youtubeFile))) {
+            writer.println(youtubeCredentials.getApplicationName());
+            writer.println(youtubeCredentials.getClientId());
+            writer.println(youtubeCredentials.getClientSecret());
+            System.out.println("Successfully saved Youtube credentials");
+        } catch (FileNotFoundException e) {
+            this.setDataFolder(); // since they are being exported its gotta exist
+        } catch (IOException e) {
+            System.err.println("Error Saving Youtube Credentials: " + e);
         }
     }
 }
