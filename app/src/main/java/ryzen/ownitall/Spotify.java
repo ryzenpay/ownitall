@@ -95,7 +95,8 @@ public class Spotify extends SpotifyCredentials {
      * 
      * @return - the oauth code with permissions
      */
-    private void requestCode() {
+    private void requestCode() { // TODO: automatically open page AND get code:
+                                 // https://www.perplexity.ai/search/i-have-this-chunk-of-code-whic-3TtHrgqLR9uTzEfRzba0vg
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
                 .show_dialog(true)

@@ -228,7 +228,7 @@ public class Main {
                 System.out.println("Liked Songs (" + likedSongs.getSize() + "): ");
                 i = 1;
                 for (Song likedSong : likedSongs.getSongs()) {
-                    System.out.println("    " + y + "/" + likedSongs.getSize() + " = " + likedSong.getName() + " | "
+                    System.out.println("    " + i + "/" + likedSongs.getSize() + " = " + likedSong.getName() + " | "
                             + musicTime(likedSong.getDuration()));
                     System.out.println("        - Artists: " + likedSong.getArtists().toString());
                     i++;

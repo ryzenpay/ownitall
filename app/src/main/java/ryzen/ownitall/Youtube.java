@@ -111,7 +111,7 @@ public class Youtube extends YoutubeCredentials {
                 YouTube.Videos.List request = youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
-                        .setVideoCategoryId("10")
+                        .setVideoCategoryId("10") // Category ID 10 is for Music
                         .setMaxResults(50L)
                         .setPageToken(pageToken)
                         .execute();
@@ -121,10 +121,13 @@ public class Youtube extends YoutubeCredentials {
                     VideoSnippet snippet = video.getSnippet();
                     VideoContentDetails contentDetails = video.getContentDetails();
                     if (snippet != null && contentDetails != null) {
-                        Duration duration = Duration.parse(contentDetails.getDuration());
-                        ArrayList<Artist> artists = new ArrayList<>();
-                        artists.add(new Artist(snippet.getChannelTitle()));
-                        songs.add(new Song(snippet.getTitle(), artists, duration));
+                        // Check if the video is in the Music category
+                        if ("10".equals(snippet.getCategoryId())) {
+                            Duration duration = Duration.parse(contentDetails.getDuration());
+                            ArrayList<Artist> artists = new ArrayList<>();
+                            artists.add(new Artist(snippet.getChannelTitle()));
+                            songs.add(new Song(snippet.getTitle(), artists, duration));
+                        }
                     }
                 }
 
