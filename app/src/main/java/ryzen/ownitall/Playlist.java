@@ -7,13 +7,16 @@ public class Playlist implements Serializable {
     private String name;
     private URI coverart;
 
+    private String youtubePageToken; // TODO: create "update" method to save API requests
+    private int spotifyPageOffset = -1;
+
     /**
      * Default playlist constructor without coverart
      * 
      * @param name - name of the playlist
      */
     public Playlist(String name) {
-        this.setName(name);
+        this.name = name;
     }
 
     /**
@@ -23,20 +26,8 @@ public class Playlist implements Serializable {
      * @param coverart - constructed URI
      */
     public Playlist(String name, URI coverart) {
-        this.setName(name);
-        this.coverart = coverart;
-    }
-
-    /**
-     * set the name of playlist class
-     * 
-     * @param name - desired name
-     */
-    private void setName(String name) {
-        if (name == null) {
-            return;
-        }
         this.name = name;
+        this.coverart = coverart;
     }
 
     /**
@@ -48,6 +39,10 @@ public class Playlist implements Serializable {
         return this.name;
     }
 
+    public void setCoverArt(URI coverArt) {
+        this.coverart = coverArt;
+    }
+
     /**
      * get coverart of current playlist class
      * 
@@ -57,6 +52,22 @@ public class Playlist implements Serializable {
         return this.coverart;
     }
 
+    public String getYoutubePageToken() {
+        return this.youtubePageToken;
+    }
+
+    public void setYoutubePageToken(String youtubePageToken) {
+        this.youtubePageToken = youtubePageToken;
+    }
+
+    public int getSpotifyPageOffset() {
+        return this.spotifyPageOffset;
+    }
+
+    public void setSpotifyPageOffset(int spotifyPageOffset) {
+        this.spotifyPageOffset = spotifyPageOffset;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -64,7 +75,7 @@ public class Playlist implements Serializable {
         if (object == null || getClass() != object.getClass())
             return false;
         Playlist playlist = (Playlist) object;
-        if (this.name.equalsIgnoreCase(playlist.name)) {
+        if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
         return false;
@@ -72,6 +83,14 @@ public class Playlist implements Serializable {
 
     @Override
     public int hashCode() {
-        return name.hashCode(); // TODO: similarity search (% check)
+        int hashCode = 0;
+        hashCode += name.hashCode();
+        if (spotifyPageOffset != -1) {
+            hashCode += Integer.hashCode(spotifyPageOffset);
+        }
+        if (youtubePageToken != null) {
+            hashCode += youtubePageToken.hashCode();
+        }
+        return hashCode; // TODO: similarity search (% check)
     }
 }

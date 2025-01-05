@@ -161,8 +161,8 @@ public class Spotify extends SpotifyCredentials {
      * 
      * @return - arraylist of constructed songs
      */
-    public LinkedHashSet<Song> getLikedSongs() {
-        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
+    public LikedSongs getLikedSongs() {
+        LikedSongs likedSongs = new LikedSongs();
         if (this.checkExpiration()) { // TODO: use an interceptor or proxy to check token validity
             System.err.println("Logged out of spotify, please restart to log in again");
             return likedSongs;
@@ -191,7 +191,7 @@ public class Spotify extends SpotifyCredentials {
                         ArrayList<Artist> artists = Arrays.stream(track.getArtists())
                                 .map(artist -> new Artist(artist.getName()))
                                 .collect(Collectors.toCollection(ArrayList::new));
-                        likedSongs.add(new Song(songName, artists, duration));
+                        likedSongs.addSong(new Song(songName, artists, duration));
                     }
 
                     offset += limit;
@@ -199,6 +199,7 @@ public class Spotify extends SpotifyCredentials {
 
                 if (offset >= savedTrackPaging.getTotal()) {
                     hasMore = false;
+                    likedSongs.setSpotifyPageOffset(offset);
                 }
             } catch (TooManyRequestsException e) {
                 System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -208,7 +209,6 @@ public class Spotify extends SpotifyCredentials {
                 hasMore = false;
             }
         }
-
         return likedSongs;
     }
 
@@ -356,14 +356,17 @@ public class Spotify extends SpotifyCredentials {
                 if (items.length == 0) {
                     hasMore = false;
                 } else {
-                    for (PlaylistSimplified playlist : items) {
-                        String playlistName = playlist.getName();
-                        ArrayList<Song> playlistSongs = getPlaylistSongs(playlist.getId());
+                    for (PlaylistSimplified spotifyPlaylist : items) {
+                        String playlistName = spotifyPlaylist.getName();
+                        ArrayList<Song> playlistSongs = getPlaylistSongs(spotifyPlaylist.getId());
+                        Playlist playlist = new Playlist(playlistName);
+                        playlist.setSpotifyPageOffset(playlistSongs.size());
                         try {
-                            URI coverart = new URI(playlist.getImages()[0].getUrl());
-                            playlists.put(new Playlist(playlistName, coverart), playlistSongs);
+                            URI coverart = new URI(spotifyPlaylist.getImages()[0].getUrl());
+                            playlist.setCoverArt(coverart);
+                            playlists.put(playlist, playlistSongs);
                         } catch (URISyntaxException e) {
-                            playlists.put(new Playlist(playlistName), playlistSongs);
+                            playlists.put(playlist, playlistSongs);
                         }
                     }
                     offset += limit;

@@ -103,7 +103,9 @@ public class Main {
                         sync.close();
                         System.out.println(
                                 "Getting all Youtube liked songs");
-                        likedSongs.addSongs(youtube.getLikedSongs());
+                        LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
+                        likedSongs.addSongs(youtubeLikedSongs.getSongs());
+                        likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
                         printInventory(1);
                         return;
                     case 2:
@@ -122,7 +124,9 @@ public class Main {
                         sync.close();
                         System.out.println(
                                 "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
-                        likedSongs.addSongs(spotify.getLikedSongs());
+                        LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
+                        likedSongs.addSongs(spotifyLikedSongs.getSongs());
+                        likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
                         playlists.putAll(spotify.getPlaylists());
                         albums.putAll(spotify.getAlbums());
                         printInventory(1);

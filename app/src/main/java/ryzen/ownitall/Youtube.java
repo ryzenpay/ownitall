@@ -103,8 +103,8 @@ public class Youtube extends YoutubeCredentials {
         return true;
     }
 
-    public LinkedHashSet<Song> getLikedSongs() {
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+    public LikedSongs getLikedSongs() {
+        LikedSongs songs = new LikedSongs();
         String pageToken = null;
         try {
             do {
@@ -123,17 +123,18 @@ public class Youtube extends YoutubeCredentials {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            Duration duration = Duration.parse(contentDetails.getDuration());
+                            Duration duration = Duration.parse(contentDetails.getDuration()); // TODO: this is not
+                                                                                              // working correctly
                             ArrayList<Artist> artists = new ArrayList<>();
                             artists.add(new Artist(snippet.getChannelTitle()));
-                            songs.add(new Song(snippet.getTitle(), artists, duration));
+                            songs.addSong(new Song(snippet.getTitle(), artists, duration));
                         }
                     }
                 }
 
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
-
+            songs.setYoutubePageToken(pageToken);
         } catch (IOException e) {
             System.err.println("Error obtaining liked songs: " + e.getMessage());
             e.printStackTrace();

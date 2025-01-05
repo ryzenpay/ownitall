@@ -105,7 +105,7 @@ public class Album implements Serializable {
         if (object == null || getClass() != object.getClass())
             return false;
         Album album = (Album) object;
-        if (this.name.equalsIgnoreCase(album.name.toLowerCase())) { // TODO: check with artists
+        if (this.hashCode() == album.hashCode()) { // TODO: check with artists
             return true;
         }
         return false;
