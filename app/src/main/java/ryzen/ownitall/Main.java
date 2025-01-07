@@ -34,10 +34,14 @@ public class Main {
                 int choice = Input.getInstance().getInt();
                 switch (choice) {
                     case 1:
-                        promptForImport();
+                        Import dataImport = new Import(DATAFOLDER);
+                        likedSongs.addSongs(dataImport.getLikedSongs());
+                        albums.putAll(dataImport.getAlbums());
+                        playlists.putAll(dataImport.getPlaylists());
+                        dataImport.printOverview();
                         break;
                     case 2:
-                        System.out.println("This is currently not supported");
+                        System.out.println("Export currently not supported");
                         // TODO: Implement export functionality
                         break;
                     case 3:
@@ -72,89 +76,6 @@ public class Main {
             }
         }
         return false;
-    }
-
-    private static void promptForImport() {
-        while (true) {
-            Sync sync = new Sync(DATAFOLDER);
-            System.out.println("Choose an import option:");
-            System.out.println("[1] YouTube");
-            System.out.println("[2] Spotify");
-            System.out.println("[3] Local");
-            System.out.println("[0] Exit");
-            System.out.print("Enter your choice: ");
-
-            try {
-                int importChoice = Input.getInstance().getInt();
-                switch (importChoice) {
-                    case 1:
-                        YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
-                        Youtube youtube;
-                        if (youtubeCredentials == null) {
-                            System.out.println("No saved youtube credential records");
-                            youtube = new Youtube();
-                        } else if (youtubeCredentials.isNull()) {
-                            System.out.println("Incorrect youtube credentials found");
-                            youtube = new Youtube();
-                        } else {
-                            youtube = new Youtube(youtubeCredentials);
-                        }
-                        sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
-                        sync.close();
-                        System.out.println(
-                                "Getting all Youtube liked songs");
-                        LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
-                        likedSongs.addSongs(youtubeLikedSongs.getSongs());
-                        likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
-                        albums.putAll(youtube.getAlbums());
-                        System.out.println("Getting youtube music playlists");
-                        playlists.putAll(youtube.getPlaylists());
-                        printInventory(1);
-                        return;
-                    case 2:
-                        SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
-                        Spotify spotify;
-                        if (spotifyCredentials == null) {
-                            System.out.println("No saved spotify credential records");
-                            spotify = new Spotify();
-                        } else if (spotifyCredentials.isNull()) {
-                            System.out.println("Incorrect spotify credentials found");
-                            spotify = new Spotify();
-                        } else {
-                            spotify = new Spotify(spotifyCredentials);
-                        }
-                        sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
-                        sync.close();
-                        System.out.println(
-                                "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
-                        LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
-                        likedSongs.addSongs(spotifyLikedSongs.getSongs());
-                        likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
-                        playlists.putAll(spotify.getPlaylists());
-                        albums.putAll(spotify.getAlbums());
-                        printInventory(1);
-                        return;
-                    case 3:
-                        Local local = new Local();
-                        System.out.println("Getting all music from your local library");
-                        likedSongs.addSongs(local.getLikedSongs());
-                        playlists.putAll(local.getPlaylists());
-                        albums.putAll(local.getAlbums());
-                        printInventory(1);
-                        sync.close();
-                        return;
-                    case 0:
-                        System.out.println("Exiting import.");
-                        sync.close();
-                        return;
-                    default:
-                        System.out.println("Invalid option. Please enter a number between 1-4.");
-                        break;
-                }
-            } catch (Exception e) {
-                System.err.println("Invalid input. or an error occured:\n" + e);
-            }
-        }
     }
 
     private static void exportData() {
