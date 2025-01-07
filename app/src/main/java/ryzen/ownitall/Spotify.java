@@ -397,7 +397,6 @@ public class Spotify extends SpotifyCredentials {
                     .limit(limit)
                     .offset(offset)
                     .build();
-
             try {
                 final Paging<PlaylistTrack> playlistTrackPaging = getPlaylistsItemsRequest.execute();
                 PlaylistTrack[] items = playlistTrackPaging.getItems();
@@ -417,11 +416,12 @@ public class Spotify extends SpotifyCredentials {
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
                             String episodeName = episode.getName();
-                            String coverImage = episode.getImages()[0].getUrl();
+                            // String coverImage = episode.getImages()[0].getUrl(); doesnt seem to work with
+                            // the current SpotifyAPI class (returns null)
                             Duration duration = Duration.ofMillis(episode.getDurationMs());
-                            songs.add(new Song(episodeName, duration, coverImage));
+                            songs.add(new Song(episodeName, duration));
                         } else {
-                            System.out.println("Skipping non-Track in playlist: " + playlistId);
+                            System.err.println("Skipping non-Track in playlist: " + playlistId);
                         }
                     }
 
