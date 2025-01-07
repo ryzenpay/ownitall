@@ -7,7 +7,7 @@ public class LikedSongs extends Playlist {
     private LinkedHashSet<Song> likedSongs;
 
     private String youtubePageToken = null;
-    private int spotifyPageOffset;
+    private int spotifyPageOffset = -1;
 
     public LikedSongs(LinkedHashSet<Song> songs) {
         super("Liked Songs");

@@ -122,7 +122,7 @@ public class SpotifyCredentials {
                 System.out.println("Authorization code received: " + code);
                 sendResponse(clientSocket, "Authorization successful. You can close this window.");
             } else {
-                System.out.println("Failed to retrieve authorization code. Request: " + request.toString());
+                System.err.println("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
                 System.out.println("Please provide the code it provides (in url)");
                 this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
@@ -149,7 +149,8 @@ public class SpotifyCredentials {
         return null;
     }
 
-    private void sendResponse(Socket clientSocket, String message) throws IOException {
+    private void sendResponse(Socket clientSocket, String message) throws IOException { // TODO: fix web page to show
+                                                                                        // this
         String response = "HTTP/1.1 200 OK\r\n"
                 + "Content-Type: text/html\r\n"
                 + "\r\n"

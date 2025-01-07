@@ -1,18 +1,36 @@
 package ryzen.ownitall;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Artist implements Serializable {
     private String name;
-    // private URI profilePicture; <-- this is not supported as it adds more API
-    // queries and has 0 usage (very limited local usage)
+    private URI profilePicture;
 
     public Artist(String name) {
         this.name = name;
     }
 
+    public Artist(String name, String profilePicture) {
+        this.name = name;
+        this.setProfilePicture(profilePicture);
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    private void setProfilePicture(String profilePicture) {
+        try {
+            this.profilePicture = new URI(profilePicture);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + profilePicture);
+        }
+    }
+
+    public URI getProfilePicture() {
+        return this.profilePicture;
     }
 
     @Override

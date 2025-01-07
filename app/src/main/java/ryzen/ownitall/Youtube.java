@@ -133,10 +133,9 @@ public class Youtube extends YoutubeCredentials {
                         }
                     }
                 }
-
+                songs.setYoutubePageToken(pageToken);
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
-            songs.setYoutubePageToken(pageToken);
         } catch (IOException e) {
             System.err.println("Error obtaining liked songs: " + e.getMessage());
             e.printStackTrace();
@@ -208,9 +207,8 @@ public class Youtube extends YoutubeCredentials {
                         songs.add(new Song(title, artists, duration));
                     }
                 }
-
-                nextPageToken = itemResponse.getNextPageToken();
                 playlist.setYoutubePageToken(nextPageToken);
+                nextPageToken = itemResponse.getNextPageToken();
             } while (nextPageToken != null);
         } catch (IOException e) {
             System.err.println("Error retrieving playlist songs: " + e.getMessage());
@@ -252,5 +250,4 @@ public class Youtube extends YoutubeCredentials {
         }
         return Duration.ZERO;
     }
-
 }

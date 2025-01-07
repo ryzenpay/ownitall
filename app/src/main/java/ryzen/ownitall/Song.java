@@ -40,11 +40,7 @@ public class Song implements Serializable {
         this.name = name;
         this.addArtists(artists);
         this.duration = duration;
-        try {
-            this.coverImage = new URI(coverImage);
-        } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + coverImage);
-        }
+        this.setCoverImage(coverImage);
     }
 
     /**
@@ -57,11 +53,7 @@ public class Song implements Serializable {
     public Song(String name, Duration duration, String coverImage) {
         this.name = name;
         this.duration = duration;
-        try {
-            this.coverImage = new URI(coverImage);
-        } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + coverImage);
-        }
+        this.setCoverImage(coverImage);
     }
 
     /**
@@ -121,7 +113,7 @@ public class Song implements Serializable {
         return new ArrayList<>(this.artists);
     }
 
-    public Artist getMainArtist() {
+    private Artist getMainArtist() {
         ArrayList<Artist> artists = new ArrayList<>(this.artists);
         return artists.get(0);
     }
@@ -136,6 +128,14 @@ public class Song implements Serializable {
             return Duration.ZERO;
         }
         return this.duration;
+    }
+
+    private void setCoverImage(String coverImage) {
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + coverImage);
+        }
     }
 
     @Override

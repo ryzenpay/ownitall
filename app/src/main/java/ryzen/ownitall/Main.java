@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.time.Duration;
 
 public class Main {
+    // TODO: initialize logger and remove all system.out.println &&
+    // system.err.println
     private static String DATAFOLDER = "data"; // TODO: user choice?
     private static LinkedHashMap<Album, ArrayList<Song>> albums;
     private static LinkedHashMap<Playlist, ArrayList<Song>> playlists;
@@ -28,7 +30,7 @@ public class Main {
             System.out.println("[2] export");
             System.out.println("[3] print inventory");
             System.out.println("[4] save");
-            System.out.println("[5] Tools");
+            System.out.println("[5] Settings"); // TODO: settings class (save in .appdata/settings.json)
             System.out.println("[0] exit");
             System.out.print("Enter your choice: ");
             try {
