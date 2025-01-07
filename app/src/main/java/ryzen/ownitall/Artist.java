@@ -1,31 +1,18 @@
 package ryzen.ownitall;
 
 import java.io.Serializable;
-import java.net.URI;
 
 public class Artist implements Serializable {
     private String name;
-    private URI profilePicture; // TODO: artist pfp
+    // private URI profilePicture; <-- this is not supported as it adds more API
+    // queries and has 0 usage (very limited local usage)
 
     public Artist(String name) {
         this.name = name;
     }
 
-    public Artist(String name, URI profilePicture) {
-        this.name = name;
-        this.profilePicture = profilePicture;
-    }
-
     public String getName() {
         return this.name;
-    }
-
-    public void setProfilePicture(URI profilePicrture) {
-        this.profilePicture = profilePicrture;
-    }
-
-    public URI getProfilePicture() {
-        return this.profilePicture;
     }
 
     @Override

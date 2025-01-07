@@ -18,13 +18,11 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
-import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
@@ -197,7 +195,9 @@ public class Spotify extends SpotifyCredentials {
                         Track track = savedTrack.getTrack();
                         String songName = track.getName();
                         Duration duration = Duration.ofMillis(track.getDurationMs());
-                        ArrayList<Artist> artists = this.getArtists(track.getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         likedSongs.addSong(new Song(songName, artists, duration));
                     }
 
@@ -250,7 +250,9 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (SavedAlbum savedAlbum : items) {
                         String albumName = savedAlbum.getAlbum().getName();
-                        ArrayList<Artist> artists = this.getArtists(savedAlbum.getAlbum().getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(savedAlbum.getAlbum().getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
                         try {
                             URI coverart = new URI(savedAlbum.getAlbum().getImages()[0].getUrl()); // TODO:
@@ -305,7 +307,9 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (TrackSimplified track : items) {
                         String songName = track.getName();
-                        ArrayList<Artist> artists = this.getArtists(track.getArtists());
+                        ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                .map(artist -> new Artist(artist.getName()))
+                                .collect(Collectors.toCollection(ArrayList::new));
                         Duration duration = Duration.ofMillis(track.getDurationMs());
 
                         songs.add(new Song(songName, artists, duration));
@@ -422,7 +426,9 @@ public class Spotify extends SpotifyCredentials {
                         try {
                             Track track = (Track) playlistTrack.getTrack();
                             String songName = track.getName();
-                            ArrayList<Artist> artists = this.getArtists(track.getArtists());
+                            ArrayList<Artist> artists = Arrays.stream(track.getArtists())
+                                    .map(artist -> new Artist(artist.getName()))
+                                    .collect(Collectors.toCollection(ArrayList::new));
                             Duration duration = Duration.ofMillis(track.getDurationMs());
                             songs.add(new Song(songName, artists, duration));
                         } catch (ClassCastException e) {
@@ -449,25 +455,4 @@ public class Spotify extends SpotifyCredentials {
         return songs;
     }
 
-    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
-        ArrayList<Artist> artists = new ArrayList<>();
-        for (ArtistSimplified artist : raw_artists) {
-            String artistName = artist.getName();
-            if (this.artists.containsKey(artistName)) { // if already exists, dont get again
-                artists.add(this.artists.get(artistName));
-                break;
-            }
-            try {
-                GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(artist.getId()).build();
-                URI profilePicture = new URI(getArtistRequest.execute().getImages()[0].getUrl());
-                artists.add(new Artist(artistName, profilePicture));
-            } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                this.sleep(e.getRetryAfter());
-            } catch (Exception e) {
-                artists.add(new Artist(artistName));
-            }
-        }
-        return artists;
-    }
 }
