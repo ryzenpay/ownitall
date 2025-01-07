@@ -3,6 +3,7 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class Import {
     private boolean status;
@@ -11,6 +12,9 @@ public class Import {
     private LinkedHashMap<Album, ArrayList<Song>> albums;
     private LinkedHashMap<Playlist, ArrayList<Song>> playlists;
     private LikedSongs likedSongs;
+    private Map<String, Runnable> supported = Map.of("Youtube", this::importYoutube, "Spotify", this::importSpotify,
+            "Local",
+            this::importLocal);
 
     public Import(String dataFolder) {
         this.dataFolder = dataFolder;
@@ -18,36 +22,30 @@ public class Import {
         this.albums = new LinkedHashMap<>();
         this.playlists = new LinkedHashMap<>();
         this.likedSongs = new LikedSongs();
-        int choice = promptImport();
-        while (!status) {
-            switch (choice) {
-                case 1:
-                    this.importYoutube();
-                    break;
-                case 2:
-                    this.importSpotify();
-                    break;
-                case 3:
-                    this.importLocal();
-                    break;
-                case 0:
-                    System.out.println("Exiting import.");
-                    break;
-                default:
-                    System.out.println("Invalid option. Please enter a number between 0-3.");
-                    break;
+        while (!this.status) {
+            String choice = promptImport();
+            if (choice != null) {
+                supported.get(choice).run();
             }
         }
     }
 
-    private int promptImport() {
-        System.out.println("Choose an import option:");
-        System.out.println("[1] YouTube");
-        System.out.println("[2] Spotify");
-        System.out.println("[3] Local");
+    private String promptImport() {
+        System.out.println("Choose an import option from the following: ");
+        int i = 1;
+        for (String option : this.supported.keySet()) {
+            System.out.println("[" + i + "] " + option);
+            i++;
+        }
         System.out.println("[0] Exit");
         System.out.print("Enter your choice: ");
-        return Input.getInstance().getInt();
+        int choice = Input.getInstance().getInt();
+        if (choice < 0 || choice > supported.size()) {
+            System.out.println("Incorrect option, try again");
+            return null;
+        }
+        ArrayList<String> options = new ArrayList<>(this.supported.keySet());
+        return options.get(choice - 1);
     }
 
     private void importYoutube() {
