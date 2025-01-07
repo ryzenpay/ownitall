@@ -88,7 +88,6 @@ public class Main {
         sync.exportPlaylists(playlists);
         sync.exportLikedSongs(likedSongs);
         System.out.println("Successfully saved all data");
-        sync.close();
     }
 
     private static void importData() {
@@ -107,7 +106,6 @@ public class Main {
             likedSongs = new LikedSongs();
         }
         System.out.println("Succesfully imported all data");
-        sync.close();
     }
 
     /**

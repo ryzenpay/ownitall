@@ -62,7 +62,6 @@ public class Import {
             youtube = new Youtube(youtubeCredentials);
         }
         sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
-        sync.close();
         System.out.println(
                 "Getting all Youtube liked songs");
         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
@@ -88,7 +87,6 @@ public class Import {
             spotify = new Spotify(spotifyCredentials);
         }
         sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
-        sync.close();
         System.out.println(
                 "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();

@@ -1,63 +1,42 @@
 package ryzen.ownitall;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class Sync implements AutoCloseable {
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class Sync {
     private File dataFolder;
     private File albumFile;
     private File playlistFile;
     private File likedSongsFile;
     private File spotifyFile;
     private File youtubeFile;
+    ObjectMapper objectMapper;
 
     public Sync(String dataPath) {
         this.setDataFolder(dataPath);
-        this.albumFile = new File(this.dataFolder, "albums.ser");
-        this.albumFile = new File(this.dataFolder, "albums.ser");
-        this.playlistFile = new File(this.dataFolder, "playlists.ser");
-        this.likedSongsFile = new File(this.dataFolder, "likedsongs.ser");
-        this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.txt");
-        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials.txt");
-    }
-
-    @Override
-    public void close() {
-        // Close any open resources
-        closeFile(this.albumFile);
-        closeFile(this.playlistFile);
-        closeFile(this.likedSongsFile);
-        closeFile(this.spotifyFile);
-        closeFile(this.youtubeFile);
-
-        // Perform any additional cleanup
-        System.out.println("Sync resources closed successfully.");
-    }
-
-    private void closeFile(File file) {
-        if (file != null && file.exists()) {
-            try {
-                // Attempt to close the file if it's open
-                // This is a simplified approach; in a real scenario, you might need to track
-                // open file handles
-                new FileInputStream(file).close();
-            } catch (IOException e) {
-                System.err.println("Error closing file: " + file.getName() + " - " + e.getMessage());
-            }
-        }
+        this.albumFile = new File(this.dataFolder, "albums.json");
+        this.albumFile = new File(this.dataFolder, "albums.json");
+        this.playlistFile = new File(this.dataFolder, "playlists.json");
+        this.likedSongsFile = new File(this.dataFolder, "likedsongs.json");
+        this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.json");
+        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials.json");
+        this.objectMapper = new ObjectMapper();
     }
 
     private void setDataFolder(String dataPath) {
@@ -121,14 +100,10 @@ public class Sync implements AutoCloseable {
     }
 
     public void exportAlbums(LinkedHashMap<Album, ArrayList<Song>> albums) {
-        try (ObjectOutputStream albumOutput = new ObjectOutputStream(
-                new FileOutputStream(this.albumFile))) {
-            albumOutput.writeObject(albums);
-            System.out.println("Successfully saved " + albums.size() + " albums");
-        } catch (FileNotFoundException e) {
-            this.setDataFolder();
+        try {
+            this.objectMapper.writeValue(this.albumFile, albums);
         } catch (IOException e) {
-            System.err.println("Error Saving Albums: " + e);
+            System.err.println("Error saving albums: " + e);
         }
     }
 
@@ -137,28 +112,23 @@ public class Sync implements AutoCloseable {
         if (!albumFile.exists()) {
             return null;
         }
-        try (ObjectInputStream albumInput = new ObjectInputStream(
-                new FileInputStream(this.albumFile))) {
-            albums = (LinkedHashMap<Album, ArrayList<Song>>) albumInput.readObject();
-            System.out.println("Successfully imported " + albums.size() + " albums");
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error Importing Albums: " + e);
-            System.err.println("If this persists, delete: " + this.albumFile.getAbsolutePath());
+        try {
+            albums = this.objectMapper.readValue(this.albumFile,
+                    new TypeReference<LinkedHashMap<Album, ArrayList<Song>>>() {
+                    });
+
+        } catch (IOException e) {
+            System.err.println("Error importing albums: " + e);
             return null;
         }
         return albums;
     }
 
     public void exportPlaylists(LinkedHashMap<Playlist, ArrayList<Song>> playlists) {
-        try (ObjectOutputStream playlistOutput = new ObjectOutputStream(
-                new FileOutputStream(this.playlistFile))) {
-            playlistOutput.writeObject(playlists);
-            System.out.println("Successfully saved " + playlists.size() + " playlists");
-
-        } catch (FileNotFoundException e) {
-            this.setDataFolder(); // since they are being exported its gotta exist
+        try {
+            this.objectMapper.writeValue(this.playlistFile, playlists);
         } catch (IOException e) {
-            System.err.println("Error Saving Playlists: " + e);
+            System.err.println("Error saving playlists: " + e);
         }
     }
 
@@ -167,25 +137,21 @@ public class Sync implements AutoCloseable {
         if (!playlistFile.exists()) {
             return null;
         }
-        try (ObjectInputStream playlistInput = new ObjectInputStream(
-                new FileInputStream(this.playlistFile))) {
-            playlists = (LinkedHashMap<Playlist, ArrayList<Song>>) playlistInput.readObject();
-            System.out.println("Successfully imported " + playlists.size() + " playlists");
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error Importing Playlists: " + e);
-            System.err
-                    .println("If this persists, delete: " + this.playlistFile.getAbsolutePath());
+        try {
+            playlists = this.objectMapper.readValue(this.playlistFile,
+                    new TypeReference<LinkedHashMap<Playlist, ArrayList<Song>>>() {
+                    });
+
+        } catch (IOException e) {
+            System.err.println("Error importing playlists: " + e);
             return null;
         }
         return playlists;
     }
 
     public void exportLikedSongs(LikedSongs likedSongs) {
-        try (ObjectOutputStream likedOutput = new ObjectOutputStream(new FileOutputStream(this.likedSongsFile))) {
-            likedOutput.writeObject(likedSongs);
-            System.out.println("Successfully saved " + likedSongs.getSize() + " liked songs");
-        } catch (FileNotFoundException e) {
-            this.setDataFolder();
+        try {
+            this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
         } catch (IOException e) {
             System.err.println("Error saving liked songs: " + e);
         }
@@ -193,15 +159,15 @@ public class Sync implements AutoCloseable {
 
     public LikedSongs importLikedSongs() {
         LikedSongs likedSongs;
-        if (!this.likedSongsFile.exists()) {
+        if (!likedSongsFile.exists()) {
             return null;
         }
-        try (ObjectInputStream likedInput = new ObjectInputStream(new FileInputStream(this.likedSongsFile))) {
-            likedSongs = (LikedSongs) likedInput.readObject();
-            System.out.println("Successfully imported " + likedSongs.getSize() + " liked songs");
-        } catch (IOException | ClassNotFoundException e) {
+        try {
+            likedSongs = this.objectMapper.readValue(this.likedSongsFile,
+                    LikedSongs.class);
+
+        } catch (IOException e) {
             System.err.println("Error importing liked songs: " + e);
-            System.err.println("If this persists, delete: " + this.likedSongsFile.getAbsolutePath());
             return null;
         }
         return likedSongs;
@@ -212,33 +178,22 @@ public class Sync implements AutoCloseable {
         if (!spotifyFile.exists()) {
             return null;
         }
-        try (BufferedReader reader = new BufferedReader(
-                new FileReader(this.spotifyFile))) {
+        try {
+            spotifyCredentials = this.objectMapper.readValue(this.spotifyFile,
+                    SpotifyCredentials.class);
 
-            String clientId = reader.readLine();
-            String clientSecret = reader.readLine();
-            String redirectUrl = reader.readLine();
-            spotifyCredentials = new SpotifyCredentials(clientId, clientSecret, redirectUrl);
         } catch (IOException e) {
-            System.err.println("Error importing spotify credentials, creating new ones: " + e);
-            System.err
-                    .println("If this persists, delete: " + this.spotifyFile.getAbsolutePath());
+            System.err.println("Error importing Spotify Credentials: " + e);
             return null;
         }
         return spotifyCredentials;
     }
 
     public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
-        try (PrintWriter writer = new PrintWriter(
-                new FileWriter(this.spotifyFile))) {
-            writer.println(spotifyCredentials.getClientId());
-            writer.println(spotifyCredentials.getClientSecret());
-            writer.println(spotifyCredentials.getRedirectUrlString());
-            System.out.println("Successfully saved Spotify credentials");
-        } catch (FileNotFoundException e) {
-            this.setDataFolder(); // since they are being exported its gotta exist
+        try {
+            this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
         } catch (IOException e) {
-            System.err.println("Error Saving Spotify Credentials: " + e);
+            System.err.println("Error saving spotify credentials: " + e);
         }
     }
 
@@ -247,33 +202,21 @@ public class Sync implements AutoCloseable {
         if (!youtubeFile.exists()) {
             return null;
         }
-        try (BufferedReader reader = new BufferedReader(
-                new FileReader(this.youtubeFile))) {
-
-            String applicationName = reader.readLine();
-            String clientId = reader.readLine();
-            String clientSecret = reader.readLine();
-            youtubeCredentials = new YoutubeCredentials(applicationName, clientId, clientSecret);
+        try {
+            youtubeCredentials = this.objectMapper.readValue(this.youtubeFile,
+                    YoutubeCredentials.class);
         } catch (IOException e) {
-            System.err.println("Error importing Youtube credentials, creating new ones: " + e);
-            System.err
-                    .println("If this persists, delete: " + this.youtubeFile.getAbsolutePath());
+            System.err.println("Error importing Youtube Credentials: " + e);
             return null;
         }
         return youtubeCredentials;
     }
 
     public void exportYoutubeCredentials(YoutubeCredentials youtubeCredentials) {
-        try (PrintWriter writer = new PrintWriter(
-                new FileWriter(this.youtubeFile))) {
-            writer.println(youtubeCredentials.getApplicationName());
-            writer.println(youtubeCredentials.getClientId());
-            writer.println(youtubeCredentials.getClientSecret());
-            System.out.println("Successfully saved Youtube credentials");
-        } catch (FileNotFoundException e) {
-            this.setDataFolder(); // since they are being exported its gotta exist
+        try {
+            this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);
         } catch (IOException e) {
-            System.err.println("Error Saving Youtube Credentials: " + e);
+            System.err.println("Error saving youtube credentials: " + e);
         }
     }
 }
