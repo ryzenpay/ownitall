@@ -31,24 +31,23 @@ import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.awt.Desktop;
 
 public class Spotify extends SpotifyCredentials {
     private SpotifyApi spotifyApi;
-    /**
-     * this variable is to limit the spotify api requests by using known artists
-     * format: <Artist name, constructed artist class>
-     */
-    private LinkedHashMap<String, Artist> artists;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
         super();
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -67,7 +66,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify(String client_id, String client_secret, String redirect_url) {
         super(client_secret, client_id, redirect_url);
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -87,7 +85,6 @@ public class Spotify extends SpotifyCredentials {
     public Spotify(SpotifyCredentials spotifyCredentials) {
         super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
                 spotifyCredentials.getRedirectUrlString());
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -102,16 +99,81 @@ public class Spotify extends SpotifyCredentials {
      * 
      * @return - the oauth code with permissions
      */
-    private void requestCode() { // TODO: automatically open page AND get code:
-                                 // https://www.perplexity.ai/search/i-have-this-chunk-of-code-whic-3TtHrgqLR9uTzEfRzba0vg
+    private void requestCode() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
                 .show_dialog(true)
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
-        System.out.println("Open this link:\n" + auth_uri.toString());
-        System.out.println("Please provide the code it provides (in url)");
-        this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+
+        // Open the default browser with the authorization URL
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(auth_uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Open this link:\n" + auth_uri.toString());
+        }
+
+        // Start a local server to receive the code
+        startLocalServer();
+    }
+
+    private void startLocalServer() {
+        try (ServerSocket serverSocket = new ServerSocket(8888)) {
+            System.out.println("Waiting for the authorization code...");
+            Socket clientSocket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String inputLine;
+            StringBuilder request = new StringBuilder();
+            while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
+                request.append(inputLine).append("\n");
+                if (inputLine.contains("code=")) {
+                    break; // Stop reading after we've found the code
+                }
+            }
+
+            String code = extractCodeFromRequest(request.toString());
+            if (code != null) {
+                this.setCode(code);
+                System.out.println("Authorization code received: " + code);
+                sendResponse(clientSocket, "Authorization successful. You can close this window.");
+            } else {
+                System.out.println("Failed to retrieve authorization code. Request: " + request.toString());
+                sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
+            }
+
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String extractCodeFromRequest(String request) {
+        int codeIndex = request.indexOf("code=");
+        if (codeIndex != -1) {
+            int endIndex = request.indexOf("&", codeIndex);
+            if (endIndex == -1) {
+                endIndex = request.indexOf(" ", codeIndex);
+            }
+            if (endIndex == -1) {
+                endIndex = request.length();
+            }
+            return request.substring(codeIndex + 5, endIndex);
+        }
+        return null;
+    }
+
+    private void sendResponse(Socket clientSocket, String message) throws IOException {
+        String response = "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: text/html\r\n"
+                + "\r\n"
+                + "<html><body>"
+                + "<h1>" + message + "</h1>"
+                + "</body></html>";
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     /**
