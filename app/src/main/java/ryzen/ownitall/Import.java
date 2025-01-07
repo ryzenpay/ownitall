@@ -12,9 +12,11 @@ public class Import {
     private LinkedHashMap<Album, ArrayList<Song>> albums;
     private LinkedHashMap<Playlist, ArrayList<Song>> playlists;
     private LikedSongs likedSongs;
-    private Map<String, Runnable> supported = Map.of("Youtube", this::importYoutube, "Spotify", this::importSpotify,
-            "Local",
-            this::importLocal);
+    private LinkedHashMap<String, Runnable> supported = new LinkedHashMap<>(
+            Map.of("Youtube", this::importYoutube, "Spotify",
+                    this::importSpotify,
+                    "Local",
+                    this::importLocal));
 
     public Import(String dataFolder) {
         this.dataFolder = dataFolder;

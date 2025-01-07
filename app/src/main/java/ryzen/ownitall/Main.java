@@ -71,9 +71,9 @@ public class Main {
     private static boolean checkDataFolder() {
         File dataFolder = new File(DATAFOLDER);
         if (dataFolder.exists() && dataFolder.isDirectory()) {
-            File albumFile = new File(DATAFOLDER + "/albums.ser");
-            File playlistFile = new File(DATAFOLDER + "/playlists.ser");
-            File likedSongsFile = new File(DATAFOLDER + "/likedsongs.ser");
+            File albumFile = new File(DATAFOLDER + "/albums.json");
+            File playlistFile = new File(DATAFOLDER + "/playlists.json");
+            File likedSongsFile = new File(DATAFOLDER + "/likedsongs.json");
             if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
                 return true;
             }

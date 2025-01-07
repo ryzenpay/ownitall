@@ -2,11 +2,10 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Album implements Serializable {
+public class Album {
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
     private URI coverimage;

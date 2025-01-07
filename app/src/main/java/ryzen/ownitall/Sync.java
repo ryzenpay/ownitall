@@ -1,16 +1,9 @@
 package ryzen.ownitall;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,7 +29,7 @@ public class Sync {
         this.likedSongsFile = new File(this.dataFolder, "likedsongs.json");
         this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.json");
         this.youtubeFile = new File(this.dataFolder, "youtubeCredentials.json");
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
     private void setDataFolder(String dataPath) {

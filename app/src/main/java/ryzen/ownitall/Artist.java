@@ -1,10 +1,9 @@
 package ryzen.ownitall;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Artist implements Serializable {
+public class Artist {
     private String name;
     private URI profilePicture;
 
