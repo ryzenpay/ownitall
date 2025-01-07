@@ -98,6 +98,11 @@ public class Album implements Serializable {
         return new LinkedHashSet<>(this.artists);
     }
 
+    public Artist getMainArtist() {
+        ArrayList<Artist> artists = new ArrayList<>(this.artists);
+        return artists.get(0);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -105,7 +110,7 @@ public class Album implements Serializable {
         if (object == null || getClass() != object.getClass())
             return false;
         Album album = (Album) object;
-        if (this.hashCode() == album.hashCode()) { // TODO: check with artists
+        if (this.hashCode() == album.hashCode()) {
             return true;
         }
         return false;
@@ -113,7 +118,7 @@ public class Album implements Serializable {
 
     @Override
     public int hashCode() {
-        return name.hashCode(); // TODO: check with artists
+        return this.name.hashCode() + this.getMainArtist().hashCode();
     }
 
 }

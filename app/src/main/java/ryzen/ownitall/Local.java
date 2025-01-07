@@ -41,7 +41,7 @@ public class Local {
 
     public LinkedHashSet<Song> getLikedSongs() {
         LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
-        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
+        for (File file : this.localLibrary.listFiles()) {
             if (file.isFile() && extensions.contains(getExtension(file))) {
                 Song song = this.getSong(file);
                 if (song != null) {

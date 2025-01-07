@@ -91,6 +91,11 @@ public class Song implements Serializable {
         return new ArrayList<>(this.artists);
     }
 
+    public Artist getMainArtist() {
+        ArrayList<Artist> artists = new ArrayList<>(this.artists);
+        return artists.get(0);
+    }
+
     /**
      * get songs duration
      * 
@@ -110,7 +115,7 @@ public class Song implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         Song song = (Song) o;
-        if (this.name.equalsIgnoreCase(song.name)) { // TODO: % check
+        if (this.hashCode() == song.hashCode()) {
             return true;
         }
         return false;
@@ -121,6 +126,7 @@ public class Song implements Serializable {
         if (this.artists == null) {
             return name.hashCode() + duration.hashCode();
         }
-        return name.hashCode() + artists.hashCode() + duration.hashCode(); // TODO: similarity search (% check)
+        return name.hashCode() + this.getMainArtist().hashCode() + duration.hashCode(); // TODO: similarity search (%
+                                                                                        // check)
     }
 }
