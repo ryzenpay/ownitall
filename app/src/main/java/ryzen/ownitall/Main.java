@@ -28,6 +28,7 @@ public class Main {
             System.out.println("[2] export");
             System.out.println("[3] print inventory");
             System.out.println("[4] save");
+            System.out.println("[5] Tools");
             System.out.println("[0] exit");
             System.out.print("Enter your choice: ");
             try {

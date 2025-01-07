@@ -22,6 +22,10 @@ public class Input {
         return scanner.nextLine().trim();
     }
 
+    public char getChar() {
+        return scanner.next().charAt(0);
+    }
+
     public int getInt() {
         while (true) {
             try {
@@ -42,6 +46,19 @@ public class Input {
             } else {
                 System.out.println("The specified file or folder does not exist. Please try again.");
             }
+        }
+    }
+
+    public boolean getBool() {
+        while (true) {
+            char choice = getChar();
+            if (Character.toLowerCase(choice) == 'y') {
+                return true;
+            }
+            if (Character.toLowerCase(choice) == 'n') {
+                return false;
+            }
+            System.out.println("Invalid input. Please enter y/N.");
         }
     }
 }

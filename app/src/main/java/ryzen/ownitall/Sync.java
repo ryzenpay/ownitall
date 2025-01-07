@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,7 +24,7 @@ public class Sync implements AutoCloseable {
     private File spotifyFile;
     private File youtubeFile;
 
-    public Sync(String dataPath) { // TODO: archiving and unarchiving
+    public Sync(String dataPath) {
         this.setDataFolder(dataPath);
         this.albumFile = new File(this.dataFolder, "albums.ser");
         this.albumFile = new File(this.dataFolder, "albums.ser");
@@ -73,6 +75,49 @@ public class Sync implements AutoCloseable {
 
     public File getDataFolder() {
         return this.dataFolder;
+    }
+
+    public void archive() { // TODO: implement into a menu
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        File archiveFolder = new File(this.dataFolder, currentDate.format(formatter).toString());
+        if (archiveFolder.exists()) {
+            System.out.println(
+                    "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
+            System.out.print("Are you sure y/N: ");
+            if (!Input.getInstance().getBool()) {
+                return;
+            }
+        }
+        archiveFolder.mkdir();
+        for (File file : this.dataFolder.listFiles()) {
+            if (file.isFile()) {
+                file.renameTo(new File(archiveFolder, file.toString()));
+            }
+        }
+    }
+
+    public void unarchive() {
+        ArrayList<File> archiveFolders = new ArrayList<>();
+        for (File file : this.dataFolder.listFiles()) {
+            if (file.isDirectory()) {
+                archiveFolders.add(file);
+            }
+        }
+        System.out.println("Available archive folders: ");
+        for (int i = 0; i < archiveFolders.size(); i++) {
+            System.out.println("[" + i + "] " + archiveFolders.get(i));
+        }
+        int choice = Input.getInstance().getInt();
+        do {
+            System.out.print("Your choice: ");
+            choice = Input.getInstance().getInt();
+        } while (choice < 1 || choice > archiveFolders.size());
+        File unarchiveFolder = archiveFolders.get(choice);
+        archive();
+        for (File file : unarchiveFolder.listFiles()) {
+            file.renameTo(new File(unarchiveFolder, file.toString()));
+        }
     }
 
     public void exportAlbums(LinkedHashMap<Album, ArrayList<Song>> albums) {
