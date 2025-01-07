@@ -180,7 +180,7 @@ public class Local {
         }
     }
 
-    public Album getAlbum(File folder) { // TODO: get album cover (need to translate to url)
+    public Album getAlbum(File folder) {
         String albumName = folder.toString(); // default album name incase of error
         LinkedHashSet<Artist> artists = new LinkedHashSet<>();
         for (File file : folder.listFiles()) {

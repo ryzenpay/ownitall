@@ -31,11 +31,7 @@ import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Desktop;
@@ -121,64 +117,7 @@ public class Spotify extends SpotifyCredentials {
         }
 
         // Start a local server to receive the code
-        startLocalServer();
-    }
-
-    private void startLocalServer() {
-        try (ServerSocket serverSocket = new ServerSocket(8888)) {
-            System.out.println("Waiting for the authorization code...");
-            Socket clientSocket = serverSocket.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine;
-            StringBuilder request = new StringBuilder();
-            while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
-                request.append(inputLine).append("\n");
-                if (inputLine.contains("code=")) {
-                    break; // Stop reading after we've found the code
-                }
-            }
-
-            String code = extractCodeFromRequest(request.toString());
-            if (code != null) {
-                this.setCode(code);
-                System.out.println("Authorization code received: " + code);
-                sendResponse(clientSocket, "Authorization successful. You can close this window.");
-            } else {
-                System.out.println("Failed to retrieve authorization code. Request: " + request.toString());
-                sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
-                System.out.println("Please provide the code it provides (in url)");
-                this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
-            }
-
-            clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String extractCodeFromRequest(String request) {
-        int codeIndex = request.indexOf("code=");
-        if (codeIndex != -1) {
-            int endIndex = request.indexOf("&", codeIndex);
-            if (endIndex == -1) {
-                endIndex = request.indexOf(" ", codeIndex);
-            }
-            if (endIndex == -1) {
-                endIndex = request.length();
-            }
-            return request.substring(codeIndex + 5, endIndex);
-        }
-        return null;
-    }
-
-    private void sendResponse(Socket clientSocket, String message) throws IOException {
-        String response = "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: text/html\r\n"
-                + "\r\n"
-                + "<html><body>"
-                + "<h1>" + message + "</h1>"
-                + "</body></html>";
-        clientSocket.getOutputStream().write(response.getBytes());
+        this.startLocalServer();
     }
 
     /**
@@ -320,15 +259,12 @@ public class Spotify extends SpotifyCredentials {
                         ArrayList<Artist> artists = Arrays.stream(savedAlbum.getAlbum().getArtists())
                                 .map(artist -> new Artist(artist.getName()))
                                 .collect(Collectors.toCollection(ArrayList::new));
-                        ArrayList<Song> songs = getAlbumSongs(savedAlbum.getAlbum().getId());
-                        try {
-                            URI coverart = new URI(savedAlbum.getAlbum().getImages()[0].getUrl()); // TODO:
-                                                                                                   // documentation says
-                                                                                                   // its per size?
-                            albums.put(new Album(albumName, artists, coverart), songs);
-                        } catch (URISyntaxException e) {
-                            albums.put(new Album(albumName, artists), songs);
-                        }
+                        String coverart = savedAlbum.getAlbum().getImages()[0].getUrl(); // TODO:
+                                                                                         // documentation says
+                                                                                         // its per size?
+                        ArrayList<Song> songs = getAlbumSongs(coverart, savedAlbum.getAlbum().getId());
+                        albums.put(new Album(albumName, artists, coverart), songs);
+
                     }
                     offset += limit;
                 }
@@ -349,7 +285,7 @@ public class Spotify extends SpotifyCredentials {
      * @param albumId - spotify ID of the album
      * @return - arraylist of constructed Songs
      */
-    public ArrayList<Song> getAlbumSongs(String albumId) {
+    public ArrayList<Song> getAlbumSongs(String coverart, String albumId) {
         ArrayList<Song> songs = new ArrayList<>();
         if (this.checkExpiration()) {
             System.err.println("Logged out of spotify, please restart to log in again");
@@ -379,7 +315,7 @@ public class Spotify extends SpotifyCredentials {
                                 .collect(Collectors.toCollection(ArrayList::new));
                         Duration duration = Duration.ofMillis(track.getDurationMs());
 
-                        songs.add(new Song(songName, artists, duration));
+                        songs.add(new Song(songName, artists, duration, coverart));
                     }
 
                     offset += limit;
@@ -521,5 +457,4 @@ public class Spotify extends SpotifyCredentials {
 
         return songs;
     }
-
 }

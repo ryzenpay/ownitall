@@ -1,6 +1,8 @@
 package ryzen.ownitall;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ public class Song implements Serializable {
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
+    URI coverImage;
     // TODO: cover image <- problem with api requests
 
     /**
@@ -32,6 +35,17 @@ public class Song implements Serializable {
     public Song(String name, Duration duration) {
         this.name = name;
         this.duration = duration;
+    }
+
+    public Song(String name, ArrayList<Artist> artists, Duration duration, String coverImage) {
+        this.name = name;
+        this.addArtists(artists);
+        this.duration = duration;
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + coverImage);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Album implements Serializable {
     private String name;
@@ -28,10 +29,14 @@ public class Album implements Serializable {
      * @param artists    - arraylist of all artists
      * @param coverimage - coverimage of album
      */
-    public Album(String name, ArrayList<Artist> artists, URI coverimage) {
+    public Album(String name, ArrayList<Artist> artists, String coverimage) {
         this.name = name;
         this.addArtists(artists);
-        this.coverimage = coverimage;
+        try {
+            this.coverimage = new URI(coverimage);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing album cover: " + e);
+        }
     }
 
     /**

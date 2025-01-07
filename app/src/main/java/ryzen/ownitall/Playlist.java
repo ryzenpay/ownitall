@@ -85,12 +85,6 @@ public class Playlist implements Serializable {
     public int hashCode() {
         int hashCode = 0;
         hashCode += name.hashCode();
-        if (spotifyPageOffset != -1) {
-            hashCode += Integer.hashCode(spotifyPageOffset);
-        }
-        if (youtubePageToken != null) {
-            hashCode += youtubePageToken.hashCode();
-        }
-        return hashCode; // TODO: similarity search (% check)
+        return hashCode;
     }
 }

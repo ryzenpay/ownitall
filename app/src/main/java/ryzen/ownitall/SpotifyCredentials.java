@@ -1,5 +1,10 @@
 package ryzen.ownitall;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.time.LocalDateTime;
 
@@ -95,5 +100,62 @@ public class SpotifyCredentials {
             return true;
         }
         return false;
+    }
+
+    public void startLocalServer() {
+        try (ServerSocket serverSocket = new ServerSocket(8888)) {
+            System.out.println("Waiting for the authorization code...");
+            Socket clientSocket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String inputLine;
+            StringBuilder request = new StringBuilder();
+            while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
+                request.append(inputLine).append("\n");
+                if (inputLine.contains("code=")) {
+                    break; // Stop reading after we've found the code
+                }
+            }
+
+            String code = extractCodeFromRequest(request.toString());
+            if (code != null) {
+                this.setCode(code);
+                System.out.println("Authorization code received: " + code);
+                sendResponse(clientSocket, "Authorization successful. You can close this window.");
+            } else {
+                System.out.println("Failed to retrieve authorization code. Request: " + request.toString());
+                sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
+                System.out.println("Please provide the code it provides (in url)");
+                this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+            }
+
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String extractCodeFromRequest(String request) {
+        int codeIndex = request.indexOf("code=");
+        if (codeIndex != -1) {
+            int endIndex = request.indexOf("&", codeIndex);
+            if (endIndex == -1) {
+                endIndex = request.indexOf(" ", codeIndex);
+            }
+            if (endIndex == -1) {
+                endIndex = request.length();
+            }
+            return request.substring(codeIndex + 5, endIndex);
+        }
+        return null;
+    }
+
+    private void sendResponse(Socket clientSocket, String message) throws IOException {
+        String response = "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: text/html\r\n"
+                + "\r\n"
+                + "<html><body>"
+                + "<h1>" + message + "</h1>"
+                + "</body></html>";
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 }
