@@ -1,10 +1,12 @@
 package ryzen.ownitall;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 public class Playlist {
     private String name;
     private URI coverart;
+    private ArrayList<Song> songs; // arraylist cuz it can contain duplicates
 
     private String youtubePageToken = null; // TODO: create "update" method to save API requests
     private int spotifyPageOffset = -1;
@@ -16,17 +18,8 @@ public class Playlist {
      */
     public Playlist(String name) {
         this.name = name;
-    }
-
-    /**
-     * Default playlist constructor with coverart
-     * 
-     * @param name     - name of playlist
-     * @param coverart - constructed URI
-     */
-    public Playlist(String name, URI coverart) {
-        this.name = name;
-        this.coverart = coverart;
+        this.songs = new ArrayList<>();
+        this.coverart = null;
     }
 
     /**
@@ -49,6 +42,22 @@ public class Playlist {
      */
     public URI getCoverart() {
         return this.coverart;
+    }
+
+    public void addSongs(ArrayList<Song> songs) {
+        this.songs.addAll(songs);
+    }
+
+    public void addSong(Song song) {
+        this.songs.add(song);
+    }
+
+    public int size() {
+        return this.songs.size();
+    }
+
+    public ArrayList<Song> getSongs() {
+        return this.songs;
     }
 
     public String getYoutubePageToken() {

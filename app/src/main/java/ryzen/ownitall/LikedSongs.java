@@ -1,8 +1,9 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
+import java.util.ArrayList;
 
-public class LikedSongs extends Playlist {
+public class LikedSongs extends Playlist { // different from playlist due to linkedhashset songs
 
     private LinkedHashSet<Song> likedSongs;
 
@@ -19,19 +20,27 @@ public class LikedSongs extends Playlist {
         this.likedSongs = new LinkedHashSet<>();
     }
 
-    public LinkedHashSet<Song> getSongs() {
-        return new LinkedHashSet<Song>(this.likedSongs);
+    @Override
+    public ArrayList<Song> getSongs() {
+        return new ArrayList<Song>(this.likedSongs);
+    }
+
+    @Override
+    public void addSongs(ArrayList<Song> songs) {
+        this.likedSongs.addAll(songs);
     }
 
     public void addSongs(LinkedHashSet<Song> songs) {
         this.likedSongs.addAll(songs);
     }
 
+    @Override
     public void addSong(Song song) {
         this.likedSongs.add(song);
     }
 
-    public int getSize() {
+    @Override
+    public int size() {
         return this.likedSongs.size();
     }
 

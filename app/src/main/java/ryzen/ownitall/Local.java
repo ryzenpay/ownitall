@@ -55,14 +55,16 @@ public class Local {
         return likedSongs;
     }
 
-    public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
-        LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
+    public LinkedHashSet<Playlist> getPlaylists() {
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
             if (file.isDirectory()) {
                 if (!isAlbum(file)) {
                     ArrayList<Song> songs = this.getSongs(file);
                     if (songs.size() > 1) {
-                        playlists.put(new Playlist(file.toString()), songs);
+                        Playlist playlist = new Playlist(file.toString());
+                        playlist.addSongs(songs);
+                        playlists.add(playlist);
                     }
                 }
             }
@@ -70,12 +72,14 @@ public class Local {
         return playlists;
     }
 
-    public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
-        LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
+    public LinkedHashSet<Album> getAlbums() {
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
             if (file.isDirectory()) {
                 if (isAlbum(file)) {
-                    albums.put(this.getAlbum(file), this.getSongs(file));
+                    Album album = this.getAlbum(file);
+                    album.addSongs(this.getSongs(file));
+                    albums.add(album);
                 }
             }
         }
@@ -181,21 +185,20 @@ public class Local {
     }
 
     public Album getAlbum(File folder) {
-        String albumName = folder.toString(); // default album name incase of error
-        LinkedHashSet<Artist> artists = new LinkedHashSet<>();
+        Album album = new Album(folder.toString());// default album name incase of error
         for (File file : folder.listFiles()) {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
-                albumName = tag.getFirst(FieldKey.ALBUM);
+                album.setName(tag.getFirst(FieldKey.ALBUM));
                 List<String> artistList = tag.getAll(FieldKey.ARTIST);
                 for (String artistName : artistList) {
-                    artists.add(new Artist(artistName));
+                    album.addArtist(new Artist(artistName));
                 }
             } catch (Exception e) {
                 break;
             }
         }
-        return new Album(albumName, new ArrayList<>(artists));
+        return album;
     }
 }

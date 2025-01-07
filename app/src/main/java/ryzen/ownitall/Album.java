@@ -1,14 +1,16 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
+
 import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class Album {
     private String name;
+    LinkedHashSet<Song> songs;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
-    private URI coverimage;
+    private URI coverImage;
 
     /**
      * Default constructor of album without album cover
@@ -16,26 +18,11 @@ public class Album {
      * @param name    - album name
      * @param artists - arraylist of all artists
      */
-    public Album(String name, ArrayList<Artist> artists) {
+    public Album(String name) {
         this.name = name;
-        this.addArtists(artists);
-    }
-
-    /**
-     * Default constructor of album with album cover
-     * 
-     * @param name       - album name
-     * @param artists    - arraylist of all artists
-     * @param coverimage - coverimage of album
-     */
-    public Album(String name, ArrayList<Artist> artists, String coverimage) {
-        this.name = name;
-        this.addArtists(artists);
-        try {
-            this.coverimage = new URI(coverimage);
-        } catch (URISyntaxException e) {
-            System.err.println("Error parsing album cover: " + e);
-        }
+        this.songs = new LinkedHashSet<>();
+        this.artists = new LinkedHashSet<>();
+        this.coverImage = null;
     }
 
     /**
@@ -47,13 +34,32 @@ public class Album {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCoverImage(String coverImage) {
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + coverImage);
+        }
+    }
+
     /**
      * get the album cover image
      * 
      * @return - URI cover image
      */
     public URI getCoverImage() {
-        return this.coverimage;
+        if (this.coverImage == null) {
+            return null;
+        }
+        return this.coverImage;
+    }
+
+    public void addSongs(ArrayList<Song> songs) {
+        this.songs.addAll(new LinkedHashSet<Song>(songs));
     }
 
     /**
@@ -61,11 +67,7 @@ public class Album {
      * 
      * @param artists - LinkedHashSet of artists
      */
-    private void addArtists(ArrayList<Artist> artists) {
-        if (this.artists == null) {
-            this.artists = new LinkedHashSet<>(artists);
-            return;
-        }
+    public void addArtists(ArrayList<Artist> artists) {
         this.artists.addAll(new LinkedHashSet<Artist>(artists));
     }
 
@@ -75,22 +77,7 @@ public class Album {
      * @param artist - artist object/string ;)
      */
     public void addArtist(Artist artist) {
-        if (artist == null) {
-            return;
-        }
         this.artists.add(artist);
-    }
-
-    /**
-     * remove artist from album artists array
-     * 
-     * @param artist - desired artist to be removed
-     */
-    public void remArtist(Artist artist) {
-        if (artist == null) {
-            return;
-        }
-        this.artists.remove(artist);
     }
 
     /**
@@ -102,9 +89,17 @@ public class Album {
         return new LinkedHashSet<>(this.artists);
     }
 
+    public ArrayList<Song> getSongs() {
+        return new ArrayList<>(this.songs);
+    }
+
     public Artist getMainArtist() {
         ArrayList<Artist> artists = new ArrayList<>(this.artists);
         return artists.get(0);
+    }
+
+    public int size() {
+        return this.songs.size();
     }
 
     @Override
@@ -124,5 +119,4 @@ public class Album {
     public int hashCode() {
         return this.name.hashCode() + this.getMainArtist().hashCode();
     }
-
 }

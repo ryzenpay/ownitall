@@ -9,18 +9,14 @@ public class Artist {
 
     public Artist(String name) {
         this.name = name;
-    }
-
-    public Artist(String name, String profilePicture) {
-        this.name = name;
-        this.setProfilePicture(profilePicture);
+        this.profilePicture = null;
     }
 
     public String getName() {
         return this.name;
     }
 
-    private void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(String profilePicture) {
         try {
             this.profilePicture = new URI(profilePicture);
         } catch (URISyntaxException e) {
@@ -35,6 +31,19 @@ public class Artist {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
+        Artist artist = (Artist) object;
+        if (this.hashCode() == artist.hashCode()) {
+            return true;
+        }
+        return false;
     }
 
     @Override

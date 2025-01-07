@@ -3,7 +3,7 @@ package ryzen.ownitall;
 
 import java.io.File;
 
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.time.Duration;
 
@@ -11,15 +11,15 @@ public class Main {
     // TODO: initialize logger and remove all system.out.println &&
     // system.err.println
     private static String DATAFOLDER = "data"; // TODO: user choice?
-    private static LinkedHashMap<Album, ArrayList<Song>> albums;
-    private static LinkedHashMap<Playlist, ArrayList<Song>> playlists;
+    private static LinkedHashSet<Album> albums;
+    private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
 
     public static void main(String[] args) {
 
         if (!checkDataFolder()) {
-            albums = new LinkedHashMap<>();
-            playlists = new LinkedHashMap<>();
+            albums = new LinkedHashSet<>();
+            playlists = new LinkedHashSet<>();
             likedSongs = new LikedSongs();
         } else {
             importData();
@@ -39,8 +39,8 @@ public class Main {
                     case 1:
                         Import dataImport = new Import(DATAFOLDER);
                         likedSongs.addSongs(dataImport.getLikedSongs());
-                        albums.putAll(dataImport.getAlbums());
-                        playlists.putAll(dataImport.getPlaylists());
+                        albums.addAll(dataImport.getAlbums());
+                        playlists.addAll(dataImport.getPlaylists());
                         dataImport.printOverview();
                         break;
                     case 2:
@@ -95,11 +95,11 @@ public class Main {
         System.out.println("Beginning to import all data");
         albums = sync.importAlbums();
         if (albums == null) {
-            albums = new LinkedHashMap<>();
+            albums = new LinkedHashSet<>();
         }
         playlists = sync.importPlaylists();
         if (playlists == null) {
-            playlists = new LinkedHashMap<>();
+            playlists = new LinkedHashSet<>();
         }
         likedSongs = sync.importLikedSongs();
         if (likedSongs == null) {
@@ -116,11 +116,11 @@ public class Main {
      */
     private static void printInventory(int recursion) {
         int trackCount = 0;
-        for (ArrayList<Song> songs : playlists.values()) {
-            trackCount += songs.size();
+        for (Playlist playlist : playlists) {
+            trackCount += playlist.size();
         }
-        for (ArrayList<Song> songs : albums.values()) {
-            trackCount += songs.size();
+        for (Album album : albums) {
+            trackCount += album.size();
         }
         int i = 1;
         int y = 1;
@@ -128,56 +128,55 @@ public class Main {
             case 1:
                 System.out.println("Total playlists: " + playlists.size());
                 System.out.println("Total albums: " + albums.size());
-                System.out.println("Total liked songs: " + likedSongs.getSize());
+                System.out.println("Total liked songs: " + likedSongs.size());
                 System.out.println("With a total of " + trackCount + " songs");
                 break;
             case 2:
-                System.out.println("Liked Songs (" + likedSongs.getSize() + ")");
+                System.out.println("Liked Songs (" + likedSongs.size() + ")");
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
-                for (Playlist playlist : playlists.keySet()) {
-                    ArrayList<Song> songs = playlists.get(playlist);
+                for (Playlist playlist : playlists) {
                     System.out
-                            .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
-                                    + " - " + musicTime(totalDuration(songs)));
+                            .println(
+                                    i + "/" + playlists.size() + " - " + playlist.getName() + " | " + playlist.size()
+                                            + " - " + musicTime(totalDuration(playlist.getSongs())));
                     i++;
                 }
                 i = 1;
                 System.out.println("Albums (" + albums.size() + "): ");
-                for (Album album : albums.keySet()) {
-                    ArrayList<Song> songs = albums.get(album);
+                for (Album album : albums) {
                     System.out
-                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
-                                    + " - " + musicTime(totalDuration(songs)));
+                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + album.size()
+                                    + " - " + musicTime(totalDuration(album.getSongs())));
                     System.out.println("    - Artists: " + album.getArtists().toString());
                     i++;
                 }
                 break;
             case 3:
-                System.out.println("Liked Songs (" + likedSongs.getSize() + "): ");
+                System.out.println("Liked Songs (" + likedSongs.size() + "): ");
                 i = 1;
                 for (Song likedSong : likedSongs.getSongs()) {
-                    System.out.println("    " + i + "/" + likedSongs.getSize() + " = " + likedSong.getName() + " | "
+                    System.out.println("    " + i + "/" + likedSongs.size() + " = " + likedSong.getName() + " | "
                             + musicTime(likedSong.getDuration()));
                     System.out.println("        - Artists: " + likedSong.getArtists().toString());
                     i++;
                 }
                 System.out.println("Playlists (" + playlists.size() + "): ");
                 i = 1;
-                for (Playlist playlist : playlists.keySet()) {
+                for (Playlist playlist : playlists) {
                     y = 1;
-                    ArrayList<Song> songs = playlists.get(playlist);
                     System.out
-                            .println(i + "/" + playlists.size() + " - " + playlist.getName() + " | " + songs.size()
-                                    + " - " + musicTime(totalDuration(songs)));
+                            .println(
+                                    i + "/" + playlists.size() + " - " + playlist.getName() + " | " + playlist.size()
+                                            + " - " + musicTime(totalDuration(playlist.getSongs())));
                     i++;
-                    for (Song song : songs) {
+                    for (Song song : playlist.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
                         }
-                        System.out.println("   " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                        System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
                                 + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
@@ -185,20 +184,19 @@ public class Main {
                 }
                 i = 1;
                 System.out.println("Albums (" + albums.size() + "): ");
-                for (Album album : albums.keySet()) {
+                for (Album album : albums) {
                     y = 1;
-                    ArrayList<Song> songs = albums.get(album);
                     System.out
-                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + songs.size()
-                                    + " - " + musicTime(totalDuration(songs)));
+                            .println(i + "/" + albums.size() + " - " + album.getName() + " | " + album.size()
+                                    + " - " + musicTime(totalDuration(album.getSongs())));
                     i++;
-                    for (Song song : songs) {
+                    for (Song song : album.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
                         }
-                        System.out.println("   " + y + "/" + songs.size() + " = " + song.getName() + " | "
+                        System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
                                 + musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
