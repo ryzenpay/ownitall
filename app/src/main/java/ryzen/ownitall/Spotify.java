@@ -115,6 +115,9 @@ public class Spotify extends SpotifyCredentials {
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
+            System.out.println("Please provide the code it provides (in url)");
+            this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+            return;
         }
 
         // Start a local server to receive the code
@@ -143,6 +146,8 @@ public class Spotify extends SpotifyCredentials {
             } else {
                 System.out.println("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
+                System.out.println("Please provide the code it provides (in url)");
+                this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
             }
 
             clientSocket.close();
