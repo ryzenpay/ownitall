@@ -12,7 +12,6 @@ public class Song implements Serializable {
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
     URI coverImage;
-    // TODO: cover image <- problem with api requests
 
     /**
      * Default Song constructor
@@ -40,6 +39,23 @@ public class Song implements Serializable {
     public Song(String name, ArrayList<Artist> artists, Duration duration, String coverImage) {
         this.name = name;
         this.addArtists(artists);
+        this.duration = duration;
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + coverImage);
+        }
+    }
+
+    /**
+     * default song constructor without artists (for spotify episodes)
+     * 
+     * @param name
+     * @param duration
+     * @param coverImage
+     */
+    public Song(String name, Duration duration, String coverImage) {
+        this.name = name;
         this.duration = duration;
         try {
             this.coverImage = new URI(coverImage);

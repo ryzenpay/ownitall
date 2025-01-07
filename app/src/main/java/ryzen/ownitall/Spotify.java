@@ -23,6 +23,7 @@ import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import se.michaelthelin.spotify.model_objects.specification.Episode;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
@@ -176,10 +177,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public LikedSongs getLikedSongs() {
         LikedSongs likedSongs = new LikedSongs();
-        if (this.checkExpiration()) { // TODO: use an interceptor or proxy to check token validity
-            System.err.println("Logged out of spotify, please restart to log in again");
-            return likedSongs;
-        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -232,10 +229,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
         LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
-        if (this.checkExpiration()) {
-            System.err.println("Logged out of spotify, please restart to log in again");
-            return albums;
-        }
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -287,10 +280,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public ArrayList<Song> getAlbumSongs(String coverart, String albumId) {
         ArrayList<Song> songs = new ArrayList<>();
-        if (this.checkExpiration()) {
-            System.err.println("Logged out of spotify, please restart to log in again");
-            return songs;
-        }
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -343,10 +332,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
         LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
-        if (this.checkExpiration()) {
-            System.err.println("Logged out of spotify, please restart to log in again");
-            return playlists;
-        }
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -404,14 +389,9 @@ public class Spotify extends SpotifyCredentials {
      */
     public ArrayList<Song> getPlaylistSongs(String playlistId) {
         ArrayList<Song> songs = new ArrayList<>();
-        if (this.checkExpiration()) {
-            System.err.println("Logged out of spotify, please restart to log in again");
-            return songs;
-        }
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
-
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
                     .limit(limit)
@@ -426,7 +406,7 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
-                        try {
+                        if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
                             String songName = track.getName();
                             ArrayList<Artist> artists = Arrays.stream(track.getArtists())
@@ -434,9 +414,14 @@ public class Spotify extends SpotifyCredentials {
                                     .collect(Collectors.toCollection(ArrayList::new));
                             Duration duration = Duration.ofMillis(track.getDurationMs());
                             songs.add(new Song(songName, artists, duration));
-                        } catch (ClassCastException e) {
-                            // TODO: handle episodes (people use to prevent copyright)
-                            System.err.println("Skipped a non-Track item in the playlist: " + playlistId);
+                        } else if (playlistTrack.getTrack() instanceof Episode) {
+                            Episode episode = (Episode) playlistTrack.getTrack();
+                            String episodeName = episode.getName();
+                            String coverImage = episode.getImages()[0].getUrl();
+                            Duration duration = Duration.ofMillis(episode.getDurationMs());
+                            songs.add(new Song(episodeName, duration, coverImage));
+                        } else {
+                            System.out.println("Skipping non-Track in playlist: " + playlistId);
                         }
                     }
 
