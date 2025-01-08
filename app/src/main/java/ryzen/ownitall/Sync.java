@@ -29,12 +29,11 @@ public class Sync {
     public Sync(String dataPath) {
         this.dataFolder = new File(dataPath);
         this.setDataFolder();
-        this.albumFile = new File(this.dataFolder, "albums.json");
-        this.albumFile = new File(this.dataFolder, "albums.json");
-        this.playlistFile = new File(this.dataFolder, "playlists.json");
-        this.likedSongsFile = new File(this.dataFolder, "likedsongs.json");
-        this.spotifyFile = new File(this.dataFolder, "spotifyCredentials.json");
-        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials.json");
+        this.albumFile = new File(this.dataFolder, "albums" + ".json");
+        this.playlistFile = new File(this.dataFolder, "playlists" + ".json");
+        this.likedSongsFile = new File(this.dataFolder, "likedsongs" + ".json");
+        this.spotifyFile = new File(this.dataFolder, "spotifyCredentials" + ".json");
+        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials" + ".json");
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
@@ -138,6 +137,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing albums: " + e);
             e.printStackTrace();
+            System.err.println("If this persists, delete the file:" + this.albumFile.getAbsolutePath());
             return null;
         }
         return albums;
@@ -177,6 +177,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing playlists: " + e);
             e.printStackTrace();
+            System.err.println("If this persists, delete the file:" + this.playlistFile.getAbsolutePath());
             return null;
         }
         return playlists;
@@ -215,6 +216,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing liked songs: " + e);
             e.printStackTrace();
+            System.err.println("If this persists, delete the file:" + this.likedSongsFile.getAbsolutePath());
             return null;
         }
         return likedSongs;
@@ -238,6 +240,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing Spotify Credentials: " + e);
             e.printStackTrace();
+            System.err.println("If this persists, delete the file:" + this.spotifyFile.getAbsolutePath());
             return null;
         }
         return spotifyCredentials;
@@ -275,6 +278,7 @@ public class Sync {
         } catch (IOException e) {
             System.err.println("Error importing Youtube Credentials: " + e);
             e.printStackTrace();
+            System.err.println("If this persists, delete the file:" + this.youtubeFile.getAbsolutePath());
             return null;
         }
         return youtubeCredentials;

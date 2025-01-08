@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.time.Duration;
+import ryzen.ownitall.tools.MusicTime;
 
 public class Main {
     // TODO: initialize logger and remove all system.out.println &&
@@ -112,7 +113,7 @@ public class Main {
      * 
      * @return - true if exist, false if not
      */
-    private static boolean checkDataFolder() {
+    private static boolean checkDataFolder() { // TODO: move to sync (after settings setup as it needs to be static)
         File dataFolder = new File(DATAFOLDER);
         if (dataFolder.exists() && dataFolder.isDirectory()) {
             File albumFile = new File(DATAFOLDER + "/albums.json");
@@ -189,7 +190,7 @@ public class Main {
                     System.out
                             .println(
                                     i + "/" + playlists.size() + " - " + playlist.getName() + " | " + playlist.size()
-                                            + " - " + musicTime(totalDuration(playlist.getSongs())));
+                                            + " - " + MusicTime.musicTime(totalDuration(playlist.getSongs())));
                     i++;
                 }
                 i = 1;
@@ -197,7 +198,7 @@ public class Main {
                 for (Album album : albums) {
                     System.out
                             .println(i + "/" + albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + musicTime(totalDuration(album.getSongs())));
+                                    + " - " + MusicTime.musicTime(totalDuration(album.getSongs())));
                     System.out.println("    - Artists: " + album.getArtists().toString());
                     i++;
                 }
@@ -207,7 +208,7 @@ public class Main {
                 i = 1;
                 for (Song likedSong : likedSongs.getSongs()) {
                     System.out.println("    " + i + "/" + likedSongs.size() + " = " + likedSong.getName() + " | "
-                            + musicTime(likedSong.getDuration()));
+                            + MusicTime.musicTime(likedSong.getDuration()));
                     System.out.println("        - Artists: " + likedSong.getArtists().toString());
                     i++;
                 }
@@ -218,7 +219,7 @@ public class Main {
                     System.out
                             .println(
                                     i + "/" + playlists.size() + " - " + playlist.getName() + " | " + playlist.size()
-                                            + " - " + musicTime(totalDuration(playlist.getSongs())));
+                                            + " - " + MusicTime.musicTime(totalDuration(playlist.getSongs())));
                     i++;
                     for (Song song : playlist.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
@@ -227,7 +228,7 @@ public class Main {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
-                                + musicTime(song.getDuration()));
+                                + MusicTime.musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
                     }
@@ -238,7 +239,7 @@ public class Main {
                     y = 1;
                     System.out
                             .println(i + "/" + albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + musicTime(totalDuration(album.getSongs())));
+                                    + " - " + MusicTime.musicTime(totalDuration(album.getSongs())));
                     i++;
                     for (Song song : album.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
@@ -247,7 +248,7 @@ public class Main {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
-                                + musicTime(song.getDuration()));
+                                + MusicTime.musicTime(song.getDuration()));
                         System.out.println("        - Artists: " + song.getArtists().toString());
                         y++;
                     }
@@ -272,23 +273,5 @@ public class Main {
             totalDuration = totalDuration.plus(song.getDuration());
         }
         return totalDuration;
-    }
-
-    /**
-     * convert duration into music time (mm:ss)
-     * 
-     * @param duration - constructed Duration
-     * @return - string in format ((hh:)mm:ss)
-     */
-    private static String musicTime(Duration duration) {
-        long hours = duration.toHours();
-        long minutes = duration.toMinutes() % 60;
-        long seconds = duration.getSeconds() % 60;
-
-        if (hours > 0) {
-            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format("%02d:%02d", minutes, seconds);
-        }
     }
 }
