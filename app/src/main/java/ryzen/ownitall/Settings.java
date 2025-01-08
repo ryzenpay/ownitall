@@ -36,6 +36,11 @@ public class Settings {
     private Long youtubeSongLimit = 50L;
     private Long youtubePlaylistLimit = 20L;
 
+    /**
+     * similarity percentage used to check if artists, songs, albums or playlists
+     * are equals (to merge or not)
+     */
+    private int similarityPercentage = 90;
     // default to the default settings
     private Settings currentSettings = new Settings();
 
@@ -157,5 +162,13 @@ public class Settings {
 
     public void setSaveCredentials(boolean saveCredentials) {
         this.saveCredentials = saveCredentials;
+    }
+
+    public int getSimilarityPercentage() {
+        return similarityPercentage;
+    }
+
+    public void setSimilarityPercentage(int similarityPercentage) {
+        this.similarityPercentage = similarityPercentage;
     }
 }

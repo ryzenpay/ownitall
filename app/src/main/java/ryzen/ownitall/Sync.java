@@ -28,6 +28,7 @@ public class Sync {
      */
     public Sync(String dataPath) {
         this.dataFolder = new File(dataPath);
+        this.setDataFolder();
         this.albumFile = new File(this.dataFolder, "albums.json");
         this.albumFile = new File(this.dataFolder, "albums.json");
         this.playlistFile = new File(this.dataFolder, "playlists.json");
@@ -40,8 +41,10 @@ public class Sync {
     /**
      * function which is called to check if datafolder exists and create if deleted
      * in middle of process
+     * for future improvements, use an interceptor but requires another class (bleh)
+     * ^ or a dynamic proxy whatever
      */
-    private void setDataFolder() { // TODO: acc use this
+    private void setDataFolder() {
         if (!this.dataFolder.exists()) { // create folder if it does not exist
             this.dataFolder.mkdirs();
         }
@@ -52,6 +55,7 @@ public class Sync {
      * to it
      */
     public void archive() { // TODO: implement into a menu
+        this.setDataFolder();
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         File archiveFolder = new File(this.dataFolder, currentDate.format(formatter).toString());
@@ -77,6 +81,7 @@ public class Sync {
      * also archives current files with todays date to prevent data loss
      */
     public void unarchive() {
+        this.setDataFolder();
         ArrayList<File> archiveFolders = new ArrayList<>();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isDirectory()) {
@@ -105,6 +110,7 @@ public class Sync {
      * @param albums - linkedhashset of constructed Album
      */
     public void exportAlbums(LinkedHashSet<Album> albums) {
+        this.setDataFolder();
         try {
             this.objectMapper.writeValue(this.albumFile, albums);
         } catch (IOException e) {
@@ -119,6 +125,7 @@ public class Sync {
      * @return - linkedhashset of constructed Album
      */
     public LinkedHashSet<Album> importAlbums() {
+        this.setDataFolder();
         LinkedHashSet<Album> albums;
         if (!albumFile.exists()) {
             return null;
@@ -142,6 +149,7 @@ public class Sync {
      * @param playlists - linkedhashset of constructed Playlist
      */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
+        this.setDataFolder();
         try {
             this.objectMapper.writeValue(this.playlistFile, playlists);
         } catch (IOException e) {
@@ -156,6 +164,7 @@ public class Sync {
      * @return - linkedhashset of constructed Playlist
      */
     public LinkedHashSet<Playlist> importPlaylists() {
+        this.setDataFolder();
         LinkedHashSet<Playlist> playlists;
         if (!playlistFile.exists()) {
             return null;
@@ -179,6 +188,7 @@ public class Sync {
      * @param likedSongs - constructed LikedSongs
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
+        this.setDataFolder();
         try {
             this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
         } catch (IOException e) {
@@ -193,6 +203,7 @@ public class Sync {
      * @return - constructed LikedSongs
      */
     public LikedSongs importLikedSongs() {
+        this.setDataFolder();
         LikedSongs likedSongs;
         if (!likedSongsFile.exists()) {
             return null;
@@ -215,6 +226,7 @@ public class Sync {
      * @return - constructed SpotifyCredentials (use isNull to check)
      */
     public SpotifyCredentials importSpotifyCredentials() {
+        this.setDataFolder();
         SpotifyCredentials spotifyCredentials;
         if (!spotifyFile.exists()) {
             return null;
@@ -237,6 +249,7 @@ public class Sync {
      * @param spotifyCredentials - constructed SpotifyCredentials
      */
     public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
+        this.setDataFolder();
         try {
             this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
         } catch (IOException e) {
@@ -251,6 +264,7 @@ public class Sync {
      * @return - constructed YoutubeCredentials
      */
     public YoutubeCredentials importYoutubeCredentials() {
+        this.setDataFolder();
         YoutubeCredentials youtubeCredentials;
         if (!youtubeFile.exists()) {
             return null;
@@ -272,6 +286,7 @@ public class Sync {
      * @param youtubeCredentials - constructed YoutubeCredentials
      */
     public void exportYoutubeCredentials(YoutubeCredentials youtubeCredentials) {
+        this.setDataFolder();
         try {
             this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);
         } catch (IOException e) {

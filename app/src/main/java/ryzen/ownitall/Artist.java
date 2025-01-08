@@ -6,6 +6,8 @@ import java.net.URISyntaxException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.tools.Levenshtein;
+
 public class Artist {
     private String name;
     private URI profilePicture;
@@ -64,6 +66,9 @@ public class Artist {
             return false;
         Artist artist = (Artist) object;
         if (this.hashCode() == artist.hashCode()) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarity(this.name, artist.getName()) > 90) { // TODO: handle support if no artist
             return true;
         }
         return false;

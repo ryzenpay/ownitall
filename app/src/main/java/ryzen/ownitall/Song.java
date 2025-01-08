@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import ryzen.ownitall.tools.Levenshtein;
 
 public class Song {
     private String name;
@@ -139,6 +140,15 @@ public class Song {
     }
 
     @Override
+    public String toString() {
+        String output = this.name;
+        if (!this.artists.isEmpty()) {
+            output += " | " + this.getMainArtist();
+        }
+        return output;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -146,6 +156,9 @@ public class Song {
             return false;
         Song song = (Song) o;
         if (this.hashCode() == song.hashCode()) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarity(this.toString(), song.toString()) > 90) { // TODO: handle support if no artist
             return true;
         }
         return false;

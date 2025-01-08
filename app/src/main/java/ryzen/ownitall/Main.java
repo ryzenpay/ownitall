@@ -39,7 +39,7 @@ public class Main {
                     case 1:
                         Import dataImport = new Import(DATAFOLDER);
                         likedSongs.addSongs(dataImport.getLikedSongs());
-                        mergeAlbums(dataImport.getAlbums());
+                        mergeAlbums(dataImport.getAlbums()); // TODO: collection class to handle this
                         mergePlaylists(dataImport.getPlaylists());
                         break;
                     case 2:

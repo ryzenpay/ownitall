@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import ryzen.ownitall.tools.Levenshtein;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -159,6 +162,9 @@ public class Playlist {
             return false;
         Playlist playlist = (Playlist) object;
         if (this.hashCode() == playlist.hashCode()) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarity(this.name, playlist.getName()) > 90) {
             return true;
         }
         return false;

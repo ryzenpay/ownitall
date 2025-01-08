@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.tools.Levenshtein;
+
 import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -154,6 +156,15 @@ public class Album {
     }
 
     @Override
+    public String toString() {
+        String output = this.name;
+        if (!this.artists.isEmpty()) {
+            output += " | " + this.getMainArtist();
+        }
+        return output;
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -161,6 +172,10 @@ public class Album {
             return false;
         Album album = (Album) object;
         if (this.hashCode() == album.hashCode()) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarity(this.toString(), album.toString()) > 90) { // TODO: handle support if no
+                                                                                     // artist
             return true;
         }
         return false;

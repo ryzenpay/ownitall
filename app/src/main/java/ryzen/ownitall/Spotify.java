@@ -121,7 +121,7 @@ public class Spotify extends SpotifyCredentials {
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
             System.out.println("Please provide the code it provides (in url)");
-            this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+            this.setCode(Input.getInstance().getString());
             return;
         }
 
@@ -177,7 +177,7 @@ public class Spotify extends SpotifyCredentials {
      * 
      * @param seconds - long amount of seconds to sleep for
      */
-    private void sleep(long seconds) { // TODO: make it repeat action after timer
+    private void sleep(long seconds) {
         long msec = seconds * 1000;
         try {
             Thread.sleep(msec);
@@ -455,18 +455,24 @@ public class Spotify extends SpotifyCredentials {
             } else {
                 Artist artist = new Artist(raw_artist.getName());
                 if (false) { // TODO: link to settings
-                    try {
-                        GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
-                        se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
-                                .execute();
-                        if (fetchedArtist.getImages().length != 0) {
-                            artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                    boolean done = false;
+                    while (!done) { // this is incase of api timeout
+                        try {
+                            GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
+                            se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
+                                    .execute();
+                            if (fetchedArtist.getImages().length != 0) {
+                                artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                            }
+                            done = true;
+                        } catch (TooManyRequestsException e) {
+                            System.err.println(
+                                    "Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                            this.sleep(e.getRetryAfter());
+                        } catch (Exception e) {
+                            System.err.print("Error obtaining artist: " + e);
+                            done = true;
                         }
-                    } catch (TooManyRequestsException e) {
-                        System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                        this.sleep(e.getRetryAfter());
-                    } catch (Exception e) {
-                        System.err.print("Error obtaining artist: " + e);
                     }
                 }
                 artists.add(artist);
