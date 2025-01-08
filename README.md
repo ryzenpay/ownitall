@@ -51,3 +51,13 @@ the current format to importing your local music library is currently strict
         - default is playlist
     - cover image of an album needs to be a file called "cover.jpg" in the folder  
     - "loose" songs in the music library folder (root of folder) are added to "liked songs"
+
+
+# Gradle and compiling  
+## generate javadoc documentation  
+to update the javadoc documentation, run the command `./gradlew javadoc` in the root of the repository  
+please fix any of the errors it throws as they show incomplete documentation  
+
+## Compile new jar file  
+to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
+a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  

@@ -1,3 +1,4 @@
+    import org.gradle.jvm.tasks.Jar
     plugins {
         id("application")
         id("java")
@@ -32,7 +33,7 @@
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(11)
+            languageVersion = JavaLanguageVersion.of(8)
         }
     }
 
@@ -73,4 +74,25 @@
                 srcDirs("src/test/java")
             }
         }
+    }
+    tasks.register<Jar>("compile") {
+        archiveClassifier.set("uber")
+        archiveFileName.set("ownitall.jar")
+        from(sourceSets.main.get().output)
+
+        dependsOn(configurations.runtimeClasspath)
+        from({
+            configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        })
+
+        manifest {
+            attributes(mapOf(
+                "Main-Class" to application.mainClass.get()
+            ))
+        }
+
+        destinationDirectory.set(rootDir)
+
+        // Add this line to handle duplicate entries
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
