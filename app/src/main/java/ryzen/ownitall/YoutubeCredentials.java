@@ -1,7 +1,9 @@
 package ryzen.ownitall;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class YoutubeCredentials {
@@ -28,7 +30,10 @@ public class YoutubeCredentials {
      * @param clientId        - youtube api client id
      * @param clientSecret    - youtube api client secret
      */
-    public YoutubeCredentials(String applicationName, String clientId, String clientSecret) {
+    @JsonCreator
+    public YoutubeCredentials(@JsonProperty("applicationName") String applicationName,
+            @JsonProperty("clientId") String clientId,
+            @JsonProperty("clientSecret") String clientSecret) {
         this.applicationName = applicationName;
         this.clientId = clientId;
         this.clientSecret = clientSecret;

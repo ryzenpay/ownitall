@@ -8,7 +8,10 @@ import java.net.Socket;
 import java.net.URI;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import se.michaelthelin.spotify.SpotifyHttpManager;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +22,6 @@ public class SpotifyCredentials {
     private String clientSecret;
     private URI redirectUrl;
     private String code;
-    private LocalDateTime codeExpiration;
 
     /**
      * Default spotify constructor checking for saved or asking for user input
@@ -42,7 +44,9 @@ public class SpotifyCredentials {
      * @param clientSecret - spotify api client secret
      * @param redirectUrl  - spotify api redirect url
      */
-    public SpotifyCredentials(String clientId, String clientSecret, String redirectUrl) {
+    @JsonCreator
+    public SpotifyCredentials(@JsonProperty("clientId") String clientId,
+            @JsonProperty("clientSecret") String clientSecret, @JsonProperty("redirectUrl") String redirectUrl) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUrl = SpotifyHttpManager.makeUri(redirectUrl);
@@ -74,6 +78,7 @@ public class SpotifyCredentials {
      * 
      * @return - string spotify api redirect url
      */
+    @JsonIgnore
     public String getRedirectUrlString() {
         return this.redirectUrl.toString();
     }

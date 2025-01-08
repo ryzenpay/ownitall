@@ -1,4 +1,3 @@
-
 package ryzen.ownitall;
 
 import java.io.File;
@@ -42,7 +41,6 @@ public class Main {
                                                                          // to merge their song arrays
                         albums.addAll(dataImport.getAlbums());
                         playlists.addAll(dataImport.getPlaylists());
-                        dataImport.printOverview();
                         break;
                     case 2:
                         System.out.println("Export currently not supported");
