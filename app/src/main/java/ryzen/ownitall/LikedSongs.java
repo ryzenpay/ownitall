@@ -1,6 +1,10 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 public class LikedSongs extends Playlist { // different from playlist due to linkedhashset songs
@@ -70,5 +74,22 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
 
     public void setSpotifyPageOffset(int spotifyPageOffset) {
         this.spotifyPageOffset = spotifyPageOffset;
+    }
+
+    @JsonCreator
+    public LikedSongs(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("youtubePageToken") String youtubePageToken,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
+        super(name);
+        if (songs != null && !songs.isEmpty()) {
+            this.likedSongs = songs;
+        }
+        if (youtubePageToken != null) {
+            this.youtubePageToken = youtubePageToken;
+        }
+        this.spotifyPageOffset = spotifyPageOffset;
+        if (coverArt != null) {
+            this.setCoverArt(coverArt);
+        }
     }
 }

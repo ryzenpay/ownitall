@@ -98,6 +98,7 @@ public class Sync {
             this.objectMapper.writeValue(this.albumFile, albums);
         } catch (IOException e) {
             System.err.println("Error saving albums: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -113,6 +114,7 @@ public class Sync {
 
         } catch (IOException e) {
             System.err.println("Error importing albums: " + e);
+            e.printStackTrace();
             return null;
         }
         return albums;
@@ -123,6 +125,7 @@ public class Sync {
             this.objectMapper.writeValue(this.playlistFile, playlists);
         } catch (IOException e) {
             System.err.println("Error saving playlists: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -138,6 +141,7 @@ public class Sync {
 
         } catch (IOException e) {
             System.err.println("Error importing playlists: " + e);
+            e.printStackTrace();
             return null;
         }
         return playlists;
@@ -148,6 +152,7 @@ public class Sync {
             this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
         } catch (IOException e) {
             System.err.println("Error saving liked songs: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -162,6 +167,7 @@ public class Sync {
 
         } catch (IOException e) {
             System.err.println("Error importing liked songs: " + e);
+            e.printStackTrace();
             return null;
         }
         return likedSongs;
@@ -178,6 +184,7 @@ public class Sync {
 
         } catch (IOException e) {
             System.err.println("Error importing Spotify Credentials: " + e);
+            e.printStackTrace();
             return null;
         }
         return spotifyCredentials;
@@ -188,6 +195,7 @@ public class Sync {
             this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
         } catch (IOException e) {
             System.err.println("Error saving spotify credentials: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -201,6 +209,7 @@ public class Sync {
                     YoutubeCredentials.class);
         } catch (IOException e) {
             System.err.println("Error importing Youtube Credentials: " + e);
+            e.printStackTrace();
             return null;
         }
         return youtubeCredentials;
@@ -211,6 +220,7 @@ public class Sync {
             this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);
         } catch (IOException e) {
             System.err.println("Error saving youtube credentials: " + e);
+            e.printStackTrace();
         }
     }
 }

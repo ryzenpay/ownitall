@@ -440,7 +440,11 @@ public class Spotify extends SpotifyCredentials {
                 Artist artist = new Artist(raw_artist.getName());
                 try {
                     GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
-                    artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                    se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
+                            .execute();
+                    if (fetchedArtist.getImages().length != 0) {
+                        artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                    }
                 } catch (TooManyRequestsException e) {
                     System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());

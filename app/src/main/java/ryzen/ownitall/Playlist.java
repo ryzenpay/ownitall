@@ -3,7 +3,13 @@ package ryzen.ownitall;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Playlist {
     private String name;
     private URI coverArt;
@@ -99,5 +105,22 @@ public class Playlist {
         int hashCode = 0;
         hashCode += name.hashCode();
         return hashCode;
+    }
+
+    @JsonCreator
+    public Playlist(@JsonProperty("name") String name, @JsonProperty("songs") ArrayList<Song> songs,
+            @JsonProperty("youtubePageToken") String youtubePageToken,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
+        this.name = name;
+        if (songs != null && !songs.isEmpty()) {
+            this.songs = songs;
+        }
+        if (youtubePageToken != null) {
+            this.youtubePageToken = youtubePageToken;
+        }
+        this.spotifyPageOffset = spotifyPageOffset;
+        if (coverArt != null) {
+            this.setCoverArt(coverArt);
+        }
     }
 }

@@ -3,6 +3,9 @@ package ryzen.ownitall;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Artist {
     private String name;
     private URI profilePicture;
@@ -49,5 +52,13 @@ public class Artist {
     @Override
     public int hashCode() {
         return this.name.hashCode();
+    }
+
+    @JsonCreator
+    public Artist(@JsonProperty("name") String name, @JsonProperty("profilePicture") String profilePicture) {
+        this.name = name;
+        if (profilePicture != null) {
+            this.setProfilePicture(profilePicture);
+        }
     }
 }

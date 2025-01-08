@@ -12,11 +12,7 @@ public class Import {
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
     private LikedSongs likedSongs;
-    private LinkedHashMap<String, Runnable> supported = new LinkedHashMap<>(
-            Map.of("Youtube", this::importYoutube, "Spotify",
-                    this::importSpotify,
-                    "Local",
-                    this::importLocal));
+    private LinkedHashMap<String, Runnable> supported;
 
     public Import(String dataFolder) {
         this.dataFolder = dataFolder;
@@ -24,6 +20,10 @@ public class Import {
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
+        this.supported = new LinkedHashMap<>();
+        supported.put("Youtube", this::importYoutube); // keeps insertion order like this
+        supported.put("Spotify", this::importSpotify);
+        supported.put("Local", this::importLocal);
         while (!this.status) {
             String choice = promptImport();
             if (choice != null) {

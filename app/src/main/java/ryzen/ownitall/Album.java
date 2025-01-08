@@ -2,10 +2,16 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Album {
     private String name;
     LinkedHashSet<Song> songs;
@@ -93,6 +99,7 @@ public class Album {
         return new ArrayList<>(this.songs);
     }
 
+    @JsonIgnore
     public Artist getMainArtist() {
         ArrayList<Artist> artists = new ArrayList<>(this.artists);
         return artists.get(0);
@@ -118,5 +125,26 @@ public class Album {
     @Override
     public int hashCode() {
         return this.name.hashCode() + this.getMainArtist().hashCode();
+    }
+
+    @JsonCreator
+    public Album(@JsonProperty("name") String name,
+            @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("artists") LinkedHashSet<Artist> artists,
+            @JsonProperty("coverImage") String coverImage) {
+        this.name = name;
+        if (songs != null && !songs.isEmpty()) {
+            this.songs = songs;
+        } else {
+            this.songs = new LinkedHashSet<>();
+        }
+        if (artists != null && !artists.isEmpty()) {
+            this.artists = artists;
+        } else {
+            this.artists = new LinkedHashSet<>();
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 }

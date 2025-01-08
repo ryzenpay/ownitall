@@ -6,6 +6,9 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashSet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 public class Song {
@@ -135,5 +138,19 @@ public class Song {
         }
         return name.hashCode() + this.getMainArtist().hashCode() + duration.hashCode(); // TODO: similarity search (%
                                                                                         // check)
+    }
+
+    @JsonCreator
+    public Song(@JsonProperty("name") String name, @JsonProperty("artists") LinkedHashSet<Artist> artists,
+            @JsonProperty("duration") Duration duration) {
+        this.name = name;
+        if (artists != null && !artists.isEmpty()) {
+            this.artists = artists;
+        } else {
+            this.artists = new LinkedHashSet<>();
+        }
+        if (duration != null) {
+            this.duration = duration;
+        }
     }
 }
