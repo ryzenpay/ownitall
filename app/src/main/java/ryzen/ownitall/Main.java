@@ -15,9 +15,10 @@ public class Main {
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
+    private static Settings settings;
 
     public static void main(String[] args) {
-
+        settings = new Settings();
         if (!checkDataFolder()) {
             albums = new LinkedHashSet<>();
             playlists = new LinkedHashSet<>();
@@ -32,7 +33,7 @@ public class Main {
             System.out.println("[3] print inventory");
             System.out.println("[4] save");
             System.out.println("[5] Tools"); // TODO: tools class
-            System.out.println("[6] Settings"); // TODO: settings class (save in .appdata/settings.json)
+            System.out.println("[6] Settings");
             System.out.println("[0] exit");
             System.out.print("Enter your choice: ");
             try {
@@ -53,15 +54,17 @@ public class Main {
                         break;
                     case 4:
                         exportData();
+                        settings.saveSettings();
                         break;
                     case 5:
                         System.out.println("Tools currently not supported");
                         break;
                     case 6:
-                        System.out.println("Settings currently not supported");
+                        settings.changeSettings();
                         break;
                     case 0:
                         exportData();
+                        settings.saveSettings();
                         System.out.println("Exiting program. Goodbye!");
                         System.exit(0);
                     default:

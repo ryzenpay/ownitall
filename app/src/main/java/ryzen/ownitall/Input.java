@@ -61,6 +61,21 @@ public class Input {
     }
 
     /**
+     * save user long input
+     * 
+     * @return - long of user input
+     */
+    public long getLong() {
+        while (true) {
+            try {
+                return scanner.nextLong();
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+    }
+
+    /**
      * save user file path input
      * 
      * @return - constructed File to users path

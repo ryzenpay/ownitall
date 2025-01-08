@@ -26,6 +26,7 @@ replay_pid*
 #ownitall specific
 data/**
 .env
+.appdata
 # Ignore Gradle project-specific cache directory
 .gradle
 
