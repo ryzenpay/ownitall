@@ -9,8 +9,8 @@ public class Import {
     private boolean status;
     private String dataFolder;
 
-    private LinkedHashMap<Album, ArrayList<Song>> albums;
-    private LinkedHashMap<Playlist, ArrayList<Song>> playlists;
+    private LinkedHashSet<Album> albums;
+    private LinkedHashSet<Playlist> playlists;
     private LikedSongs likedSongs;
     private LinkedHashMap<String, Runnable> supported = new LinkedHashMap<>(
             Map.of("Youtube", this::importYoutube, "Spotify",
@@ -21,8 +21,8 @@ public class Import {
     public Import(String dataFolder) {
         this.dataFolder = dataFolder;
         this.status = false;
-        this.albums = new LinkedHashMap<>();
-        this.playlists = new LinkedHashMap<>();
+        this.albums = new LinkedHashSet<>();
+        this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
         while (!this.status) {
             String choice = promptImport();
@@ -69,9 +69,9 @@ public class Import {
         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
         likedSongs.addSongs(youtubeLikedSongs.getSongs());
         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
-        albums.putAll(youtube.getAlbums());
+        albums.addAll(youtube.getAlbums());
         System.out.println("Getting youtube music playlists");
-        playlists.putAll(youtube.getPlaylists());
+        playlists.addAll(youtube.getPlaylists());
         this.status = true;
     }
 
@@ -94,8 +94,8 @@ public class Import {
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
         likedSongs.addSongs(spotifyLikedSongs.getSongs());
         likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
-        playlists.putAll(spotify.getPlaylists());
-        albums.putAll(spotify.getAlbums());
+        playlists.addAll(spotify.getPlaylists());
+        albums.addAll(spotify.getAlbums());
         this.status = true;
     }
 
@@ -103,34 +103,34 @@ public class Import {
         Local local = new Local();
         System.out.println("Getting all music from your local library");
         likedSongs.addSongs(local.getLikedSongs());
-        playlists.putAll(local.getPlaylists());
-        albums.putAll(local.getAlbums());
+        playlists.addAll(local.getPlaylists());
+        albums.addAll(local.getAlbums());
         this.status = true;
     }
 
-    public LinkedHashMap<Album, ArrayList<Song>> getAlbums() {
+    public LinkedHashSet<Album> getAlbums() {
         return this.albums;
     }
 
-    public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
+    public LinkedHashSet<Playlist> getPlaylists() {
         return this.playlists;
     }
 
     public LinkedHashSet<Song> getLikedSongs() {
-        return this.likedSongs.getSongs();
+        return new LinkedHashSet<>(this.likedSongs.getSongs());
     }
 
     public void printOverview() {
         int trackCount = 0;
-        for (ArrayList<Song> songs : playlists.values()) {
-            trackCount += songs.size();
+        for (Playlist playlist : this.playlists) {
+            trackCount += playlist.size();
         }
-        for (ArrayList<Song> songs : albums.values()) {
-            trackCount += songs.size();
+        for (Album album : this.albums) {
+            trackCount += album.size();
         }
         System.out.println("Imported " + this.albums.size() + " albums");
         System.out.println("Imported " + this.playlists.size() + " playlists");
-        System.out.println("Imported " + this.likedSongs.getSize() + " liked songs");
+        System.out.println("Imported " + this.likedSongs.size() + " liked songs");
         System.out.println("With a total of: " + trackCount + " songs");
     }
 }

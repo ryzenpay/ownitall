@@ -18,9 +18,8 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
-import java.util.LinkedHashMap;
 import java.util.ArrayList;
-import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 public class Local {
     private File localLibrary;
@@ -99,23 +98,16 @@ public class Local {
      * @return
      */
     public Song getSong(File file) {
-        String name;
-        ArrayList<Artist> artists = new ArrayList<>();
-        Duration duration;
+        Song song = new Song(file.toString());
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
             AudioHeader audioHeader = audioFile.getAudioHeader();
-            duration = Duration.ofSeconds(audioHeader.getTrackLength());
-            name = tag.getFirst(FieldKey.TITLE);
+            song.setName(tag.getFirst(FieldKey.TITLE));
+            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
             List<String> artistList = tag.getAll(FieldKey.ARTIST);
             for (String artistName : artistList) {
-                artists.add(new Artist(artistName));
-            }
-            if (artists.isEmpty() || name == null) { // no metadata found
-                return new Song(file.toString(), duration);
-            } else {
-                return new Song(name, artists, duration);
+                song.addArtist(new Artist(artistName));
             }
         } catch (InvalidAudioFrameException | TagException e) {
             System.err.println("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
@@ -124,6 +116,7 @@ public class Local {
             System.err.println("Error processing file: " + file.getAbsolutePath() + " error: " + e);
             return null;
         }
+        return song;
     }
 
     public ArrayList<Song> getSongs(File folder) {

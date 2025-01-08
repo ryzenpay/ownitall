@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.time.Duration;
 import java.util.List;
@@ -125,11 +125,11 @@ public class Youtube extends YoutubeCredentials {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            Duration duration = Duration.parse(contentDetails.getDuration()); // TODO: this is not
-                                                                                              // working correctly
-                            ArrayList<Artist> artists = new ArrayList<>();
-                            artists.add(new Artist(snippet.getChannelTitle()));
-                            songs.addSong(new Song(snippet.getTitle(), artists, duration));
+                            Song song = new Song(snippet.getTitle());
+                            song.addArtist(new Artist(snippet.getChannelTitle()));
+                            song.setDuration(Duration.parse(contentDetails.getDuration()));// TODO: this is not
+                                                                                           // working correctly
+                            songs.addSong(song);
                         }
                     }
                 }
@@ -143,13 +143,13 @@ public class Youtube extends YoutubeCredentials {
         return songs;
     }
 
-    public LinkedHashMap<Album, ArrayList<Song>> getAlbums() { // TODO: currently not supported (no youtube music API)
-        LinkedHashMap<Album, ArrayList<Song>> albums = new LinkedHashMap<>();
+    public LinkedHashSet<Album> getAlbums() { // TODO: currently not supported (no youtube music API)
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         return albums;
     }
 
-    public LinkedHashMap<Playlist, ArrayList<Song>> getPlaylists() {
-        LinkedHashMap<Playlist, ArrayList<Song>> playlists = new LinkedHashMap<>();
+    public LinkedHashSet<Playlist> getPlaylists() {
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         String nextPageToken = null;
         try {
             do {
@@ -161,14 +161,12 @@ public class Youtube extends YoutubeCredentials {
 
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
-                for (com.google.api.services.youtube.model.Playlist playlist : playlistResponse.getItems()) {
-                    String playlistId = playlist.getId();
-                    String playlistTitle = playlist.getSnippet().getTitle();
-                    Playlist currentPlaylist = new Playlist(playlistTitle);
-                    ArrayList<Song> playlistSongs = getPlaylistSongs(playlistId, currentPlaylist);
-
-                    if (!playlistSongs.isEmpty()) {
-                        playlists.put(currentPlaylist, playlistSongs);
+                for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
+                    ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
+                    if (!songs.isEmpty()) {
+                        Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
+                        playlist.addSongs(songs);
+                        playlists.add(playlist);
                     }
                 }
 
@@ -181,9 +179,9 @@ public class Youtube extends YoutubeCredentials {
         return playlists;
     }
 
-    private ArrayList<Song> getPlaylistSongs(String playlistId, Playlist playlist) {
+    private ArrayList<Song> getPlaylistSongs(String playlistId) {
         ArrayList<Song> songs = new ArrayList<>();
-        String nextPageToken = playlist.getYoutubePageToken();
+        String nextPageToken = null;
         try {
             do {
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
@@ -198,16 +196,12 @@ public class Youtube extends YoutubeCredentials {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        String title = snippet.getTitle();
-                        String channelTitle = snippet.getChannelTitle();
-                        Duration duration = getDuration(videoId);
-
-                        ArrayList<Artist> artists = new ArrayList<>();
-                        artists.add(new Artist(channelTitle));
-                        songs.add(new Song(title, artists, duration));
+                        Song song = new Song(snippet.getTitle());
+                        song.addArtist(new Artist(snippet.getChannelTitle()));
+                        song.setDuration(this.getDuration(videoId));
+                        songs.add(song);
                     }
                 }
-                playlist.setYoutubePageToken(nextPageToken);
                 nextPageToken = itemResponse.getNextPageToken();
             } while (nextPageToken != null);
         } catch (IOException e) {

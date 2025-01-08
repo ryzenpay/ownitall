@@ -3,6 +3,7 @@ package ryzen.ownitall;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashSet;
 
 import java.util.ArrayList;
@@ -20,40 +21,11 @@ public class Song {
      * @param artists  - arraylist of artists (converted to set for no duplicates)
      * @param duration - java.Duration on the song's duration
      */
-    public Song(String name, ArrayList<Artist> artists, Duration duration) {
+    public Song(String name) {
         this.name = name;
-        this.addArtists(artists);
-        this.duration = duration;
-    }
-
-    /**
-     * song constructor only knowing the name
-     * 
-     * @return
-     */
-    public Song(String name, Duration duration) {
-        this.name = name;
-        this.duration = duration;
-    }
-
-    public Song(String name, ArrayList<Artist> artists, Duration duration, String coverImage) {
-        this.name = name;
-        this.addArtists(artists);
-        this.duration = duration;
-        this.setCoverImage(coverImage);
-    }
-
-    /**
-     * default song constructor without artists (for spotify episodes)
-     * 
-     * @param name
-     * @param duration
-     * @param coverImage
-     */
-    public Song(String name, Duration duration, String coverImage) {
-        this.name = name;
-        this.duration = duration;
-        this.setCoverImage(coverImage);
+        this.artists = new LinkedHashSet<>();
+        this.duration = null;
+        this.coverImage = null;
     }
 
     /**
@@ -63,6 +35,10 @@ public class Song {
      */
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -82,23 +58,11 @@ public class Song {
      * 
      * @param artists - LinkedHashSet of artists
      */
-    private void addArtists(ArrayList<Artist> artists) {
+    public void addArtists(ArrayList<Artist> artists) {
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
         this.artists.addAll(new LinkedHashSet<Artist>(artists));
-    }
-
-    /**
-     * remove artist from song artists array
-     * 
-     * @param artist - desired artist to be removed
-     */
-    public void remArtist(Artist artist) {
-        if (artist == null) {
-            return;
-        }
-        this.artists.remove(artist);
     }
 
     /**
@@ -130,7 +94,20 @@ public class Song {
         return this.duration;
     }
 
-    private void setCoverImage(String coverImage) {
+    /**
+     * duration in terms of seconds
+     * 
+     * @param duration
+     */
+    public void setDuration(long duration, ChronoUnit unit) {
+        this.duration = Duration.of(duration, unit);
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setCoverImage(String coverImage) {
         try {
             this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {

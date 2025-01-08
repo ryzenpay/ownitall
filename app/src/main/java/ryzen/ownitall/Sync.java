@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,7 +93,7 @@ public class Sync {
         }
     }
 
-    public void exportAlbums(LinkedHashMap<Album, ArrayList<Song>> albums) {
+    public void exportAlbums(LinkedHashSet<Album> albums) {
         try {
             this.objectMapper.writeValue(this.albumFile, albums);
         } catch (IOException e) {
@@ -100,14 +101,14 @@ public class Sync {
         }
     }
 
-    public LinkedHashMap<Album, ArrayList<Song>> importAlbums() {
-        LinkedHashMap<Album, ArrayList<Song>> albums;
+    public LinkedHashSet<Album> importAlbums() {
+        LinkedHashSet<Album> albums;
         if (!albumFile.exists()) {
             return null;
         }
         try {
             albums = this.objectMapper.readValue(this.albumFile,
-                    new TypeReference<LinkedHashMap<Album, ArrayList<Song>>>() {
+                    new TypeReference<LinkedHashSet<Album>>() {
                     });
 
         } catch (IOException e) {
@@ -117,7 +118,7 @@ public class Sync {
         return albums;
     }
 
-    public void exportPlaylists(LinkedHashMap<Playlist, ArrayList<Song>> playlists) {
+    public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
         try {
             this.objectMapper.writeValue(this.playlistFile, playlists);
         } catch (IOException e) {
@@ -125,14 +126,14 @@ public class Sync {
         }
     }
 
-    public LinkedHashMap<Playlist, ArrayList<Song>> importPlaylists() {
-        LinkedHashMap<Playlist, ArrayList<Song>> playlists;
+    public LinkedHashSet<Playlist> importPlaylists() {
+        LinkedHashSet<Playlist> playlists;
         if (!playlistFile.exists()) {
             return null;
         }
         try {
             playlists = this.objectMapper.readValue(this.playlistFile,
-                    new TypeReference<LinkedHashMap<Playlist, ArrayList<Song>>>() {
+                    new TypeReference<LinkedHashSet<Playlist>>() {
                     });
 
         } catch (IOException e) {

@@ -1,11 +1,12 @@
 package ryzen.ownitall;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class Playlist {
     private String name;
-    private URI coverart;
+    private URI coverArt;
     private ArrayList<Song> songs; // arraylist cuz it can contain duplicates
 
     private String youtubePageToken = null; // TODO: create "update" method to save API requests
@@ -19,7 +20,7 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new ArrayList<>();
-        this.coverart = null;
+        this.coverArt = null;
     }
 
     /**
@@ -31,8 +32,12 @@ public class Playlist {
         return this.name;
     }
 
-    public void setCoverArt(URI coverArt) {
-        this.coverart = coverArt;
+    public void setCoverArt(String coverArt) {
+        try {
+            this.coverArt = new URI(coverArt);
+        } catch (URISyntaxException e) {
+            System.err.println("Error parsing cover image: " + coverArt);
+        }
     }
 
     /**
@@ -41,7 +46,7 @@ public class Playlist {
      * @return - constructed URI
      */
     public URI getCoverart() {
-        return this.coverart;
+        return this.coverArt;
     }
 
     public void addSongs(ArrayList<Song> songs) {
