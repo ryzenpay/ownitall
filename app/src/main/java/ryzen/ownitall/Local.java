@@ -38,17 +38,17 @@ public class Local {
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
 
-    public LinkedHashSet<Song> getLikedSongs() {
-        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
+    public LikedSongs getLikedSongs() {
+        LikedSongs likedSongs = new LikedSongs();
         for (File file : this.localLibrary.listFiles()) {
             if (file.isFile() && extensions.contains(getExtension(file))) {
                 Song song = this.getSong(file);
                 if (song != null) {
-                    likedSongs.add(song);
+                    likedSongs.addSong(song);
                 }
             }
             if (file.isDirectory() && file.toString().equalsIgnoreCase("liked songs")) {
-                likedSongs.addAll(new LinkedHashSet<>(this.getSongs(file)));
+                likedSongs.addSongs(this.getSongs(file));
             }
         }
         return likedSongs;

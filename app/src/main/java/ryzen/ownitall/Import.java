@@ -64,13 +64,17 @@ public class Import {
         }
         sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
         System.out.println(
-                "Getting all Youtube liked songs");
+                "Getting all Youtube liked songs, albums and playlists: ");
         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
+        System.out.println("    Processed " + youtubeLikedSongs.size() + " liked songs");
         likedSongs.addSongs(youtubeLikedSongs.getSongs());
         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
-        albums.addAll(youtube.getAlbums());
-        System.out.println("Getting youtube music playlists");
-        playlists.addAll(youtube.getPlaylists());
+        LinkedHashSet<Album> youtubeAlbums = youtube.getAlbums();
+        albums.addAll(youtubeAlbums);
+        System.out.println("    Processed " + youtubeAlbums.size() + " albums");
+        LinkedHashSet<Playlist> youtubePlaylists = youtube.getPlaylists();
+        System.out.println("    Processed " + youtubePlaylists.size() + " playlists");
+        playlists.addAll(youtubePlaylists);
         this.status = true;
     }
 
@@ -91,19 +95,30 @@ public class Import {
         System.out.println(
                 "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
+        System.out.println("    Processed " + spotifyLikedSongs.size() + " liked songs");
         likedSongs.addSongs(spotifyLikedSongs.getSongs());
         likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
-        playlists.addAll(spotify.getPlaylists());
-        albums.addAll(spotify.getAlbums());
+        LinkedHashSet<Album> spotifyAlbums = spotify.getAlbums();
+        System.out.println("    Processed " + spotifyAlbums.size() + " albums");
+        albums.addAll(spotifyAlbums);
+        LinkedHashSet<Playlist> spotifyPlaylists = spotify.getPlaylists();
+        System.out.println("    Processed " + spotifyPlaylists.size() + " playlists");
+        playlists.addAll(spotifyPlaylists);
         this.status = true;
     }
 
     private void importLocal() {
         Local local = new Local();
         System.out.println("Getting all music from your local library");
-        likedSongs.addSongs(local.getLikedSongs());
-        playlists.addAll(local.getPlaylists());
-        albums.addAll(local.getAlbums());
+        LikedSongs localLikedSongs = local.getLikedSongs();
+        System.out.println("Processed " + localLikedSongs.size() + " liked songs");
+        likedSongs.addSongs(localLikedSongs.getSongs());
+        LinkedHashSet<Album> localAlbums = local.getAlbums();
+        System.out.println("Processed " + localAlbums.size() + " albums");
+        albums.addAll(localAlbums);
+        LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
+        System.out.println("Processed " + localPlaylists.size() + " playlists");
+        playlists.addAll(playlists);
         this.status = true;
     }
 

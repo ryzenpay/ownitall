@@ -38,7 +38,8 @@ public class Main {
                 switch (choice) {
                     case 1:
                         Import dataImport = new Import(DATAFOLDER);
-                        likedSongs.addSongs(dataImport.getLikedSongs());
+                        likedSongs.addSongs(dataImport.getLikedSongs()); // TODO: this currently overwrites, but needs
+                                                                         // to merge their song arrays
                         albums.addAll(dataImport.getAlbums());
                         playlists.addAll(dataImport.getPlaylists());
                         dataImport.printOverview();

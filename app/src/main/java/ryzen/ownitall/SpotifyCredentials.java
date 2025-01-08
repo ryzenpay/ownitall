@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import se.michaelthelin.spotify.SpotifyHttpManager;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SpotifyCredentials {
     private String clientId;
     private String clientSecret;

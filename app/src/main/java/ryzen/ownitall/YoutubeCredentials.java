@@ -1,5 +1,9 @@
 package ryzen.ownitall;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class YoutubeCredentials {
     private String applicationName;
     private String clientId;
@@ -32,6 +36,7 @@ public class YoutubeCredentials {
         return this.applicationName;
     }
 
+    @JsonIgnore
     public boolean isNull() {
         if (this.getClientId() == null || this.getClientSecret() == null || this.getApplicationName() == null) {
             return true;
