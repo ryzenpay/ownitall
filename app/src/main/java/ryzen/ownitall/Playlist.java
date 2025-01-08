@@ -164,7 +164,7 @@ public class Playlist {
         if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarity(this.name, playlist.getName()) > 90) {
+        if (Levenshtein.computeSimilarityCheck(this.name, playlist.getName())) {
             return true;
         }
         return false;

@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -29,6 +28,8 @@ public class Settings {
     protected String albumFile = "albums";
     protected String likedSongFile = "likedsongs";
     protected String playlistFile = "playlists";
+    protected String spotifyCredentialsFile = "spotifyCredentials";
+    protected String youtubeCredentialsFile = "youtubeCredentials";
 
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
@@ -55,7 +56,7 @@ public class Settings {
      * increases API requests
      */
     protected boolean spotifyArtistPfp = false;
-
+    protected boolean spotifyPlaylistSongCover = false; // TODO: get cover image of songs in playlist
     /**
      * to limit number of songs in each youtube API batch query
      */
@@ -66,7 +67,7 @@ public class Settings {
      * similarity percentage used to check if artists, songs, albums or playlists
      * are equals (to merge or not)
      */
-    protected int similarityPercentage = 90;
+    protected double similarityPercentage = 90.0;
 
     /**
      * location of where to store and get settings
@@ -94,6 +95,9 @@ public class Settings {
         return settings;
     }
 
+    /**
+     * check if settings folder exists, if not make it (to prevent errors)
+     */
     @JsonIgnore
     private void setSettingsFolder() {
         File settingsFolder = new File(this.settingsFolderPath);
@@ -102,6 +106,9 @@ public class Settings {
         }
     }
 
+    /**
+     * load settings from saved file
+     */
     @JsonIgnore
     public void loadSettings() {
         setSettingsFolder();
@@ -123,6 +130,9 @@ public class Settings {
         }
     }
 
+    /**
+     * save settings to predefined file
+     */
     @JsonIgnore
     public void saveSettings() {
         this.setSettingsFolder();
@@ -270,115 +280,139 @@ public class Settings {
         return true;
     }
 
-    public String getDataFolderPath() {
-        return dataFolderPath;
-    }
-
     public void setDataFolderPath(String dataFolderPath) {
         this.dataFolderPath = dataFolderPath;
-    }
-
-    public String getLikedSongName() {
-        return likedSongName;
     }
 
     public void setLikedSongName(String likedSongName) {
         this.likedSongName = likedSongName;
     }
 
-    public String getAlbumFile() {
-        return albumFile;
-    }
-
     public void setAlbumFile(String albumFile) {
         this.albumFile = albumFile;
-    }
-
-    public String getLikedSongFile() {
-        return likedSongFile;
     }
 
     public void setLikedSongFile(String likedSongFile) {
         this.likedSongFile = likedSongFile;
     }
 
-    public String getPlaylistFile() {
-        return playlistFile;
-    }
-
     public void setPlaylistFile(String playlistFile) {
         this.playlistFile = playlistFile;
-    }
-
-    public boolean isSpotifyShowDialog() {
-        return spotifyShowDialog;
     }
 
     public void setSpotifyShowDialog(boolean spotifyShowDialog) {
         this.spotifyShowDialog = spotifyShowDialog;
     }
 
-    public int getSpotifySongLimit() {
-        return spotifySongLimit;
-    }
-
     public void setSpotifySongLimit(int spotifySongLimit) {
         this.spotifySongLimit = spotifySongLimit;
-    }
-
-    public int getSpotifyAlbumLimit() {
-        return spotifyAlbumLimit;
     }
 
     public void setSpotifyAlbumLimit(int spotifyAlbumLimit) {
         this.spotifyAlbumLimit = spotifyAlbumLimit;
     }
 
-    public int getSpotifyPlaylistLimit() {
-        return spotifyPlaylistLimit;
-    }
-
     public void setSpotifyPlaylistLimit(int spotifyPlaylistLimit) {
         this.spotifyPlaylistLimit = spotifyPlaylistLimit;
-    }
-
-    public boolean isSpotifyArtistPfp() {
-        return spotifyArtistPfp;
     }
 
     public void setSpotifyArtistPfp(boolean spotifyArtistPfp) {
         this.spotifyArtistPfp = spotifyArtistPfp;
     }
 
-    public Long getYoutubeSongLimit() {
-        return youtubeSongLimit;
-    }
-
     public void setYoutubeSongLimit(Long youtubeSongLimit) {
         this.youtubeSongLimit = youtubeSongLimit;
-    }
-
-    public Long getYoutubePlaylistLimit() {
-        return youtubePlaylistLimit;
     }
 
     public void setYoutubePlaylistLimit(Long youtubePlaylistLimit) {
         this.youtubePlaylistLimit = youtubePlaylistLimit;
     }
 
-    public boolean isSaveCredentials() {
-        return saveCredentials;
-    }
-
     public void setSaveCredentials(boolean saveCredentials) {
         this.saveCredentials = saveCredentials;
     }
 
-    public int getSimilarityPercentage() {
-        return similarityPercentage;
+    public void setSimilarityPercentage(double similarityPercentage) {
+        this.similarityPercentage = similarityPercentage;
     }
 
-    public void setSimilarityPercentage(int similarityPercentage) {
-        this.similarityPercentage = similarityPercentage;
+    public void setSpotifyCredentialsFile(String spotifyCredentialsFile) {
+        this.spotifyCredentialsFile = spotifyCredentialsFile;
+    }
+
+    public void setYoutubeCredentialsFile(String youtubeCredentialsFile) {
+        this.youtubeCredentialsFile = youtubeCredentialsFile;
+    }
+
+    public String getDataFolderPath() {
+        return dataFolderPath;
+    }
+
+    public String getLikedSongName() {
+        return likedSongName;
+    }
+
+    public String getAlbumFile() {
+        return albumFile;
+    }
+
+    public String getLikedSongFile() {
+        return likedSongFile;
+    }
+
+    public String getPlaylistFile() {
+        return playlistFile;
+    }
+
+    public String getSpotifyCredentialsFile() {
+        return spotifyCredentialsFile;
+    }
+
+    public String getYoutubeCredentialsFile() {
+        return youtubeCredentialsFile;
+    }
+
+    public boolean isSaveCredentials() {
+        return saveCredentials;
+    }
+
+    public boolean isSpotifyShowDialog() {
+        return spotifyShowDialog;
+    }
+
+    public int getSpotifySongLimit() {
+        return spotifySongLimit;
+    }
+
+    public int getSpotifyAlbumLimit() {
+        return spotifyAlbumLimit;
+    }
+
+    public int getSpotifyPlaylistLimit() {
+        return spotifyPlaylistLimit;
+    }
+
+    public boolean isSpotifyArtistPfp() {
+        return spotifyArtistPfp;
+    }
+
+    public boolean isSpotifyPlaylistSongCover() {
+        return spotifyPlaylistSongCover;
+    }
+
+    public void setSpotifyPlaylistSongCover(boolean spotifyPlaylistSongCover) {
+        this.spotifyPlaylistSongCover = spotifyPlaylistSongCover;
+    }
+
+    public Long getYoutubeSongLimit() {
+        return youtubeSongLimit;
+    }
+
+    public Long getYoutubePlaylistLimit() {
+        return youtubePlaylistLimit;
+    }
+
+    public double getSimilarityPercentage() {
+        return similarityPercentage;
     }
 }

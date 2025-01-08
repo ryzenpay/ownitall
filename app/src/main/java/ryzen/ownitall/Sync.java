@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Sync {
+    private Settings settings;
     private File dataFolder;
     private File albumFile;
     private File playlistFile;
@@ -24,16 +25,16 @@ public class Sync {
     /**
      * initialize all files for syncronization
      * 
-     * @param dataPath - datapath of where to store data
      */
-    public Sync(String dataPath) {
-        this.dataFolder = new File(dataPath);
+    public Sync() {
+        settings = Settings.load();
+        this.dataFolder = new File(settings.dataFolderPath);
         this.setDataFolder();
-        this.albumFile = new File(this.dataFolder, "albums" + ".json");
-        this.playlistFile = new File(this.dataFolder, "playlists" + ".json");
-        this.likedSongsFile = new File(this.dataFolder, "likedsongs" + ".json");
-        this.spotifyFile = new File(this.dataFolder, "spotifyCredentials" + ".json");
-        this.youtubeFile = new File(this.dataFolder, "youtubeCredentials" + ".json");
+        this.albumFile = new File(this.dataFolder, settings.albumFile + ".json");
+        this.playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
+        this.likedSongsFile = new File(this.dataFolder, settings.likedSongFile + ".json");
+        this.spotifyFile = new File(this.dataFolder, settings.spotifyCredentialsFile + ".json");
+        this.youtubeFile = new File(this.dataFolder, settings.youtubeCredentialsFile + ".json");
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
@@ -47,6 +48,25 @@ public class Sync {
         if (!this.dataFolder.exists()) { // create folder if it does not exist
             this.dataFolder.mkdirs();
         }
+    }
+
+    /**
+     * check if existing data files exist
+     * 
+     * @return - true if exist, false if not
+     */
+    public static boolean checkDataFolder() { // TODO: move to sync (after settings setup as it needs to be static)
+        Settings settings = Settings.load();
+        File dataFolder = new File(settings.dataFolderPath);
+        if (dataFolder.exists() && dataFolder.isDirectory()) {
+            File albumFile = new File(settings.dataFolderPath, settings.albumFile + ".json");
+            File playlistFile = new File(settings.dataFolderPath, settings.playlistFile + ".json");
+            File likedSongsFile = new File(settings.dataFolderPath, settings.likedSongFile + ".json");
+            if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

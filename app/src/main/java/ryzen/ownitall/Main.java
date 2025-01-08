@@ -1,7 +1,5 @@
 package ryzen.ownitall;
 
-import java.io.File;
-
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -11,15 +9,14 @@ import ryzen.ownitall.tools.MusicTime;
 public class Main {
     // TODO: initialize logger and remove all system.out.println &&
     // system.err.println
-    private static String DATAFOLDER = "data"; // TODO: user choice?
+    private static Settings settings;
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
-    private static Settings settings;
 
     public static void main(String[] args) {
         settings = Settings.load();
-        if (!checkDataFolder()) {
+        if (!Sync.checkDataFolder()) {
             albums = new LinkedHashSet<>();
             playlists = new LinkedHashSet<>();
             likedSongs = new LikedSongs();
@@ -40,7 +37,7 @@ public class Main {
                 int choice = Input.getInstance().getInt();
                 switch (choice) {
                     case 1:
-                        Import dataImport = new Import(DATAFOLDER);
+                        Import dataImport = new Import(settings.dataFolderPath);
                         likedSongs.addSongs(dataImport.getLikedSongs());
                         mergeAlbums(dataImport.getAlbums()); // TODO: collection class to handle this
                         mergePlaylists(dataImport.getPlaylists());
@@ -112,28 +109,10 @@ public class Main {
     }
 
     /**
-     * check if existing data files exist
-     * 
-     * @return - true if exist, false if not
-     */
-    private static boolean checkDataFolder() { // TODO: move to sync (after settings setup as it needs to be static)
-        File dataFolder = new File(DATAFOLDER);
-        if (dataFolder.exists() && dataFolder.isDirectory()) {
-            File albumFile = new File(DATAFOLDER + "/albums.json");
-            File playlistFile = new File(DATAFOLDER + "/playlists.json");
-            File likedSongsFile = new File(DATAFOLDER + "/likedsongs.json");
-            if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * export all current data
      */
     private static void exportData() {
-        Sync sync = new Sync(DATAFOLDER);
+        Sync sync = new Sync();
         System.out.println("Beginning to save all data");
         sync.exportAlbums(albums);
         sync.exportPlaylists(playlists);
@@ -145,7 +124,7 @@ public class Main {
      * import data from local files
      */
     private static void importData() {
-        Sync sync = new Sync(DATAFOLDER);
+        Sync sync = new Sync();
         System.out.println("Beginning to import all data");
         albums = sync.importAlbums();
         if (albums == null) {

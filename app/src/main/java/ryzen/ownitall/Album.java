@@ -174,7 +174,7 @@ public class Album {
         if (this.hashCode() == album.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarity(this.toString(), album.toString()) > 90) { // TODO: handle support if no
+        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString())) { // TODO: handle support if no
                                                                                      // artist
             return true;
         }

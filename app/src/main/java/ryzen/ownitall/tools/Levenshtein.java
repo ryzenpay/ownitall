@@ -3,6 +3,7 @@ package ryzen.ownitall.tools;
 //https://www.geeksforgeeks.org/java-program-to-implement-levenshtein-distance-computing-algorithm/
 
 import java.util.Arrays;
+import ryzen.ownitall.Settings;
 
 public class Levenshtein {
 
@@ -34,6 +35,15 @@ public class Levenshtein {
         if (maxLength == 0)
             return 100.0; // Both strings are empty
         return (1.0 - (double) distance / maxLength) * 100;
+    }
+
+    public static boolean computeSimilarityCheck(String str1, String str2) {
+        double simularity = computeSimilarity(str1, str2);
+        Settings settings = Settings.load();
+        if (simularity >= settings.getSimilarityPercentage()) {
+            return true;
+        }
+        return false;
     }
 
     // Determines if replacement is needed

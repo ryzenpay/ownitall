@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 public class Import {
+    private Settings settings;
     private boolean status;
-    private String dataFolder;
 
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
@@ -19,7 +19,7 @@ public class Import {
      * @param dataFolder - datafolder of where to get presaved credentials
      */
     public Import(String dataFolder) {
-        this.dataFolder = dataFolder;
+        this.settings = Settings.load();
         this.status = false;
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
@@ -64,19 +64,23 @@ public class Import {
      * import music from youtube, getting or setting credentials as needed
      */
     private void importYoutube() {
-        Sync sync = new Sync(this.dataFolder);
-        YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
+        Sync sync = new Sync();
         Youtube youtube;
-        if (youtubeCredentials == null) {
-            System.out.println("No saved youtube credential records");
-            youtube = new Youtube();
-        } else if (youtubeCredentials.isNull()) {
-            System.out.println("Incorrect youtube credentials found");
-            youtube = new Youtube();
+        if (settings.saveCredentials) {
+            YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
+            if (youtubeCredentials == null) {
+                System.out.println("No saved youtube credential records");
+                youtube = new Youtube();
+            } else if (youtubeCredentials.isNull()) {
+                System.out.println("Incorrect youtube credentials found");
+                youtube = new Youtube();
+            } else {
+                youtube = new Youtube(youtubeCredentials);
+            }
+            sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
         } else {
-            youtube = new Youtube(youtubeCredentials);
+            youtube = new Youtube();
         }
-        sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
         System.out.println(
                 "Getting all Youtube liked songs, albums and playlists: ");
         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
@@ -96,19 +100,23 @@ public class Import {
      * import music from spotify, getting or setting credentials as needed
      */
     private void importSpotify() {
-        Sync sync = new Sync(this.dataFolder);
-        SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
+        Sync sync = new Sync();
         Spotify spotify;
-        if (spotifyCredentials == null) {
-            System.out.println("No saved spotify credential records");
-            spotify = new Spotify();
-        } else if (spotifyCredentials.isNull()) {
-            System.out.println("Incorrect spotify credentials found");
-            spotify = new Spotify();
+        if (settings.saveCredentials) {
+            SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
+            if (spotifyCredentials == null) {
+                System.out.println("No saved spotify credential records");
+                spotify = new Spotify();
+            } else if (spotifyCredentials.isNull()) {
+                System.out.println("Incorrect spotify credentials found");
+                spotify = new Spotify();
+            } else {
+                spotify = new Spotify(spotifyCredentials);
+            }
+            sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
         } else {
-            spotify = new Spotify(spotifyCredentials);
+            spotify = new Spotify();
         }
-        sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
         System.out.println(
                 "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();

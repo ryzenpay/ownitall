@@ -39,6 +39,7 @@ import java.awt.Desktop;
 
 public class Spotify extends SpotifyCredentials {
     private SpotifyApi spotifyApi;
+    private Settings settings;
     /**
      * this variable is to limit the spotify api requests by using known artists
      * format: <Artist name, constructed artist class>
@@ -50,6 +51,7 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify() {
         super();
+        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
@@ -69,6 +71,7 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify(String client_id, String client_secret, String redirect_url) {
         super(client_secret, client_id, redirect_url);
+        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
@@ -89,6 +92,7 @@ public class Spotify extends SpotifyCredentials {
     public Spotify(SpotifyCredentials spotifyCredentials) {
         super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
                 spotifyCredentials.getRedirectUrlString());
+        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
@@ -107,7 +111,7 @@ public class Spotify extends SpotifyCredentials {
     private void requestCode() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
-                .show_dialog(false)
+                .show_dialog(settings.spotifyShowDialog)
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
 
@@ -199,7 +203,7 @@ public class Spotify extends SpotifyCredentials {
 
         while (hasMore) {
             GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                    .limit(limit)
+                    .limit(this.settings.spotifySongLimit)
                     .offset(offset)
                     .build();
 
@@ -249,7 +253,7 @@ public class Spotify extends SpotifyCredentials {
         while (hasMore) {
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
-                    .limit(limit)
+                    .limit(this.settings.spotifyAlbumLimit)
                     .offset(offset)
                     .build();
 
@@ -298,7 +302,7 @@ public class Spotify extends SpotifyCredentials {
 
         while (hasMore) {
             GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
-                    .limit(limit)
+                    .limit(this.settings.spotifySongLimit)
                     .offset(offset)
                     .build();
 
@@ -346,7 +350,7 @@ public class Spotify extends SpotifyCredentials {
         while (hasMore) {
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
-                    .limit(limit)
+                    .limit(this.settings.spotifyPlaylistLimit)
                     .offset(offset)
                     .build();
 
@@ -394,7 +398,7 @@ public class Spotify extends SpotifyCredentials {
         boolean hasMore = true;
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
-                    .limit(limit)
+                    .limit(this.settings.spotifySongLimit)
                     .offset(offset)
                     .build();
             try {
@@ -454,7 +458,7 @@ public class Spotify extends SpotifyCredentials {
                 artists.add(this.artists.get(raw_artist.getName()));
             } else {
                 Artist artist = new Artist(raw_artist.getName());
-                if (false) { // TODO: link to settings
+                if (this.settings.spotifyArtistPfp) {
                     boolean done = false;
                     while (!done) { // this is incase of api timeout
                         try {
