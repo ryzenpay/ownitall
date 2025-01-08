@@ -20,7 +20,7 @@ public class Song {
     /**
      * default song constructor
      * 
-     * @param name
+     * @param name - String song name
      */
     public Song(String name) {
         this.name = name;

@@ -112,7 +112,7 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
     /**
      * set youtube page token of youtube liked songs
      * 
-     * @param yotubePageToken - String of token to continue from
+     * @param youtubePageToken - String of token to continue from
      */
     public void setYoutubePageToken(String youtubePageToken) {
         this.youtubePageToken = youtubePageToken;

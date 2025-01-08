@@ -286,7 +286,8 @@ public class Spotify extends SpotifyCredentials {
     /**
      * get all songs of an album
      * 
-     * @param albumId - spotify ID of the album
+     * @param coverArt - album coverart to set on songs
+     * @param albumId  - spotify ID of the album
      * @return - arraylist of constructed Songs
      */
     public ArrayList<Song> getAlbumSongs(URI coverArt, String albumId) {

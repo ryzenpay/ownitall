@@ -107,9 +107,9 @@ public class SpotifyCredentials {
     }
 
     /**
-     * true if spotify credentials is empty
+     * true if spotify credentials is empty (if successfully initialized)
      * 
-     * @return
+     * @return - true if empty, false if not
      */
     @JsonIgnore
     public boolean isNull() {

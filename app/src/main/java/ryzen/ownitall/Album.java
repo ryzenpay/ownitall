@@ -21,8 +21,7 @@ public class Album {
     /**
      * Default constructor of album without album cover
      * 
-     * @param name    - album name
-     * @param artists - arraylist of all artists
+     * @param name - album name
      */
     public Album(String name) {
         this.name = name;

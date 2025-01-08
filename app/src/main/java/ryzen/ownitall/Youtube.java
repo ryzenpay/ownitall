@@ -77,8 +77,9 @@ public class Youtube extends YoutubeCredentials {
     /**
      * Create an authorized Credential object.
      *
+     * @param httpTransport - idk
      * @return an authorized Credential object.
-     * @throws IOException
+     * @throws IOException - standard IOException
      */
     public Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         // Create GoogleClientSecrets from the stored client secret

@@ -17,7 +17,7 @@ public class Input {
     /**
      * function to get the instance of input
      * 
-     * @return
+     * @return - Input instance
      */
     public static Input getInstance() {
         if (instance == null) {

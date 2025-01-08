@@ -62,9 +62,9 @@ public class YoutubeCredentials {
     }
 
     /**
-     * check if youtube credentials successfully initialized
+     * check if youtube credentials empty (if successfully initialized)
      * 
-     * @return - true if successfully initialized, false if not
+     * @return - true if empty, false if not
      */
     @JsonIgnore
     public boolean isNull() {
