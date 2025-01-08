@@ -14,8 +14,8 @@ public class Playlist {
     private URI coverArt;
     private ArrayList<Song> songs; // arraylist cuz it can contain duplicates
 
-    private String youtubePageToken = null; // TODO: create "update" method to save API requests
-    private int spotifyPageOffset = -1;
+    private String youtubePageToken; // TODO: create "update" method to save API requests
+    private int spotifyPageOffset;
 
     /**
      * Default playlist constructor
@@ -26,6 +26,26 @@ public class Playlist {
         this.name = name;
         this.songs = new ArrayList<>();
         this.coverArt = null;
+        this.youtubePageToken = null;
+        this.spotifyPageOffset = -1;
+    }
+
+    /**
+     * merge two playlist objects together
+     * 
+     * @param playlist - constructed playlist to merge
+     */
+    public void mergePlaylist(Playlist playlist) {
+        this.addSongs(playlist.getSongs());
+        if (this.coverArt == null) {
+            this.coverArt = playlist.getCoverart();
+        }
+        if (playlist.getYoutubePageToken() != null) {
+            this.youtubePageToken = playlist.getYoutubePageToken();
+        }
+        if (playlist.getSpotifyPageOffset() > this.spotifyPageOffset) {
+            this.spotifyPageOffset = playlist.getSpotifyPageOffset();
+        }
     }
 
     /**
@@ -146,9 +166,7 @@ public class Playlist {
 
     @Override
     public int hashCode() {
-        int hashCode = 0;
-        hashCode += name.hashCode();
-        return hashCode;
+        return this.name.hashCode();
     }
 
     @JsonCreator

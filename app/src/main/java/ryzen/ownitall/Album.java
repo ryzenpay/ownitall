@@ -31,6 +31,19 @@ public class Album {
     }
 
     /**
+     * merge two albums together
+     * 
+     * @param album - constructed Album to merge
+     */
+    public void mergeAlbum(Album album) {
+        this.addSongs(album.getSongs());
+        this.addArtists(album.getArtists());
+        if (this.coverImage == null) {
+            this.coverImage = album.getCoverImage();
+        }
+    }
+
+    /**
      * get the name of the current album class
      * 
      * @return - album name
@@ -105,8 +118,8 @@ public class Album {
      * 
      * @return - arraylist of artists
      */
-    public LinkedHashSet<Artist> getArtists() {
-        return new LinkedHashSet<>(this.artists);
+    public ArrayList<Artist> getArtists() {
+        return new ArrayList<Artist>(this.artists);
     }
 
     /**
@@ -125,8 +138,10 @@ public class Album {
      */
     @JsonIgnore
     public Artist getMainArtist() {
-        ArrayList<Artist> artists = new ArrayList<>(this.artists);
-        return artists.get(0);
+        if (this.artists.isEmpty()) {
+            return null;
+        }
+        return artists.iterator().next();
     }
 
     /**
@@ -153,7 +168,11 @@ public class Album {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode() + this.getMainArtist().hashCode();
+        int hashCode = this.name.hashCode();
+        if (!this.artists.isEmpty()) {
+            hashCode = this.getMainArtist().hashCode();
+        }
+        return hashCode;
     }
 
     @JsonCreator

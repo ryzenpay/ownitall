@@ -11,9 +11,6 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
 
     private LinkedHashSet<Song> likedSongs;
 
-    private String youtubePageToken = null;
-    private int spotifyPageOffset = -1;
-
     /**
      * LikedSongs constructor with songs
      * 
@@ -100,42 +97,6 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
         return false;
     }
 
-    /**
-     * get youtube page token of youtube liked songs
-     * 
-     * @return - String of token to continue from
-     */
-    public String getYoutubePageToken() {
-        return this.youtubePageToken;
-    }
-
-    /**
-     * set youtube page token of youtube liked songs
-     * 
-     * @param youtubePageToken - String of token to continue from
-     */
-    public void setYoutubePageToken(String youtubePageToken) {
-        this.youtubePageToken = youtubePageToken;
-    }
-
-    /**
-     * get spotify offset for spotify liked songs
-     * 
-     * @return - int of spotify page offset
-     */
-    public int getSpotifyPageOffset() {
-        return this.spotifyPageOffset;
-    }
-
-    /**
-     * set spotify page offset for spotify liked songs
-     * 
-     * @param spotifyPageOffset - int of spotify page offset
-     */
-    public void setSpotifyPageOffset(int spotifyPageOffset) {
-        this.spotifyPageOffset = spotifyPageOffset;
-    }
-
     @JsonCreator
     public LikedSongs(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("youtubePageToken") String youtubePageToken,
@@ -145,9 +106,9 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
             this.likedSongs = songs;
         }
         if (youtubePageToken != null) {
-            this.youtubePageToken = youtubePageToken;
+            this.setYoutubePageToken(youtubePageToken);
         }
-        this.spotifyPageOffset = spotifyPageOffset;
+        this.setSpotifyPageOffset(spotifyPageOffset);
         if (coverArt != null) {
             this.setCoverArt(coverArt);
         }

@@ -3,6 +3,7 @@ package ryzen.ownitall;
 import java.io.File;
 
 import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.time.Duration;
 
@@ -37,10 +38,9 @@ public class Main {
                 switch (choice) {
                     case 1:
                         Import dataImport = new Import(DATAFOLDER);
-                        likedSongs.addSongs(dataImport.getLikedSongs()); // TODO: this currently overwrites, but needs
-                                                                         // to merge their song arrays
-                        albums.addAll(dataImport.getAlbums());
-                        playlists.addAll(dataImport.getPlaylists());
+                        likedSongs.addSongs(dataImport.getLikedSongs());
+                        mergeAlbums(dataImport.getAlbums());
+                        mergePlaylists(dataImport.getPlaylists());
                         break;
                     case 2:
                         System.out.println("Export currently not supported");
@@ -62,9 +62,42 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.err.println("Invalid input. or an error occured:\n" + e);
+                e.printStackTrace();
             }
         }
 
+    }
+
+    private static void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
+        LinkedHashMap<Integer, Album> mappedAlbums = new LinkedHashMap<>();
+        for (Album album : albums) {
+            mappedAlbums.put(album.hashCode(), album);
+        }
+        for (Album album : mergeAlbums) {
+            Album foundAlbum = mappedAlbums.get(album.hashCode());
+            if (foundAlbum == null) {
+                mappedAlbums.put(album.hashCode(), album);
+            } else {
+                foundAlbum.mergeAlbum(album);
+            }
+        }
+        albums = new LinkedHashSet<>(mappedAlbums.values());
+    }
+
+    private static void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
+        LinkedHashMap<Integer, Playlist> mappedPlaylists = new LinkedHashMap<>();
+        for (Playlist playlist : playlists) {
+            mappedPlaylists.put(playlist.hashCode(), playlist);
+        }
+        for (Playlist playlist : mergePlaylists) {
+            Playlist foundPlaylist = mappedPlaylists.get(playlist.hashCode());
+            if (foundPlaylist == null) {
+                mappedPlaylists.put(playlist.hashCode(), playlist);
+            } else {
+                foundPlaylist.mergePlaylist(playlist);
+            }
+        }
+        playlists = new LinkedHashSet<>(mappedPlaylists.values());
     }
 
     /**

@@ -25,7 +25,8 @@ public class Import {
         this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
         this.supported = new LinkedHashMap<>();
-        supported.put("Youtube", this::importYoutube); // keeps insertion order like this
+        supported.put("Exit", this::exit); // keep this one first
+        supported.put("Youtube", this::importYoutube);
         supported.put("Spotify", this::importSpotify);
         supported.put("Local", this::importLocal);
         while (!this.status) {
@@ -56,7 +57,7 @@ public class Import {
             return null;
         }
         ArrayList<String> options = new ArrayList<>(this.supported.keySet());
-        return options.get(choice - 1);
+        return options.get(choice);
     }
 
     /**
@@ -138,6 +139,10 @@ public class Import {
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
         System.out.println("Processed " + localPlaylists.size() + " playlists");
         playlists.addAll(playlists);
+        this.status = true;
+    }
+
+    private void exit() {
         this.status = true;
     }
 

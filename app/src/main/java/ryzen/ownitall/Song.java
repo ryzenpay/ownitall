@@ -153,11 +153,15 @@ public class Song {
 
     @Override
     public int hashCode() {
-        if (this.artists == null) {
-            return name.hashCode() + duration.hashCode();
+        int hashCode = name.hashCode();
+        if (!this.artists.isEmpty()) {
+            hashCode += this.getMainArtist().hashCode();
         }
-        return name.hashCode() + this.getMainArtist().hashCode() + duration.hashCode(); // TODO: similarity search (%
-                                                                                        // check)
+        if (this.duration != null) {
+            hashCode += duration.hashCode();
+        }
+        return hashCode; // TODO: similarity search (%
+                         // check)
     }
 
     @JsonCreator
