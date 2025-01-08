@@ -51,7 +51,7 @@
     }
 
     tasks.javadoc {
-        destinationDir = file("$rootDir/documentation")
+        destinationDir = file("$rootDir/docs")
         (options as StandardJavadocDocletOptions).apply {
             isAuthor = true
             isVersion = true
