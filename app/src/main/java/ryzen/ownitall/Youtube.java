@@ -153,8 +153,7 @@ public class Youtube extends YoutubeCredentials {
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = new Song(snippet.getTitle());
                             song.addArtist(new Artist(snippet.getChannelTitle()));
-                            song.setDuration(Duration.parse(contentDetails.getDuration()));// TODO: this is not
-                                                                                           // working correctly
+                            song.setDuration(Duration.parse(contentDetails.getDuration()));
                             songs.addSong(song);
                         }
                     }
@@ -297,8 +296,7 @@ public class Youtube extends YoutubeCredentials {
             VideoListResponse videoResponse = videoRequest.execute();
             if (!videoResponse.getItems().isEmpty()) {
                 Video video = videoResponse.getItems().get(0);
-                return Duration.parse(video.getContentDetails().getDuration()); // TODO: currently does not work (also
-                                                                                // need somewhere higher up)
+                return Duration.parse(video.getContentDetails().getDuration());
             }
         } catch (IOException e) {
             System.err.println("Error getting video duration: " + e.getMessage());

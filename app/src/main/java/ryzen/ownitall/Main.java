@@ -30,7 +30,8 @@ public class Main {
             System.out.println("[2] export");
             System.out.println("[3] print inventory");
             System.out.println("[4] save");
-            System.out.println("[5] Settings"); // TODO: settings class (save in .appdata/settings.json)
+            System.out.println("[5] Tools"); // TODO: tools class
+            System.out.println("[6] Settings"); // TODO: settings class (save in .appdata/settings.json)
             System.out.println("[0] exit");
             System.out.print("Enter your choice: ");
             try {
@@ -51,6 +52,12 @@ public class Main {
                         break;
                     case 4:
                         exportData();
+                        break;
+                    case 5:
+                        System.out.println("Tools currently not supported");
+                        break;
+                    case 6:
+                        System.out.println("Settings currently not supported");
                         break;
                     case 0:
                         exportData();

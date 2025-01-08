@@ -173,8 +173,7 @@ public class Song {
         if (this.duration != null) {
             hashCode += duration.hashCode();
         }
-        return hashCode; // TODO: similarity search (%
-                         // check)
+        return hashCode;
     }
 
     @JsonCreator
