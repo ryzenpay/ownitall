@@ -2,10 +2,12 @@
 big disclaimer, it is still in works and no where near close to finished
 another note i want to add before i forget: use of this program is at your own risk and can be agains the TOS of certain platforms, use at your own caution
 
-# ownitall 
+# ownitall
 have full control over your music no matter the playform (whichever is currently supported),  
 OwnItAll hopes to ease the movement of your music library between playforms including local in supported formats
 
+# documentation
+all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## Spotify
 when attempting to import or export to spotify, you will need to provide the 3 following things:  
@@ -48,16 +50,16 @@ When doing this, read every TOS as you are using them at the risk of your own sp
 the current format to importing your local music library is currently strict  
     - if you have a "liked songs" folder, name it "liked songs"  
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
-        - default is playlist
+        - default is playlist  
     - cover image of an album needs to be a file called "cover.jpg" in the folder  
-    - "loose" songs in the music library folder (root of folder) are added to "liked songs"
+    - "loose" songs in the music library folder (root of folder) are added to "liked songs"  
 
 
-# Gradle and compiling  
-## generate javadoc documentation  
+# Gradle and compiling
+## generate javadoc documentation
 to update the javadoc documentation, run the command `./gradlew javadoc` in the root of the repository  
 please fix any of the errors it throws as they show incomplete documentation  
 
-## Compile new jar file  
+## Compile new jar file
 to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
 a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  
