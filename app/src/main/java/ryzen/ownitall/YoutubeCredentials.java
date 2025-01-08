@@ -1,10 +1,5 @@
 package ryzen.ownitall;
 
-import java.util.ArrayList;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class YoutubeCredentials {
     private String applicationName;
     private String clientId;

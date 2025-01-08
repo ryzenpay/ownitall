@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.URI;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import se.michaelthelin.spotify.SpotifyHttpManager;
 
 public class SpotifyCredentials {
@@ -63,6 +65,7 @@ public class SpotifyCredentials {
         return this.redirectUrl;
     }
 
+    @JsonIgnore
     public void setCode(String code) {
         this.code = code;
     }
@@ -95,6 +98,7 @@ public class SpotifyCredentials {
      * 
      * @return
      */
+    @JsonIgnore
     public boolean isNull() {
         if (this.getClientId() == null || this.getClientSecret() == null || this.getRedirectUrl() == null) {
             return true;
