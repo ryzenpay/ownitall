@@ -6,118 +6,129 @@ import java.util.ArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Settings {
-    ObjectMapper objectMapper;
+    @JsonIgnore
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
     // TODO: move spotify and youtube credentials to here?
     // the defaults: (protected for the ones that can be changed by user)
+
     /**
      * default file names (without extensions)
      */
-
-    protected String dataFolder = "data";
-
+    protected String dataFolderPath = "data";
     protected String likedSongName = "liked songs";
-
     protected String albumFile = "albums";
-
     protected String likedSongFile = "likedsongs";
-
     protected String playlistFile = "playlists";
 
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
      * to prevent having to provide them each time
      */
-
     protected boolean saveCredentials = true;
+
     /**
      * in the Spotify class, this decides if the user has to click "accept"
      * everytime they "log in", set to true in case you use multiple accounts and
      * want to easily switch between them
      */
-
     protected boolean spotifyShowDialog = false;
+
     /**
      * to limit number of songs in each spotify API batch query
      */
-
     protected int spotifySongLimit = 50;
-
     protected int spotifyAlbumLimit = 20;
-
     protected int spotifyPlaylistLimit = 20;
+
     /**
      * to get the profile picture of the artist, default to false as it hugely
      * increases API requests
      */
-
     protected boolean spotifyArtistPfp = false;
+
     /**
      * to limit number of songs in each youtube API batch query
      */
-
     protected Long youtubeSongLimit = 50L;
-
     protected Long youtubePlaylistLimit = 20L;
 
     /**
      * similarity percentage used to check if artists, songs, albums or playlists
      * are equals (to merge or not)
      */
-
     protected int similarityPercentage = 90;
 
     /**
      * location of where to store and get settings
      */
+    @JsonIgnore
     private final String settingsFolderPath = ".appdata";
-    private final String settingsFilePath = settingsFolderPath + "/settings.json";
+    @JsonIgnore
+    private final String settingsFilePath = "settings.json";
 
+    /**
+     * default settings constructor with default settings
+     */
     public Settings() {
-        this.objectMapper = new ObjectMapper();
-        this.loadSettings();
     }
 
+    /**
+     * to get custom settings set by user, load them
+     * 
+     * @return - compiled Settings with custom settings
+     */
+    @JsonIgnore
+    public static Settings load() {
+        Settings settings = new Settings();
+        settings.loadSettings();
+        return settings;
+    }
+
+    @JsonIgnore
     private void setSettingsFolder() {
         File settingsFolder = new File(this.settingsFolderPath);
-        if (settingsFolder.exists()) { // Create folder if it does not exist
-            settingsFolder.mkdirs();
+        if (!settingsFolder.exists()) {
+            settingsFolder.mkdirs(); // Create folder if it does not exist
         }
     }
 
+    @JsonIgnore
     public void loadSettings() {
-        this.setSettingsFolder();
-        File settingsFile = new File(settingsFilePath);
+        setSettingsFolder();
+        File settingsFile = new File(settingsFolderPath, settingsFilePath);
+
         if (!settingsFile.exists() || settingsFile.length() == 0) {
             this.saveSettings();
             return;
         }
+
         try {
-            Settings importSettings = this.objectMapper.readValue(settingsFile, Settings.class);
-            if (importSettings == null) {
-                return;
+            Settings importedSettings = objectMapper.readValue(settingsFile, Settings.class);
+            if (importedSettings != null) {
+                this.setSettings(importedSettings);
             }
-            if (importSettings.isNull()) {
-                return;
-            }
-            this.setSettings(importSettings);
         } catch (IOException e) {
             System.err.println("Error importing settings: " + e);
             System.err.println("If this persists, delete the file: " + settingsFile.getAbsolutePath());
-            return;
         }
     }
 
+    @JsonIgnore
     public void saveSettings() {
         this.setSettingsFolder();
-        File settingsFile = new File(settingsFilePath);
+        File settingsFile = new File(settingsFolderPath, settingsFilePath);
         try {
-            this.objectMapper.writeValue(settingsFile, this);
+            objectMapper.writeValue(settingsFile, this);
         } catch (IOException e) {
             System.err.println("Error saving settings: " + e);
         }
@@ -147,6 +158,7 @@ public class Settings {
     /**
      * print menu of settings and values, prompt user for which to change
      */
+    @JsonIgnore
     public void changeSettings() {
         while (true) {
             System.out.println("Choose a setting to change: ");
@@ -192,6 +204,7 @@ public class Settings {
      * @return - true if modified, false if not
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
+    @JsonIgnore
     public boolean changeSetting(Field setting) throws IllegalAccessException {
         System.out.print("Enter new value for " + setting.getName() + ": ");
         if (setting.getType() == boolean.class) {
@@ -221,6 +234,7 @@ public class Settings {
      * 
      * @param setting - constructed Settings
      */
+    @JsonIgnore
     public void setSettings(Settings setting) {
         for (Field field : setting.getClass().getDeclaredFields()) {
             if (Modifier.isProtected(field.getModifiers())) {
@@ -256,12 +270,12 @@ public class Settings {
         return true;
     }
 
-    public String getDataFolder() {
-        return dataFolder;
+    public String getDataFolderPath() {
+        return dataFolderPath;
     }
 
-    public void setDataFolder(String dataFolder) {
-        this.dataFolder = dataFolder;
+    public void setDataFolderPath(String dataFolderPath) {
+        this.dataFolderPath = dataFolderPath;
     }
 
     public String getLikedSongName() {

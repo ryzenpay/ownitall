@@ -18,7 +18,7 @@ public class Main {
     private static Settings settings;
 
     public static void main(String[] args) {
-        settings = new Settings();
+        settings = Settings.load();
         if (!checkDataFolder()) {
             albums = new LinkedHashSet<>();
             playlists = new LinkedHashSet<>();
