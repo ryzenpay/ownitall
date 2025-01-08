@@ -48,6 +48,11 @@ public class SpotifyCredentials {
         this.redirectUrl = SpotifyHttpManager.makeUri(redirectUrl);
     }
 
+    /**
+     * get spotify api client id
+     * 
+     * @return - string client id
+     */
     public String getClientId() {
         if (this.clientId == null) {
             return null;
@@ -55,44 +60,50 @@ public class SpotifyCredentials {
         return this.clientId;
     }
 
+    /**
+     * set spotify api client id
+     * 
+     * @return - string client id
+     */
     public String getClientSecret() {
         return this.clientSecret;
     }
 
+    /**
+     * get spotify api redirect url (String)
+     * 
+     * @return - string spotify api redirect url
+     */
     public String getRedirectUrlString() {
         return this.redirectUrl.toString();
     }
 
+    /**
+     * get spotify api redirect url (URI)
+     * 
+     * @return - URI spotify api redirect url
+     */
     public URI getRedirectUrl() {
         return this.redirectUrl;
     }
 
+    /**
+     * set spotifyAPI temoporary authentication code
+     * 
+     * @param code - String code
+     */
     @JsonIgnore
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * get spotifyAPI temporary authentication code
+     * 
+     * @return - String code
+     */
     public String getCode() {
         return this.code;
-    }
-
-    public void setCodeExpiration(int codeExpiration) {
-        this.codeExpiration = LocalDateTime.now().plusSeconds(codeExpiration);
-    }
-
-    /**
-     * check the expiration of the current code, but also fix if close
-     * 
-     * @return - true if expired, false if not expired
-     */
-    public boolean checkExpiration() {
-        if (this.codeExpiration == null) {
-            return true;
-        }
-        if (this.codeExpiration.isBefore(LocalDateTime.now())) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -108,6 +119,9 @@ public class SpotifyCredentials {
         return false;
     }
 
+    /**
+     * start temporary local server to "intercept" spotify api code
+     */
     public void startLocalServer() {
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
             System.out.println("Waiting for the authorization code...");
@@ -140,6 +154,12 @@ public class SpotifyCredentials {
         }
     }
 
+    /**
+     * extract code from the "intercepted" spotify api
+     * 
+     * @param request - raw response data
+     * @return - String code
+     */
     private String extractCodeFromRequest(String request) {
         int codeIndex = request.indexOf("code=");
         if (codeIndex != -1) {
@@ -155,6 +175,13 @@ public class SpotifyCredentials {
         return null;
     }
 
+    /**
+     * send response to website if received code
+     * 
+     * @param clientSocket - socket to send through
+     * @param message      - additional success message
+     * @throws IOException
+     */
     private void sendResponse(Socket clientSocket, String message) throws IOException { // TODO: fix web page to show
                                                                                         // this
         String response = "HTTP/1.1 200 OK\r\n"

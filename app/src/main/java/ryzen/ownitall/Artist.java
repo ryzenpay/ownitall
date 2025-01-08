@@ -10,15 +10,30 @@ public class Artist {
     private String name;
     private URI profilePicture;
 
+    /**
+     * default artist constructor setting name and initializing values
+     * 
+     * @param name - string artist name
+     */
     public Artist(String name) {
         this.name = name;
         this.profilePicture = null;
     }
 
+    /**
+     * get artist name
+     * 
+     * @return - string artist name
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * set artists profile picture
+     * 
+     * @param profilePicture - string url of artists profile picture
+     */
     public void setProfilePicture(String profilePicture) {
         try {
             this.profilePicture = new URI(profilePicture);
@@ -27,6 +42,11 @@ public class Artist {
         }
     }
 
+    /**
+     * get artists profile picture
+     * 
+     * @return - constructed URI of artists profile picture
+     */
     public URI getProfilePicture() {
         return this.profilePicture;
     }

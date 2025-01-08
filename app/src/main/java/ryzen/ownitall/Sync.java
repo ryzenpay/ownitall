@@ -21,8 +21,13 @@ public class Sync {
     private File youtubeFile;
     ObjectMapper objectMapper;
 
+    /**
+     * initialize all files for syncronization
+     * 
+     * @param dataPath - datapath of where to store data
+     */
     public Sync(String dataPath) {
-        this.setDataFolder(dataPath);
+        this.dataFolder = new File(dataPath);
         this.albumFile = new File(this.dataFolder, "albums.json");
         this.albumFile = new File(this.dataFolder, "albums.json");
         this.playlistFile = new File(this.dataFolder, "playlists.json");
@@ -32,23 +37,20 @@ public class Sync {
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
-    private void setDataFolder(String dataPath) {
-        this.dataFolder = new File(dataPath);
+    /**
+     * function which is called to check if datafolder exists and create if deleted
+     * in middle of process
+     */
+    private void setDataFolder() { // TODO: acc use this
         if (!this.dataFolder.exists()) { // create folder if it does not exist
             this.dataFolder.mkdirs();
         }
     }
 
-    private void setDataFolder() {
-        if (!this.dataFolder.exists()) { // create folder if it does not exist
-            this.dataFolder.mkdirs();
-        }
-    }
-
-    public File getDataFolder() {
-        return this.dataFolder;
-    }
-
+    /**
+     * create archive folder (current date) in dataPath and move all current files
+     * to it
+     */
     public void archive() { // TODO: implement into a menu
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -69,6 +71,11 @@ public class Sync {
         }
     }
 
+    /**
+     * display a menu of all archived files (folders and dates) and give an option
+     * to unarchive
+     * also archives current files with todays date to prevent data loss
+     */
     public void unarchive() {
         ArrayList<File> archiveFolders = new ArrayList<>();
         for (File file : this.dataFolder.listFiles()) {
@@ -92,6 +99,11 @@ public class Sync {
         }
     }
 
+    /**
+     * save all albums
+     * 
+     * @param albums - linkedhashset of constructed Album
+     */
     public void exportAlbums(LinkedHashSet<Album> albums) {
         try {
             this.objectMapper.writeValue(this.albumFile, albums);
@@ -101,6 +113,11 @@ public class Sync {
         }
     }
 
+    /**
+     * import saved albums
+     * 
+     * @return - linkedhashset of constructed Album
+     */
     public LinkedHashSet<Album> importAlbums() {
         LinkedHashSet<Album> albums;
         if (!albumFile.exists()) {
@@ -119,6 +136,11 @@ public class Sync {
         return albums;
     }
 
+    /**
+     * save all playlists
+     * 
+     * @param playlists - linkedhashset of constructed Playlist
+     */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
         try {
             this.objectMapper.writeValue(this.playlistFile, playlists);
@@ -128,6 +150,11 @@ public class Sync {
         }
     }
 
+    /**
+     * import all saved playlists
+     * 
+     * @return - linkedhashset of constructed Playlist
+     */
     public LinkedHashSet<Playlist> importPlaylists() {
         LinkedHashSet<Playlist> playlists;
         if (!playlistFile.exists()) {
@@ -146,6 +173,11 @@ public class Sync {
         return playlists;
     }
 
+    /**
+     * save all liked songs
+     * 
+     * @param likedSongs - constructed LikedSongs
+     */
     public void exportLikedSongs(LikedSongs likedSongs) {
         try {
             this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
@@ -155,6 +187,11 @@ public class Sync {
         }
     }
 
+    /**
+     * import all saved liked songs
+     * 
+     * @return - constructed LikedSongs
+     */
     public LikedSongs importLikedSongs() {
         LikedSongs likedSongs;
         if (!likedSongsFile.exists()) {
@@ -172,6 +209,11 @@ public class Sync {
         return likedSongs;
     }
 
+    /**
+     * import saved spotify credentials
+     * 
+     * @return - constructed SpotifyCredentials (use isNull to check)
+     */
     public SpotifyCredentials importSpotifyCredentials() {
         SpotifyCredentials spotifyCredentials;
         if (!spotifyFile.exists()) {
@@ -189,6 +231,11 @@ public class Sync {
         return spotifyCredentials;
     }
 
+    /**
+     * save spotify credentials
+     * 
+     * @param spotifyCredentials - constructed SpotifyCredentials
+     */
     public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
         try {
             this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
@@ -198,6 +245,11 @@ public class Sync {
         }
     }
 
+    /**
+     * import saved youtube credentials (use isNull to check)
+     * 
+     * @return - constructed YoutubeCredentials
+     */
     public YoutubeCredentials importYoutubeCredentials() {
         YoutubeCredentials youtubeCredentials;
         if (!youtubeFile.exists()) {
@@ -214,6 +266,11 @@ public class Sync {
         return youtubeCredentials;
     }
 
+    /**
+     * save youtube credentials
+     * 
+     * @param youtubeCredentials - constructed YoutubeCredentials
+     */
     public void exportYoutubeCredentials(YoutubeCredentials youtubeCredentials) {
         try {
             this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);

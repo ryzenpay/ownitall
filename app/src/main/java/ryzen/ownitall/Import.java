@@ -13,6 +13,11 @@ public class Import {
     private LikedSongs likedSongs;
     private LinkedHashMap<String, Runnable> supported;
 
+    /**
+     * constructor for Import which also prompts user for import options
+     * 
+     * @param dataFolder - datafolder of where to get presaved credentials
+     */
     public Import(String dataFolder) {
         this.dataFolder = dataFolder;
         this.status = false;
@@ -31,6 +36,11 @@ public class Import {
         }
     }
 
+    /**
+     * prompt user for import options from the supported array
+     * 
+     * @return - String key value of the options hashmap
+     */
     private String promptImport() {
         System.out.println("Choose an import option from the following: ");
         int i = 1;
@@ -49,6 +59,9 @@ public class Import {
         return options.get(choice - 1);
     }
 
+    /**
+     * import music from youtube, getting or setting credentials as needed
+     */
     private void importYoutube() {
         Sync sync = new Sync(this.dataFolder);
         YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
@@ -78,6 +91,9 @@ public class Import {
         this.status = true;
     }
 
+    /**
+     * import music from spotify, getting or setting credentials as needed
+     */
     private void importSpotify() {
         Sync sync = new Sync(this.dataFolder);
         SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
@@ -107,6 +123,9 @@ public class Import {
         this.status = true;
     }
 
+    /**
+     * import music from a local music library, prompting for location
+     */
     private void importLocal() {
         Local local = new Local();
         System.out.println("Getting all music from your local library");
@@ -122,18 +141,37 @@ public class Import {
         this.status = true;
     }
 
+    /**
+     * get imported albums
+     * 
+     * @return - linkedhashset of constructed Album
+     */
     public LinkedHashSet<Album> getAlbums() {
         return this.albums;
     }
 
+    /**
+     * get imported playlists
+     * 
+     * @return - linkedhashset of constructed Playlist
+     */
     public LinkedHashSet<Playlist> getPlaylists() {
         return this.playlists;
     }
 
+    /**
+     * get liked songs
+     * 
+     * @return - linkedhashset of constructed Song
+     */
     public LinkedHashSet<Song> getLikedSongs() {
         return new LinkedHashSet<>(this.likedSongs.getSongs());
     }
 
+    /**
+     * print overview of imported music
+     * similar to Main inventory print with recursion 1
+     */
     public void printOverview() {
         int trackCount = 0;
         for (Playlist playlist : this.playlists) {

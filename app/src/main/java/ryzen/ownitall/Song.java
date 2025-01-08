@@ -18,11 +18,9 @@ public class Song {
     URI coverImage;
 
     /**
-     * Default Song constructor
+     * default song constructor
      * 
-     * @param name     - song name
-     * @param artists  - arraylist of artists (converted to set for no duplicates)
-     * @param duration - java.Duration on the song's duration
+     * @param name
      */
     public Song(String name) {
         this.name = name;
@@ -34,12 +32,17 @@ public class Song {
     /**
      * get the name of the current song class
      * 
-     * @return - song name
+     * @return - string song name
      */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * set song name
+     * 
+     * @param name - string song name
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -80,6 +83,12 @@ public class Song {
         return new ArrayList<>(this.artists);
     }
 
+    /**
+     * get main artist of song
+     * currently the first artist added
+     * 
+     * @return - constructed Artist
+     */
     private Artist getMainArtist() {
         ArrayList<Artist> artists = new ArrayList<>(this.artists);
         return artists.get(0);
@@ -98,18 +107,29 @@ public class Song {
     }
 
     /**
-     * duration in terms of seconds
+     * set songs duration
      * 
-     * @param duration
+     * @param duration - Long in duration
+     * @param unit     - ChronoUnit of measurement for duration
      */
     public void setDuration(long duration, ChronoUnit unit) {
         this.duration = Duration.of(duration, unit);
     }
 
+    /**
+     * set songs duration with constructed Duration
+     * 
+     * @param duration - constructed Duration
+     */
     public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
+    /**
+     * set songs cover iamge
+     * 
+     * @param coverImage - String of songs cover image URL
+     */
     public void setCoverImage(String coverImage) {
         try {
             this.coverImage = new URI(coverImage);

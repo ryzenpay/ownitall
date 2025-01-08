@@ -140,7 +140,6 @@ public class Spotify extends SpotifyCredentials {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-            this.setCodeExpiration(authorizationCodeCredentials.getExpiresIn());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             System.err.println("Error logging in: " + e);
         }
@@ -157,7 +156,6 @@ public class Spotify extends SpotifyCredentials {
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            this.setCodeExpiration(authorizationCodeCredentials.getExpiresIn());
             return true;
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             System.err.println("Error: " + e.getMessage());
@@ -165,10 +163,20 @@ public class Spotify extends SpotifyCredentials {
         }
     }
 
+    /**
+     * get spotify credentials (used for exporting)
+     * 
+     * @return - constructed SpotifyCredentials
+     */
     public SpotifyCredentials getSpotifyCredentials() {
         return new SpotifyCredentials(this.getClientId(), this.getClientSecret(), this.getRedirectUrlString());
     }
 
+    /**
+     * sleep function for when API limit is hit
+     * 
+     * @param seconds - long amount of seconds to sleep for
+     */
     private void sleep(long seconds) { // TODO: make it repeat action after timer
         long msec = seconds * 1000;
         try {
@@ -431,6 +439,13 @@ public class Spotify extends SpotifyCredentials {
         return songs;
     }
 
+    /**
+     * process array of SpotifyAPI artists to constructed Artist
+     * can also get artists pfp if set in settings
+     * 
+     * @param raw_artists - array of SpotifyAPI artists
+     * @return - arraylist of constructed Artist
+     */
     public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
         ArrayList<Artist> artists = new ArrayList<>();
         for (ArtistSimplified raw_artist : raw_artists) {

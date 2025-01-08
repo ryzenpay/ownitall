@@ -18,7 +18,7 @@ public class Playlist {
     private int spotifyPageOffset = -1;
 
     /**
-     * Default playlist constructor without coverart
+     * Default playlist constructor
      * 
      * @param name - name of the playlist
      */
@@ -37,6 +37,11 @@ public class Playlist {
         return this.name;
     }
 
+    /**
+     * set playlist cover art
+     * 
+     * @param coverArt - String of coverart URL
+     */
     public void setCoverArt(String coverArt) {
         try {
             this.coverArt = new URI(coverArt);
@@ -54,34 +59,74 @@ public class Playlist {
         return this.coverArt;
     }
 
+    /**
+     * add songs to playlist
+     * 
+     * @param songs - arraylist of constructed Song
+     */
     public void addSongs(ArrayList<Song> songs) {
         this.songs.addAll(songs);
     }
 
+    /**
+     * add song to playlist
+     * 
+     * @param song - constructed Song
+     */
     public void addSong(Song song) {
         this.songs.add(song);
     }
 
+    /**
+     * return size/numbers of songs in playlist
+     * 
+     * @return - integer of size of playlist
+     */
     public int size() {
         return this.songs.size();
     }
 
+    /**
+     * get all playlist songs
+     * 
+     * @return - arraylist of constructed Song
+     */
     public ArrayList<Song> getSongs() {
         return this.songs;
     }
 
+    /**
+     * get youtube page token of youtube playlist
+     * 
+     * @return - String youtube page token
+     */
     public String getYoutubePageToken() {
         return this.youtubePageToken;
     }
 
+    /**
+     * set youtube page token of youtube playlist
+     * 
+     * @param youtubePageToken - String youtube page token
+     */
     public void setYoutubePageToken(String youtubePageToken) {
         this.youtubePageToken = youtubePageToken;
     }
 
+    /**
+     * get spotify offset for spotify playlist
+     * 
+     * @return - int spotify offset
+     */
     public int getSpotifyPageOffset() {
         return this.spotifyPageOffset;
     }
 
+    /**
+     * set spotify offset for spotify playlist
+     * 
+     * @param spotifyPageOffset - int spotify offset
+     */
     public void setSpotifyPageOffset(int spotifyPageOffset) {
         this.spotifyPageOffset = spotifyPageOffset;
     }

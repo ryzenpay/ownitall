@@ -34,22 +34,42 @@ public class Youtube extends YoutubeCredentials {
     private com.google.api.services.youtube.YouTube youtubeApi;
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
+    /**
+     * default youtube constructor asking for user input
+     */
     public Youtube() {
         super();
         this.youtubeApi = this.getService();
     }
 
+    /**
+     * youtube constructor with known values
+     * 
+     * @param applicationName - youtube api application name
+     * @param clientId        - youtube api client id
+     * @param clientSecret    - youtube api client secret
+     */
     public Youtube(String applicationName, String clientId, String clientSecret) {
         super(applicationName, clientId, clientSecret);
         this.youtubeApi = this.getService();
     }
 
+    /**
+     * youtube constructor with known youtube credentials
+     * 
+     * @param youtubeCredentials - constructed YoutubeCredentials
+     */
     public Youtube(YoutubeCredentials youtubeCredentials) {
         super(youtubeCredentials.getApplicationName(), youtubeCredentials.getClientId(),
                 youtubeCredentials.getClientSecret());
         this.youtubeApi = this.getService();
     }
 
+    /**
+     * get constructed youtube credentials (for exporting)
+     * 
+     * @return - constructed YoutubeCredentials
+     */
     public YoutubeCredentials getYoutubeCredentials() {
         return new YoutubeCredentials(this.getApplicationName(), this.getClientId(), this.getClientSecret());
     }
@@ -105,6 +125,11 @@ public class Youtube extends YoutubeCredentials {
         return true;
     }
 
+    /**
+     * get all youtube liked songs
+     * 
+     * @return - constructed LikedSongs
+     */
     public LikedSongs getLikedSongs() {
         LikedSongs songs = new LikedSongs();
         String pageToken = null;
@@ -143,11 +168,23 @@ public class Youtube extends YoutubeCredentials {
         return songs;
     }
 
+    /**
+     * get saved youtube albums
+     * 
+     * @return - linkedhashset of constructed Album
+     */
     public LinkedHashSet<Album> getAlbums() { // TODO: currently not supported (no youtube music API)
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
         return albums;
     }
 
+    /**
+     * get saved youtube playlists
+     * current criteria:
+     * - gets all vidoes from any playlist with category id 10
+     * 
+     * @return - linkedhashset of constructed Playlist
+     */
     public LinkedHashSet<Playlist> getPlaylists() {
         LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         String nextPageToken = null;
@@ -166,7 +203,9 @@ public class Youtube extends YoutubeCredentials {
                     if (!songs.isEmpty()) {
                         Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                         playlist.addSongs(songs);
-                        playlists.add(playlist);
+                        if (!playlist.getSongs().isEmpty()) { // to filter out non music playlists
+                            playlists.add(playlist);
+                        }
                     }
                 }
 
@@ -179,6 +218,12 @@ public class Youtube extends YoutubeCredentials {
         return playlists;
     }
 
+    /**
+     * get all songs from a playlist
+     * 
+     * @param playlistId - youtube id of playlist
+     * @return - arraylist of constructed Song
+     */
     private ArrayList<Song> getPlaylistSongs(String playlistId) {
         ArrayList<Song> songs = new ArrayList<>();
         String nextPageToken = null;
@@ -211,6 +256,13 @@ public class Youtube extends YoutubeCredentials {
         return songs;
     }
 
+    /**
+     * check if youtube video is a music video
+     * done by checking category id to be 10
+     * 
+     * @param videoId - youtube video id
+     * @return - true if song, false if not
+     */
     private boolean isMusicVideo(String videoId) {
         try {
             YouTube.Videos.List videoRequest = youtubeApi.videos()
@@ -228,6 +280,12 @@ public class Youtube extends YoutubeCredentials {
         return false;
     }
 
+    /**
+     * get video duration
+     * 
+     * @param videoId - spotify video id
+     * @return - constructed Duration
+     */
     private Duration getDuration(String videoId) {
         try {
             YouTube.Videos.List videoRequest = youtubeApi.videos()
@@ -237,7 +295,8 @@ public class Youtube extends YoutubeCredentials {
             VideoListResponse videoResponse = videoRequest.execute();
             if (!videoResponse.getItems().isEmpty()) {
                 Video video = videoResponse.getItems().get(0);
-                return Duration.parse(video.getContentDetails().getDuration());
+                return Duration.parse(video.getContentDetails().getDuration()); // TODO: currently does not work (also
+                                                                                // need somewhere higher up)
             }
         } catch (IOException e) {
             System.err.println("Error getting video duration: " + e.getMessage());

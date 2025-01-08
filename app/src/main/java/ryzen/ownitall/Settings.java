@@ -10,6 +10,12 @@ public class Settings {
     private String albumFile = "albums.ser";
     private String likedSongFile = "likedsongs.ser";
     private String playlistFile = "playlists.ser";
+
+    /**
+     * to save credentials of anything 3rd party logins (youtube, spotify etc)
+     * to prevent having to provide them each time
+     */
+    private boolean saveCredentials = true;
     /**
      * in the Spotify class, this decides if the user has to click "accept"
      * everytime they "log in", set to true in case you use multiple accounts and
@@ -143,5 +149,13 @@ public class Settings {
 
     public void setCurrentSettings(Settings currentSettings) {
         this.currentSettings = currentSettings;
+    }
+
+    public boolean isSaveCredentials() {
+        return saveCredentials;
+    }
+
+    public void setSaveCredentials(boolean saveCredentials) {
+        this.saveCredentials = saveCredentials;
     }
 }

@@ -69,6 +69,11 @@ public class Main {
 
     }
 
+    /**
+     * check if existing data files exist
+     * 
+     * @return - true if exist, false if not
+     */
     private static boolean checkDataFolder() {
         File dataFolder = new File(DATAFOLDER);
         if (dataFolder.exists() && dataFolder.isDirectory()) {
@@ -82,6 +87,9 @@ public class Main {
         return false;
     }
 
+    /**
+     * export all current data
+     */
     private static void exportData() {
         Sync sync = new Sync(DATAFOLDER);
         System.out.println("Beginning to save all data");
@@ -91,6 +99,9 @@ public class Main {
         System.out.println("Successfully saved all data");
     }
 
+    /**
+     * import data from local files
+     */
     private static void importData() {
         Sync sync = new Sync(DATAFOLDER);
         System.out.println("Beginning to import all data");
@@ -210,6 +221,13 @@ public class Main {
         }
     }
 
+    /**
+     * get the total duration of an arraylist of songs
+     * 
+     * @param songs - arraylist of constructed Song
+     * @return - constructed Duration representing total duration of arraylist of
+     *         songs
+     */
     private static Duration totalDuration(ArrayList<Song> songs) {
         Duration totalDuration = Duration.ZERO;
         for (Song song : songs) {
@@ -218,6 +236,12 @@ public class Main {
         return totalDuration;
     }
 
+    /**
+     * convert duration into music time (mm:ss)
+     * 
+     * @param duration - constructed Duration
+     * @return - string in format ((hh:)mm:ss)
+     */
     private static String musicTime(Duration duration) {
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;

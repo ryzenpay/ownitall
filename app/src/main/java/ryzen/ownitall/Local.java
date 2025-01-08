@@ -24,20 +24,70 @@ import java.time.temporal.ChronoUnit;
 public class Local {
     private File localLibrary;
     private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "mp4", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
-    // formats (have to
-    // be lower case)
+    // formats have to be lower case
 
+    /**
+     * default local constructor asking for library path
+     */
     public Local() {
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
 
+    /**
+     * default local constructor with a known library path
+     * 
+     * @param localFolderPath - String with path location to local music library
+     */
     public Local(String localFolderPath) {
         this.localLibrary = new File(localFolderPath);
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
 
+    /**
+     * get all sub folders of the library folder
+     * 
+     * @return - arraylist of constructed File
+     */
+    private ArrayList<File> getLibraryFolders() {
+        ArrayList<File> folders = new ArrayList<>();
+        for (File file : this.localLibrary.listFiles()) {
+            if (file.isDirectory()) {
+                folders.add(file);
+                addSubFolders(file, folders);
+            }
+        }
+        return folders;
+    }
+
+    /**
+     * recursive function used in getLibraryFolders to traverse through sub
+     * directories
+     * 
+     * @param directory - constructed File of the directory to traverse
+     * @param folders   - arraylist of current folders to add to
+     */
+    private void addSubFolders(File directory, ArrayList<File> folders) {
+        File[] subFiles = directory.listFiles();
+        if (subFiles != null) {
+            for (File subFile : subFiles) {
+                if (subFile.isDirectory()) {
+                    folders.add(subFile);
+                    addSubFolders(subFile, folders);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get local liked songs
+     * current criteria:
+     * - songs in root folder (library path)
+     * - folder named "liked songs"
+     * 
+     * @return - constructed LikedSongs
+     */
     public LikedSongs getLikedSongs() {
         LikedSongs likedSongs = new LikedSongs();
         for (File file : this.localLibrary.listFiles()) {
@@ -54,9 +104,15 @@ public class Local {
         return likedSongs;
     }
 
+    /**
+     * get local playlists
+     * criteria for playlist is determined by isAlbum() = false
+     * 
+     * @return - LinkedHashSet with constructed Playlist
+     */
     public LinkedHashSet<Playlist> getPlaylists() {
         LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
-        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
+        for (File file : this.getLibraryFolders()) {
             if (file.isDirectory()) {
                 if (!isAlbum(file)) {
                     ArrayList<Song> songs = this.getSongs(file);
@@ -71,9 +127,15 @@ public class Local {
         return playlists;
     }
 
+    /**
+     * get local albums
+     * criteria for album is determined by isAlbum() = true
+     * 
+     * @return - linkedhashset with constructed Album
+     */
     public LinkedHashSet<Album> getAlbums() {
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
-        for (File file : this.localLibrary.listFiles()) { // TODO: only scans root of folder, recursion?
+        for (File file : this.getLibraryFolders()) {
             if (file.isDirectory()) {
                 if (isAlbum(file)) {
                     Album album = this.getAlbum(file);
@@ -85,6 +147,12 @@ public class Local {
         return albums;
     }
 
+    /**
+     * get file extension of a file
+     * 
+     * @param file - constructed File to get extension from
+     * @return - String of file extension
+     */
     public String getExtension(File file) {
         String fileName = file.toString();
         int extensionIndex = fileName.lastIndexOf('.');
@@ -92,10 +160,10 @@ public class Local {
     }
 
     /**
-     * getting metadata from mp3 file: https://github.com/mpatric/mp3agic
+     * getting metadata from music file: https://github.com/mpatric/mp3agic
      * 
-     * @param file
-     * @return
+     * @param file - file to get metadata from
+     * @return - constructed Song
      */
     public Song getSong(File file) {
         Song song = new Song(file.toString());
@@ -109,6 +177,7 @@ public class Local {
             for (String artistName : artistList) {
                 song.addArtist(new Artist(artistName));
             }
+            song.setCoverImage(tag.getFirst(FieldKey.COVER_ART));
         } catch (InvalidAudioFrameException | TagException e) {
             System.err.println("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
             return null;
@@ -119,6 +188,12 @@ public class Local {
         return song;
     }
 
+    /**
+     * parsing through library sub folder and construct Song for each file
+     * 
+     * @param folder - library sub folder to check
+     * @return - arraylist of constructed Song
+     */
     public ArrayList<Song> getSongs(File folder) {
         ArrayList<Song> songs = new ArrayList<>();
         if (folder.isFile() || !folder.exists()) {
@@ -177,6 +252,12 @@ public class Local {
         }
     }
 
+    /**
+     * construct Album class from an album folder
+     * 
+     * @param folder - folder to get files from
+     * @return - constructed Album without songs
+     */
     public Album getAlbum(File folder) {
         Album album = new Album(folder.toString());// default album name incase of error
         for (File file : folder.listFiles()) {

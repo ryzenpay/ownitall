@@ -40,10 +40,20 @@ public class Album {
         return this.name;
     }
 
+    /**
+     * set album name
+     * 
+     * @param name - string album name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * set album cover image
+     * 
+     * @param coverImage - string url of album cover
+     */
     public void setCoverImage(String coverImage) {
         try {
             this.coverImage = new URI(coverImage);
@@ -64,6 +74,11 @@ public class Album {
         return this.coverImage;
     }
 
+    /**
+     * add array of songs to album's songs
+     * 
+     * @param songs - arraylist of constructed Song
+     */
     public void addSongs(ArrayList<Song> songs) {
         this.songs.addAll(new LinkedHashSet<Song>(songs));
     }
@@ -95,16 +110,31 @@ public class Album {
         return new LinkedHashSet<>(this.artists);
     }
 
+    /**
+     * get album songs
+     * 
+     * @return - arraylist of constructed Song
+     */
     public ArrayList<Song> getSongs() {
         return new ArrayList<>(this.songs);
     }
 
+    /**
+     * gets albums main artist (first in array = first added)
+     * 
+     * @return - constructucted Artist
+     */
     @JsonIgnore
     public Artist getMainArtist() {
         ArrayList<Artist> artists = new ArrayList<>(this.artists);
         return artists.get(0);
     }
 
+    /**
+     * get amount of songs in album
+     * 
+     * @return - int of album size
+     */
     public int size() {
         return this.songs.size();
     }
