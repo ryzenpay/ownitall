@@ -107,7 +107,7 @@ public class Spotify extends SpotifyCredentials {
     private void requestCode() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
-                .show_dialog(true)
+                .show_dialog(false)
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
 
@@ -454,18 +454,20 @@ public class Spotify extends SpotifyCredentials {
                 artists.add(this.artists.get(raw_artist.getName()));
             } else {
                 Artist artist = new Artist(raw_artist.getName());
-                try {
-                    GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
-                    se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
-                            .execute();
-                    if (fetchedArtist.getImages().length != 0) {
-                        artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                if (false) { // TODO: link to settings
+                    try {
+                        GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
+                        se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
+                                .execute();
+                        if (fetchedArtist.getImages().length != 0) {
+                            artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
+                        }
+                    } catch (TooManyRequestsException e) {
+                        System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                        this.sleep(e.getRetryAfter());
+                    } catch (Exception e) {
+                        System.err.print("Error obtaining artist: " + e);
                     }
-                } catch (TooManyRequestsException e) {
-                    System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (Exception e) {
-                    System.err.print("Error obtaining artist: " + e);
                 }
                 artists.add(artist);
                 this.artists.put(artist.getName(), artist); // add them to the known database

@@ -243,7 +243,8 @@ public class Youtube extends YoutubeCredentials {
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
                         Song song = new Song(snippet.getTitle());
-                        song.addArtist(new Artist(snippet.getChannelTitle()));
+                        song.addArtist(new Artist(snippet.getChannelTitle())); // TODO: this is defaulting to the
+                                                                               // playlist owner
                         song.setDuration(this.getDuration(videoId));
                         songs.add(song);
                     }
