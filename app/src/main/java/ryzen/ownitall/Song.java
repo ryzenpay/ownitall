@@ -166,9 +166,9 @@ public class Song {
 
     @Override
     public int hashCode() {
-        int hashCode = name.hashCode();
+        int hashCode = name.toLowerCase().hashCode();
         if (!this.artists.isEmpty()) {
-            hashCode += this.getMainArtist().hashCode();
+            hashCode += this.getMainArtist().toString().toLowerCase().hashCode();
         }
         if (this.duration != null) {
             hashCode += duration.hashCode();

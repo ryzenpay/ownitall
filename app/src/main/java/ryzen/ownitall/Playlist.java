@@ -155,6 +155,11 @@ public class Playlist {
     }
 
     @Override
+    public String toString() {
+        return this.name;
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -164,7 +169,7 @@ public class Playlist {
         if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.name, playlist.getName())) {
+        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString())) {
             return true;
         }
         return false;
@@ -172,7 +177,7 @@ public class Playlist {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return this.name.toLowerCase().hashCode();
     }
 
     @JsonCreator

@@ -68,7 +68,7 @@ public class Artist {
         if (this.hashCode() == artist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.name, artist.getName())) { // TODO: handle support if no artist
+        if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString())) {
             return true;
         }
         return false;
@@ -76,7 +76,7 @@ public class Artist {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return this.name.toLowerCase().hashCode();
     }
 
     @JsonCreator

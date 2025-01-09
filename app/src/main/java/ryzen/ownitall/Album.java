@@ -159,7 +159,7 @@ public class Album {
     public String toString() {
         String output = this.name;
         if (!this.artists.isEmpty()) {
-            output += " | " + this.getMainArtist();
+            output += " | " + this.getMainArtist().getName();
         }
         return output;
     }
@@ -183,9 +183,9 @@ public class Album {
 
     @Override
     public int hashCode() {
-        int hashCode = this.name.hashCode();
+        int hashCode = this.name.toLowerCase().hashCode();
         if (!this.artists.isEmpty()) {
-            hashCode = this.getMainArtist().hashCode();
+            hashCode = this.getMainArtist().toString().toLowerCase().hashCode();
         }
         return hashCode;
     }

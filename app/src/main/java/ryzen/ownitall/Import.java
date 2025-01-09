@@ -46,8 +46,10 @@ public class Import {
         System.out.println("Choose an import option from the following: ");
         int i = 1;
         for (String option : this.supported.keySet()) {
-            System.out.println("[" + i + "] " + option);
-            i++;
+            if (!option.equals("Exit")) { // TODO: such a poor way, make it better
+                System.out.println("[" + i + "] " + option);
+                i++;
+            }
         }
         System.out.println("[0] Exit");
         System.out.print("Enter your choice: ");

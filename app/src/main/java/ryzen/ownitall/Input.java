@@ -61,6 +61,28 @@ public class Input {
     }
 
     /**
+     * save user input and force boundaries
+     * 
+     * @param lowerBound - lower int boundary
+     * @param upperBound - upper int boundary
+     * @return - int of user input
+     */
+    public int getInt(int lowerBound, int upperBound) {
+        while (true) {
+            try {
+                int result = Integer.parseInt(scanner.nextLine().trim());
+                if (result >= lowerBound && result <= upperBound) {
+                    return result;
+                } else {
+                    System.out.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+    }
+
+    /**
      * save user long input
      * 
      * @return - long of user input

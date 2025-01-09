@@ -47,7 +47,9 @@ public class Main {
                         // TODO: Implement export functionality
                         break;
                     case 3:
-                        printInventory(3);
+                        System.out.print("Select recursion (1-3): ");
+                        int recursion = Input.getInstance().getInt(1, 3);
+                        printInventory(recursion);
                         break;
                     case 4:
                         exportData();

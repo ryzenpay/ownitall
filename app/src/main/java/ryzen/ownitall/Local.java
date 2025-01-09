@@ -177,7 +177,8 @@ public class Local {
             for (String artistName : artistList) {
                 song.addArtist(new Artist(artistName));
             }
-            song.setCoverImage(tag.getFirst(FieldKey.COVER_ART));
+            // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
+            // support / convert to url
         } catch (InvalidAudioFrameException | TagException e) {
             System.err.println("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
             return null;
