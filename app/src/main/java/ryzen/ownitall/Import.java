@@ -31,10 +31,10 @@ public class Import {
         while (!this.status) {
             String choice = promptImport();
             if (choice != null) {
-                if (choice == "Exit") {
-                    exit();
+                if (choice.equals("Exit")) {
+                    this.exit();
                 } else {
-                    options.get(choice).run();
+                    this.options.get(choice).run();
                 }
             }
         }

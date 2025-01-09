@@ -34,7 +34,7 @@ public class Main {
         while (true) {
             String choice = promptMenu();
             if (choice != null) {
-                if (choice == "Exit") {
+                if (choice.equals("Exit")) {
                     exit();
                 } else {
                     options.get(choice).run();
@@ -86,8 +86,7 @@ public class Main {
     }
 
     private static void optionTools() {
-        System.out.println("Tools currently not supported");
-        // TODO: tools menu (archiving, unarchiving,...)
+        new Tools();
     }
 
     private static void optionSettings() {

@@ -89,7 +89,7 @@ public class Sync {
         archiveFolder.mkdir();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
-                file.renameTo(new File(archiveFolder, file.toString()));
+                file.renameTo(new File(archiveFolder, file.getName()));
             }
         }
     }
@@ -99,7 +99,7 @@ public class Sync {
      * to unarchive
      * also archives current files with todays date to prevent data loss
      */
-    public void unarchive() {
+    public void unArchive() {
         this.setDataFolder();
         ArrayList<File> archiveFolders = new ArrayList<>();
         for (File file : this.dataFolder.listFiles()) {
@@ -119,7 +119,7 @@ public class Sync {
         File unarchiveFolder = archiveFolders.get(choice);
         archive();
         for (File file : unarchiveFolder.listFiles()) {
-            file.renameTo(new File(unarchiveFolder, file.toString()));
+            file.renameTo(new File(unarchiveFolder, file.getName()));
         }
     }
 
