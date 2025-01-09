@@ -158,7 +158,9 @@ public class Song {
         if (this.hashCode() == song.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString())) { // TODO: handle support if no artist
+        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString())) { // also checks artists as they have
+                                                                                    // their own "equals" and compare
+                                                                                    // names
             return true;
         }
         return false;

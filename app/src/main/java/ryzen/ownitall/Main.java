@@ -13,68 +13,92 @@ public class Main {
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
+    private static LinkedHashMap<String, Runnable> options;
 
     public static void main(String[] args) {
         settings = Settings.load();
+        options = new LinkedHashMap<>();
         albums = new LinkedHashSet<>();
         playlists = new LinkedHashSet<>();
         likedSongs = new LikedSongs();
         if (Sync.checkDataFolder()) {
             importData();
         }
+        // main menu
+        options.put("Import", Main::optionImport);
+        options.put("Export", Main::optionExport);
+        options.put("Print Inventory", Main::optionInventory);
+        options.put("Save", Main::optionSave);
+        options.put("Tools", Main::optionTools);
+        options.put("Settings", Main::optionSettings);
         while (true) {
-            System.out.println("Choose an option: ");
-            System.out.println("[1] import");
-            System.out.println("[2] export");
-            System.out.println("[3] print inventory");
-            System.out.println("[4] save");
-            System.out.println("[5] Tools"); // TODO: tools class
-            System.out.println("[6] Settings");
-            System.out.println("[0] exit");
-            System.out.print("Enter your choice: ");
-            try {
-                int choice = Input.getInstance().getInt();
-                switch (choice) {
-                    case 1:
-                        Import dataImport = new Import(settings.dataFolderPath);
-                        likedSongs.addSongs(dataImport.getLikedSongs());
-                        mergeAlbums(dataImport.getAlbums()); // TODO: collection class to handle this
-                        mergePlaylists(dataImport.getPlaylists());
-                        break;
-                    case 2:
-                        System.out.println("Export currently not supported");
-                        // TODO: Implement export functionality
-                        break;
-                    case 3:
-                        System.out.print("Select recursion (1-3): ");
-                        int recursion = Input.getInstance().getInt(1, 3);
-                        printInventory(recursion);
-                        break;
-                    case 4:
-                        exportData();
-                        settings.saveSettings();
-                        break;
-                    case 5:
-                        System.out.println("Tools currently not supported");
-                        break;
-                    case 6:
-                        settings.changeSettings();
-                        break;
-                    case 0:
-                        exportData();
-                        settings.saveSettings();
-                        System.out.println("Exiting program. Goodbye!");
-                        System.exit(0);
-                    default:
-                        System.err.println("Invalid option. Please try again.");
-                        break;
+            String choice = promptMenu();
+            if (choice != null) {
+                if (choice == "Exit") {
+                    exit();
+                } else {
+                    options.get(choice).run();
                 }
-            } catch (Exception e) {
-                System.err.println("Invalid input. or an error occured:\n" + e);
-                e.printStackTrace();
             }
         }
+    }
 
+    private static String promptMenu() {
+        System.out.println("Choose an option from the following: ");
+        int i = 1;
+        for (String option : options.keySet()) {
+            System.out.println("[" + i + "] " + option);
+            i++;
+        }
+        System.out.println("[0] Exit");
+        System.out.print("Enter your choice: ");
+        int choice = Input.getInstance().getInt();
+        if (choice < 0 || choice > options.size()) {
+            System.out.println("Incorrect option, try again");
+            return null;
+        }
+        ArrayList<String> arrayOptions = new ArrayList<>(options.keySet());
+        arrayOptions.add(0, "Exit");
+        return arrayOptions.get(choice);
+    }
+
+    private static void optionImport() {
+        Import dataImport = new Import(settings.dataFolderPath);
+        likedSongs.addSongs(dataImport.getLikedSongs());
+        mergeAlbums(dataImport.getAlbums()); // TODO: collection class to handle this
+        mergePlaylists(dataImport.getPlaylists());
+    }
+
+    private static void optionExport() {
+        System.out.println("Export currently not supported");
+        // TODO: Implement export functionality
+    }
+
+    private static void optionInventory() {
+        System.out.print("Select recursion (1-3): ");
+        int recursion = Input.getInstance().getInt(1, 3);
+        printInventory(recursion);
+    }
+
+    private static void optionSave() {
+        exportData();
+        settings.saveSettings();
+    }
+
+    private static void optionTools() {
+        System.out.println("Tools currently not supported");
+        // TODO: tools menu (archiving, unarchiving,...)
+    }
+
+    private static void optionSettings() {
+        settings.changeSettings();
+    }
+
+    private static void exit() {
+        exportData();
+        settings.saveSettings();
+        System.out.println("Exiting program. Goodbye!");
+        System.exit(0);
     }
 
     private static void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {

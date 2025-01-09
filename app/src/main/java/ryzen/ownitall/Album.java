@@ -159,7 +159,7 @@ public class Album {
     public String toString() {
         String output = this.name;
         if (!this.artists.isEmpty()) {
-            output += " | " + this.getMainArtist().getName();
+            output += " (" + this.getMainArtist().getName() + ")";
         }
         return output;
     }
@@ -174,8 +174,7 @@ public class Album {
         if (this.hashCode() == album.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString())) { // TODO: handle support if no
-                                                                                     // artist
+        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString())) {
             return true;
         }
         return false;

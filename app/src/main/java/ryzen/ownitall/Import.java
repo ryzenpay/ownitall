@@ -11,7 +11,7 @@ public class Import {
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
     private LikedSongs likedSongs;
-    private LinkedHashMap<String, Runnable> supported;
+    private LinkedHashMap<String, Runnable> options;
 
     /**
      * constructor for Import which also prompts user for import options
@@ -24,41 +24,43 @@ public class Import {
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
-        this.supported = new LinkedHashMap<>();
-        supported.put("Exit", this::exit); // keep this one first
-        supported.put("Youtube", this::importYoutube);
-        supported.put("Spotify", this::importSpotify);
-        supported.put("Local", this::importLocal);
+        this.options = new LinkedHashMap<>();
+        options.put("Youtube", this::importYoutube);
+        options.put("Spotify", this::importSpotify);
+        options.put("Local", this::importLocal);
         while (!this.status) {
             String choice = promptImport();
             if (choice != null) {
-                supported.get(choice).run();
+                if (choice == "Exit") {
+                    exit();
+                } else {
+                    options.get(choice).run();
+                }
             }
         }
     }
 
     /**
-     * prompt user for import options from the supported array
+     * prompt user for import options from the options array
      * 
      * @return - String key value of the options hashmap
      */
     private String promptImport() {
         System.out.println("Choose an import option from the following: ");
         int i = 1;
-        for (String option : this.supported.keySet()) {
-            if (!option.equals("Exit")) { // TODO: such a poor way, make it better
-                System.out.println("[" + i + "] " + option);
-                i++;
-            }
+        for (String option : this.options.keySet()) {
+            System.out.println("[" + i + "] " + option);
+            i++;
         }
         System.out.println("[0] Exit");
         System.out.print("Enter your choice: ");
         int choice = Input.getInstance().getInt();
-        if (choice < 0 || choice > supported.size()) {
+        if (choice < 0 || choice > options.size()) {
             System.out.println("Incorrect option, try again");
             return null;
         }
-        ArrayList<String> options = new ArrayList<>(this.supported.keySet());
+        ArrayList<String> options = new ArrayList<>(this.options.keySet());
+        options.add(0, "Exit");
         return options.get(choice);
     }
 
