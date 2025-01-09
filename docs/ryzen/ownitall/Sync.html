@@ -26,8 +26,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":10,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -153,7 +153,7 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String)">Sync</a></span>&#8203;(java.lang.String&nbsp;dataPath)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Sync</a></span>()</code></th>
 <td class="colLast">
 <div class="block">initialize all files for syncronization</div>
 </td>
@@ -170,7 +170,7 @@ extends java.lang.Object</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
@@ -186,77 +186,92 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#archive(boolean)">archive</a></span>&#8203;(boolean&nbsp;noUserInput)</code></th>
+<td class="colLast">
+<div class="block">create archive folder (current date) in dataPath and move all current files
+ to it with no user input</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>static boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkDataFolder()">checkDataFolder</a></span>()</code></th>
+<td class="colLast">
+<div class="block">check if existing data files exist</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportAlbums(java.util.LinkedHashSet)">exportAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;&nbsp;albums)</code></th>
 <td class="colLast">
 <div class="block">save all albums</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportLikedSongs(ryzen.ownitall.LikedSongs)">exportLikedSongs</a></span>&#8203;(<a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a>&nbsp;likedSongs)</code></th>
 <td class="colLast">
 <div class="block">save all liked songs</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportPlaylists(java.util.LinkedHashSet)">exportPlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;&nbsp;playlists)</code></th>
 <td class="colLast">
 <div class="block">save all playlists</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportSpotifyCredentials(ryzen.ownitall.SpotifyCredentials)">exportSpotifyCredentials</a></span>&#8203;(<a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a>&nbsp;spotifyCredentials)</code></th>
 <td class="colLast">
 <div class="block">save spotify credentials</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportYoutubeCredentials(ryzen.ownitall.YoutubeCredentials)">exportYoutubeCredentials</a></span>&#8203;(<a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a>&nbsp;youtubeCredentials)</code></th>
 <td class="colLast">
 <div class="block">save youtube credentials</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importAlbums()">importAlbums</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import saved albums</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importLikedSongs()">importLikedSongs</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import all saved liked songs</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importPlaylists()">importPlaylists</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import all saved playlists</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importSpotifyCredentials()">importSpotifyCredentials</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import saved spotify credentials</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importYoutubeCredentials()">importYoutubeCredentials</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import saved youtube credentials (use isNull to check)</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unarchive()">unarchive</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unArchive()">unArchive</a></span>()</code></th>
 <td class="colLast">
 <div class="block">display a menu of all archived files (folders and dates) and give an option
  to unarchive
@@ -287,18 +302,14 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a id="&lt;init&gt;(java.lang.String)">
+<a id="&lt;init&gt;()">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Sync</h4>
-<pre>public&nbsp;Sync&#8203;(java.lang.String&nbsp;dataPath)</pre>
+<pre>public&nbsp;Sync()</pre>
 <div class="block">initialize all files for syncronization</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>dataPath</code> - - datapath of where to store data</dd>
-</dl>
 </li>
 </ul>
 </li>
@@ -311,6 +322,20 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="checkDataFolder()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>checkDataFolder</h4>
+<pre class="methodSignature">public static&nbsp;boolean&nbsp;checkDataFolder()</pre>
+<div class="block">check if existing data files exist</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- true if exist, false if not</dd>
+</dl>
+</li>
+</ul>
 <a id="archive()">
 <!--   -->
 </a>
@@ -322,13 +347,24 @@ extends java.lang.Object</pre>
  to it</div>
 </li>
 </ul>
-<a id="unarchive()">
+<a id="archive(boolean)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>unarchive</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;unarchive()</pre>
+<h4>archive</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;archive&#8203;(boolean&nbsp;noUserInput)</pre>
+<div class="block">create archive folder (current date) in dataPath and move all current files
+ to it with no user input</div>
+</li>
+</ul>
+<a id="unArchive()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>unArchive</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;unArchive()</pre>
 <div class="block">display a menu of all archived files (folders and dates) and give an option
  to unarchive
  also archives current files with todays date to prevent data loss</div>

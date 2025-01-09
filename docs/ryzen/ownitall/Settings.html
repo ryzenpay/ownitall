@@ -26,8 +26,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":9,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10};
+var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -160,7 +160,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#dataFolder">dataFolder</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#dataFolderPath">dataFolderPath</a></span></code></th>
 <td class="colLast">
 <div class="block">default file names (without extensions)</div>
 </td>
@@ -189,7 +189,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected int</code></td>
+<td class="colFirst"><code>protected double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#similarityPercentage">similarityPercentage</a></span></code></th>
 <td class="colLast">
 <div class="block">similarity percentage used to check if artists, songs, albums or playlists
@@ -210,8 +210,18 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spotifyCredentialsFile">spotifyCredentialsFile</a></span></code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spotifyPlaylistLimit">spotifyPlaylistLimit</a></span></code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#spotifyPlaylistSongCover">spotifyPlaylistSongCover</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -231,11 +241,16 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#youtubeCredentialsFile">youtubeCredentialsFile</a></span></code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#youtubePlaylistLimit">youtubePlaylistLimit</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#youtubeSongLimit">youtubeSongLimit</a></span></code></th>
 <td class="colLast">
@@ -261,7 +276,9 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Settings</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">default settings constructor with default settings</div>
+</td>
 </tr>
 </table>
 </li>
@@ -275,7 +292,7 @@ extends java.lang.Object</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
@@ -307,7 +324,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDataFolder()">getDataFolder</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDataFolderPath()">getDataFolderPath</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
@@ -326,7 +343,7 @@ extends java.lang.Object</pre>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSimilarityPercentage()">getSimilarityPercentage</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -336,130 +353,171 @@ extends java.lang.Object</pre>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i10" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifyPlaylistLimit()">getSpotifyPlaylistLimit</a></span>()</code></th>
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifyCredentialsFile()">getSpotifyCredentialsFile</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifySongLimit()">getSpotifySongLimit</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifyPlaylistLimit()">getSpotifyPlaylistLimit</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i12" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifySongLimit()">getSpotifySongLimit</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getYoutubeCredentialsFile()">getYoutubeCredentialsFile</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getYoutubePlaylistLimit()">getYoutubePlaylistLimit</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getYoutubeSongLimit()">getYoutubeSongLimit</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isNull()">isNull</a></span>()</code></th>
 <td class="colLast">
 <div class="block">check if settings correctly imported</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isSaveCredentials()">isSaveCredentials</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isSpotifyArtistPfp()">isSpotifyArtistPfp</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i19" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isSpotifyPlaylistSongCover()">isSpotifyPlaylistSongCover</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isSpotifyShowDialog()">isSpotifyShowDialog</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i18" class="altColor">
-<td class="colFirst"><code><a href="Settings.html" title="class in ryzen.ownitall">Settings</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadSettings()">loadSettings</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i19" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveSettings()">saveSettings</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i20" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setAlbumFile(java.lang.String)">setAlbumFile</a></span>&#8203;(java.lang.String&nbsp;albumFile)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i21" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCurrentSettings(ryzen.ownitall.Settings)">setCurrentSettings</a></span>&#8203;(<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;setting)</code></th>
+<td class="colFirst"><code>static <a href="Settings.html" title="class in ryzen.ownitall">Settings</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load()">load</a></span>()</code></th>
 <td class="colLast">
-<div class="block">copy over settings from constructed Settings to this</div>
+<div class="block">to get custom settings set by user, load them</div>
 </td>
 </tr>
 <tr id="i22" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDataFolder(java.lang.String)">setDataFolder</a></span>&#8203;(java.lang.String&nbsp;dataFolder)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadSettings()">loadSettings</a></span>()</code></th>
+<td class="colLast">
+<div class="block">load settings from saved file</div>
+</td>
 </tr>
 <tr id="i23" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLikedSongFile(java.lang.String)">setLikedSongFile</a></span>&#8203;(java.lang.String&nbsp;likedSongFile)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveSettings()">saveSettings</a></span>()</code></th>
+<td class="colLast">
+<div class="block">save settings to predefined file</div>
+</td>
 </tr>
 <tr id="i24" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLikedSongName(java.lang.String)">setLikedSongName</a></span>&#8203;(java.lang.String&nbsp;likedSongName)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setAlbumFile(java.lang.String)">setAlbumFile</a></span>&#8203;(java.lang.String&nbsp;albumFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i25" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPlaylistFile(java.lang.String)">setPlaylistFile</a></span>&#8203;(java.lang.String&nbsp;playlistFile)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDataFolderPath(java.lang.String)">setDataFolderPath</a></span>&#8203;(java.lang.String&nbsp;dataFolderPath)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i26" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSaveCredentials(boolean)">setSaveCredentials</a></span>&#8203;(boolean&nbsp;saveCredentials)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLikedSongFile(java.lang.String)">setLikedSongFile</a></span>&#8203;(java.lang.String&nbsp;likedSongFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i27" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSimilarityPercentage(int)">setSimilarityPercentage</a></span>&#8203;(int&nbsp;similarityPercentage)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLikedSongName(java.lang.String)">setLikedSongName</a></span>&#8203;(java.lang.String&nbsp;likedSongName)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i28" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyAlbumLimit(int)">setSpotifyAlbumLimit</a></span>&#8203;(int&nbsp;spotifyAlbumLimit)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPlaylistFile(java.lang.String)">setPlaylistFile</a></span>&#8203;(java.lang.String&nbsp;playlistFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i29" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyArtistPfp(boolean)">setSpotifyArtistPfp</a></span>&#8203;(boolean&nbsp;spotifyArtistPfp)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSaveCredentials(boolean)">setSaveCredentials</a></span>&#8203;(boolean&nbsp;saveCredentials)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyPlaylistLimit(int)">setSpotifyPlaylistLimit</a></span>&#8203;(int&nbsp;spotifyPlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSettings(ryzen.ownitall.Settings)">setSettings</a></span>&#8203;(<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;setting)</code></th>
+<td class="colLast">
+<div class="block">copy over settings from constructed Settings to this</div>
+</td>
 </tr>
 <tr id="i31" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyShowDialog(boolean)">setSpotifyShowDialog</a></span>&#8203;(boolean&nbsp;spotifyShowDialog)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSimilarityPercentage(double)">setSimilarityPercentage</a></span>&#8203;(double&nbsp;similarityPercentage)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifySongLimit(int)">setSpotifySongLimit</a></span>&#8203;(int&nbsp;spotifySongLimit)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyAlbumLimit(int)">setSpotifyAlbumLimit</a></span>&#8203;(int&nbsp;spotifyAlbumLimit)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i33" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setYoutubePlaylistLimit(java.lang.Long)">setYoutubePlaylistLimit</a></span>&#8203;(java.lang.Long&nbsp;youtubePlaylistLimit)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyArtistPfp(boolean)">setSpotifyArtistPfp</a></span>&#8203;(boolean&nbsp;spotifyArtistPfp)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i34" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyCredentialsFile(java.lang.String)">setSpotifyCredentialsFile</a></span>&#8203;(java.lang.String&nbsp;spotifyCredentialsFile)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i35" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyPlaylistLimit(int)">setSpotifyPlaylistLimit</a></span>&#8203;(int&nbsp;spotifyPlaylistLimit)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i36" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyPlaylistSongCover(boolean)">setSpotifyPlaylistSongCover</a></span>&#8203;(boolean&nbsp;spotifyPlaylistSongCover)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i37" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifyShowDialog(boolean)">setSpotifyShowDialog</a></span>&#8203;(boolean&nbsp;spotifyShowDialog)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i38" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpotifySongLimit(int)">setSpotifySongLimit</a></span>&#8203;(int&nbsp;spotifySongLimit)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i39" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setYoutubeCredentialsFile(java.lang.String)">setYoutubeCredentialsFile</a></span>&#8203;(java.lang.String&nbsp;youtubeCredentialsFile)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i40" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setYoutubePlaylistLimit(java.lang.Long)">setYoutubePlaylistLimit</a></span>&#8203;(java.lang.Long&nbsp;youtubePlaylistLimit)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setYoutubeSongLimit(java.lang.Long)">setYoutubeSongLimit</a></span>&#8203;(java.lang.Long&nbsp;youtubeSongLimit)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -488,13 +546,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Field Detail</h3>
-<a id="dataFolder">
+<a id="dataFolderPath">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>dataFolder</h4>
-<pre>protected&nbsp;java.lang.String dataFolder</pre>
+<h4>dataFolderPath</h4>
+<pre>protected&nbsp;java.lang.String dataFolderPath</pre>
 <div class="block">default file names (without extensions)</div>
 </li>
 </ul>
@@ -532,6 +590,24 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>playlistFile</h4>
 <pre>protected&nbsp;java.lang.String playlistFile</pre>
+</li>
+</ul>
+<a id="spotifyCredentialsFile">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>spotifyCredentialsFile</h4>
+<pre>protected&nbsp;java.lang.String spotifyCredentialsFile</pre>
+</li>
+</ul>
+<a id="youtubeCredentialsFile">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>youtubeCredentialsFile</h4>
+<pre>protected&nbsp;java.lang.String youtubeCredentialsFile</pre>
 </li>
 </ul>
 <a id="saveCredentials">
@@ -596,6 +672,15 @@ extends java.lang.Object</pre>
  increases API requests</div>
 </li>
 </ul>
+<a id="spotifyPlaylistSongCover">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>spotifyPlaylistSongCover</h4>
+<pre>protected&nbsp;boolean spotifyPlaylistSongCover</pre>
+</li>
+</ul>
 <a id="youtubeSongLimit">
 <!--   -->
 </a>
@@ -621,7 +706,7 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>similarityPercentage</h4>
-<pre>protected&nbsp;int similarityPercentage</pre>
+<pre>protected&nbsp;double similarityPercentage</pre>
 <div class="block">similarity percentage used to check if artists, songs, albums or playlists
  are equals (to merge or not)</div>
 </li>
@@ -643,6 +728,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>Settings</h4>
 <pre>public&nbsp;Settings()</pre>
+<div class="block">default settings constructor with default settings</div>
 </li>
 </ul>
 </li>
@@ -655,13 +741,28 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="load()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>load</h4>
+<pre class="methodSignature">public static&nbsp;<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;load()</pre>
+<div class="block">to get custom settings set by user, load them</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- compiled Settings with custom settings</dd>
+</dl>
+</li>
+</ul>
 <a id="loadSettings()">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>loadSettings</h4>
-<pre class="methodSignature">public&nbsp;<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;loadSettings()</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;loadSettings()</pre>
+<div class="block">load settings from saved file</div>
 </li>
 </ul>
 <a id="saveSettings()">
@@ -671,6 +772,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>saveSettings</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;saveSettings()</pre>
+<div class="block">save settings to predefined file</div>
 </li>
 </ul>
 <a id="getAllSettings()">
@@ -715,13 +817,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="setCurrentSettings(ryzen.ownitall.Settings)">
+<a id="setSettings(ryzen.ownitall.Settings)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setCurrentSettings</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;setCurrentSettings&#8203;(<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;setting)</pre>
+<h4>setSettings</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setSettings&#8203;(<a href="Settings.html" title="class in ryzen.ownitall">Settings</a>&nbsp;setting)</pre>
 <div class="block">copy over settings from constructed Settings to this</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -743,31 +845,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getDataFolder()">
+<a id="setDataFolderPath(java.lang.String)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getDataFolder</h4>
-<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getDataFolder()</pre>
-</li>
-</ul>
-<a id="setDataFolder(java.lang.String)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDataFolder</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;setDataFolder&#8203;(java.lang.String&nbsp;dataFolder)</pre>
-</li>
-</ul>
-<a id="getLikedSongName()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getLikedSongName</h4>
-<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getLikedSongName()</pre>
+<h4>setDataFolderPath</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setDataFolderPath&#8203;(java.lang.String&nbsp;dataFolderPath)</pre>
 </li>
 </ul>
 <a id="setLikedSongName(java.lang.String)">
@@ -779,15 +863,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setLikedSongName&#8203;(java.lang.String&nbsp;likedSongName)</pre>
 </li>
 </ul>
-<a id="getAlbumFile()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getAlbumFile</h4>
-<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getAlbumFile()</pre>
-</li>
-</ul>
 <a id="setAlbumFile(java.lang.String)">
 <!--   -->
 </a>
@@ -795,15 +870,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setAlbumFile</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;setAlbumFile&#8203;(java.lang.String&nbsp;albumFile)</pre>
-</li>
-</ul>
-<a id="getLikedSongFile()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getLikedSongFile</h4>
-<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getLikedSongFile()</pre>
 </li>
 </ul>
 <a id="setLikedSongFile(java.lang.String)">
@@ -815,15 +881,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setLikedSongFile&#8203;(java.lang.String&nbsp;likedSongFile)</pre>
 </li>
 </ul>
-<a id="getPlaylistFile()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getPlaylistFile</h4>
-<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getPlaylistFile()</pre>
-</li>
-</ul>
 <a id="setPlaylistFile(java.lang.String)">
 <!--   -->
 </a>
@@ -831,15 +888,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setPlaylistFile</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;setPlaylistFile&#8203;(java.lang.String&nbsp;playlistFile)</pre>
-</li>
-</ul>
-<a id="isSpotifyShowDialog()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isSpotifyShowDialog</h4>
-<pre class="methodSignature">public&nbsp;boolean&nbsp;isSpotifyShowDialog()</pre>
 </li>
 </ul>
 <a id="setSpotifyShowDialog(boolean)">
@@ -851,15 +899,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyShowDialog&#8203;(boolean&nbsp;spotifyShowDialog)</pre>
 </li>
 </ul>
-<a id="getSpotifySongLimit()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSpotifySongLimit</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifySongLimit()</pre>
-</li>
-</ul>
 <a id="setSpotifySongLimit(int)">
 <!--   -->
 </a>
@@ -867,15 +906,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setSpotifySongLimit</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSpotifySongLimit&#8203;(int&nbsp;spotifySongLimit)</pre>
-</li>
-</ul>
-<a id="getSpotifyAlbumLimit()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSpotifyAlbumLimit</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifyAlbumLimit()</pre>
 </li>
 </ul>
 <a id="setSpotifyAlbumLimit(int)">
@@ -887,15 +917,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyAlbumLimit&#8203;(int&nbsp;spotifyAlbumLimit)</pre>
 </li>
 </ul>
-<a id="getSpotifyPlaylistLimit()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSpotifyPlaylistLimit</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifyPlaylistLimit()</pre>
-</li>
-</ul>
 <a id="setSpotifyPlaylistLimit(int)">
 <!--   -->
 </a>
@@ -903,15 +924,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setSpotifyPlaylistLimit</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyPlaylistLimit&#8203;(int&nbsp;spotifyPlaylistLimit)</pre>
-</li>
-</ul>
-<a id="isSpotifyArtistPfp()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isSpotifyArtistPfp</h4>
-<pre class="methodSignature">public&nbsp;boolean&nbsp;isSpotifyArtistPfp()</pre>
 </li>
 </ul>
 <a id="setSpotifyArtistPfp(boolean)">
@@ -923,15 +935,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyArtistPfp&#8203;(boolean&nbsp;spotifyArtistPfp)</pre>
 </li>
 </ul>
-<a id="getYoutubeSongLimit()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getYoutubeSongLimit</h4>
-<pre class="methodSignature">public&nbsp;java.lang.Long&nbsp;getYoutubeSongLimit()</pre>
-</li>
-</ul>
 <a id="setYoutubeSongLimit(java.lang.Long)">
 <!--   -->
 </a>
@@ -939,15 +942,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>setYoutubeSongLimit</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;setYoutubeSongLimit&#8203;(java.lang.Long&nbsp;youtubeSongLimit)</pre>
-</li>
-</ul>
-<a id="getYoutubePlaylistLimit()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getYoutubePlaylistLimit</h4>
-<pre class="methodSignature">public&nbsp;java.lang.Long&nbsp;getYoutubePlaylistLimit()</pre>
 </li>
 </ul>
 <a id="setYoutubePlaylistLimit(java.lang.Long)">
@@ -959,15 +953,6 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setYoutubePlaylistLimit&#8203;(java.lang.Long&nbsp;youtubePlaylistLimit)</pre>
 </li>
 </ul>
-<a id="isSaveCredentials()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>isSaveCredentials</h4>
-<pre class="methodSignature">public&nbsp;boolean&nbsp;isSaveCredentials()</pre>
-</li>
-</ul>
 <a id="setSaveCredentials(boolean)">
 <!--   -->
 </a>
@@ -977,22 +962,193 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;setSaveCredentials&#8203;(boolean&nbsp;saveCredentials)</pre>
 </li>
 </ul>
-<a id="getSimilarityPercentage()">
+<a id="setSimilarityPercentage(double)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getSimilarityPercentage</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;getSimilarityPercentage()</pre>
+<h4>setSimilarityPercentage</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setSimilarityPercentage&#8203;(double&nbsp;similarityPercentage)</pre>
 </li>
 </ul>
-<a id="setSimilarityPercentage(int)">
+<a id="setSpotifyCredentialsFile(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setSpotifyCredentialsFile</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyCredentialsFile&#8203;(java.lang.String&nbsp;spotifyCredentialsFile)</pre>
+</li>
+</ul>
+<a id="setYoutubeCredentialsFile(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setYoutubeCredentialsFile</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setYoutubeCredentialsFile&#8203;(java.lang.String&nbsp;youtubeCredentialsFile)</pre>
+</li>
+</ul>
+<a id="getDataFolderPath()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getDataFolderPath</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getDataFolderPath()</pre>
+</li>
+</ul>
+<a id="getLikedSongName()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLikedSongName</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getLikedSongName()</pre>
+</li>
+</ul>
+<a id="getAlbumFile()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAlbumFile</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getAlbumFile()</pre>
+</li>
+</ul>
+<a id="getLikedSongFile()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLikedSongFile</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getLikedSongFile()</pre>
+</li>
+</ul>
+<a id="getPlaylistFile()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPlaylistFile</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getPlaylistFile()</pre>
+</li>
+</ul>
+<a id="getSpotifyCredentialsFile()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSpotifyCredentialsFile</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getSpotifyCredentialsFile()</pre>
+</li>
+</ul>
+<a id="getYoutubeCredentialsFile()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getYoutubeCredentialsFile</h4>
+<pre class="methodSignature">public&nbsp;java.lang.String&nbsp;getYoutubeCredentialsFile()</pre>
+</li>
+</ul>
+<a id="isSaveCredentials()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isSaveCredentials</h4>
+<pre class="methodSignature">public&nbsp;boolean&nbsp;isSaveCredentials()</pre>
+</li>
+</ul>
+<a id="isSpotifyShowDialog()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isSpotifyShowDialog</h4>
+<pre class="methodSignature">public&nbsp;boolean&nbsp;isSpotifyShowDialog()</pre>
+</li>
+</ul>
+<a id="getSpotifySongLimit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSpotifySongLimit</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifySongLimit()</pre>
+</li>
+</ul>
+<a id="getSpotifyAlbumLimit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSpotifyAlbumLimit</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifyAlbumLimit()</pre>
+</li>
+</ul>
+<a id="getSpotifyPlaylistLimit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSpotifyPlaylistLimit</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getSpotifyPlaylistLimit()</pre>
+</li>
+</ul>
+<a id="isSpotifyArtistPfp()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isSpotifyArtistPfp</h4>
+<pre class="methodSignature">public&nbsp;boolean&nbsp;isSpotifyArtistPfp()</pre>
+</li>
+</ul>
+<a id="isSpotifyPlaylistSongCover()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isSpotifyPlaylistSongCover</h4>
+<pre class="methodSignature">public&nbsp;boolean&nbsp;isSpotifyPlaylistSongCover()</pre>
+</li>
+</ul>
+<a id="setSpotifyPlaylistSongCover(boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setSpotifyPlaylistSongCover</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setSpotifyPlaylistSongCover&#8203;(boolean&nbsp;spotifyPlaylistSongCover)</pre>
+</li>
+</ul>
+<a id="getYoutubeSongLimit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getYoutubeSongLimit</h4>
+<pre class="methodSignature">public&nbsp;java.lang.Long&nbsp;getYoutubeSongLimit()</pre>
+</li>
+</ul>
+<a id="getYoutubePlaylistLimit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getYoutubePlaylistLimit</h4>
+<pre class="methodSignature">public&nbsp;java.lang.Long&nbsp;getYoutubePlaylistLimit()</pre>
+</li>
+</ul>
+<a id="getSimilarityPercentage()">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>setSimilarityPercentage</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;setSimilarityPercentage&#8203;(int&nbsp;similarityPercentage)</pre>
+<h4>getSimilarityPercentage</h4>
+<pre class="methodSignature">public&nbsp;double&nbsp;getSimilarityPercentage()</pre>
 </li>
 </ul>
 </li>

@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":10,"i5":10,"i6":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -189,13 +189,21 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getInt(int,int)">getInt</a></span>&#8203;(int&nbsp;lowerBound,
+      int&nbsp;upperBound)</code></th>
+<td class="colLast">
+<div class="block">save user input and force boundaries</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLong()">getLong</a></span>()</code></th>
 <td class="colLast">
 <div class="block">save user long input</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getString()">getString</a></span>()</code></th>
 <td class="colLast">
@@ -277,6 +285,24 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;int&nbsp;getInt()</pre>
 <div class="block">save user int input</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- int of user input</dd>
+</dl>
+</li>
+</ul>
+<a id="getInt(int,int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getInt</h4>
+<pre class="methodSignature">public&nbsp;int&nbsp;getInt&#8203;(int&nbsp;lowerBound,
+                  int&nbsp;upperBound)</pre>
+<div class="block">save user input and force boundaries</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>lowerBound</code> - - lower int boundary</dd>
+<dd><code>upperBound</code> - - upper int boundary</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- int of user input</dd>
 </dl>
