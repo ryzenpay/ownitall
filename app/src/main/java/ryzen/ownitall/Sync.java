@@ -13,7 +13,11 @@ import java.util.LinkedHashMap;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Sync {
+    private static final Logger logger = LogManager.getLogger(Sync.class);
     private Settings settings;
     private File dataFolder;
     private File albumFile;
@@ -74,7 +78,7 @@ public class Sync {
      * create archive folder (current date) in dataPath and move all current files
      * to it
      */
-    public void archive() { // TODO: implement into a menu
+    public void archive() {
         this.setDataFolder();
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -87,6 +91,23 @@ public class Sync {
                 return;
             }
         }
+        archiveFolder.mkdir();
+        for (File file : this.dataFolder.listFiles()) {
+            if (file.isFile()) {
+                file.renameTo(new File(archiveFolder, file.getName()));
+            }
+        }
+    }
+
+    /**
+     * create archive folder (current date) in dataPath and move all current files
+     * to it with no user input
+     */
+    public void archive(boolean noUserInput) {
+        this.setDataFolder();
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        File archiveFolder = new File(this.dataFolder, currentDate.format(formatter).toString());
         archiveFolder.mkdir();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
@@ -131,12 +152,14 @@ public class Sync {
         if (chosen == "Cancel") {
             return;
         } else {
-            archive();
+            archive(true);
             File unarchiveFolder = archiveFolders.get(chosen);
             for (File file : unarchiveFolder.listFiles()) {
-                file.renameTo(new File(unarchiveFolder, file.getName()));
+                file.renameTo(new File(this.dataFolder, file.getName())); // TODO: this doesnt work, needs
+                                                                          // java.nio.File.move() (cant overwrite)
             }
         }
+        System.out.println("Restart the program to see the unarchived data");
     }
 
     /**
@@ -149,8 +172,7 @@ public class Sync {
         try {
             this.objectMapper.writeValue(this.albumFile, albums);
         } catch (IOException e) {
-            System.err.println("Error saving albums: " + e);
-            e.printStackTrace();
+            logger.error("Error saving albums: " + e);
         }
     }
 
@@ -171,9 +193,8 @@ public class Sync {
                     });
 
         } catch (IOException e) {
-            System.err.println("Error importing albums: " + e);
-            e.printStackTrace();
-            System.err.println("If this persists, delete the file:" + this.albumFile.getAbsolutePath());
+            logger.error("Error importing albums: " + e);
+            logger.info("If this persists, delete the file:" + this.albumFile.getAbsolutePath());
             return null;
         }
         return albums;
@@ -189,8 +210,7 @@ public class Sync {
         try {
             this.objectMapper.writeValue(this.playlistFile, playlists);
         } catch (IOException e) {
-            System.err.println("Error saving playlists: " + e);
-            e.printStackTrace();
+            logger.error("Error saving playlists: " + e);
         }
     }
 
@@ -211,9 +231,8 @@ public class Sync {
                     });
 
         } catch (IOException e) {
-            System.err.println("Error importing playlists: " + e);
-            e.printStackTrace();
-            System.err.println("If this persists, delete the file:" + this.playlistFile.getAbsolutePath());
+            logger.error("Error importing playlists: " + e);
+            logger.info("If this persists, delete the file:" + this.playlistFile.getAbsolutePath());
             return null;
         }
         return playlists;
@@ -229,8 +248,7 @@ public class Sync {
         try {
             this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
         } catch (IOException e) {
-            System.err.println("Error saving liked songs: " + e);
-            e.printStackTrace();
+            logger.error("Error saving liked songs: " + e);
         }
     }
 
@@ -250,9 +268,8 @@ public class Sync {
                     LikedSongs.class);
 
         } catch (IOException e) {
-            System.err.println("Error importing liked songs: " + e);
-            e.printStackTrace();
-            System.err.println("If this persists, delete the file:" + this.likedSongsFile.getAbsolutePath());
+            logger.error("Error importing liked songs: " + e);
+            logger.info("If this persists, delete the file:" + this.likedSongsFile.getAbsolutePath());
             return null;
         }
         return likedSongs;
@@ -274,9 +291,8 @@ public class Sync {
                     SpotifyCredentials.class);
 
         } catch (IOException e) {
-            System.err.println("Error importing Spotify Credentials: " + e);
-            e.printStackTrace();
-            System.err.println("If this persists, delete the file:" + this.spotifyFile.getAbsolutePath());
+            logger.error("Error importing Spotify Credentials: " + e);
+            logger.info("If this persists, delete the file:" + this.spotifyFile.getAbsolutePath());
             return null;
         }
         return spotifyCredentials;
@@ -292,8 +308,7 @@ public class Sync {
         try {
             this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
         } catch (IOException e) {
-            System.err.println("Error saving spotify credentials: " + e);
-            e.printStackTrace();
+            logger.error("Error saving spotify credentials: " + e);
         }
     }
 
@@ -312,9 +327,8 @@ public class Sync {
             youtubeCredentials = this.objectMapper.readValue(this.youtubeFile,
                     YoutubeCredentials.class);
         } catch (IOException e) {
-            System.err.println("Error importing Youtube Credentials: " + e);
-            e.printStackTrace();
-            System.err.println("If this persists, delete the file:" + this.youtubeFile.getAbsolutePath());
+            logger.error("Error importing Youtube Credentials: " + e);
+            logger.info("If this persists, delete the file:" + this.youtubeFile.getAbsolutePath());
             return null;
         }
         return youtubeCredentials;
@@ -330,8 +344,7 @@ public class Sync {
         try {
             this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);
         } catch (IOException e) {
-            System.err.println("Error saving youtube credentials: " + e);
-            e.printStackTrace();
+            logger.error("Error saving youtube credentials: " + e);
         }
     }
 }

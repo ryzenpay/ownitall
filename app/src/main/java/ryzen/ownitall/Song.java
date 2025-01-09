@@ -12,7 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import ryzen.ownitall.tools.Levenshtein;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Song {
+    private static final Logger logger = LogManager.getLogger(Song.class);
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
@@ -135,7 +139,7 @@ public class Song {
         try {
             this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + coverImage);
+            logger.error("Error parsing cover image: " + coverImage);
         }
     }
 

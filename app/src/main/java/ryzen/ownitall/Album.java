@@ -13,8 +13,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Album {
+    private static final Logger logger = LogManager.getLogger(Album.class);
     private String name;
     LinkedHashSet<Song> songs;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
@@ -72,7 +76,7 @@ public class Album {
         try {
             this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + coverImage);
+            logger.error("Error parsing cover image: " + coverImage);
         }
     }
 

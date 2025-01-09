@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.time.Duration;
 import ryzen.ownitall.tools.MusicTime;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Main {
-    // TODO: initialize logger and remove all system.out.println &&
-    // system.err.println
+    private static final Logger logger = LogManager.getLogger(Main.class);
     private static Settings settings;
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
@@ -94,8 +96,6 @@ public class Main {
     }
 
     private static void exit() {
-        exportData();
-        settings.saveSettings();
         System.out.println("Exiting program. Goodbye!");
         System.exit(0);
     }
@@ -137,23 +137,23 @@ public class Main {
      */
     private static void exportData() {
         Sync sync = new Sync();
-        System.out.println("Beginning to save all data");
+        logger.info("Saving all data...");
         sync.exportAlbums(albums);
         sync.exportPlaylists(playlists);
         sync.exportLikedSongs(likedSongs);
-        System.out.println("Successfully saved all data");
+        logger.info("Successfully saved all data");
     }
 
     /**
      * import data from local files
      */
-    private static void importData() {
+    public static void importData() {
         Sync sync = new Sync();
-        System.out.println("Beginning to import all data");
+        logger.info("Importing all data...");
         mergeAlbums(sync.importAlbums());
         mergePlaylists(sync.importPlaylists());
         likedSongs.addSongs(sync.importLikedSongs().getSongs());
-        System.out.println("Succesfully imported all data");
+        logger.info("Succesfully imported all data");
     }
 
     /**

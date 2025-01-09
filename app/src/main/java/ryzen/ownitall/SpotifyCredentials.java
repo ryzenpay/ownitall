@@ -13,9 +13,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import se.michaelthelin.spotify.SpotifyHttpManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SpotifyCredentials {
+    private static final Logger logger = LogManager.getLogger(SpotifyCredentials.class);
     private String clientId;
     private String clientSecret;
     private URI redirectUrl;
@@ -127,7 +130,7 @@ public class SpotifyCredentials {
      */
     public void startLocalServer() { // TODO: make this work (cors error)
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
-            System.out.println("Waiting for the authorization code...");
+            logger.info("Waiting for the authorization code...");
             Socket clientSocket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine;
@@ -142,10 +145,10 @@ public class SpotifyCredentials {
             String code = extractCodeFromRequest(request.toString());
             if (code != null) {
                 this.setCode(code);
-                System.out.println("Authorization code received: " + code);
+                logger.info("Authorization code received: " + code);
                 sendResponse(clientSocket, 200, "Authorization code received successfully.");
             } else {
-                System.err.println("Failed to retrieve authorization code. Request: " + request.toString());
+                logger.error("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
                 System.out.println("Please provide the code it provides (in url)");
                 this.setCode(Input.getInstance().getString());
@@ -153,7 +156,6 @@ public class SpotifyCredentials {
 
             clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Please provide the code it provides (in url)");
             this.setCode(Input.getInstance().getString());
         }

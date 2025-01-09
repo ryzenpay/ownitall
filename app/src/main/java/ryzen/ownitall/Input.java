@@ -55,7 +55,7 @@ public class Input {
                 int result = Integer.parseInt(getString());
                 return result;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
+                System.err.println("Invalid input. Please enter a valid integer.");
             }
         }
     }
@@ -74,10 +74,10 @@ public class Input {
                 if (result >= lowerBound && result <= upperBound) {
                     return result;
                 } else {
-                    System.out.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
+                    System.err.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
+                System.err.println("Invalid input. Please enter a valid integer.");
             }
         }
     }
@@ -92,7 +92,7 @@ public class Input {
             try {
                 return Long.parseLong(getString());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
+                System.err.println("Invalid input. Please enter a valid integer.");
             }
         }
     }
@@ -109,7 +109,7 @@ public class Input {
             if (file.exists()) {
                 return file;
             } else {
-                System.out.println("The specified file or folder does not exist. Please try again.");
+                System.err.println("The specified file or folder does not exist. Please try again.");
             }
         }
     }
@@ -128,7 +128,7 @@ public class Input {
             if (Character.toLowerCase(choice) == 'n') {
                 return false;
             }
-            System.out.println("Invalid input. Please enter y/N.");
+            System.err.println("Invalid input. Please enter y/N.");
         }
     }
 }

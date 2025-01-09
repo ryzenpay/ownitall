@@ -33,11 +33,15 @@ import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.URI;
 import java.awt.Desktop;
 
 public class Spotify extends SpotifyCredentials {
+    private static final Logger logger = LogManager.getLogger(Spotify.class);
     private SpotifyApi spotifyApi;
     private Settings settings;
     /**
@@ -120,11 +124,11 @@ public class Spotify extends SpotifyCredentials {
             try {
                 Desktop.getDesktop().browse(auth_uri);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error opening web browser: " + e);
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
-            System.out.println("Please provide the code it provides (in url)");
+            System.out.print("Please provide the code it presents (in url): ");
             this.setCode(Input.getInstance().getString());
             return;
         }
@@ -145,7 +149,7 @@ public class Spotify extends SpotifyCredentials {
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            System.err.println("Error logging in: " + e);
+            logger.error("Error logging in: " + e);
         }
     }
 
@@ -162,7 +166,7 @@ public class Spotify extends SpotifyCredentials {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             return true;
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            System.err.println("Error: " + e.getMessage());
+            logger.error("Error: " + e.getMessage());
             return false;
         }
     }
@@ -186,7 +190,7 @@ public class Spotify extends SpotifyCredentials {
         try {
             Thread.sleep(msec);
         } catch (Exception e) {
-            System.err.println("Error in spotify sleep: " + e);
+            logger.error("Error in spotify sleep: " + e);
         }
     }
 
@@ -229,10 +233,10 @@ public class Spotify extends SpotifyCredentials {
                     likedSongs.setSpotifyPageOffset(offset);
                 }
             } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.err.println("Error fetching liked songs: " + e.getMessage());
+                logger.error("Error fetching liked songs: " + e);
                 hasMore = false;
             }
         }
@@ -277,10 +281,10 @@ public class Spotify extends SpotifyCredentials {
                     offset += limit;
                 }
             } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.err.println("Error: " + e.getMessage());
+                logger.error("Error: " + e);
                 hasMore = false;
             }
         }
@@ -325,10 +329,10 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.err.println("Error fetching songs for album: " + albumId + ": " + e.getMessage());
+                logger.error("Error fetching songs for album: " + albumId + ": " + e);
                 hasMore = false;
             }
         }
@@ -375,10 +379,10 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.err.println("Error fetching playlists: " + e.getMessage());
+                logger.error("Error fetching playlists: " + e);
                 hasMore = false;
             }
         }
@@ -424,7 +428,7 @@ public class Spotify extends SpotifyCredentials {
                             song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
                             songs.add(song);
                         } else {
-                            System.err.println("Skipping non-Track in playlist: " + playlistId);
+                            logger.info("Skipping non-Track in playlist: " + playlistId);
                         }
                     }
                     offset += limit;
@@ -434,10 +438,10 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                System.err.println("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                System.err.println("Error fetching playlist tracks: " + e.getMessage());
+                logger.error("Error fetching playlist tracks: " + e);
                 hasMore = false;
             }
         }
@@ -470,11 +474,10 @@ public class Spotify extends SpotifyCredentials {
                             }
                             done = true;
                         } catch (TooManyRequestsException e) {
-                            System.err.println(
-                                    "Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                            logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                             this.sleep(e.getRetryAfter());
                         } catch (Exception e) {
-                            System.err.print("Error obtaining artist: " + e);
+                            logger.error("Error obtaining artist: " + e);
                             done = true;
                         }
                     }

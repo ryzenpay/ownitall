@@ -28,6 +28,10 @@
         //json
         implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
         implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
+
+        //logging
+        implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+        implementation("org.apache.logging.log4j:log4j-core:2.20.0")
     }
 
     java {
@@ -40,6 +44,10 @@
         mainClass = "ryzen.ownitall.Main"
     }
 
+    // remove this to not have any logs in terminal
+    tasks.withType<JavaExec> {
+        systemProperty("consoleLogLevel", "INFO")
+    }
     tasks.named<JavaExec>("run") {
         standardInput = System.`in` //to allow scanner
     }
@@ -94,4 +102,10 @@
 
         // Add this line to handle duplicate entries
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes(
+                "Main-Class" to application.mainClass.get(),
+                "consoleLogLevel" to "OFF"
+            )
+        }
     }

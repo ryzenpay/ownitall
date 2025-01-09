@@ -11,8 +11,12 @@ import ryzen.ownitall.tools.Levenshtein;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Playlist {
+    private static final Logger logger = LogManager.getLogger(Playlist.class);
     private String name;
     private URI coverArt;
     private ArrayList<Song> songs; // arraylist cuz it can contain duplicates
@@ -69,7 +73,7 @@ public class Playlist {
         try {
             this.coverArt = new URI(coverArt);
         } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + coverArt);
+            logger.error("Error parsing cover image: " + coverArt);
         }
     }
 

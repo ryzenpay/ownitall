@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -21,7 +19,12 @@ import org.jaudiotagger.tag.TagException;
 import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+
 public class Local {
+    private static final Logger logger = LogManager.getLogger(Local.class);
     private Settings settings;
     private File localLibrary;
     private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "mp4", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
@@ -34,7 +37,7 @@ public class Local {
         this.settings = Settings.load();
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
-        Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
+        LogManager.getLogger("org.jaudiotagger").atLevel(Level.OFF);
     }
 
     /**
@@ -45,7 +48,7 @@ public class Local {
     public Local(String localFolderPath) {
         this.settings = Settings.load();
         this.localLibrary = new File(localFolderPath);
-        Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
+        LogManager.getLogger("org.jaudiotagger").atLevel(Level.OFF);
     }
 
     /**
@@ -183,10 +186,10 @@ public class Local {
             // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
             // support / convert to url
         } catch (InvalidAudioFrameException | TagException e) {
-            System.err.println("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
+            logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
             return null;
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {
-            System.err.println("Error processing file: " + file.getAbsolutePath() + " error: " + e);
+            logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
             return null;
         }
         return song;

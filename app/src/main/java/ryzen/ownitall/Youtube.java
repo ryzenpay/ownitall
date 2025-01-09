@@ -29,7 +29,11 @@ import java.util.ArrayList;
 import java.time.Duration;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Youtube extends YoutubeCredentials {
+    private static final Logger logger = LogManager.getLogger(YoutubeCredentials.class);
     private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private com.google.api.services.youtube.YouTube youtubeApi;
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -113,7 +117,7 @@ public class Youtube extends YoutubeCredentials {
                     .setApplicationName(this.getApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
-            System.err.println("Error logging in with youtube api: " + e);
+            logger.error("Error logging in with youtube api: " + e);
             return null;
         }
     }
@@ -166,8 +170,7 @@ public class Youtube extends YoutubeCredentials {
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            System.err.println("Error obtaining liked songs: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error obtaining liked songs: " + e);
         }
         return songs;
     }
@@ -216,8 +219,7 @@ public class Youtube extends YoutubeCredentials {
                 nextPageToken = playlistResponse.getNextPageToken();
             } while (nextPageToken != null);
         } catch (IOException e) {
-            System.err.println("Error retrieving playlists: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error retrieving playlists: " + e);
         }
         return playlists;
     }
@@ -255,8 +257,7 @@ public class Youtube extends YoutubeCredentials {
                 nextPageToken = itemResponse.getNextPageToken();
             } while (nextPageToken != null);
         } catch (IOException e) {
-            System.err.println("Error retrieving playlist songs: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error retrieving playlist songs: " + e);
         }
         return songs;
     }
@@ -280,7 +281,7 @@ public class Youtube extends YoutubeCredentials {
                 return "10".equals(video.getSnippet().getCategoryId());
             }
         } catch (IOException e) {
-            System.err.println("Error checking if video is music: " + e.getMessage());
+            logger.error("Error checking if video is music: " + e);
         }
         return false;
     }
@@ -303,7 +304,7 @@ public class Youtube extends YoutubeCredentials {
                 return Duration.parse(video.getContentDetails().getDuration());
             }
         } catch (IOException e) {
-            System.err.println("Error getting video duration: " + e.getMessage());
+            logger.error("Error getting video duration: " + e);
         }
         return Duration.ZERO;
     }

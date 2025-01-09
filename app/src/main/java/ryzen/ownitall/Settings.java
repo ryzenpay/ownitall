@@ -12,8 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Settings {
+    private static final Logger logger = LogManager.getLogger(Settings.class);
     @JsonIgnore
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
@@ -125,8 +129,8 @@ public class Settings {
                 this.setSettings(importedSettings);
             }
         } catch (IOException e) {
-            System.err.println("Error importing settings: " + e);
-            System.err.println("If this persists, delete the file: " + settingsFile.getAbsolutePath());
+            logger.error("Error importing settings: " + e);
+            logger.info("If this persists, delete the file: " + settingsFile.getAbsolutePath());
         }
     }
 
@@ -140,7 +144,7 @@ public class Settings {
         try {
             objectMapper.writeValue(settingsFile, this);
         } catch (IOException e) {
-            System.err.println("Error saving settings: " + e);
+            logger.error("Error saving settings: " + e);
         }
     }
 
@@ -158,7 +162,7 @@ public class Settings {
                 try {
                     allSettings.add(field.get(this)); // Add field value to the list
                 } catch (IllegalAccessException e) {
-                    System.err.println("Error getting all settings: " + e);
+                    logger.error("Error getting all settings: " + e);
                 }
             }
         }
@@ -183,7 +187,7 @@ public class Settings {
                         allOptions.add(i - 1, field); // Add field to options for later use
                         i++;
                     } catch (IllegalAccessException e) {
-                        System.err.println("Error changing settings: " + e);
+                        logger.error("Error changing settings: " + e);
                     }
                 }
             }
@@ -196,13 +200,13 @@ public class Settings {
                 Field selectedField = (Field) allOptions.get(choice - 1);
                 try {
                     if (this.changeSetting(selectedField)) {
-                        System.out.println(
+                        logger.info(
                                 "Setting successfully changed, the program might need a restart for this to take shape");
                     } else {
-                        System.err.println("Unsuccessfully changed setting, read the log for more information");
+                        logger.error("Unsuccessfully changed setting, read the log for more information");
                     }
                 } catch (IllegalAccessException e) {
-                    System.out.println("Error updating setting: " + e);
+                    logger.error("Error updating setting: " + e);
                 }
             }
         }
@@ -252,7 +256,7 @@ public class Settings {
                     Object value = field.get(setting);
                     field.set(this, value);
                 } catch (IllegalAccessException e) {
-                    System.err.println("Error copying over settings: " + e);
+                    logger.error("Error copying over settings: " + e);
                 }
             }
         }
@@ -272,7 +276,7 @@ public class Settings {
                         return false;
                     }
                 } catch (IllegalAccessException e) {
-                    System.err.println("Error checking if settings isNull");
+                    logger.error("Error checking if settings isNull");
                     return false;
                 }
             }

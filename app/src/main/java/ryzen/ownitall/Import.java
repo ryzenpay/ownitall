@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Import {
+    private static final Logger logger = LogManager.getLogger(Import.class);
     private Settings settings;
     private boolean status;
 
@@ -56,7 +60,7 @@ public class Import {
         System.out.print("Enter your choice: ");
         int choice = Input.getInstance().getInt();
         if (choice < 0 || choice > options.size()) {
-            System.out.println("Incorrect option, try again");
+            System.err.println("Incorrect option, try again");
             return null;
         }
         ArrayList<String> options = new ArrayList<>(this.options.keySet());
@@ -73,10 +77,10 @@ public class Import {
         if (settings.saveCredentials) {
             YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
             if (youtubeCredentials == null) {
-                System.out.println("No saved youtube credential records");
+                logger.info("No saved youtube credential records");
                 youtube = new Youtube();
             } else if (youtubeCredentials.isNull()) {
-                System.out.println("Incorrect youtube credentials found");
+                logger.error("Incorrect youtube credentials found");
                 youtube = new Youtube();
             } else {
                 youtube = new Youtube(youtubeCredentials);
@@ -85,17 +89,16 @@ public class Import {
         } else {
             youtube = new Youtube();
         }
-        System.out.println(
-                "Getting all Youtube liked songs, albums and playlists: ");
+        logger.info("Getting all Youtube liked songs, albums and playlists: ");
         LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
-        System.out.println("    Processed " + youtubeLikedSongs.size() + " liked songs");
+        logger.info("   Processed " + youtubeLikedSongs.size() + " liked songs");
         likedSongs.addSongs(youtubeLikedSongs.getSongs());
         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
         LinkedHashSet<Album> youtubeAlbums = youtube.getAlbums();
         albums.addAll(youtubeAlbums);
-        System.out.println("    Processed " + youtubeAlbums.size() + " albums");
+        logger.info("   Processed " + youtubeAlbums.size() + " albums");
         LinkedHashSet<Playlist> youtubePlaylists = youtube.getPlaylists();
-        System.out.println("    Processed " + youtubePlaylists.size() + " playlists");
+        logger.info("   Processed " + youtubePlaylists.size() + " playlists");
         playlists.addAll(youtubePlaylists);
         this.status = true;
     }
@@ -109,10 +112,10 @@ public class Import {
         if (settings.saveCredentials) {
             SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
             if (spotifyCredentials == null) {
-                System.out.println("No saved spotify credential records");
+                logger.info("No saved spotify credential records");
                 spotify = new Spotify();
             } else if (spotifyCredentials.isNull()) {
-                System.out.println("Incorrect spotify credentials found");
+                logger.error("Incorrect spotify credentials found");
                 spotify = new Spotify();
             } else {
                 spotify = new Spotify(spotifyCredentials);
@@ -121,17 +124,16 @@ public class Import {
         } else {
             spotify = new Spotify();
         }
-        System.out.println(
-                "Getting all spotify Playlists, Albums and liked songs: (This might take a minute)");
+        logger.info("Getting all spotify Playlists, Albums and liked songs: ");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
-        System.out.println("    Processed " + spotifyLikedSongs.size() + " liked songs");
+        logger.info("   Processed " + spotifyLikedSongs.size() + " liked songs");
         likedSongs.addSongs(spotifyLikedSongs.getSongs());
         likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
         LinkedHashSet<Album> spotifyAlbums = spotify.getAlbums();
-        System.out.println("    Processed " + spotifyAlbums.size() + " albums");
+        logger.info("   Processed " + spotifyAlbums.size() + " albums");
         albums.addAll(spotifyAlbums);
         LinkedHashSet<Playlist> spotifyPlaylists = spotify.getPlaylists();
-        System.out.println("    Processed " + spotifyPlaylists.size() + " playlists");
+        logger.info("   Processed " + spotifyPlaylists.size() + " playlists");
         playlists.addAll(spotifyPlaylists);
         this.status = true;
     }
@@ -141,15 +143,15 @@ public class Import {
      */
     private void importLocal() {
         Local local = new Local();
-        System.out.println("Getting all music from your local library");
+        logger.info("Getting all music from your local library");
         LikedSongs localLikedSongs = local.getLikedSongs();
-        System.out.println("Processed " + localLikedSongs.size() + " liked songs");
+        logger.info("   Processed " + localLikedSongs.size() + " liked songs");
         likedSongs.addSongs(localLikedSongs.getSongs());
         LinkedHashSet<Album> localAlbums = local.getAlbums();
-        System.out.println("Processed " + localAlbums.size() + " albums");
+        logger.info("    Processed " + localAlbums.size() + " albums");
         albums.addAll(localAlbums);
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
-        System.out.println("Processed " + localPlaylists.size() + " playlists");
+        logger.info("    Processed " + localPlaylists.size() + " playlists");
         playlists.addAll(playlists);
         this.status = true;
     }

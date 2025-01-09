@@ -8,7 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.tools.Levenshtein;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Artist {
+    private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
     private URI profilePicture;
 
@@ -40,7 +44,7 @@ public class Artist {
         try {
             this.profilePicture = new URI(profilePicture);
         } catch (URISyntaxException e) {
-            System.err.println("Error parsing cover image: " + profilePicture);
+            logger.error("Error parsing cover image: " + profilePicture);
         }
     }
 
