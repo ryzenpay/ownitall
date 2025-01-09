@@ -41,7 +41,7 @@ public class Input {
      * @return - char of user input
      */
     public char getChar() {
-        return scanner.next().charAt(0);
+        return getString().charAt(0);
     }
 
     /**
@@ -52,7 +52,7 @@ public class Input {
     public int getInt() {
         while (true) {
             try {
-                int result = Integer.parseInt(scanner.nextLine().trim());
+                int result = Integer.parseInt(getString());
                 return result;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
@@ -70,7 +70,7 @@ public class Input {
     public int getInt(int lowerBound, int upperBound) {
         while (true) {
             try {
-                int result = Integer.parseInt(scanner.nextLine().trim());
+                int result = Integer.parseInt(getString());
                 if (result >= lowerBound && result <= upperBound) {
                     return result;
                 } else {
@@ -90,7 +90,7 @@ public class Input {
     public long getLong() {
         while (true) {
             try {
-                return scanner.nextLong();
+                return Long.parseLong(getString());
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
             }

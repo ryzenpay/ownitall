@@ -187,6 +187,8 @@ public class Playlist {
         this.name = name;
         if (songs != null && !songs.isEmpty()) {
             this.songs = songs;
+        } else {
+            this.songs = new ArrayList<>();
         }
         if (youtubePageToken != null) {
             this.youtubePageToken = youtubePageToken;

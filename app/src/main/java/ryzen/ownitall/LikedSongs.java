@@ -36,6 +36,9 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
      */
     @Override
     public ArrayList<Song> getSongs() {
+        if (this.likedSongs.isEmpty()) {
+            return new ArrayList<>();
+        }
         return new ArrayList<Song>(this.likedSongs);
     }
 
@@ -46,6 +49,9 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
      */
     @Override
     public void addSongs(ArrayList<Song> songs) {
+        if (songs.isEmpty()) {
+            return;
+        }
         this.likedSongs.addAll(songs);
     }
 
@@ -104,6 +110,8 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
         super(name);
         if (songs != null && !songs.isEmpty()) {
             this.likedSongs = songs;
+        } else {
+            this.likedSongs = new LinkedHashSet<>();
         }
         if (youtubePageToken != null) {
             this.setYoutubePageToken(youtubePageToken);

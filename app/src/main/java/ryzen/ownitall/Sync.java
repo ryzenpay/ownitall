@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,25 +102,40 @@ public class Sync {
      */
     public void unArchive() {
         this.setDataFolder();
-        ArrayList<File> archiveFolders = new ArrayList<>();
+        LinkedHashMap<String, File> archiveFolders = new LinkedHashMap<>();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isDirectory()) {
-                archiveFolders.add(file);
+                archiveFolders.put(file.getName(), file);
             }
         }
-        System.out.println("Available archive folders: ");
-        for (int i = 0; i < archiveFolders.size(); i++) {
-            System.out.println("[" + i + "] " + archiveFolders.get(i));
-        }
-        int choice = Input.getInstance().getInt();
-        do {
-            System.out.print("Your choice: ");
+        int choice = -1;
+        while (true) {
+            System.out.println("Available archive folders: ");
+            int i = 1;
+            for (String fileName : archiveFolders.keySet()) {
+                System.out.println("[" + i + "] " + fileName);
+                i++;
+            }
+            System.out.println("[0] Cancel");
+            System.out.print("Enter your choice: ");
             choice = Input.getInstance().getInt();
-        } while (choice < 1 || choice > archiveFolders.size());
-        File unarchiveFolder = archiveFolders.get(choice);
-        archive();
-        for (File file : unarchiveFolder.listFiles()) {
-            file.renameTo(new File(unarchiveFolder, file.getName()));
+            if (choice < 0 || choice > archiveFolders.size()) {
+                System.out.println("Incorrect option, try again");
+            } else {
+                break;
+            }
+        }
+        ArrayList<String> options = new ArrayList<>(archiveFolders.keySet());
+        options.add(0, "Cancel");
+        String chosen = options.get(choice);
+        if (chosen == "Cancel") {
+            return;
+        } else {
+            archive();
+            File unarchiveFolder = archiveFolders.get(chosen);
+            for (File file : unarchiveFolder.listFiles()) {
+                file.renameTo(new File(unarchiveFolder, file.getName()));
+            }
         }
     }
 
