@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
 
 public class Local {
+    private Settings settings;
     private File localLibrary;
     private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "mp4", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
@@ -30,6 +31,7 @@ public class Local {
      * default local constructor asking for library path
      */
     public Local() {
+        this.settings = Settings.load();
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
@@ -41,6 +43,7 @@ public class Local {
      * @param localFolderPath - String with path location to local music library
      */
     public Local(String localFolderPath) {
+        this.settings = Settings.load();
         this.localLibrary = new File(localFolderPath);
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
@@ -84,7 +87,7 @@ public class Local {
      * Get local liked songs
      * current criteria:
      * - songs in root folder (library path)
-     * - folder named "liked songs"
+     * - folder named "liked songs" (changeable in settings)
      * 
      * @return - constructed LikedSongs
      */
@@ -97,7 +100,7 @@ public class Local {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.toString().equalsIgnoreCase("liked songs")) {
+            if (file.isDirectory() && file.toString().equalsIgnoreCase(this.settings.likedSongName)) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }
