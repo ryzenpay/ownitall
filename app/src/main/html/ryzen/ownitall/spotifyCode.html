@@ -55,6 +55,8 @@
             border-radius: 50%;
             display: inline-block;
             margin-left: 10px;
+            background-color: orange;
+            /* Default color */
         }
 
         .success {
@@ -89,27 +91,33 @@
             xhr.open('GET', 'http://localhost:8888?code=' + code, true);
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    xhrStatus.classList.add('success');
-                    statusMessage.textContent = 'Code sent successfully!';
+                    xhrStatus.className = 'success';
+                    statusMessage.textContent = 'You can close this web page';
+                } else if (xhr.status === 404) {
+                    xhrStatus.className = 'failure';
+                    statusMessage.textContent = 'Error occurred';
                 } else {
-                    xhrStatus.classList.add('failure');
-                    statusMessage.textContent = 'Failed to send code to local server.';
+                    // Keep the default orange color for other status codes
+                    statusMessage.textContent = 'Unexpected response from server';
                 }
             };
             xhr.onerror = function () {
-                xhrStatus.classList.add('failure');
-                statusMessage.textContent = 'Failed to connect to local server.';
+                xhrStatus.className = 'failure';
+                statusMessage.textContent = 'Failed to connect to local server';
             };
             xhr.send();
         } else {
             codeDisplay.textContent = 'No code provided';
+            xhrStatus.className = 'failure';
+            statusMessage.textContent = 'Error: No code provided';
         }
 
         copyButton.addEventListener('click', () => {
             navigator.clipboard.writeText(code).then(() => {
+                const originalText = statusMessage.textContent;
                 statusMessage.textContent = 'Code copied to clipboard!';
                 setTimeout(() => {
-                    statusMessage.textContent = ''; // Clear message after a few seconds
+                    statusMessage.textContent = originalText; // Restore the original message
                 }, 2000);
             });
         });

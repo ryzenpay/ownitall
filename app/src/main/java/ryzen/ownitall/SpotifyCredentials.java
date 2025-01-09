@@ -143,17 +143,19 @@ public class SpotifyCredentials {
             if (code != null) {
                 this.setCode(code);
                 System.out.println("Authorization code received: " + code);
-                sendResponse(clientSocket, "Authorization successful. You can close this window.");
+                sendResponse(clientSocket, 200, "Authorization code received successfully.");
             } else {
                 System.err.println("Failed to retrieve authorization code. Request: " + request.toString());
-                sendResponse(clientSocket, "Failed to retrieve authorization code. Please try again.");
+                sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
                 System.out.println("Please provide the code it provides (in url)");
-                this.setCode(Input.getInstance().getString());// TODO: gui would help this so much
+                this.setCode(Input.getInstance().getString());
             }
 
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Please provide the code it provides (in url)");
+            this.setCode(Input.getInstance().getString());
         }
     }
 
@@ -182,17 +184,16 @@ public class SpotifyCredentials {
      * send response to website if received code
      * 
      * @param clientSocket - socket to send through
-     * @param message      - additional success message
+     * @param statusCode   - additional success message (200 = success, 404 =
+     *                     failed)
+     * @param message      - additional message to present on site
      * @throws IOException
      */
-    private void sendResponse(Socket clientSocket, String message) throws IOException { // TODO: fix web page to show
-                                                                                        // this
-        String response = "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: text/html\r\n"
-                + "\r\n"
-                + "<html><body>"
-                + "<h1>" + message + "</h1>"
-                + "</body></html>";
+    private void sendResponse(Socket clientSocket, int statusCode, String message) throws IOException {
+        String statusLine = "HTTP/1.1 " + statusCode + " " + (statusCode == 200 ? "OK" : "Not Found") + "\r\n";
+        String contentType = "Content-Type: text/plain\r\n";
+        String contentLength = "Content-Length: " + message.length() + "\r\n";
+        String response = statusLine + contentType + contentLength + "\r\n" + message;
         clientSocket.getOutputStream().write(response.getBytes());
     }
 }
