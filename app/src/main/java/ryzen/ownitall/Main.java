@@ -16,11 +16,10 @@ public class Main {
 
     public static void main(String[] args) {
         settings = Settings.load();
-        if (!Sync.checkDataFolder()) {
-            albums = new LinkedHashSet<>();
-            playlists = new LinkedHashSet<>();
-            likedSongs = new LikedSongs();
-        } else {
+        albums = new LinkedHashSet<>();
+        playlists = new LinkedHashSet<>();
+        likedSongs = new LikedSongs();
+        if (Sync.checkDataFolder()) {
             importData();
         }
         while (true) {
@@ -128,18 +127,9 @@ public class Main {
     private static void importData() {
         Sync sync = new Sync();
         System.out.println("Beginning to import all data");
-        albums = sync.importAlbums();
-        if (albums == null) {
-            albums = new LinkedHashSet<>();
-        }
-        playlists = sync.importPlaylists();
-        if (playlists == null) {
-            playlists = new LinkedHashSet<>();
-        }
-        likedSongs = sync.importLikedSongs();
-        if (likedSongs == null) {
-            likedSongs = new LikedSongs();
-        }
+        mergeAlbums(sync.importAlbums());
+        mergePlaylists(sync.importPlaylists());
+        likedSongs.addSongs(sync.importLikedSongs().getSongs());
         System.out.println("Succesfully imported all data");
     }
 
