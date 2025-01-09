@@ -27,6 +27,8 @@ replay_pid*
 data/**
 .env
 .appdata
+app/logs
+
 # Ignore Gradle project-specific cache directory
 .gradle
 

@@ -13,6 +13,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.KeyNotFoundException;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
@@ -21,13 +22,15 @@ import java.time.temporal.ChronoUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
 
 public class Local {
+    static {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
+    }
     private static final Logger logger = LogManager.getLogger(Local.class);
     private Settings settings;
     private File localLibrary;
-    private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "mp4", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
+    private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
 
     /**
@@ -37,7 +40,6 @@ public class Local {
         this.settings = Settings.load();
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
-        LogManager.getLogger("org.jaudiotagger").atLevel(Level.OFF);
     }
 
     /**
@@ -48,7 +50,6 @@ public class Local {
     public Local(String localFolderPath) {
         this.settings = Settings.load();
         this.localLibrary = new File(localFolderPath);
-        LogManager.getLogger("org.jaudiotagger").atLevel(Level.OFF);
     }
 
     /**
@@ -175,13 +176,17 @@ public class Local {
         Song song = new Song(file.toString());
         try {
             AudioFile audioFile = AudioFileIO.read(file);
-            Tag tag = audioFile.getTag();
             AudioHeader audioHeader = audioFile.getAudioHeader();
-            song.setName(tag.getFirst(FieldKey.TITLE));
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
-            List<String> artistList = tag.getAll(FieldKey.ARTIST);
-            for (String artistName : artistList) {
-                song.addArtist(new Artist(artistName));
+            Tag tag = audioFile.getTag();
+            if (tag != null) {
+                if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
+                    song.setName(tag.getFirst(FieldKey.TITLE));
+                }
+                List<String> artistList = tag.getAll(FieldKey.ARTIST);
+                for (String artistName : artistList) {
+                    song.addArtist(new Artist(artistName));
+                }
             }
             // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
             // support / convert to url
