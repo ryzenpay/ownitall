@@ -104,11 +104,20 @@ public class Collection {
     public void printInventory(int recursion) {
         int trackCount = 0;
         for (Playlist playlist : this.playlists) {
-            trackCount += playlist.size();
+            for (Song song : playlist.getSongs()) { // to prevent duplicate liked songs and entries
+                if (!this.likedSongs.checkLiked(song)) {
+                    trackCount++;
+                }
+            }
         }
         for (Album album : this.albums) {
-            trackCount += album.size();
+            for (Song song : album.getSongs()) {
+                if (!this.likedSongs.checkLiked(song)) {
+                    trackCount++;
+                }
+            }
         }
+        trackCount += this.likedSongs.size();
         int i = 1;
         int y = 1;
         switch (recursion) {

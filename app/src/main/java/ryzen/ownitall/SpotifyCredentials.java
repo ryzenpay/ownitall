@@ -146,7 +146,8 @@ public class SpotifyCredentials {
             String code = extractCodeFromRequest(request.toString());
             if (code != null) {
                 this.setCode(code);
-                logger.info("Authorization code received: " + code);
+                logger.info("Authorization code received: " + code); // TODO: jframe force window on top
+                                                                     // (frame.toFront(); frame.repaint();)
                 sendResponse(clientSocket, 200, "Authorization code received successfully.");
             } else {
                 logger.error("Failed to retrieve authorization code. Request: " + request.toString());
