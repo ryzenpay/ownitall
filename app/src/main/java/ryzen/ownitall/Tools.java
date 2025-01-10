@@ -3,6 +3,8 @@ package ryzen.ownitall;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.tools.Input;
+
 public class Tools {
     private LinkedHashMap<String, Runnable> options;
 

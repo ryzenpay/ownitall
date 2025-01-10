@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.tools.Input;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class YoutubeCredentials {
     private String applicationName;

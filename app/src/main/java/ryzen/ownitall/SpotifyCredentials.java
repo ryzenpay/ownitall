@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.tools.Input;
 import se.michaelthelin.spotify.SpotifyHttpManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

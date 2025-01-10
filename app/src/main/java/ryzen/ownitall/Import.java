@@ -1,16 +1,16 @@
 package ryzen.ownitall;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.tools.Menu;
+
 public class Import {
     private static final Logger logger = LogManager.getLogger(Import.class);
     private static final Settings settings = Settings.load();
-    private boolean status;
 
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
@@ -20,10 +20,8 @@ public class Import {
     /**
      * constructor for Import which also prompts user for import options
      * 
-     * @param dataFolder - datafolder of where to get presaved credentials
      */
-    public Import(String dataFolder) {
-        this.status = false;
+    public Import() {
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
@@ -31,40 +29,14 @@ public class Import {
         options.put("Youtube", this::importYoutube);
         options.put("Spotify", this::importSpotify);
         options.put("Local", this::importLocal);
-        while (!this.status) {
-            String choice = promptImport();
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    this.exit();
-                } else {
-                    this.options.get(choice).run();
-                }
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet());
+            if (choice == "Exit") {
+                break;
+            } else {
+                options.get(choice).run();
             }
         }
-    }
-
-    /**
-     * prompt user for import options from the options array
-     * 
-     * @return - String key value of the options hashmap
-     */
-    private String promptImport() {
-        System.out.println("Choose an import option from the following: ");
-        int i = 1;
-        for (String option : this.options.keySet()) {
-            System.out.println("[" + i + "] " + option);
-            i++;
-        }
-        System.out.println("[0] Exit");
-        System.out.print("Enter your choice: ");
-        int choice = Input.getInstance().getInt();
-        if (choice < 0 || choice > options.size()) {
-            System.err.println("Incorrect option, try again");
-            return null;
-        }
-        ArrayList<String> options = new ArrayList<>(this.options.keySet());
-        options.add(0, "Exit");
-        return options.get(choice);
     }
 
     /**
@@ -99,7 +71,6 @@ public class Import {
         LinkedHashSet<Playlist> youtubePlaylists = youtube.getPlaylists();
         logger.info("   Processed " + youtubePlaylists.size() + " playlists");
         playlists.addAll(youtubePlaylists);
-        this.status = true;
     }
 
     /**
@@ -134,7 +105,6 @@ public class Import {
         LinkedHashSet<Playlist> spotifyPlaylists = spotify.getPlaylists();
         logger.info("   Processed " + spotifyPlaylists.size() + " playlists");
         playlists.addAll(spotifyPlaylists);
-        this.status = true;
     }
 
     /**
@@ -152,11 +122,6 @@ public class Import {
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
         logger.info("    Processed " + localPlaylists.size() + " playlists");
         playlists.addAll(playlists);
-        this.status = true;
-    }
-
-    private void exit() {
-        this.status = true;
     }
 
     /**

@@ -4,6 +4,9 @@ import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.time.Duration;
+
+import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.tools.Menu;
 import ryzen.ownitall.tools.MusicTime;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,14 +18,13 @@ public class Main {
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
-    private static LinkedHashMap<String, Runnable> options;
 
     public static void main(String[] args) {
-        options = new LinkedHashMap<>();
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         albums = new LinkedHashSet<>();
         playlists = new LinkedHashSet<>();
         likedSongs = new LikedSongs();
-        if (Sync.checkDataFolder()) {
+        if (Sync.load().checkDataFolder()) {
             importData();
         }
         // main menu
@@ -33,38 +35,17 @@ public class Main {
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
         while (true) {
-            String choice = promptMenu();
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    exit();
-                } else {
-                    options.get(choice).run();
-                }
+            String choice = Menu.optionMenu(options.keySet());
+            if (choice == "Exit") {
+                exit();
+            } else {
+                options.get(choice).run();
             }
         }
     }
 
-    private static String promptMenu() {
-        System.out.println("Choose an option from the following: ");
-        int i = 1;
-        for (String option : options.keySet()) {
-            System.out.println("[" + i + "] " + option);
-            i++;
-        }
-        System.out.println("[0] Exit");
-        System.out.print("Enter your choice: ");
-        int choice = Input.getInstance().getInt();
-        if (choice < 0 || choice > options.size()) {
-            System.out.println("Incorrect option, try again");
-            return null;
-        }
-        ArrayList<String> arrayOptions = new ArrayList<>(options.keySet());
-        arrayOptions.add(0, "Exit");
-        return arrayOptions.get(choice);
-    }
-
     private static void optionImport() {
-        Import dataImport = new Import(settings.dataFolderPath);
+        Import dataImport = new Import();
         likedSongs.addSongs(dataImport.getLikedSongs());
         mergeAlbums(dataImport.getAlbums()); // TODO: collection class to handle this
         mergePlaylists(dataImport.getPlaylists());

@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.tools.Menu;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class Sync {
     private static final Logger logger = LogManager.getLogger(Sync.class);
     private static final Settings settings = Settings.load();
+    private static Sync instance;
     private File dataFolder;
     private File albumFile;
     private File playlistFile;
@@ -43,7 +46,10 @@ public class Sync {
     }
 
     public static Sync load() {
-        return new Sync();
+        if (instance == null) {
+            instance = new Sync();
+        }
+        return instance;
     }
 
     /**
@@ -63,7 +69,7 @@ public class Sync {
      * 
      * @return - true if exist, false if not
      */
-    public static boolean checkDataFolder() { // TODO: move to sync (after settings setup as it needs to be static)
+    public boolean checkDataFolder() {
         Settings settings = Settings.load();
         File dataFolder = new File(settings.dataFolderPath);
         if (dataFolder.exists() && dataFolder.isDirectory()) {
@@ -132,31 +138,12 @@ public class Sync {
                 archiveFolders.put(file.getName(), file);
             }
         }
-        int choice = -1;
-        while (true) {
-            System.out.println("Available archive folders: ");
-            int i = 1;
-            for (String fileName : archiveFolders.keySet()) {
-                System.out.println("[" + i + "] " + fileName);
-                i++;
-            }
-            System.out.println("[0] Cancel");
-            System.out.print("Enter your choice: ");
-            choice = Input.getInstance().getInt();
-            if (choice < 0 || choice > archiveFolders.size()) {
-                System.out.println("Incorrect option, try again");
-            } else {
-                break;
-            }
-        }
-        ArrayList<String> options = new ArrayList<>(archiveFolders.keySet());
-        options.add(0, "Cancel");
-        String chosen = options.get(choice);
-        if (chosen == "Cancel") {
+        String choice = Menu.optionMenu(archiveFolders.keySet());
+        if (choice == "Exit") {
             return;
         } else {
             archive(true);
-            File unarchiveFolder = archiveFolders.get(chosen);
+            File unarchiveFolder = archiveFolders.get(choice);
             for (File file : unarchiveFolder.listFiles()) {
                 file.renameTo(new File(this.dataFolder, file.getName())); // TODO: this doesnt work, needs
                                                                           // java.nio.File.move() (cant overwrite)

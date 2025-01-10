@@ -3,7 +3,6 @@ package ryzen.ownitall.tools;
 //https://www.geeksforgeeks.org/java-program-to-implement-levenshtein-distance-computing-algorithm/
 
 import java.util.Arrays;
-import ryzen.ownitall.Settings;
 
 public class Levenshtein {
 

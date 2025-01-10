@@ -16,6 +16,8 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
+import ryzen.ownitall.tools.Input;
+
 import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
 
@@ -101,7 +103,7 @@ public class Local {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.toString().equalsIgnoreCase(this.settings.likedSongName)) {
+            if (file.isDirectory() && file.toString().equalsIgnoreCase(settings.likedSongName)) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }

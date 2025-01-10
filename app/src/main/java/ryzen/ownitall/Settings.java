@@ -3,12 +3,17 @@ package ryzen.ownitall;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.tools.Menu;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 
@@ -176,37 +181,26 @@ public class Settings {
     public void changeSettings() {
         while (true) {
             System.out.println("Choose a setting to change: ");
-            ArrayList<Object> allOptions = this.getAllSettings();
-            int i = 1;
-            // Display settings with current values
-            for (Field field : this.getClass().getDeclaredFields()) {
-                if (Modifier.isProtected(field.getModifiers())) {
-                    try {
-                        Object value = field.get(this);
-                        System.out.println("[" + i + "] " + field.getName() + ": " + value); // Show current value
-                        allOptions.add(i - 1, field); // Add field to options for later use
-                        i++;
-                    } catch (IllegalAccessException e) {
-                        logger.error("Error changing settings: " + e);
-                    }
-                }
+            LinkedHashMap<String, Object> options = new LinkedHashMap<>();
+            for (Object setting : this.getAllSettings()) {
+                options.put(setting.getClass().getName(), setting);
             }
-            System.out.println("[0] Exit");
-            System.out.print("Enter your choice: ");
-            int choice = Input.getInstance().getInt();
-            if (choice == 0) {
-                break; // Exit the loop
-            } else if (choice > 0 && choice < allOptions.size()) {
-                Field selectedField = (Field) allOptions.get(choice - 1);
-                try {
-                    if (this.changeSetting(selectedField)) {
-                        logger.info(
-                                "Setting successfully changed, the program might need a restart for this to take shape");
-                    } else {
-                        logger.error("Unsuccessfully changed setting, read the log for more information");
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet());
+                if (choice == "Exit") {
+                    break;
+                } else {
+                    Field selectedField = (Field) options.get(choice);
+                    try {
+                        if (this.changeSetting(selectedField)) {
+                            logger.info(
+                                    "Setting successfully changed, the program might need a restart for this to take shape");
+                        } else {
+                            logger.error("Unsuccessfully changed setting, read the log for more information");
+                        }
+                    } catch (IllegalAccessException e) {
+                        logger.error("Error updating setting: " + e);
                     }
-                } catch (IllegalAccessException e) {
-                    logger.error("Error updating setting: " + e);
                 }
             }
         }
