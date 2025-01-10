@@ -30,7 +30,8 @@ public class Import {
         options.put("Spotify", this::importSpotify);
         options.put("Local", this::importLocal);
         while (true) {
-            String choice = Menu.optionMenu(options.keySet());
+            String choice = Menu.optionMenu(options.keySet(), "IMPORT"); // TODO: add shutdownhook handling (pressing
+                                                                         // cntr c)
             if (choice == "Exit") {
                 break;
             } else {
@@ -147,8 +148,8 @@ public class Import {
      * 
      * @return - linkedhashset of constructed Song
      */
-    public LinkedHashSet<Song> getLikedSongs() {
-        return new LinkedHashSet<>(this.likedSongs.getSongs());
+    public LikedSongs getLikedSongs() {
+        return likedSongs;
     }
 
     /**

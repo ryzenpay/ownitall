@@ -122,7 +122,7 @@ public class Playlist {
      * @return - arraylist of constructed Song
      */
     public ArrayList<Song> getSongs() {
-        return new ArrayList<>(this.getSongs());
+        return new ArrayList<>(this.songs);
     }
 
     /**

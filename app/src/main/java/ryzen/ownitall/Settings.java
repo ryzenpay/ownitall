@@ -186,7 +186,7 @@ public class Settings {
                 options.put(setting.getClass().getName(), setting);
             }
             while (true) {
-                String choice = Menu.optionMenu(options.keySet());
+                String choice = Menu.optionMenu(options.keySet(), "SETTINGS");
                 if (choice == "Exit") {
                     break;
                 } else {

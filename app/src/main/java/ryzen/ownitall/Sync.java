@@ -138,7 +138,7 @@ public class Sync {
                 archiveFolders.put(file.getName(), file);
             }
         }
-        String choice = Menu.optionMenu(archiveFolders.keySet());
+        String choice = Menu.optionMenu(archiveFolders.keySet(), "ARCHIVING");
         if (choice == "Exit") {
             return;
         } else {
