@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Album {
     private static final Logger logger = LogManager.getLogger(Album.class);
+    private static final Settings settings = Settings.load();
     private String name;
     LinkedHashSet<Song> songs;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
@@ -178,7 +179,8 @@ public class Album {
         if (this.hashCode() == album.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString())) {
+        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
+                settings.getSimilarityPercentage())) {
             return true;
         }
         return false;

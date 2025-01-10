@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
+    private static Settings settings = Settings.load();
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
@@ -162,9 +163,8 @@ public class Song {
         if (this.hashCode() == song.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString())) { // also checks artists as they have
-                                                                                    // their own "equals" and compare
-                                                                                    // names
+        // also checks artists as they have their own "equals" and compare
+        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), settings.getSimilarityPercentage())) {
             return true;
         }
         return false;

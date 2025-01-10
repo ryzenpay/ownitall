@@ -3,6 +3,7 @@ package ryzen.ownitall;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,9 +18,11 @@ import org.apache.logging.log4j.Logger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
+    private static final Settings settings = Settings.load();
     private String name;
     private URI coverArt;
-    private ArrayList<Song> songs; // arraylist cuz it can contain duplicates
+    private LinkedHashSet<Song> songs; // arraylist cuz it can contain duplicates //no longer arraylist for
+    // re-importing and merging capabilities
 
     private String youtubePageToken; // TODO: create "update" method to save API requests
     private int spotifyPageOffset;
@@ -31,7 +34,7 @@ public class Playlist {
      */
     public Playlist(String name) {
         this.name = name;
-        this.songs = new ArrayList<>();
+        this.songs = new LinkedHashSet<>();
         this.coverArt = null;
         this.youtubePageToken = null;
         this.spotifyPageOffset = -1;
@@ -119,7 +122,7 @@ public class Playlist {
      * @return - arraylist of constructed Song
      */
     public ArrayList<Song> getSongs() {
-        return this.songs;
+        return new ArrayList<>(this.getSongs());
     }
 
     /**
@@ -173,7 +176,8 @@ public class Playlist {
         if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString())) {
+        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
+                settings.getSimilarityPercentage())) {
             return true;
         }
         return false;
@@ -185,14 +189,14 @@ public class Playlist {
     }
 
     @JsonCreator
-    public Playlist(@JsonProperty("name") String name, @JsonProperty("songs") ArrayList<Song> songs,
+    public Playlist(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
         this.name = name;
         if (songs != null && !songs.isEmpty()) {
             this.songs = songs;
         } else {
-            this.songs = new ArrayList<>();
+            this.songs = new LinkedHashSet<>();
         }
         if (youtubePageToken != null) {
             this.youtubePageToken = youtubePageToken;

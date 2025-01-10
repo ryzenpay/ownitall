@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Import {
     private static final Logger logger = LogManager.getLogger(Import.class);
-    private Settings settings;
+    private static final Settings settings = Settings.load();
     private boolean status;
 
     private LinkedHashSet<Album> albums;
@@ -23,7 +23,6 @@ public class Import {
      * @param dataFolder - datafolder of where to get presaved credentials
      */
     public Import(String dataFolder) {
-        this.settings = Settings.load();
         this.status = false;
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
@@ -72,7 +71,7 @@ public class Import {
      * import music from youtube, getting or setting credentials as needed
      */
     private void importYoutube() {
-        Sync sync = new Sync();
+        Sync sync = Sync.load();
         Youtube youtube;
         if (settings.saveCredentials) {
             YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();

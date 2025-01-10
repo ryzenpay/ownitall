@@ -45,14 +45,12 @@ public class Tools {
     }
 
     private void optionArchive() {
-        Sync sync = new Sync();
-        sync.archive();
+        Sync.load().archive();
         this.status = true;
     }
 
     private void optionUnArchive() {
-        Sync sync = new Sync();
-        sync.unArchive();
+        Sync.load().unArchive();
         this.status = true;
     }
 

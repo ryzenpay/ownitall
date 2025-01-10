@@ -13,7 +13,6 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.KeyNotFoundException;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
@@ -28,7 +27,7 @@ public class Local {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
     private static final Logger logger = LogManager.getLogger(Local.class);
-    private Settings settings;
+    private static final Settings settings = Settings.load();
     private File localLibrary;
     private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
@@ -37,7 +36,6 @@ public class Local {
      * default local constructor asking for library path
      */
     public Local() {
-        this.settings = Settings.load();
         System.out.println("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.getInstance().getFile();
     }
@@ -48,7 +46,6 @@ public class Local {
      * @param localFolderPath - String with path location to local music library
      */
     public Local(String localFolderPath) {
-        this.settings = Settings.load();
         this.localLibrary = new File(localFolderPath);
     }
 

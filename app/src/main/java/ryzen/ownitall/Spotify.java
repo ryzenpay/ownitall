@@ -42,8 +42,8 @@ import java.awt.Desktop;
 
 public class Spotify extends SpotifyCredentials {
     private static final Logger logger = LogManager.getLogger(Spotify.class);
+    private static final Settings settings = Settings.load();
     private SpotifyApi spotifyApi;
-    private Settings settings;
     /**
      * this variable is to limit the spotify api requests by using known artists
      * format: <Artist name, constructed artist class>
@@ -55,7 +55,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify() {
         super();
-        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
@@ -75,7 +74,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify(String client_id, String client_secret, String redirect_url) {
         super(client_secret, client_id, redirect_url);
-        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
@@ -96,7 +94,6 @@ public class Spotify extends SpotifyCredentials {
     public Spotify(SpotifyCredentials spotifyCredentials) {
         super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
                 spotifyCredentials.getRedirectUrlString());
-        this.settings = Settings.load();
         this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())

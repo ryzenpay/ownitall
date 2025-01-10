@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Sync {
     private static final Logger logger = LogManager.getLogger(Sync.class);
-    private Settings settings;
+    private static final Settings settings = Settings.load();
     private File dataFolder;
     private File albumFile;
     private File playlistFile;
@@ -32,7 +32,6 @@ public class Sync {
      * 
      */
     public Sync() {
-        settings = Settings.load();
         this.dataFolder = new File(settings.dataFolderPath);
         this.setDataFolder();
         this.albumFile = new File(this.dataFolder, settings.albumFile + ".json");
@@ -41,6 +40,10 @@ public class Sync {
         this.spotifyFile = new File(this.dataFolder, settings.spotifyCredentialsFile + ".json");
         this.youtubeFile = new File(this.dataFolder, settings.youtubeCredentialsFile + ".json");
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
+    }
+
+    public static Sync load() {
+        return new Sync();
     }
 
     /**

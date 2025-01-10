@@ -37,10 +37,9 @@ public class Levenshtein {
         return (1.0 - (double) distance / maxLength) * 100;
     }
 
-    public static boolean computeSimilarityCheck(String str1, String str2) {
+    public static boolean computeSimilarityCheck(String str1, String str2, double wantedSimularity) {
         double simularity = computeSimilarity(str1, str2);
-        Settings settings = Settings.load();
-        if (simularity >= settings.getSimilarityPercentage()) {
+        if (simularity >= wantedSimularity) {
             return true;
         }
         return false;

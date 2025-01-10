@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Artist {
     private static final Logger logger = LogManager.getLogger(Artist.class);
+    private static final Settings settings = Settings.load();
     private String name;
     private URI profilePicture;
 
@@ -72,7 +73,8 @@ public class Artist {
         if (this.hashCode() == artist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString())) {
+        if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
+                settings.getSimilarityPercentage())) {
             return true;
         }
         return false;

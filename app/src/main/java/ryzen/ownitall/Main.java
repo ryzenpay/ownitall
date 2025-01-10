@@ -11,14 +11,13 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
-    private static Settings settings;
+    private static final Settings settings = Settings.load();
     private static LinkedHashSet<Album> albums;
     private static LinkedHashSet<Playlist> playlists;
     private static LikedSongs likedSongs;
     private static LinkedHashMap<String, Runnable> options;
 
     public static void main(String[] args) {
-        settings = Settings.load();
         options = new LinkedHashMap<>();
         albums = new LinkedHashSet<>();
         playlists = new LinkedHashSet<>();
