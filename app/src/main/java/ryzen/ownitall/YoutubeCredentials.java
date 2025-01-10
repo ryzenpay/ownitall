@@ -99,7 +99,8 @@ public class YoutubeCredentials {
     @JsonIgnore
     public Credential authorize(final NetHttpTransport httpTransport) throws IOException { // TODO: jframe force window
                                                                                            // on top
-        // (frame.toFront(); frame.repaint();)
+                                                                                           // (frame.toFront();
+                                                                                           // frame.repaint();)
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()

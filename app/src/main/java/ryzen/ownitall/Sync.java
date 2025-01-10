@@ -96,7 +96,7 @@ public class Sync {
             System.out.println(
                     "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
             System.out.print("Are you sure y/N: ");
-            if (!Input.getInstance().getBool()) {
+            if (!Input.getInstance().getAgreement()) {
                 return;
             }
         }

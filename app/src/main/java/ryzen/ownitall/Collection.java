@@ -87,6 +87,30 @@ public class Collection {
         return this.likedSongs;
     }
 
+    /**
+     * function to get standalone liked songs (not in any albums or playlists)
+     * 
+     * @return - linkedhashset of standalone liked songs
+     */
+    public ArrayList<Song> getStandaloneLikedSongs() {
+        ArrayList<Song> likedSongs = new ArrayList<>();
+        for (Playlist playlist : this.playlists) {
+            for (Song song : playlist.getSongs()) {
+                if (!this.likedSongs.checkLiked(song)) {
+                    likedSongs.add(song);
+                }
+            }
+        }
+        for (Album album : this.albums) {
+            for (Song song : album.getSongs()) {
+                if (!this.likedSongs.checkLiked(song)) {
+                    likedSongs.add(song);
+                }
+            }
+        }
+        return likedSongs;
+    }
+
     public LinkedHashSet<Album> getAlbums() {
         return this.albums;
     }
@@ -102,34 +126,28 @@ public class Collection {
      *                  albums, playlist and song names
      */
     public void printInventory(int recursion) {
-        int trackCount = 0;
+        int playlistTrackCount = 0;
+        int albumTrackCount = 0;
         for (Playlist playlist : this.playlists) {
-            for (Song song : playlist.getSongs()) { // to prevent duplicate liked songs and entries
-                if (!this.likedSongs.checkLiked(song)) {
-                    trackCount++;
-                }
-            }
+            playlistTrackCount += playlist.size();
         }
         for (Album album : this.albums) {
-            for (Song song : album.getSongs()) {
-                if (!this.likedSongs.checkLiked(song)) {
-                    trackCount++;
-                }
-            }
+            albumTrackCount += album.size();
         }
-        trackCount += this.likedSongs.size();
+        int trackCount = this.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
         int i = 1;
         int y = 1;
         switch (recursion) {
             case 1:
-                System.out.println("Total playlists: " + this.playlists.size());
-                System.out.println("Total albums: " + this.albums.size());
+                System.out
+                        .println("Total playlists: " + this.playlists.size() + "  (" + playlistTrackCount + " songs)");
+                System.out.println("Total albums: " + this.albums.size() + "  (" + albumTrackCount + " songs)");
                 System.out.println("Total liked songs: " + this.likedSongs.size());
                 System.out.println("With a total of " + trackCount + " songs");
                 break;
             case 2:
                 System.out.println("Liked Songs (" + this.likedSongs.size() + ")");
-                System.out.println("Playlists (" + this.playlists.size() + "): ");
+                System.out.println("Playlists (" + this.playlists.size() + "): (" + playlistTrackCount + " songs)");
                 i = 1;
                 for (Playlist playlist : this.playlists) {
                     System.out
@@ -140,7 +158,7 @@ public class Collection {
                     i++;
                 }
                 i = 1;
-                System.out.println("Albums (" + this.albums.size() + "): ");
+                System.out.println("Albums (" + this.albums.size() + "): (" + albumTrackCount + " songs)");
                 for (Album album : this.albums) {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
@@ -158,7 +176,7 @@ public class Collection {
                     System.out.println("        - Artists: " + likedSong.getArtists().toString());
                     i++;
                 }
-                System.out.println("Playlists (" + this.playlists.size() + "): ");
+                System.out.println("Playlists (" + this.playlists.size() + "): (" + playlistTrackCount + " songs)");
                 i = 1;
                 for (Playlist playlist : this.playlists) {
                     y = 1;
@@ -181,7 +199,7 @@ public class Collection {
                     }
                 }
                 i = 1;
-                System.out.println("Albums (" + this.albums.size() + "): ");
+                System.out.println("Albums (" + this.albums.size() + "): (" + albumTrackCount + " songs)");
                 for (Album album : this.albums) {
                     y = 1;
                     System.out

@@ -3,7 +3,8 @@ package ryzen.ownitall;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -159,14 +160,14 @@ public class Settings {
      * @return - ArrayList of all setting varialbes as Object
      */
     @JsonIgnore
-    public ArrayList<Object> getAllSettings() {
-        ArrayList<Object> allSettings = new ArrayList<>();
+    public ArrayList<Field> getAllSettings() {
+        ArrayList<Field> allSettings = new ArrayList<>();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (Modifier.isProtected(field.getModifiers())) { // only allow option to change the protected ones
                 try {
-                    allSettings.add(field.get(this)); // Add field value to the list
-                } catch (IllegalAccessException e) {
+                    allSettings.add(field); // Add field value to the list
+                } catch (Exception e) {
                     logger.error("Error getting all settings: " + e);
                 }
             }
@@ -179,20 +180,19 @@ public class Settings {
      */
     @JsonIgnore
     public void changeSettings() {
-        while (true) {
-            System.out.println("Choose a setting to change: ");
-            LinkedHashMap<String, Object> options = new LinkedHashMap<>();
-            for (Object setting : this.getAllSettings()) {
-                options.put(setting.getClass().getName(), setting);
-            }
+        System.out.println("Choose a setting to change: ");
+        Map<String, String> options = new HashMap<>();
+        try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "SETTINGS");
+                for (Field setting : this.getAllSettings()) {
+                    options.put(setting.getName(), setting.get(this).toString());
+                }
+                String choice = Menu.optionMenuWithValue(options, "SETTINGS");
                 if (choice == "Exit") {
                     break;
                 } else {
-                    Field selectedField = (Field) options.get(choice);
                     try {
-                        if (this.changeSetting(selectedField)) {
+                        if (this.changeSetting(choice)) {
                             logger.info(
                                     "Setting successfully changed, the program might need a restart for this to take shape");
                         } else {
@@ -203,6 +203,8 @@ public class Settings {
                     }
                 }
             }
+        } catch (IllegalAccessException e) {
+            logger.error("Error listing settings: " + e);
         }
     }
 
@@ -213,28 +215,34 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
-    public boolean changeSetting(Field setting) throws IllegalAccessException {
-        System.out.print("Enter new value for " + setting.getName() + ": ");
-        if (setting.getType() == boolean.class) {
-            boolean input = Input.getInstance().getBool(); // TODO: check if setting actually changed
-            setting.set(this, input);
-            return true;
-        } else if (setting.getType() == String.class) {
-            String input = Input.getInstance().getString();
-            setting.set(this, input);
-            return true;
-        } else if (setting.getType() == Integer.class) {
-            int input = Input.getInstance().getInt();
-            setting.set(this, input);
-            return true;
-        } else if (setting.getType() == long.class) {
-            long input = Input.getInstance().getLong();
-            setting.set(this, input);
-            return true;
-        } else {
-            System.out.println("Modifying settings of the type " + setting.getType() + " is currently not supported");
-            return false;
+    public boolean changeSetting(String settingName) throws IllegalAccessException {
+        try {
+            Field setting = this.getClass().getDeclaredField(settingName);
+            System.out.print("Enter new value for " + setting.getName() + ": ");
+            if (setting.getType() == boolean.class) {
+                boolean input = Input.getInstance().getBool();
+                setting.set(this, input);
+                return true;
+            } else if (setting.getType() == String.class) {
+                String input = Input.getInstance().getString();
+                setting.set(this, input);
+                return true;
+            } else if (setting.getType() == Integer.class) {
+                int input = Input.getInstance().getInt();
+                setting.set(this, input);
+                return true;
+            } else if (setting.getType() == long.class) {
+                long input = Input.getInstance().getLong();
+                setting.set(this, input);
+                return true;
+            } else {
+                System.out
+                        .println("Modifying settings of the type " + setting.getType() + " is currently not supported");
+            }
+        } catch (NoSuchFieldException e) {
+            logger.error("Error modifying setting: " + e);
         }
+        return false;
     }
 
     /**

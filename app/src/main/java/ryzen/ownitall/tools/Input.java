@@ -119,7 +119,7 @@ public class Input {
      * 
      * @return - true of y, false for n
      */
-    public boolean getBool() {
+    public boolean getAgreement() {
         while (true) {
             char choice = getChar();
             if (Character.toLowerCase(choice) == 'y') {
@@ -129,6 +129,24 @@ public class Input {
                 return false;
             }
             System.err.println("Invalid input. Please enter y/N.");
+        }
+    }
+
+    /**
+     * take user true / false input
+     * 
+     * @return - true of y, false for n
+     */
+    public boolean getBool() {
+        while (true) {
+            String choice = getString();
+            if (choice.toLowerCase() == "true") {
+                return true;
+            }
+            if (choice.toLowerCase() == "false") {
+                return false;
+            }
+            System.err.println("Invalid input. Please enter true/false.");
         }
     }
 }
