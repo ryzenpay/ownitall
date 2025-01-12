@@ -28,6 +28,7 @@ data/**
 .env
 .appdata
 app/logs
+logs
 
 # Ignore Gradle project-specific cache directory
 .gradle

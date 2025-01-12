@@ -10,7 +10,7 @@ import ryzen.ownitall.tools.Menu;
 
 public class Import {
     private static final Logger logger = LogManager.getLogger(Import.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
 
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
@@ -46,7 +46,7 @@ public class Import {
     private void importYoutube() {
         Sync sync = Sync.load();
         Youtube youtube;
-        if (settings.saveCredentials) {
+        if (settings.isSaveCredentials()) {
             YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
             if (youtubeCredentials == null) {
                 logger.info("No saved youtube credential records");
@@ -80,7 +80,7 @@ public class Import {
     private void importSpotify() {
         Sync sync = new Sync();
         Spotify spotify;
-        if (settings.saveCredentials) {
+        if (settings.isSaveCredentials()) {
             SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
             if (spotifyCredentials == null) {
                 logger.info("No saved spotify credential records");

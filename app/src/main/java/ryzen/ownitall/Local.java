@@ -29,7 +29,7 @@ public class Local {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
     private static final Logger logger = LogManager.getLogger(Local.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private File localLibrary;
     private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
@@ -103,7 +103,7 @@ public class Local {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.toString().equalsIgnoreCase(settings.likedSongName)) {
+            if (file.isDirectory() && file.toString().equalsIgnoreCase(settings.getLikedSongName())) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }

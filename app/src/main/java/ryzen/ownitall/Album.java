@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Album {
     private static final Logger logger = LogManager.getLogger(Album.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private String name;
     LinkedHashSet<Song> songs;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates

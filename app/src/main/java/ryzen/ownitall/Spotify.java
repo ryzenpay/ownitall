@@ -44,7 +44,7 @@ import java.awt.Desktop;
 
 public class Spotify extends SpotifyCredentials {
     private static final Logger logger = LogManager.getLogger(Spotify.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private SpotifyApi spotifyApi;
     /**
      * this variable is to limit the spotify api requests by using known artists
@@ -114,7 +114,7 @@ public class Spotify extends SpotifyCredentials {
     private void requestCode() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope("user-library-read,playlist-read-private")
-                .show_dialog(settings.spotifyShowDialog)
+                .show_dialog(settings.isSpotifyShowDialog())
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
 
@@ -206,7 +206,7 @@ public class Spotify extends SpotifyCredentials {
 
         while (hasMore) {
             GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
 
@@ -256,7 +256,7 @@ public class Spotify extends SpotifyCredentials {
         while (hasMore) {
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
-                    .limit(settings.spotifyAlbumLimit)
+                    .limit(settings.getSpotifyAlbumLimit())
                     .offset(offset)
                     .build();
 
@@ -305,7 +305,7 @@ public class Spotify extends SpotifyCredentials {
 
         while (hasMore) {
             GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
 
@@ -353,7 +353,7 @@ public class Spotify extends SpotifyCredentials {
         while (hasMore) {
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
-                    .limit(settings.spotifyPlaylistLimit)
+                    .limit(settings.getSpotifyPlaylistLimit())
                     .offset(offset)
                     .build();
 
@@ -401,7 +401,7 @@ public class Spotify extends SpotifyCredentials {
         boolean hasMore = true;
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
             try {
@@ -461,7 +461,7 @@ public class Spotify extends SpotifyCredentials {
                 artists.add(this.artists.get(raw_artist.getName()));
             } else {
                 Artist artist = new Artist(raw_artist.getName());
-                if (settings.spotifyArtistPfp) {
+                if (settings.isSpotifyArtistPfp()) {
                     boolean done = false;
                     while (!done) { // this is incase of api timeout
                         try {

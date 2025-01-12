@@ -140,10 +140,10 @@ public class Input {
     public boolean getBool() {
         while (true) {
             String choice = getString();
-            if (choice.toLowerCase() == "true") {
+            if (choice.toLowerCase().equals("true")) {
                 return true;
             }
-            if (choice.toLowerCase() == "false") {
+            if (choice.toLowerCase().equals("false")) {
                 return false;
             }
             System.err.println("Invalid input. Please enter true/false.");

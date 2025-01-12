@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private String name;
     private URI coverArt;
     private LinkedHashSet<Song> songs; // arraylist cuz it can contain duplicates //no longer arraylist for

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private static Collection collection;
 
     public static void main(String[] args) {
@@ -59,7 +59,11 @@ public class Main {
 
     private static void optionSave() {
         collection.exportData();
-        settings.saveSettings();
+        try {
+            settings.saveSettings();
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     private static void optionTools() {
@@ -67,7 +71,11 @@ public class Main {
     }
 
     private static void optionSettings() {
-        settings.changeSettings();
+        try {
+            settings.changeSettings();
+        } catch (Exception e) {
+            logger.error(e);
+        }
     }
 
     private static void exit() {

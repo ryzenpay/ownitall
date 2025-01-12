@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Sync {
     private static final Logger logger = LogManager.getLogger(Sync.class);
-    private static final Settings settings = Settings.load();
+    private static Settings settings = Settings.load();
     private static Sync instance;
     private File dataFolder;
     private File albumFile;
@@ -35,13 +35,13 @@ public class Sync {
      * 
      */
     public Sync() {
-        this.dataFolder = new File(settings.dataFolderPath);
+        this.dataFolder = new File(settings.getDataFolderPath());
         this.setDataFolder();
-        this.albumFile = new File(this.dataFolder, settings.albumFile + ".json");
-        this.playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
-        this.likedSongsFile = new File(this.dataFolder, settings.likedSongFile + ".json");
-        this.spotifyFile = new File(this.dataFolder, settings.spotifyCredentialsFile + ".json");
-        this.youtubeFile = new File(this.dataFolder, settings.youtubeCredentialsFile + ".json");
+        this.albumFile = new File(this.dataFolder, settings.getAlbumFile() + ".json");
+        this.playlistFile = new File(this.dataFolder, settings.getPlaylistFile() + ".json");
+        this.likedSongsFile = new File(this.dataFolder, settings.getLikedSongFile() + ".json");
+        this.spotifyFile = new File(this.dataFolder, settings.getSpotifyCredentialsFile() + ".json");
+        this.youtubeFile = new File(this.dataFolder, settings.getYoutubeCredentialsFile() + ".json");
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
@@ -70,12 +70,11 @@ public class Sync {
      * @return - true if exist, false if not
      */
     public boolean checkDataFolder() {
-        Settings settings = Settings.load();
-        File dataFolder = new File(settings.dataFolderPath);
+        File dataFolder = new File(settings.getDataFolderPath());
         if (dataFolder.exists() && dataFolder.isDirectory()) {
-            File albumFile = new File(settings.dataFolderPath, settings.albumFile + ".json");
-            File playlistFile = new File(settings.dataFolderPath, settings.playlistFile + ".json");
-            File likedSongsFile = new File(settings.dataFolderPath, settings.likedSongFile + ".json");
+            File albumFile = new File(settings.getDataFolderPath(), settings.getAlbumFile() + ".json");
+            File playlistFile = new File(settings.getDataFolderPath(), settings.getPlaylistFile() + ".json");
+            File likedSongsFile = new File(settings.getDataFolderPath(), settings.getLikedSongFile() + ".json");
             if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
                 return true;
             }
