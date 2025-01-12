@@ -201,8 +201,10 @@ public class Youtube extends YoutubeCredentials {
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
                         Song song = new Song(snippet.getTitle());
-                        song.addArtist(new Artist(snippet.getChannelTitle())); // TODO: this is defaulting to the
-                                                                               // playlist owner
+                        String artistName = this.getVideoChannel(videoId);
+                        if (artistName != null) {
+                            song.addArtist(new Artist(artistName));
+                        }
                         song.setDuration(this.getDuration(videoId));
                         songs.add(song);
                     }
@@ -260,5 +262,26 @@ public class Youtube extends YoutubeCredentials {
             logger.error("Error getting video duration: " + e);
         }
         return Duration.ZERO;
+    }
+
+    /**
+     * get video artist (needed because playlist snippet doesnt include)
+     * 
+     * @param videoId - video id of artist to find
+     * @return - name of the channel
+     */
+    private String getVideoChannel(String videoId) {
+        try {
+            YouTube.Videos.List videoRequest = youtubeApi.videos()
+                    .list("snippet")
+                    .setId(videoId);
+            VideoListResponse videoResponse = videoRequest.execute();
+            if (!videoResponse.getItems().isEmpty()) {
+                return videoResponse.getItems().get(0).getSnippet().getChannelTitle();
+            }
+        } catch (IOException e) {
+            logger.error("Error retrieving video details for " + videoId + ": " + e);
+        }
+        return null;
     }
 }

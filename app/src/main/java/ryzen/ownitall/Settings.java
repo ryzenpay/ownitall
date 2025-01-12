@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
 public class Settings extends ryzen.ownitall.tools.Settings {
     @JsonIgnore
-    private static Settings instance;
+    private static Settings instance; // TODO: move this to tools.Settings
     @JsonIgnore
     private static final Logger logger = LogManager.getLogger(Settings.class);
     // the defaults: (non final & protected for the ones that can be changed by
