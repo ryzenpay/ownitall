@@ -32,11 +32,11 @@ public class SpotifyCredentials {
     public SpotifyCredentials() {
         System.out.println("A guide to obtaining the following variables is in the readme");
         System.out.println("Please provide your client id: ");
-        this.clientId = Input.getInstance().getString();
+        this.clientId = Input.request().getString();
         System.out.println("Please provide your client secret: ");
-        this.clientSecret = Input.getInstance().getString();
+        this.clientSecret = Input.request().getString();
         System.out.println("Please provide redirect url:");
-        this.redirectUrl = SpotifyHttpManager.makeUri(Input.getInstance().getString());
+        this.redirectUrl = SpotifyHttpManager.makeUri(Input.request().getString());
     }
 
     /**
@@ -119,7 +119,7 @@ public class SpotifyCredentials {
      * @return - true if empty, false if not
      */
     @JsonIgnore
-    public boolean isNull() {
+    public boolean isEmpty() {
         if (this.getClientId() == null || this.getClientSecret() == null || this.getRedirectUrl() == null) {
             return true;
         }
@@ -153,13 +153,13 @@ public class SpotifyCredentials {
                 logger.error("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
                 System.out.println("Please provide the code it provides (in url)");
-                this.setCode(Input.getInstance().getString());
+                this.setCode(Input.request().getString());
             }
 
             clientSocket.close();
         } catch (IOException e) {
             System.out.println("Please provide the code it provides (in url)");
-            this.setCode(Input.getInstance().getString());
+            this.setCode(Input.request().getString());
         }
     }
 

@@ -19,7 +19,7 @@ public class Input {
      * 
      * @return - Input instance
      */
-    public static Input getInstance() {
+    public static Input request() {
         if (instance == null) {
             instance = new Input();
         }

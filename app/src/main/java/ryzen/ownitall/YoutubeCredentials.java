@@ -34,11 +34,11 @@ public class YoutubeCredentials {
      */
     public YoutubeCredentials() {
         System.out.println("Enter youtube application name: ");
-        this.applicationName = Input.getInstance().getString();
+        this.applicationName = Input.request().getString();
         System.out.println("Enter youtube client id: ");
-        this.clientId = Input.getInstance().getString();
+        this.clientId = Input.request().getString();
         System.out.println("Enter youtube client secret: ");
-        this.clientSecret = Input.getInstance().getString();
+        this.clientSecret = Input.request().getString();
     }
 
     /**
@@ -121,7 +121,7 @@ public class YoutubeCredentials {
      * @return - true if empty, false if not
      */
     @JsonIgnore
-    public boolean isNull() {
+    public boolean isEmpty() {
         if (this.getClientId() == null || this.getClientSecret() == null || this.getApplicationName() == null) {
             return true;
         }

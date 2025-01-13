@@ -3,11 +3,15 @@ big disclaimer, it is still in works and no where near close to finished
 another note i want to add before i forget: use of this program is at your own risk and can be agains the TOS of certain platforms, use at your own caution
 
 # ownitall
-have full control over your music no matter the playform (whichever is currently supported),  
+own your music library no matter the platform (whichever is currently supported)  
 OwnItAll hopes to ease the movement of your music library between playforms including local in supported formats
 
 # documentation
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
+
+## LastFM  
+to get the best data possible, everything is checked with lastFM  
+to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  
 
 ## Spotify
 when attempting to import or export to spotify, you will need to provide the 3 following things:  

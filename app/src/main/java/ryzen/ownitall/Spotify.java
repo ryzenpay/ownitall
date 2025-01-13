@@ -128,7 +128,7 @@ public class Spotify extends SpotifyCredentials {
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
             System.out.print("Please provide the code it presents (in url): ");
-            this.setCode(Input.getInstance().getString());
+            this.setCode(Input.request().getString());
             return;
         }
 

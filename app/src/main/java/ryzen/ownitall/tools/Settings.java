@@ -79,7 +79,7 @@ public class Settings {
             if (importedSettings == null) {
                 throw new Exception("Failed to import settings from file");
             }
-            if (importedSettings.isNull()) {
+            if (importedSettings.isEmpty()) {
                 throw new Exception("Loaded settings were null");
             } else {
                 this.setSettings(importedSettings);
@@ -169,19 +169,19 @@ public class Settings {
             System.out.print("Enter new value for " + setting.getName() + ": ");
             setting.setAccessible(true);
             if (setting.getType() == boolean.class) {
-                boolean input = Input.getInstance().getBool();
+                boolean input = Input.request().getBool();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == String.class) {
-                String input = Input.getInstance().getString();
+                String input = Input.request().getString();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == Integer.class) {
-                int input = Input.getInstance().getInt();
+                int input = Input.request().getInt();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == long.class) {
-                long input = Input.getInstance().getLong();
+                long input = Input.request().getLong();
                 setting.set(this, input);
                 return true;
             } else {
@@ -222,7 +222,7 @@ public class Settings {
      * @return - true if errors, false if none
      */
     @JsonIgnore
-    public boolean isNull() {
+    public boolean isEmpty() {
         for (Field field : this.getClass().getDeclaredFields()) {
             if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())) {
                 try {

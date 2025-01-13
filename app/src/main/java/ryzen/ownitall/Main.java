@@ -53,7 +53,7 @@ public class Main {
 
     private static void optionInventory() {
         System.out.print("Select recursion (1-3): ");
-        int recursion = Input.getInstance().getInt(1, 3);
+        int recursion = Input.request().getInt(1, 3);
         collection.printInventory(recursion);
     }
 

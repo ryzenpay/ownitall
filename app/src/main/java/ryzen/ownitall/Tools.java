@@ -36,7 +36,7 @@ public class Tools {
         }
         System.out.println("[0] Exit");
         System.out.print("Enter your choice: ");
-        int choice = Input.getInstance().getInt();
+        int choice = Input.request().getInt();
         if (choice < 0 || choice > options.size()) {
             System.out.println("Incorrect option, try again");
             return null;

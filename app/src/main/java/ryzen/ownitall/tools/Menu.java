@@ -42,7 +42,7 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            choice = Input.getInstance().getInt();
+            choice = Input.request().getInt();
             if (choice < 0 || choice > options.size()) {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");
@@ -66,7 +66,7 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            choice = Input.getInstance().getInt();
+            choice = Input.request().getInt();
             if (choice < 0 || choice > options.size()) {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");

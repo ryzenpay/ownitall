@@ -48,28 +48,30 @@ public class Import {
         Youtube youtube;
         if (settings.isSaveCredentials()) {
             YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
-            if (youtubeCredentials == null) {
+            if (youtubeCredentials == null || youtubeCredentials.isEmpty()) {
                 logger.info("No saved youtube credential records");
-                youtube = new Youtube();
-            } else if (youtubeCredentials.isNull()) {
-                logger.error("Incorrect youtube credentials found");
                 youtube = new Youtube();
             } else {
                 youtube = new Youtube(youtubeCredentials);
             }
             sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
-        } else {
+        } else
+
+        {
             youtube = new Youtube();
         }
         logger.info("Getting all Youtube liked songs, albums and playlists: ");
-        LikedSongs youtubeLikedSongs = youtube.getLikedSongs();
+        LikedSongs youtubeLikedSongs = youtube
+                .getLikedSongs();
         logger.info("   Processed " + youtubeLikedSongs.size() + " liked songs");
         likedSongs.addSongs(youtubeLikedSongs.getSongs());
         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
-        LinkedHashSet<Album> youtubeAlbums = youtube.getAlbums();
+        LinkedHashSet<Album> youtubeAlbums = youtube
+                .getAlbums();
         albums.addAll(youtubeAlbums);
         logger.info("   Processed " + youtubeAlbums.size() + " albums");
-        LinkedHashSet<Playlist> youtubePlaylists = youtube.getPlaylists();
+        LinkedHashSet<Playlist> youtubePlaylists = youtube
+                .getPlaylists();
         logger.info("   Processed " + youtubePlaylists.size() + " playlists");
         playlists.addAll(youtubePlaylists);
     }
@@ -82,11 +84,8 @@ public class Import {
         Spotify spotify;
         if (settings.isSaveCredentials()) {
             SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
-            if (spotifyCredentials == null) {
+            if (spotifyCredentials == null || spotifyCredentials.isEmpty()) {
                 logger.info("No saved spotify credential records");
-                spotify = new Spotify();
-            } else if (spotifyCredentials.isNull()) {
-                logger.error("Incorrect spotify credentials found");
                 spotify = new Spotify();
             } else {
                 spotify = new Spotify(spotifyCredentials);

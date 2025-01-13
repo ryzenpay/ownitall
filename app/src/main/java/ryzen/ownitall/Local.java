@@ -39,7 +39,7 @@ public class Local {
      */
     public Local() {
         System.out.println("Provide absolute path to local music library (folder): ");
-        this.localLibrary = Input.getInstance().getFile();
+        this.localLibrary = Input.request().getFile();
     }
 
     /**
