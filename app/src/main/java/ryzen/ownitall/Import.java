@@ -9,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.tools.Menu;
 
-public class Import {
+public class Import { // TODO: progress bar: https://github.com/ctongfei/progressbar
     private static final Logger logger = LogManager.getLogger(Import.class);
-    private static Settings settings = Settings.load();
 
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
@@ -45,22 +44,7 @@ public class Import {
      * import music from youtube, getting or setting credentials as needed
      */
     private void importYoutube() {
-        Sync sync = Sync.load();
-        Youtube youtube;
-        if (settings.isSaveCredentials()) {
-            YoutubeCredentials youtubeCredentials = sync.importYoutubeCredentials();
-            if (youtubeCredentials == null || youtubeCredentials.isEmpty()) {
-                logger.info("No saved youtube credential records");
-                youtube = new Youtube();
-            } else {
-                youtube = new Youtube(youtubeCredentials);
-            }
-            sync.exportYoutubeCredentials(youtube.getYoutubeCredentials());
-        } else
-
-        {
-            youtube = new Youtube();
-        }
+        Youtube youtube = new Youtube();
         logger.info("Getting all Youtube liked songs, albums and playlists: ");
         LikedSongs youtubeLikedSongs = youtube
                 .getLikedSongs();
@@ -81,20 +65,7 @@ public class Import {
      * import music from spotify, getting or setting credentials as needed
      */
     private void importSpotify() {
-        Sync sync = new Sync();
-        Spotify spotify;
-        if (settings.isSaveCredentials()) {
-            SpotifyCredentials spotifyCredentials = sync.importSpotifyCredentials();
-            if (spotifyCredentials == null || spotifyCredentials.isEmpty()) {
-                logger.info("No saved spotify credential records");
-                spotify = new Spotify();
-            } else {
-                spotify = new Spotify(spotifyCredentials);
-            }
-            sync.exportSpotifyCredentials(spotify.getSpotifyCredentials());
-        } else {
-            spotify = new Spotify();
-        }
+        Spotify spotify = new Spotify();
         logger.info("Getting all spotify Playlists, Albums and liked songs: ");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
         logger.info("   Processed " + spotifyLikedSongs.size() + " liked songs");
@@ -162,7 +133,7 @@ public class Import {
 
     /**
      * print overview of imported music
-     * similar to Main inventory print with recursion 1
+     * similar to Collection inventory print with recursion 1
      */
     public void printOverview() {
         int trackCount = 0;

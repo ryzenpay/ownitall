@@ -20,13 +20,14 @@ import java.net.URL;
 
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
+    private static Credentials credentials = Credentials.load();
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
-    private String apiKey; // TODO: save credentials
     private ObjectMapper objectMapper;
 
     /**
      * arrays to save api queries if they already exist
+     * TODO: dump them and reload to save API queries
      */
     private LinkedHashMap<Integer, Artist> artists;
     private LinkedHashMap<Integer, Song> songs;
@@ -40,12 +41,19 @@ public class Library {
     }
 
     public Library() {
-        System.out.print("Please enter lastfm api key: ");
-        this.apiKey = Input.request().getString();
+        if (credentials.lastFMIsEmpty()) {
+            setCredentials();
+        }
         this.objectMapper = new ObjectMapper();
         this.artists = new LinkedHashMap<>();
         this.songs = new LinkedHashMap<>();
         this.albums = new LinkedHashMap<>();
+    }
+
+    public static void setCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please enter LastFM API key: ");
+        credentials.setLastFMApiKey(Input.request().getString());
     }
 
     public Artist getArtist(String artistName) {
@@ -128,8 +136,10 @@ public class Library {
                     String artist = trackNode.path("artist").asText();
                     if (this.artists.containsKey(artist.hashCode())) {
                         song.addArtist(this.artists.get(artist.hashCode()));
-                    } else { // TODO: should it query to get all artist details?
-                        song.addArtist(new Artist(artistName));
+                    } else {
+                        if (artistName != null) {
+                            song.addArtist(this.getArtist(artistName));
+                        }
                     }
                     song.setCoverImage(trackNode.path("image").get(2).path("#text").asText());
                     this.songs.put(song.hashCode(), song);
@@ -146,7 +156,7 @@ public class Library {
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append("?method=").append(method);
-            urlBuilder.append("&api_key=").append(apiKey);
+            urlBuilder.append("&api_key=").append(credentials.lastFMApiKey);
             urlBuilder.append("&format=json");
 
             for (Map.Entry<String, String> entry : params.entrySet()) {

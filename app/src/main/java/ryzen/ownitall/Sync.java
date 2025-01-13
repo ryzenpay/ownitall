@@ -26,8 +26,6 @@ public class Sync {
     private File albumFile;
     private File playlistFile;
     private File likedSongsFile;
-    private File spotifyFile;
-    private File youtubeFile;
     ObjectMapper objectMapper;
 
     /**
@@ -40,8 +38,6 @@ public class Sync {
         this.albumFile = new File(this.dataFolder, settings.getAlbumFile() + ".json");
         this.playlistFile = new File(this.dataFolder, settings.getPlaylistFile() + ".json");
         this.likedSongsFile = new File(this.dataFolder, settings.getLikedSongFile() + ".json");
-        this.spotifyFile = new File(this.dataFolder, settings.getSpotifyCredentialsFile() + ".json");
-        this.youtubeFile = new File(this.dataFolder, settings.getYoutubeCredentialsFile() + ".json");
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
@@ -156,6 +152,14 @@ public class Sync {
         logger.info("Restart the program to see the unarchived data");
     }
 
+    public Collection importCollection() {
+        Collection collection = new Collection();
+        collection.mergeAlbums(this.importAlbums());
+        collection.mergePlaylists(this.importPlaylists());
+        collection.mergeLikedSongs(this.importLikedSongs());
+        return collection;
+    }
+
     /**
      * save all albums
      * 
@@ -267,78 +271,5 @@ public class Sync {
             return null;
         }
         return likedSongs;
-    }
-
-    /**
-     * import saved spotify credentials
-     * 
-     * @return - constructed SpotifyCredentials (use isNull to check)
-     */
-    public SpotifyCredentials importSpotifyCredentials() {
-        this.setDataFolder();
-        SpotifyCredentials spotifyCredentials;
-        if (!spotifyFile.exists()) {
-            return null;
-        }
-        try {
-            spotifyCredentials = this.objectMapper.readValue(this.spotifyFile,
-                    SpotifyCredentials.class);
-
-        } catch (IOException e) {
-            logger.error("Error importing Spotify Credentials: " + e);
-            logger.info("If this persists, delete the file:" + this.spotifyFile.getAbsolutePath());
-            return null;
-        }
-        return spotifyCredentials;
-    }
-
-    /**
-     * save spotify credentials
-     * 
-     * @param spotifyCredentials - constructed SpotifyCredentials
-     */
-    public void exportSpotifyCredentials(SpotifyCredentials spotifyCredentials) {
-        this.setDataFolder();
-        try {
-            this.objectMapper.writeValue(this.spotifyFile, spotifyCredentials);
-        } catch (IOException e) {
-            logger.error("Error saving spotify credentials: " + e);
-        }
-    }
-
-    /**
-     * import saved youtube credentials (use isNull to check)
-     * 
-     * @return - constructed YoutubeCredentials
-     */
-    public YoutubeCredentials importYoutubeCredentials() {
-        this.setDataFolder();
-        YoutubeCredentials youtubeCredentials;
-        if (!youtubeFile.exists()) {
-            return null;
-        }
-        try {
-            youtubeCredentials = this.objectMapper.readValue(this.youtubeFile,
-                    YoutubeCredentials.class);
-        } catch (IOException e) {
-            logger.error("Error importing Youtube Credentials: " + e);
-            logger.info("If this persists, delete the file:" + this.youtubeFile.getAbsolutePath());
-            return null;
-        }
-        return youtubeCredentials;
-    }
-
-    /**
-     * save youtube credentials
-     * 
-     * @param youtubeCredentials - constructed YoutubeCredentials
-     */
-    public void exportYoutubeCredentials(YoutubeCredentials youtubeCredentials) {
-        this.setDataFolder();
-        try {
-            this.objectMapper.writeValue(this.youtubeFile, youtubeCredentials);
-        } catch (IOException e) {
-            logger.error("Error saving youtube credentials: " + e);
-        }
     }
 }

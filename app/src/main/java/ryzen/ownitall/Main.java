@@ -11,16 +11,21 @@ import org.apache.logging.log4j.Logger;
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static Settings settings = Settings.load();
+    private static Credentials credentials = Credentials.load();
     private static Collection collection;
 
     public static void main(String[] args) {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        collection = new Collection();
         if (Sync.load().checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
-            collection.importData();
+            collection = Sync.load().importCollection();
         } else {
             logger.info("No local data found");
+            collection = new Collection();
+        }
+        if (credentials.lastFMIsEmpty()) {
+            logger.info("No local LastFM API key found");
+            Library.setCredentials();
         }
         // main menu
         options.put("Import", Main::optionImport);
@@ -58,9 +63,14 @@ public class Main {
     }
 
     private static void optionSave() {
-        collection.exportData();
+        Sync.load().exportAlbums(collection.getAlbums());
+        Sync.load().exportPlaylists(collection.getPlaylists());
+        Sync.load().exportLikedSongs(collection.getLikedSongs());
         try {
             settings.saveSettings();
+            if (settings.saveCredentials) {
+                Credentials.load().saveCredentials();
+            }
         } catch (Exception e) {
             logger.error(e);
         }

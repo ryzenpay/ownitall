@@ -3,7 +3,6 @@ package ryzen.ownitall;
 //https://developer.spotify.com/documentation/web-api
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.time.temporal.ChronoUnit;
 
@@ -17,7 +16,6 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
-import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
@@ -38,64 +36,45 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.tools.Input;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.awt.Desktop;
 
-public class Spotify extends SpotifyCredentials {
+public class Spotify {
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static Settings settings = Settings.load();
+    private static Credentials credentials = Credentials.load();
     private SpotifyApi spotifyApi;
+    private String code;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
-        super();
+        if (credentials.spotifyIsEmpty()) {
+            this.setCredentials();
+        }
         this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(this.getClientId())
-                .setClientSecret(this.getClientSecret())
-                .setRedirectUri(this.getRedirectUrl())
+                .setClientId(credentials.getSpotifyClientId())
+                .setClientSecret(credentials.getSpotifyClientSecret())
+                .setRedirectUri(credentials.getSpotifyRedirectUrl())
                 .build();
         this.requestCode();
         this.setToken();
     }
 
-    /**
-     * Default spotify constructor with known values excluding token
-     * 
-     * @param client_id     - provided spotify developer app client id
-     * @param client_secret - provided spotify developer app client secret
-     * @param redirect_url  - provided spotify developer app redirect url
-     */
-    public Spotify(String client_id, String client_secret, String redirect_url) {
-        super(client_secret, client_id, redirect_url);
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(this.getClientId())
-                .setClientSecret(this.getClientSecret())
-                .setRedirectUri(this.getRedirectUrl())
-                .build();
-        this.requestCode();
-        this.setToken();
-    }
-
-    /**
-     * default spotify constructor taking in constructed spotify credentials (for
-     * importing)
-     * 
-     * @param spotifyCredentials - constructed SpotifyCredentials class with
-     *                           variables
-     */
-    public Spotify(SpotifyCredentials spotifyCredentials) {
-        super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
-                spotifyCredentials.getRedirectUrlString());
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(this.getClientId())
-                .setClientSecret(this.getClientSecret())
-                .setRedirectUri(this.getRedirectUrl())
-                .build();
-        this.requestCode();
-        this.setToken();
+    public void setCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please provide your client id: ");
+        credentials.setSpotifyClientId(Input.request().getString());
+        System.out.print("Please provide your client secret: ");
+        credentials.setSpotifyClientSecret(Input.request().getString());
+        System.out.print("Please provide redirect url:");
+        credentials.setSpotifyRedirectUrl(Input.request().getString());
     }
 
     /**
@@ -120,7 +99,7 @@ public class Spotify extends SpotifyCredentials {
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
             System.out.print("Please provide the code it presents (in url): ");
-            this.setCode(Input.request().getString());
+            this.code = Input.request().getString();
             return;
         }
 
@@ -134,7 +113,7 @@ public class Spotify extends SpotifyCredentials {
      * @param code - the authentication code provided in the oauth
      */
     private void setToken() {
-        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.getCode()).build();
+        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.code).build();
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
@@ -163,12 +142,78 @@ public class Spotify extends SpotifyCredentials {
     }
 
     /**
-     * get spotify credentials (used for exporting)
-     * 
-     * @return - constructed SpotifyCredentials
+     * start temporary local server to "intercept" spotify api code
      */
-    public SpotifyCredentials getSpotifyCredentials() {
-        return new SpotifyCredentials(this.getClientId(), this.getClientSecret(), this.getRedirectUrlString());
+    public void startLocalServer() { // TODO: make this work (cors error)
+        try (ServerSocket serverSocket = new ServerSocket(8888)) {
+            logger.info("Waiting for the authorization code...");
+            Socket clientSocket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String inputLine;
+            StringBuilder request = new StringBuilder();
+            while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
+                request.append(inputLine).append("\n");
+                if (inputLine.contains("code=")) {
+                    break; // Stop reading after we've found the code
+                }
+            }
+
+            String code = extractCodeFromRequest(request.toString());
+            if (code != null) {
+                this.code = code;
+                logger.info("Authorization code received: " + code); // TODO: jframe force window on top
+                                                                     // (frame.toFront(); frame.repaint();)
+                sendResponse(clientSocket, 200, "Authorization code received successfully.");
+            } else {
+                logger.error("Failed to retrieve authorization code. Request: " + request.toString());
+                sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
+                System.out.println("Please provide the code it provides (in url)");
+                this.code = Input.request().getString();
+            }
+
+            clientSocket.close();
+        } catch (IOException e) {
+            System.out.println("Please provide the code it provides (in url)");
+            this.code = Input.request().getString();
+        }
+    }
+
+    /**
+     * extract code from the "intercepted" spotify api
+     * 
+     * @param request - raw response data
+     * @return - String code
+     */
+    private String extractCodeFromRequest(String request) {
+        int codeIndex = request.indexOf("code=");
+        if (codeIndex != -1) {
+            int endIndex = request.indexOf("&", codeIndex);
+            if (endIndex == -1) {
+                endIndex = request.indexOf(" ", codeIndex);
+            }
+            if (endIndex == -1) {
+                endIndex = request.length();
+            }
+            return request.substring(codeIndex + 5, endIndex);
+        }
+        return null;
+    }
+
+    /**
+     * send response to website if received code
+     * 
+     * @param clientSocket - socket to send through
+     * @param statusCode   - additional success message (200 = success, 404 =
+     *                     failed)
+     * @param message      - additional message to present on site
+     * @throws IOException
+     */
+    private void sendResponse(Socket clientSocket, int statusCode, String message) throws IOException {
+        String statusLine = "HTTP/1.1 " + statusCode + " " + (statusCode == 200 ? "OK" : "Not Found") + "\r\n";
+        String contentType = "Content-Type: text/plain\r\n";
+        String contentLength = "Content-Length: " + message.length() + "\r\n";
+        String response = statusLine + contentType + contentLength + "\r\n" + message;
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     /**

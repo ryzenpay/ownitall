@@ -17,6 +17,6 @@ class testSpotify { // TODO: write tests fuck face
         String client_id = "8cf63653de3c45bf9155a0cb39e06c8a";
         String client_secret = "";
         String redirect_url = "https://ryzen.rip/ownitall";
-        spotify = new Spotify(client_id, client_secret, redirect_url);
+        spotify = new Spotify();
     }
 }

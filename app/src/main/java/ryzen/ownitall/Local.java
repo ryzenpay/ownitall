@@ -30,7 +30,7 @@ public class Local {
     private static final Logger logger = LogManager.getLogger(Local.class);
     private static Settings settings = Settings.load();
     private File localLibrary;
-    private LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
+    private final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
 
     /**

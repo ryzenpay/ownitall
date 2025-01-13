@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
 public class Settings extends ryzen.ownitall.tools.Settings {
     @JsonIgnore
-    private static Settings instance; // TODO: move this to tools.Settings
+    private static Settings instance;
     @JsonIgnore
     private static final Logger logger = LogManager.getLogger(Settings.class);
+    @JsonIgnore
+    private final static String settingsFilePath = "settings.json";
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
@@ -26,8 +28,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
     protected String albumFile = "albums";
     protected String likedSongFile = "likedsongs";
     protected String playlistFile = "playlists";
-    protected String spotifyCredentialsFile = "spotifyCredentials";
-    protected String youtubeCredentialsFile = "youtubeCredentials";
 
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
@@ -71,13 +71,21 @@ public class Settings extends ryzen.ownitall.tools.Settings {
         if (instance == null) {
             instance = new Settings();
             try {
-                instance.importSettings(Settings.class);
+                instance.importSettings(Settings.class, settingsFilePath);
             } catch (Exception e) {
                 logger.error(e);
-                logger.info("If this persists, delete the file: " + instance.getSettingsFilePath());
+                logger.info("If this persists, delete the file: " + settingsFilePath);
             }
         }
         return instance;
+    }
+
+    public void saveSettings() {
+        try {
+            super.saveSettings(settingsFilePath);
+        } catch (Exception e) {
+            logger.error("Error saving settings: " + e);
+        }
     }
 
     public void setDataFolderPath(String dataFolderPath) {
@@ -132,14 +140,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
         this.similarityPercentage = similarityPercentage;
     }
 
-    public void setSpotifyCredentialsFile(String spotifyCredentialsFile) {
-        this.spotifyCredentialsFile = spotifyCredentialsFile;
-    }
-
-    public void setYoutubeCredentialsFile(String youtubeCredentialsFile) {
-        this.youtubeCredentialsFile = youtubeCredentialsFile;
-    }
-
     public String getDataFolderPath() {
         return dataFolderPath;
     }
@@ -158,14 +158,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public String getPlaylistFile() {
         return playlistFile;
-    }
-
-    public String getSpotifyCredentialsFile() {
-        return spotifyCredentialsFile;
-    }
-
-    public String getYoutubeCredentialsFile() {
-        return youtubeCredentialsFile;
     }
 
     public boolean isSaveCredentials() {

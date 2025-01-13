@@ -1,9 +1,14 @@
 package ryzen.ownitall;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
@@ -14,59 +19,47 @@ import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 
+import ryzen.ownitall.tools.Input;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.time.Duration;
 import java.util.List;
+import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Youtube extends YoutubeCredentials {
-    private static final Logger logger = LogManager.getLogger(YoutubeCredentials.class);
+public class Youtube {
+    private static final Logger logger = LogManager.getLogger(Youtube.class);
     private static Settings settings = Settings.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
+
+    private static Credentials credentials = Credentials.load();
+    private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
+    private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     /**
      * default youtube constructor asking for user input
      */
     public Youtube() {
-        super();
+        if (credentials.youtubeIsEmpty()) {
+            this.setCredentials();
+        }
         this.youtubeApi = this.getService();
     }
 
-    /**
-     * youtube constructor with known values
-     * 
-     * @param applicationName - youtube api application name
-     * @param clientId        - youtube api client id
-     * @param clientSecret    - youtube api client secret
-     */
-    public Youtube(String applicationName, String clientId, String clientSecret) {
-        super(applicationName, clientId, clientSecret);
-        this.youtubeApi = this.getService();
-    }
-
-    /**
-     * youtube constructor with known youtube credentials
-     * 
-     * @param youtubeCredentials - constructed YoutubeCredentials
-     */
-    public Youtube(YoutubeCredentials youtubeCredentials) {
-        super(youtubeCredentials.getApplicationName(), youtubeCredentials.getClientId(),
-                youtubeCredentials.getClientSecret());
-        this.youtubeApi = this.getService();
-    }
-
-    /**
-     * get constructed youtube credentials (for exporting)
-     * 
-     * @return - constructed YoutubeCredentials
-     */
-    public YoutubeCredentials getYoutubeCredentials() {
-        return new YoutubeCredentials(this.getApplicationName(), this.getClientId(), this.getClientSecret());
+    public void setCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Enter youtube application name: ");
+        credentials.setYoutubeApplicationName(Input.request().getString());
+        System.out.print("Enter youtube client id: ");
+        credentials.setYoutubeClientId(Input.request().getString());
+        System.out.print("Enter youtube client secret: ");
+        credentials.setYoutubeClientSecret(Input.request().getString());
     }
 
     /**
@@ -79,12 +72,41 @@ public class Youtube extends YoutubeCredentials {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
             return new com.google.api.services.youtube.YouTube.Builder(httpTransport, this.getJsonFactory(), credential)
-                    .setApplicationName(this.getApplicationName())
+                    .setApplicationName(credentials.getYoutubeApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Error logging in with youtube api: " + e);
             return null;
         }
+    }
+
+    public JsonFactory getJsonFactory() {
+        return this.JSON_FACTORY;
+    }
+
+    /**
+     * Create an authorized Credential object.
+     *
+     * @param httpTransport - idk
+     * @return an authorized Credential object.
+     * @throws IOException - standard IOException
+     */
+    public Credential authorize(final NetHttpTransport httpTransport) throws IOException { // TODO: jframe force window
+                                                                                           // on top
+                                                                                           // (frame.toFront();
+                                                                                           // frame.repaint();)
+        // Create GoogleClientSecrets from the stored client secret
+        GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
+                .setInstalled(new GoogleClientSecrets.Details()
+                        .setClientId(credentials.getYoutubeClientId())
+                        .setClientSecret(credentials.getYoutubeClientSecret()));
+
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                httpTransport, this.JSON_FACTORY, clientSecrets, this.scopes)
+                .build();
+        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+        return credential;
     }
 
     /**

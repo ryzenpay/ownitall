@@ -5,13 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.tools.MusicTime;
 
 public class Collection {
-    private static final Logger logger = LogManager.getLogger(Collection.class);
     private LikedSongs likedSongs;
     private LinkedHashSet<Playlist> playlists;
     private LinkedHashSet<Album> albums;
@@ -20,33 +16,6 @@ public class Collection {
         this.likedSongs = new LikedSongs();
         this.playlists = new LinkedHashSet<>();
         this.albums = new LinkedHashSet<>();
-    }
-
-    /**
-     * function to either load fresh data or load and append to current data from
-     * local files
-     * 
-     */
-    public void importData() {
-        Sync sync = new Sync();
-        logger.info("Importing all data...");
-        this.mergeAlbums(sync.importAlbums());
-        this.mergePlaylists(sync.importPlaylists());
-        this.mergeLikedSongs(sync.importLikedSongs());
-        logger.info("Succesfully imported all data");
-    }
-
-    /**
-     * export a collection to local files
-     * 
-     */
-    public void exportData() {
-        Sync sync = new Sync();
-        logger.info("Saving all data...");
-        sync.exportAlbums(this.albums);
-        sync.exportPlaylists(this.playlists);
-        sync.exportLikedSongs(this.likedSongs);
-        logger.info("Successfully saved all data");
     }
 
     public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {

@@ -47,8 +47,6 @@ public class Settings {
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
     @JsonIgnore
     private final String settingsFolderPath = ".appdata";
-    @JsonIgnore
-    private final String settingsFilePath = "settings.json";
 
     /**
      * check if settings folder exists, if not make it (to prevent errors)
@@ -65,12 +63,12 @@ public class Settings {
      * load settings from saved file
      */
     @JsonIgnore
-    public <T extends Settings> void importSettings(Class<T> settingsClass) throws Exception {
+    protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws Exception {
         setSettingsFolder();
-        File settingsFile = new File(this.getSettingsFolderPath(), this.getSettingsFilePath());
+        File settingsFile = new File(this.getSettingsFolderPath(), filePath);
 
         if (!settingsFile.exists() || settingsFile.length() == 0) {
-            this.saveSettings();
+            this.saveSettings(filePath);
             return;
         }
 
@@ -93,9 +91,9 @@ public class Settings {
      * save settings to predefined file
      */
     @JsonIgnore
-    public void saveSettings() throws Exception {
+    protected void saveSettings(String filePath) throws Exception {
         this.setSettingsFolder();
-        File settingsFile = new File(settingsFolderPath, settingsFilePath);
+        File settingsFile = new File(settingsFolderPath, filePath);
         try {
             this.objectMapper.writeValue(settingsFile, this);
         } catch (IOException e) {
@@ -163,7 +161,7 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
-    public boolean changeSetting(String settingName) throws IllegalAccessException, Exception {
+    private boolean changeSetting(String settingName) throws IllegalAccessException, Exception {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             System.out.print("Enter new value for " + setting.getName() + ": ");
@@ -201,7 +199,7 @@ public class Settings {
      * @param setting - constructed Settings
      */
     @JsonIgnore
-    public <T extends Settings> void setSettings(T settings) throws Exception {
+    private <T extends Settings> void setSettings(T settings) throws Exception {
         for (Field field : settings.getClass().getDeclaredFields()) {
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
                 try {
@@ -243,10 +241,5 @@ public class Settings {
     @JsonIgnore
     public String getSettingsFolderPath() {
         return settingsFolderPath;
-    }
-
-    @JsonIgnore
-    public String getSettingsFilePath() {
-        return settingsFilePath;
     }
 }
