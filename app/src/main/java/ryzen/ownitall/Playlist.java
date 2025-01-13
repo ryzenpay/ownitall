@@ -25,7 +25,7 @@ public class Playlist {
     // re-importing and merging capabilities
 
     private String youtubePageToken; // TODO: create "update" method to save API requests
-    private int spotifyPageOffset;
+    private int spotifyPageOffset = -1;
 
     /**
      * Default playlist constructor
@@ -35,9 +35,6 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
-        this.coverArt = null;
-        this.youtubePageToken = null;
-        this.spotifyPageOffset = -1;
     }
 
     /**

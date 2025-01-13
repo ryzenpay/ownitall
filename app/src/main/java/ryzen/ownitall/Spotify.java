@@ -507,7 +507,7 @@ public class Spotify {
      * @param raw_artists - array of SpotifyAPI artists
      * @return - arraylist of constructed Artist
      */
-    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) { // TODO: still needed with library?
+    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
         ArrayList<Artist> artists = new ArrayList<>();
         for (ArtistSimplified raw_artist : raw_artists) {
             Artist artist = Library.load().getArtist(raw_artist.getName());

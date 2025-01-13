@@ -160,7 +160,7 @@ public class Youtube {
      * 
      * @return - linkedhashset of constructed Album
      */
-    public LinkedHashSet<Album> getAlbums() { // TODO: currently not supported (no youtube music API)
+    public LinkedHashSet<Album> getAlbums() { // currently not supported (no youtube music API)
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
         return albums;
     }

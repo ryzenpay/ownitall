@@ -107,6 +107,8 @@ public class Sync {
     /**
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
+     * 
+     * @param noUserInput - optional boolean to silence userinput
      */
     public void archive(boolean noUserInput) {
         this.setDataFolder();

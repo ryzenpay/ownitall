@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -123,12 +123,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li><a href="SpotifyCredentials.html" title="class in ryzen.ownitall">ryzen.ownitall.SpotifyCredentials</a></li>
-<li>
-<ul class="inheritance">
 <li>ryzen.ownitall.Spotify</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -137,7 +132,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="blockList">
 <hr>
 <pre>public class <span class="typeNameLabel">Spotify</span>
-extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a></pre>
+extends java.lang.Object</pre>
 </li>
 </ul>
 </div>
@@ -161,21 +156,6 @@ extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">Spotif
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Spotify</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Default spotify constructor asking for user input</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String)">Spotify</a></span>&#8203;(java.lang.String&nbsp;client_id,
-       java.lang.String&nbsp;client_secret,
-       java.lang.String&nbsp;redirect_url)</code></th>
-<td class="colLast">
-<div class="block">Default spotify constructor with known values excluding token</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(ryzen.ownitall.SpotifyCredentials)">Spotify</a></span>&#8203;(<a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a>&nbsp;spotifyCredentials)</code></th>
-<td class="colLast">
-<div class="block">default spotify constructor taking in constructed spotify credentials (for
- importing)</div>
 </td>
 </tr>
 </table>
@@ -241,27 +221,25 @@ extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">Spotif
 </td>
 </tr>
 <tr id="i6" class="altColor">
-<td class="colFirst"><code><a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpotifyCredentials()">getSpotifyCredentials</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get spotify credentials (used for exporting)</div>
-</td>
-</tr>
-<tr id="i7" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#refreshToken()">refreshToken</a></span>()</code></th>
 <td class="colLast">
 <div class="block">refresh the spotify api token incase of expiring</div>
 </td>
 </tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCredentials()">setCredentials</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startLocalServer()">startLocalServer</a></span>()</code></th>
+<td class="colLast">
+<div class="block">start temporary local server to "intercept" spotify api code</div>
+</td>
+</tr>
 </table>
-<ul class="blockList">
-<li class="blockList"><a id="methods.inherited.from.class.ryzen.ownitall.SpotifyCredentials">
-<!--   -->
-</a>
-<h3>Methods inherited from class&nbsp;ryzen.ownitall.<a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a></h3>
-<code><a href="SpotifyCredentials.html#getClientId()">getClientId</a>, <a href="SpotifyCredentials.html#getClientSecret()">getClientSecret</a>, <a href="SpotifyCredentials.html#getCode()">getCode</a>, <a href="SpotifyCredentials.html#getRedirectUrl()">getRedirectUrl</a>, <a href="SpotifyCredentials.html#getRedirectUrlString()">getRedirectUrlString</a>, <a href="SpotifyCredentials.html#isNull()">isNull</a>, <a href="SpotifyCredentials.html#setCode(java.lang.String)">setCode</a>, <a href="SpotifyCredentials.html#startLocalServer()">startLocalServer</a></code></li>
-</ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
@@ -288,45 +266,11 @@ extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">Spotif
 <a id="&lt;init&gt;()">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>Spotify</h4>
 <pre>public&nbsp;Spotify()</pre>
 <div class="block">Default spotify constructor asking for user input</div>
-</li>
-</ul>
-<a id="&lt;init&gt;(java.lang.String,java.lang.String,java.lang.String)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>Spotify</h4>
-<pre>public&nbsp;Spotify&#8203;(java.lang.String&nbsp;client_id,
-               java.lang.String&nbsp;client_secret,
-               java.lang.String&nbsp;redirect_url)</pre>
-<div class="block">Default spotify constructor with known values excluding token</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>client_id</code> - - provided spotify developer app client id</dd>
-<dd><code>client_secret</code> - - provided spotify developer app client secret</dd>
-<dd><code>redirect_url</code> - - provided spotify developer app redirect url</dd>
-</dl>
-</li>
-</ul>
-<a id="&lt;init&gt;(ryzen.ownitall.SpotifyCredentials)">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>Spotify</h4>
-<pre>public&nbsp;Spotify&#8203;(<a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a>&nbsp;spotifyCredentials)</pre>
-<div class="block">default spotify constructor taking in constructed spotify credentials (for
- importing)</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>spotifyCredentials</code> - - constructed SpotifyCredentials class with
-                           variables</dd>
-</dl>
 </li>
 </ul>
 </li>
@@ -339,6 +283,15 @@ extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">Spotif
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="setCredentials()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setCredentials</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setCredentials()</pre>
+</li>
+</ul>
 <a id="refreshToken()">
 <!--   -->
 </a>
@@ -353,18 +306,14 @@ extends <a href="SpotifyCredentials.html" title="class in ryzen.ownitall">Spotif
 </dl>
 </li>
 </ul>
-<a id="getSpotifyCredentials()">
+<a id="startLocalServer()">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getSpotifyCredentials</h4>
-<pre class="methodSignature">public&nbsp;<a href="SpotifyCredentials.html" title="class in ryzen.ownitall">SpotifyCredentials</a>&nbsp;getSpotifyCredentials()</pre>
-<div class="block">get spotify credentials (used for exporting)</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>- constructed SpotifyCredentials</dd>
-</dl>
+<h4>startLocalServer</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;startLocalServer()</pre>
+<div class="block">start temporary local server to "intercept" spotify api code</div>
 </li>
 </ul>
 <a id="getLikedSongs()">

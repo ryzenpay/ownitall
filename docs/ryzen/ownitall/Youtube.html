@@ -123,12 +123,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li><a href="YoutubeCredentials.html" title="class in ryzen.ownitall">ryzen.ownitall.YoutubeCredentials</a></li>
-<li>
-<ul class="inheritance">
 <li>ryzen.ownitall.Youtube</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -137,7 +132,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="blockList">
 <hr>
 <pre>public class <span class="typeNameLabel">Youtube</span>
-extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a></pre>
+extends java.lang.Object</pre>
 </li>
 </ul>
 </div>
@@ -161,20 +156,6 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Youtube</a></span>()</code></th>
 <td class="colLast">
 <div class="block">default youtube constructor asking for user input</div>
-</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String)">Youtube</a></span>&#8203;(java.lang.String&nbsp;applicationName,
-       java.lang.String&nbsp;clientId,
-       java.lang.String&nbsp;clientSecret)</code></th>
-<td class="colLast">
-<div class="block">youtube constructor with known values</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(ryzen.ownitall.YoutubeCredentials)">Youtube</a></span>&#8203;(<a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a>&nbsp;youtubeCredentials)</code></th>
-<td class="colLast">
-<div class="block">youtube constructor with known youtube credentials</div>
 </td>
 </tr>
 </table>
@@ -203,18 +184,16 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkLogin()">checkLogin</a></span>()</code></th>
-<td class="colLast">
-<div class="block">check if youtubeapi successfully set up</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAlbums()">getAlbums</a></span>()</code></th>
 <td class="colLast">
 <div class="block">get saved youtube albums</div>
 </td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>com.google.api.client.json.JsonFactory</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJsonFactory()">getJsonFactory</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a></code></td>
@@ -240,20 +219,11 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 </td>
 </tr>
 <tr id="i6" class="altColor">
-<td class="colFirst"><code><a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getYoutubeCredentials()">getYoutubeCredentials</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get constructed youtube credentials (for exporting)</div>
-</td>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCredentials()">setCredentials</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </table>
-<ul class="blockList">
-<li class="blockList"><a id="methods.inherited.from.class.ryzen.ownitall.YoutubeCredentials">
-<!--   -->
-</a>
-<h3>Methods inherited from class&nbsp;ryzen.ownitall.<a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a></h3>
-<code><a href="YoutubeCredentials.html#getApplicationName()">getApplicationName</a>, <a href="YoutubeCredentials.html#getClientId()">getClientId</a>, <a href="YoutubeCredentials.html#getClientSecret()">getClientSecret</a>, <a href="YoutubeCredentials.html#isNull()">isNull</a></code></li>
-</ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
@@ -280,43 +250,11 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 <a id="&lt;init&gt;()">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>Youtube</h4>
 <pre>public&nbsp;Youtube()</pre>
 <div class="block">default youtube constructor asking for user input</div>
-</li>
-</ul>
-<a id="&lt;init&gt;(java.lang.String,java.lang.String,java.lang.String)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>Youtube</h4>
-<pre>public&nbsp;Youtube&#8203;(java.lang.String&nbsp;applicationName,
-               java.lang.String&nbsp;clientId,
-               java.lang.String&nbsp;clientSecret)</pre>
-<div class="block">youtube constructor with known values</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>applicationName</code> - - youtube api application name</dd>
-<dd><code>clientId</code> - - youtube api client id</dd>
-<dd><code>clientSecret</code> - - youtube api client secret</dd>
-</dl>
-</li>
-</ul>
-<a id="&lt;init&gt;(ryzen.ownitall.YoutubeCredentials)">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>Youtube</h4>
-<pre>public&nbsp;Youtube&#8203;(<a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a>&nbsp;youtubeCredentials)</pre>
-<div class="block">youtube constructor with known youtube credentials</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>youtubeCredentials</code> - - constructed YoutubeCredentials</dd>
-</dl>
 </li>
 </ul>
 </li>
@@ -329,18 +267,36 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a id="getYoutubeCredentials()">
+<a id="setCredentials()">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getYoutubeCredentials</h4>
-<pre class="methodSignature">public&nbsp;<a href="YoutubeCredentials.html" title="class in ryzen.ownitall">YoutubeCredentials</a>&nbsp;getYoutubeCredentials()</pre>
-<div class="block">get constructed youtube credentials (for exporting)</div>
+<h4>setCredentials</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;setCredentials()</pre>
+</li>
+</ul>
+<a id="getService()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getService</h4>
+<pre class="methodSignature">public&nbsp;com.google.api.services.youtube.YouTube&nbsp;getService()</pre>
+<div class="block">Build and return an authorized API client service.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>- constructed YoutubeCredentials</dd>
+<dd>an authorized API client service</dd>
 </dl>
+</li>
+</ul>
+<a id="getJsonFactory()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getJsonFactory</h4>
+<pre class="methodSignature">public&nbsp;com.google.api.client.json.JsonFactory&nbsp;getJsonFactory()</pre>
 </li>
 </ul>
 <a id="authorize(com.google.api.client.http.javanet.NetHttpTransport)">
@@ -359,34 +315,6 @@ extends <a href="YoutubeCredentials.html" title="class in ryzen.ownitall">Youtub
 <dd>an authorized Credential object.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code> - - standard IOException</dd>
-</dl>
-</li>
-</ul>
-<a id="getService()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getService</h4>
-<pre class="methodSignature">public&nbsp;com.google.api.services.youtube.YouTube&nbsp;getService()</pre>
-<div class="block">Build and return an authorized API client service.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>an authorized API client service</dd>
-</dl>
-</li>
-</ul>
-<a id="checkLogin()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>checkLogin</h4>
-<pre class="methodSignature">public&nbsp;boolean&nbsp;checkLogin()</pre>
-<div class="block">check if youtubeapi successfully set up</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>- true if working and logged in, false if not working</dd>
 </dl>
 </li>
 </ul>

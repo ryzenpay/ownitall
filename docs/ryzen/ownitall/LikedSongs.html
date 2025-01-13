@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -163,20 +163,6 @@ extends <a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></pr
 <div class="block">LikedSongs construcor with no songs</div>
 </td>
 </tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.util.LinkedHashSet,java.lang.String,int,java.lang.String)">LikedSongs</a></span>&#8203;(java.lang.String&nbsp;name,
-          java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs,
-          java.lang.String&nbsp;youtubePageToken,
-          int&nbsp;spotifyPageOffset,
-          java.lang.String&nbsp;coverArt)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.LinkedHashSet)">LikedSongs</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</code></th>
-<td class="colLast">
-<div class="block">LikedSongs constructor with songs</div>
-</td>
-</tr>
 </table>
 </li>
 </ul>
@@ -196,46 +182,11 @@ extends <a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></pr
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addSong(ryzen.ownitall.Song)">addSong</a></span>&#8203;(<a href="Song.html" title="class in ryzen.ownitall">Song</a>&nbsp;song)</code></th>
-<td class="colLast">
-<div class="block">add invididual song to liked songs</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addSongs(java.util.ArrayList)">addSongs</a></span>&#8203;(java.util.ArrayList&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</code></th>
-<td class="colLast">
-<div class="block">add array of songs to liked songs</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addSongs(java.util.LinkedHashSet)">addSongs</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</code></th>
-<td class="colLast">
-<div class="block">add array of songs to liked songs</div>
-</td>
-</tr>
-<tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkLiked(ryzen.ownitall.Song)">checkLiked</a></span>&#8203;(<a href="Song.html" title="class in ryzen.ownitall">Song</a>&nbsp;song)</code></th>
 <td class="colLast">
 <div class="block">check if a song is a liked song
  uses the hashcode to compare</div>
-</td>
-</tr>
-<tr id="i4" class="altColor">
-<td class="colFirst"><code>java.util.ArrayList&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSongs()">getSongs</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get array of liked songs</div>
-</td>
-</tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#size()">size</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get size/number of songs in liked songs</div>
 </td>
 </tr>
 </table>
@@ -244,7 +195,7 @@ extends <a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></pr
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ryzen.ownitall.<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></h3>
-<code><a href="Playlist.html#equals(java.lang.Object)">equals</a>, <a href="Playlist.html#getCoverart()">getCoverart</a>, <a href="Playlist.html#getName()">getName</a>, <a href="Playlist.html#getSpotifyPageOffset()">getSpotifyPageOffset</a>, <a href="Playlist.html#getYoutubePageToken()">getYoutubePageToken</a>, <a href="Playlist.html#hashCode()">hashCode</a>, <a href="Playlist.html#mergePlaylist(ryzen.ownitall.Playlist)">mergePlaylist</a>, <a href="Playlist.html#setCoverArt(java.lang.String)">setCoverArt</a>, <a href="Playlist.html#setSpotifyPageOffset(int)">setSpotifyPageOffset</a>, <a href="Playlist.html#setYoutubePageToken(java.lang.String)">setYoutubePageToken</a>, <a href="Playlist.html#toString()">toString</a></code></li>
+<code><a href="Playlist.html#addSong(ryzen.ownitall.Song)">addSong</a>, <a href="Playlist.html#addSongs(java.util.ArrayList)">addSongs</a>, <a href="Playlist.html#equals(java.lang.Object)">equals</a>, <a href="Playlist.html#getCoverart()">getCoverart</a>, <a href="Playlist.html#getName()">getName</a>, <a href="Playlist.html#getSongs()">getSongs</a>, <a href="Playlist.html#getSpotifyPageOffset()">getSpotifyPageOffset</a>, <a href="Playlist.html#getYoutubePageToken()">getYoutubePageToken</a>, <a href="Playlist.html#hashCode()">hashCode</a>, <a href="Playlist.html#mergePlaylist(ryzen.ownitall.Playlist)">mergePlaylist</a>, <a href="Playlist.html#setCoverArt(java.lang.String)">setCoverArt</a>, <a href="Playlist.html#setSpotifyPageOffset(int)">setSpotifyPageOffset</a>, <a href="Playlist.html#setYoutubePageToken(java.lang.String)">setYoutubePageToken</a>, <a href="Playlist.html#size()">size</a>, <a href="Playlist.html#toString()">toString</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
@@ -269,41 +220,14 @@ extends <a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></pr
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a id="&lt;init&gt;(java.util.LinkedHashSet)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>LikedSongs</h4>
-<pre>public&nbsp;LikedSongs&#8203;(java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</pre>
-<div class="block">LikedSongs constructor with songs</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>songs</code> - - linkedhashset of constructed Song</dd>
-</dl>
-</li>
-</ul>
 <a id="&lt;init&gt;()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>LikedSongs</h4>
-<pre>public&nbsp;LikedSongs()</pre>
-<div class="block">LikedSongs construcor with no songs</div>
-</li>
-</ul>
-<a id="&lt;init&gt;(java.lang.String,java.util.LinkedHashSet,java.lang.String,int,java.lang.String)">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>LikedSongs</h4>
-<pre>public&nbsp;LikedSongs&#8203;(java.lang.String&nbsp;name,
-                  java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs,
-                  java.lang.String&nbsp;youtubePageToken,
-                  int&nbsp;spotifyPageOffset,
-                  java.lang.String&nbsp;coverArt)</pre>
+<pre>public&nbsp;LikedSongs()</pre>
+<div class="block">LikedSongs construcor with no songs</div>
 </li>
 </ul>
 </li>
@@ -316,84 +240,6 @@ extends <a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></pr
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a id="getSongs()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSongs</h4>
-<pre class="methodSignature">public&nbsp;java.util.ArrayList&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;getSongs()</pre>
-<div class="block">get array of liked songs</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="Playlist.html#getSongs()">getSongs</a></code>&nbsp;in class&nbsp;<code><a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>- ArrayList of constructed Song</dd>
-</dl>
-</li>
-</ul>
-<a id="addSongs(java.util.ArrayList)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>addSongs</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;addSongs&#8203;(java.util.ArrayList&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</pre>
-<div class="block">add array of songs to liked songs</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="Playlist.html#addSongs(java.util.ArrayList)">addSongs</a></code>&nbsp;in class&nbsp;<code><a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>songs</code> - - arraylist of constructed Song to add</dd>
-</dl>
-</li>
-</ul>
-<a id="addSongs(java.util.LinkedHashSet)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>addSongs</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;addSongs&#8203;(java.util.LinkedHashSet&lt;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&gt;&nbsp;songs)</pre>
-<div class="block">add array of songs to liked songs</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>songs</code> - - linkedhashset of constructed Song to add</dd>
-</dl>
-</li>
-</ul>
-<a id="addSong(ryzen.ownitall.Song)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>addSong</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;addSong&#8203;(<a href="Song.html" title="class in ryzen.ownitall">Song</a>&nbsp;song)</pre>
-<div class="block">add invididual song to liked songs</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="Playlist.html#addSong(ryzen.ownitall.Song)">addSong</a></code>&nbsp;in class&nbsp;<code><a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>song</code> - - constructed Song to add</dd>
-</dl>
-</li>
-</ul>
-<a id="size()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>size</h4>
-<pre class="methodSignature">public&nbsp;int&nbsp;size()</pre>
-<div class="block">get size/number of songs in liked songs</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="Playlist.html#size()">size</a></code>&nbsp;in class&nbsp;<code><a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>- integer of liked songs size</dd>
-</dl>
-</li>
-</ul>
 <a id="checkLiked(ryzen.ownitall.Song)">
 <!--   -->
 </a>

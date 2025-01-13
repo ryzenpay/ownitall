@@ -9,25 +9,12 @@ public class Menu {
     /**
      * standard option menu with little to no customizability
      * 
-     * @param options  - arraylist of options which need to reflect to a
-     * @param menuName - parameter to give the menu a name and help the user
-     *                 remember where they are
-     *                 linkedhashmap
+     * @param setOptions - arraylist of options which need to reflect to a
+     * @param menuName   - parameter to give the menu a name and help the user
+     *                   remember where they are
+     *                   linkedhashmap
      * @return - string choice
      * 
-     *         Example usage of this function:
-     *         private LinkedHashMap<String, Runnable> options;
-     *         options.put("Youtube", this::importYoutube);
-     *         options.put("Spotify", this::importSpotify);
-     *         options.put("Local", this::importLocal);
-     *         while (true) {
-     *         String choice = Menu.optionMenu(options.keySet(), "IMPORT");
-     *         if (choice == "Exit") {
-     *         break;
-     *         } else {
-     *         options.get(choice).run();
-     *         }
-     *         }
      */
     public static String optionMenu(Set<String> setOptions, String menuName) {
         ArrayList<String> options = new ArrayList<>(setOptions);
