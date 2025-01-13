@@ -46,18 +46,12 @@ public class Spotify extends SpotifyCredentials {
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static Settings settings = Settings.load();
     private SpotifyApi spotifyApi;
-    /**
-     * this variable is to limit the spotify api requests by using known artists
-     * format: <Artist name, constructed artist class>
-     */
-    private LinkedHashMap<String, Artist> artists;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
         super();
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -76,7 +70,6 @@ public class Spotify extends SpotifyCredentials {
      */
     public Spotify(String client_id, String client_secret, String redirect_url) {
         super(client_secret, client_id, redirect_url);
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -96,7 +89,6 @@ public class Spotify extends SpotifyCredentials {
     public Spotify(SpotifyCredentials spotifyCredentials) {
         super(spotifyCredentials.getClientId(), spotifyCredentials.getClientSecret(),
                 spotifyCredentials.getRedirectUrlString());
-        this.artists = new LinkedHashMap<>();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(this.getClientId())
                 .setClientSecret(this.getClientSecret())
@@ -219,8 +211,11 @@ public class Spotify extends SpotifyCredentials {
                 } else {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
-                        Song song = new Song(track.getName());
-                        song.addArtists(this.getArtists(track.getArtists()));
+                        Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
+                        if (song == null) {
+                            song = new Song(track.getName());
+                            song.addArtists(this.getArtists(track.getArtists()));
+                        }
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         likedSongs.addSong(song);
                     }
@@ -268,11 +263,15 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
-                        Album album = new Album(savedAlbum.getAlbum().getName());
-                        album.addArtists(this.getArtists(savedAlbum.getAlbum().getArtists()));
-                        album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());// TODO:
-                                                                                           // documentation says
-                                                                                           // its per size?
+                        Album album = Library.load().getAlbum(savedAlbum.getAlbum().getName(),
+                                savedAlbum.getAlbum().getArtists()[0].getName());
+                        if (album == null) {
+                            album = new Album(savedAlbum.getAlbum().getName());
+                            album.addArtists(this.getArtists(savedAlbum.getAlbum().getArtists()));
+                            album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());// TODO:
+                                                                                               // documentation says
+                                                                                               // its per size?
+                        }
                         album.addSongs(
                                 this.getAlbumSongs(album.getCoverImage(), savedAlbum.getAlbum().getId()));
                         albums.add(album);
@@ -317,8 +316,11 @@ public class Spotify extends SpotifyCredentials {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
-                        Song song = new Song(track.getName());
-                        song.addArtists(this.getArtists(track.getArtists()));
+                        Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
+                        if (song == null) {
+                            song = new Song(track.getName());
+                            song.addArtists(this.getArtists(track.getArtists()));
+                        }
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         songs.add(song);
                     }
@@ -414,14 +416,20 @@ public class Spotify extends SpotifyCredentials {
                     for (PlaylistTrack playlistTrack : items) {
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
-                            Song song = new Song(track.getName());
-                            song.addArtists(this.getArtists(track.getArtists()));
+                            Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
+                            if (song == null) {
+                                song = new Song(track.getName());
+                                song.addArtists(this.getArtists(track.getArtists()));
+                            }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             // TODO: song cover
                             songs.add(song);
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
-                            Song song = new Song(episode.getName());
+                            Song song = Library.load().getSong(episode.getName(), null);
+                            if (song == null) {
+                                song = new Song(episode.getName());
+                            }
                             // String coverImage = episode.getImages()[0].getUrl(); doesnt seem to work with
                             // the current SpotifyAPI class (returns null)
                             song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
@@ -454,36 +462,14 @@ public class Spotify extends SpotifyCredentials {
      * @param raw_artists - array of SpotifyAPI artists
      * @return - arraylist of constructed Artist
      */
-    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
+    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) { // TODO: still needed with library?
         ArrayList<Artist> artists = new ArrayList<>();
         for (ArtistSimplified raw_artist : raw_artists) {
-            if (this.artists.containsKey(raw_artist.getName())) { // if already exists, dont get again
-                artists.add(this.artists.get(raw_artist.getName()));
-            } else {
-                Artist artist = new Artist(raw_artist.getName());
-                if (settings.isSpotifyArtistPfp()) {
-                    boolean done = false;
-                    while (!done) { // this is incase of api timeout
-                        try {
-                            GetArtistRequest getArtistRequest = this.spotifyApi.getArtist(raw_artist.getId()).build();
-                            se.michaelthelin.spotify.model_objects.specification.Artist fetchedArtist = getArtistRequest
-                                    .execute();
-                            if (fetchedArtist.getImages().length != 0) {
-                                artist.setProfilePicture(getArtistRequest.execute().getImages()[0].getUrl());
-                            }
-                            done = true;
-                        } catch (TooManyRequestsException e) {
-                            logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                            this.sleep(e.getRetryAfter());
-                        } catch (Exception e) {
-                            logger.error("Error obtaining artist: " + e);
-                            done = true;
-                        }
-                    }
-                }
-                artists.add(artist);
-                this.artists.put(artist.getName(), artist); // add them to the known database
+            Artist artist = Library.load().getArtist(raw_artist.getName());
+            if (artist == null) {
+                artist = new Artist(raw_artist.getName());
             }
+            artists.add(artist);
         }
         return artists;
     }

@@ -112,8 +112,13 @@ public class Youtube extends YoutubeCredentials {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            Song song = new Song(snippet.getTitle());
-                            song.addArtist(new Artist(snippet.getChannelTitle()));
+                            String songName = snippet.getTitle();
+                            String artistName = snippet.getChannelTitle();
+                            Song song = Library.load().getSong(songName, artistName);
+                            if (song == null) {
+                                song = new Song(snippet.getTitle());
+                                song.addArtist(new Artist(snippet.getChannelTitle()));
+                            }
                             song.setDuration(Duration.parse(contentDetails.getDuration()));
                             songs.addSong(song);
                         }
@@ -200,9 +205,11 @@ public class Youtube extends YoutubeCredentials {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        Song song = new Song(snippet.getTitle());
+                        String songName = snippet.getTitle();
                         String artistName = this.getVideoChannel(videoId);
-                        if (artistName != null) {
+                        Song song = Library.load().getSong(songName, this.getVideoChannel(videoId));
+                        if (song == null) {
+                            song = new Song(songName);
                             song.addArtist(new Artist(artistName));
                         }
                         song.setDuration(this.getDuration(videoId));

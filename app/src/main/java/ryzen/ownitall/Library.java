@@ -67,7 +67,7 @@ public class Library {
                 logger.error("Error parsing json while getting artist " + artistName + ": " + e);
             }
         }
-        return null;
+        return new Artist(artistName);
     }
 
     public Album getAlbum(String albumName, String artistName) {
@@ -99,15 +99,20 @@ public class Library {
                 logger.error("Error parshing json while getting album " + albumName + ": " + e);
             }
         }
-        return null;
+        return new Album(albumName);
     }
 
-    public Song getSong(String trackName, String artistName) {
-        Song tmpSong = new Song(trackName);
+    public Song getSong(String songName, String artistName) {
+        Song tmpSong = new Song(songName);
         if (this.songs.containsKey(tmpSong.hashCode())) {
             return this.songs.get(tmpSong.hashCode());
         }
-        Map<String, String> params = Map.of("track", trackName, "artist", artistName, "limit", "1");
+        Map<String, String> params;
+        if (artistName == null) {
+            params = Map.of("track", songName, "limit", "1");
+        } else {
+            params = Map.of("track", songName, "artist", artistName, "limit", "1");
+        }
         String response = query("track.search", params);
         if (response != null) {
             try {
@@ -127,10 +132,10 @@ public class Library {
                     return song;
                 }
             } catch (JsonProcessingException e) {
-                logger.error("Error parshing json while getting song " + trackName + ": " + e);
+                logger.error("Error parshing json while getting song " + songName + ": " + e);
             }
         }
-        return null;
+        return new Song(songName);
     }
 
     private String query(String method, Map<String, String> params) {

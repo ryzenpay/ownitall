@@ -6,7 +6,6 @@
 
     repositories {
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
     }
 
     dependencies {
@@ -33,9 +32,6 @@
         //logging
         implementation("org.apache.logging.log4j:log4j-api:2.20.0")
         implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-
-        //last fm
-        implementation("com.github.aklevans:lastfm-java:master-SNAPSHOT")
     }
 
     java {

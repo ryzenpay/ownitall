@@ -2,6 +2,7 @@ package ryzen.ownitall;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -172,21 +173,22 @@ public class Local {
      * @return - constructed Song
      */
     public Song getSong(File file) {
-        Song song = new Song(file.toString());
+        Song song;
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             AudioHeader audioHeader = audioFile.getAudioHeader();
-            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
             Tag tag = audioFile.getTag();
-            if (tag != null) {
-                if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                    song.setName(tag.getFirst(FieldKey.TITLE));
+            if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
+                String songName = tag.getFirst(FieldKey.TITLE);
+                String artistName = tag.getFirst(FieldKey.ARTIST);
+                song = Library.load().getSong(songName, artistName);
+                if (song == null) {
+                    song = new Song(tag.getFirst(FieldKey.TITLE));
                 }
-                List<String> artistList = tag.getAll(FieldKey.ARTIST);
-                for (String artistName : artistList) {
-                    song.addArtist(new Artist(artistName));
-                }
+            } else {
+                song = new Song(file.toString());
             }
+            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
             // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
             // support / convert to url
         } catch (InvalidAudioFrameException | TagException e) {
@@ -270,20 +272,22 @@ public class Local {
      * @return - constructed Album without songs
      */
     public Album getAlbum(File folder) {
-        Album album = new Album(folder.toString());// default album name incase of error
+        Album album;
         for (File file : folder.listFiles()) {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
-                album.setName(tag.getFirst(FieldKey.ALBUM));
-                List<String> artistList = tag.getAll(FieldKey.ARTIST);
-                for (String artistName : artistList) {
-                    album.addArtist(new Artist(artistName));
+                if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
+                    String albumName = tag.getFirst(FieldKey.ALBUM);
+                    String artistName = tag.getFirst(FieldKey.ALBUM);
+                    album = Library.load().getAlbum(albumName, artistName);
+                    return album;
                 }
             } catch (Exception e) {
                 break;
             }
         }
+        album = new Album(folder.toString()); // default to foldername
         return album;
     }
 }

@@ -53,8 +53,7 @@ public class Settings extends ryzen.ownitall.tools.Settings {
      * to get the profile picture of the artist, default to false as it hugely
      * increases API requests
      */
-    protected boolean spotifyArtistPfp = false;
-    protected boolean spotifyPlaylistSongCover = false; // TODO: get cover image of songs in playlist
+    protected boolean spotifyPlaylistSongCover = false; // TODO: get custom playlist image
     /**
      * to limit number of songs in each youtube API batch query
      */
@@ -115,10 +114,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public void setSpotifyPlaylistLimit(int spotifyPlaylistLimit) {
         this.spotifyPlaylistLimit = spotifyPlaylistLimit;
-    }
-
-    public void setSpotifyArtistPfp(boolean spotifyArtistPfp) {
-        this.spotifyArtistPfp = spotifyArtistPfp;
     }
 
     public void setYoutubeSongLimit(Long youtubeSongLimit) {
@@ -191,10 +186,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public int getSpotifyPlaylistLimit() {
         return spotifyPlaylistLimit;
-    }
-
-    public boolean isSpotifyArtistPfp() {
-        return spotifyArtistPfp;
     }
 
     public boolean isSpotifyPlaylistSongCover() {
