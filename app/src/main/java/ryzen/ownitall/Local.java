@@ -2,10 +2,8 @@ package ryzen.ownitall;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -104,7 +102,7 @@ public class Local {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.toString().equalsIgnoreCase(settings.getLikedSongName())) {
+            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }
@@ -123,11 +121,9 @@ public class Local {
             if (file.isDirectory()) {
                 if (!isAlbum(file)) {
                     ArrayList<Song> songs = this.getSongs(file);
-                    if (songs.size() > 1) {
-                        Playlist playlist = new Playlist(file.toString());
-                        playlist.addSongs(songs);
-                        playlists.add(playlist);
-                    }
+                    Playlist playlist = new Playlist(file.getName());
+                    playlist.addSongs(songs);
+                    playlists.add(playlist);
                 }
             }
         }
@@ -161,7 +157,7 @@ public class Local {
      * @return - String of file extension
      */
     public String getExtension(File file) {
-        String fileName = file.toString();
+        String fileName = file.getName();
         int extensionIndex = fileName.lastIndexOf('.');
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
@@ -186,17 +182,17 @@ public class Local {
                     song = new Song(tag.getFirst(FieldKey.TITLE));
                 }
             } else {
-                song = new Song(file.toString());
+                song = new Song(file.getName());
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
             // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
             // support / convert to url
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-            return null;
+            song = new Song(file.getName());
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {
             logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
-            return null;
+            song = new Song(file.getName());
         }
         return song;
     }
@@ -212,15 +208,9 @@ public class Local {
         if (folder.isFile() || !folder.exists()) {
             return songs;
         }
-        if (folder.list().length == 0) {
-            return songs;
-        }
         for (File file : folder.listFiles()) {
             if (file.isFile() && extensions.contains(getExtension(file))) {
-                Song song = getSong(file);
-                if (song != null) {
-                    songs.add(song);
-                }
+                songs.add(getSong(file));
             }
         }
         return songs;
@@ -238,11 +228,11 @@ public class Local {
         if (folder.isFile() || !folder.exists()) {
             return false;
         }
-        if (folder.list().length == 0) {
+        if (folder.list().length <= 1) { // empty or a single
             return false;
         }
         for (File file : folder.listFiles()) {
-            String foundAlbum = null;
+            String foundAlbum = "";
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
@@ -250,19 +240,20 @@ public class Local {
             } catch (Exception e) {
                 break;
             }
-            if (foundAlbum != null && album != null) {
-                if (!album.equals(foundAlbum)) {
-                    return false;
+            if (!foundAlbum.isEmpty()) {
+                if (album == null) {
+                    album = foundAlbum;
+                } else {
+                    if (!album.equals(foundAlbum)) {
+                        return false;
+                    }
                 }
-            } else if (album == null && foundAlbum != "") {
-                album = foundAlbum;
             }
         }
-        if (album != null) { // to prevent it defaulting to album if none of the songs had metadata
-            return true;
-        } else {
+        if (album == null) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -287,7 +278,7 @@ public class Local {
                 break;
             }
         }
-        album = new Album(folder.toString()); // default to foldername
+        album = new Album(folder.getName()); // default to foldername
         return album;
     }
 }

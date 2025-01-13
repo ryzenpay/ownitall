@@ -43,6 +43,9 @@ public class Library {
         System.out.print("Please enter lastfm api key: ");
         this.apiKey = Input.request().getString();
         this.objectMapper = new ObjectMapper();
+        this.artists = new LinkedHashMap<>();
+        this.songs = new LinkedHashMap<>();
+        this.albums = new LinkedHashMap<>();
     }
 
     public Artist getArtist(String artistName) {
@@ -88,8 +91,9 @@ public class Library {
                     String artist = albumNode.path("artist").asText();
                     if (this.artists.containsKey(artist.hashCode())) {
                         album.addArtist(this.artists.get(artist.hashCode()));
-                    } else { // TODO: here again, should it query again?
-                        album.addArtist(new Artist(artist));
+                    } else {
+                        album.addArtist(this.getArtist(artist));
+                        // album.addArtist(new Artist(artist));
                     }
                     album.setCoverImage(albumNode.path("image").get(2).path("#text").asText());
                     this.albums.put(album.hashCode(), album);

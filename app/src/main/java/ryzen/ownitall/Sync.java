@@ -105,6 +105,7 @@ public class Sync {
                 file.renameTo(new File(archiveFolder, file.getName()));
             }
         }
+        logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
     }
 
     /**
@@ -122,6 +123,8 @@ public class Sync {
                 file.renameTo(new File(archiveFolder, file.getName()));
             }
         }
+        logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
+        logger.info("Restart the program to refresh the library");
     }
 
     /**
@@ -148,7 +151,9 @@ public class Sync {
                                                                           // java.nio.File.move() (cant overwrite)
             }
         }
-        System.out.println("Restart the program to see the unarchived data");
+        logger.info("Successfully unarchived music library from"); // TODO: doesnt work because after closing program it
+                                                                   // stores cached data
+        logger.info("Restart the program to see the unarchived data");
     }
 
     /**

@@ -2,6 +2,7 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -121,6 +122,14 @@ public class Import {
         albums.addAll(localAlbums);
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
         logger.info("    Processed " + localPlaylists.size() + " playlists");
+        Iterator<Playlist> iterator = localPlaylists.iterator();
+        while (iterator.hasNext()) { // filter out singles
+            Playlist playlist = iterator.next();
+            if (playlist.size() <= 1) {
+                likedSongs.addSongs(playlist.getSongs());
+                iterator.remove();
+            }
+        }
         playlists.addAll(playlists);
     }
 
