@@ -70,10 +70,6 @@ public class Library {
 
                 if (artistNode != null) {
                     Artist artist = new Artist(artistNode.path("name").asText());
-                    JsonNode imageNode = artistNode.path("image");
-                    if (imageNode != null && imageNode.size() > 0) {
-                        artist.setProfilePicture(imageNode.get(0).path("#text").asText());
-                    }
                     this.artists.put(artist.hashCode(), artist);
                     return artist;
                 }
@@ -106,10 +102,6 @@ public class Library {
                     } else {
                         album.addArtist(this.getArtist(artist));
                         // album.addArtist(new Artist(artist));
-                    }
-                    JsonNode imageNode = albumNode.path("image");
-                    if (imageNode != null && imageNode.size() > 0) {
-                        album.setCoverImage(imageNode.get(0).path("#text").asText());
                     }
                     this.albums.put(album.hashCode(), album);
                     return album;
@@ -151,10 +143,6 @@ public class Library {
                         if (artistName != null) {
                             song.addArtist(this.getArtist(artistName));
                         }
-                    }
-                    JsonNode imageNode = trackNode.path("image");
-                    if (imageNode != null && imageNode.size() > 0) {
-                        song.setCoverImage(imageNode.get(0).path("#text").asText());
                     }
                     this.songs.put(song.hashCode(), song);
                     return song;

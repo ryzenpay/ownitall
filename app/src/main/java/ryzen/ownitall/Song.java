@@ -1,7 +1,5 @@
 package ryzen.ownitall;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashSet;
@@ -12,16 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import ryzen.ownitall.tools.Levenshtein;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class Song {
-    private static final Logger logger = LogManager.getLogger(Song.class);
     private static Settings settings = Settings.load();
     private String name;
     private LinkedHashSet<Artist> artists; // the first being the main
     private Duration duration;
-    URI coverImage;
 
     /**
      * default song constructor
@@ -32,7 +25,6 @@ public class Song {
         this.name = name;
         this.artists = new LinkedHashSet<>();
         this.duration = null;
-        this.coverImage = null;
     }
 
     /**
@@ -129,19 +121,6 @@ public class Song {
      */
     public void setDuration(Duration duration) {
         this.duration = duration;
-    }
-
-    /**
-     * set songs cover iamge
-     * 
-     * @param coverImage - String of songs cover image URL
-     */
-    public void setCoverImage(String coverImage) {
-        try {
-            this.coverImage = new URI(coverImage);
-        } catch (URISyntaxException e) {
-            logger.error("Error parsing cover image: " + coverImage);
-        }
     }
 
     @Override

@@ -313,12 +313,9 @@ public class Spotify {
                         if (album == null) {
                             album = new Album(savedAlbum.getAlbum().getName());
                             album.addArtists(this.getArtists(savedAlbum.getAlbum().getArtists()));
-                            album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());// TODO:
-                                                                                               // documentation says
-                                                                                               // its per size?
                         }
                         album.addSongs(
-                                this.getAlbumSongs(album.getCoverImage(), savedAlbum.getAlbum().getId()));
+                                this.getAlbumSongs(savedAlbum.getAlbum().getId()));
                         albums.add(album);
                     }
                     offset += limit;
@@ -337,11 +334,10 @@ public class Spotify {
     /**
      * get all songs of an album
      * 
-     * @param coverArt - album coverart to set on songs
-     * @param albumId  - spotify ID of the album
+     * @param albumId - spotify ID of the album
      * @return - arraylist of constructed Songs
      */
-    public ArrayList<Song> getAlbumSongs(URI coverArt, String albumId) {
+    public ArrayList<Song> getAlbumSongs(String albumId) {
         ArrayList<Song> songs = new ArrayList<>();
         int limit = 20;
         int offset = 0;

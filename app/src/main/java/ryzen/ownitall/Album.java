@@ -9,21 +9,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.tools.Levenshtein;
 
 import java.util.ArrayList;
-import java.net.URI;
-import java.net.URISyntaxException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Album {
-    private static final Logger logger = LogManager.getLogger(Album.class);
+public class Album { // TODO: extend from playlist?
     private static Settings settings = Settings.load();
     private String name;
     LinkedHashSet<Song> songs;
     private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
-    private URI coverImage;
 
     /**
      * Default constructor of album without album cover
@@ -34,7 +27,23 @@ public class Album {
         this.name = name;
         this.songs = new LinkedHashSet<>();
         this.artists = new LinkedHashSet<>();
-        this.coverImage = null;
+    }
+
+    @JsonCreator
+    public Album(@JsonProperty("name") String name,
+            @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("artists") LinkedHashSet<Artist> artists) {
+        this.name = name;
+        if (songs != null && !songs.isEmpty()) {
+            this.songs = songs;
+        } else {
+            this.songs = new LinkedHashSet<>();
+        }
+        if (artists != null && !artists.isEmpty()) {
+            this.artists = artists;
+        } else {
+            this.artists = new LinkedHashSet<>();
+        }
     }
 
     /**
@@ -45,9 +54,6 @@ public class Album {
     public void mergeAlbum(Album album) {
         this.addSongs(album.getSongs());
         this.addArtists(album.getArtists());
-        if (this.coverImage == null) {
-            this.coverImage = album.getCoverImage();
-        }
     }
 
     /**
@@ -66,31 +72,6 @@ public class Album {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * set album cover image
-     * 
-     * @param coverImage - string url of album cover
-     */
-    public void setCoverImage(String coverImage) {
-        try {
-            this.coverImage = new URI(coverImage);
-        } catch (URISyntaxException e) {
-            logger.error("Error parsing cover image: " + coverImage);
-        }
-    }
-
-    /**
-     * get the album cover image
-     * 
-     * @return - URI cover image
-     */
-    public URI getCoverImage() {
-        if (this.coverImage == null) {
-            return null;
-        }
-        return this.coverImage;
     }
 
     /**
@@ -193,26 +174,5 @@ public class Album {
             hashCode = this.getMainArtist().toString().toLowerCase().hashCode();
         }
         return hashCode;
-    }
-
-    @JsonCreator
-    public Album(@JsonProperty("name") String name,
-            @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("artists") LinkedHashSet<Artist> artists,
-            @JsonProperty("coverImage") String coverImage) {
-        this.name = name;
-        if (songs != null && !songs.isEmpty()) {
-            this.songs = songs;
-        } else {
-            this.songs = new LinkedHashSet<>();
-        }
-        if (artists != null && !artists.isEmpty()) {
-            this.artists = artists;
-        } else {
-            this.artists = new LinkedHashSet<>();
-        }
-        if (coverImage != null) {
-            this.setCoverImage(coverImage);
-        }
     }
 }
