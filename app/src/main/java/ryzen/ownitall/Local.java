@@ -182,8 +182,6 @@ public class Local {
                 song = new Song(file.getName());
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
-            // song.setCoverImage(tag.getFirst(FieldKey.COVER_ART)); //TODO: need to add
-            // support / convert to url
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
             song = new Song(file.getName());

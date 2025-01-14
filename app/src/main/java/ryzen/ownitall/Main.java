@@ -18,6 +18,9 @@ public class Main {
     private static Collection collection;
 
     public static void main(String[] args) {
+        // incase cntrl c is pressed, still save data
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::exit)); // TODO: make functions default return and remove
+                                                                      // this one
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (Sync.load().checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
@@ -36,7 +39,7 @@ public class Main {
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
             if (choice.equals("Exit")) {
-                exit();
+                break;
             } else {
                 options.get(choice).run();
             }
@@ -48,6 +51,12 @@ public class Main {
         collection.mergeAlbums(dataImport.getAlbums());
         collection.mergePlaylists(dataImport.getPlaylists());
         collection.mergeLikedSongs(dataImport.getLikedSongs());
+        if (settings.useLibrary) {
+            int hits = Library.load().getHits();
+            int trackCount = collection.getTrackCount();
+            double efficiency = (double) hits / trackCount;
+            logger.info("Library usage efficiency: " + efficiency + " (" + hits + "/" + trackCount + ")");
+        }
     }
 
     private static void optionExport() {
@@ -89,7 +98,6 @@ public class Main {
         optionSave();
         System.out.println("Exiting program. Goodbye!");
         logger.info("Exiting program...");
-        System.exit(0);
     }
 
     public static ProgressBar progressBar(String title, int maxStep) {
@@ -98,6 +106,7 @@ public class Main {
                 .setTaskName(title)
                 // .setConsumer(new DelegatingProgressBarConsumer(logger::info))
                 .setStyle(ProgressBarStyle.ASCII)
+                .hideEta()
                 .build();
     }
 }

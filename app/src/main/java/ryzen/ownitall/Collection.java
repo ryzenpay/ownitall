@@ -1,6 +1,5 @@
 package ryzen.ownitall;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -103,7 +102,7 @@ public class Collection {
         for (Album album : this.albums) {
             albumTrackCount += album.size();
         }
-        int trackCount = this.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
+        int trackCount = this.getTrackCount();
         int i = 1;
         int y = 1;
         switch (recursion) {
@@ -123,7 +122,8 @@ public class Collection {
                             .println(
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
-                                            + " - " + MusicTime.musicTime(totalDuration(playlist.getSongs())));
+                                            + " - "
+                                            + MusicTime.musicTime(MusicTime.totalDuration(playlist.getSongs())));
                     i++;
                 }
                 i = 1;
@@ -131,7 +131,7 @@ public class Collection {
                 for (Album album : this.albums) {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTime.musicTime(totalDuration(album.getSongs())));
+                                    + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
                     System.out.println("    - Artists: " + album.getArtists().toString());
                     i++;
                 }
@@ -153,7 +153,8 @@ public class Collection {
                             .println(
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
-                                            + " - " + MusicTime.musicTime(totalDuration(playlist.getSongs())));
+                                            + " - " + MusicTime.musicTime(
+                                                    MusicTime.totalDuration(playlist.getSongs())));
                     i++;
                     for (Song song : playlist.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
@@ -173,7 +174,7 @@ public class Collection {
                     y = 1;
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTime.musicTime(totalDuration(album.getSongs())));
+                                    + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
                     i++;
                     for (Song song : album.getSongs()) {
                         if (likedSongs.checkLiked(song)) {
@@ -194,18 +195,14 @@ public class Collection {
         }
     }
 
-    /**
-     * get the total duration of an arraylist of songs
-     * 
-     * @param songs - arraylist of constructed Song
-     * @return - constructed Duration representing total duration of arraylist of
-     *         songs
-     */
-    private static Duration totalDuration(ArrayList<Song> songs) {
-        Duration totalDuration = Duration.ZERO;
-        for (Song song : songs) {
-            totalDuration = totalDuration.plus(song.getDuration());
+    public int getTrackCount() {
+        int trackCount = 0;
+        for (Playlist playlist : this.playlists) {
+            trackCount += playlist.size();
         }
-        return totalDuration;
+        for (Album album : this.albums) {
+            trackCount += album.size();
+        }
+        return this.getStandaloneLikedSongs().size() + trackCount;
     }
 }

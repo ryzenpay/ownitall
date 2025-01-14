@@ -164,7 +164,7 @@ public class Sync {
         collection.mergePlaylists(this.importPlaylists());
         pb.setExtraMessage("Liked Songs").step();
         collection.mergeLikedSongs(this.importLikedSongs());
-        pb.setExtraMessage("Done");
+        pb.setExtraMessage("Done").step();
         pb.close();
         return collection;
     }
@@ -177,7 +177,7 @@ public class Sync {
         this.exportPlaylists(collection.getPlaylists());
         pb.setExtraMessage("Liked Songs").step();
         this.exportLikedSongs(collection.getLikedSongs());
-        pb.setExtraMessage("Done");
+        pb.setExtraMessage("Done").step();
         pb.close();
     }
 

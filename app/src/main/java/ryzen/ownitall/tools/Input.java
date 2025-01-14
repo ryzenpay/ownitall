@@ -55,7 +55,7 @@ public class Input {
                 int result = Integer.parseInt(getString());
                 return result;
             } catch (NumberFormatException e) {
-                System.err.println("Invalid input. Please enter a valid integer.");
+                System.err.print("Invalid input. Please enter a valid integer: ");
             }
         }
     }
@@ -77,7 +77,7 @@ public class Input {
                     System.err.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Invalid input. Please enter a valid integer.");
+                System.err.print("Invalid input. Please enter a valid integer: ");
             }
         }
     }
@@ -92,7 +92,7 @@ public class Input {
             try {
                 return Long.parseLong(getString());
             } catch (NumberFormatException e) {
-                System.err.println("Invalid input. Please enter a valid integer.");
+                System.err.print("Invalid input. Please enter a valid long: ");
             }
         }
     }
@@ -109,7 +109,7 @@ public class Input {
             if (file.exists()) {
                 return file;
             } else {
-                System.err.println("The specified file or folder does not exist. Please try again.");
+                System.err.print("The specified file or folder does not exist. Try again: ");
             }
         }
     }
@@ -128,7 +128,7 @@ public class Input {
             if (Character.toLowerCase(choice) == 'n') {
                 return false;
             }
-            System.err.println("Invalid input. Please enter y/N.");
+            System.err.print("Invalid input. Enter y/N: ");
         }
     }
 
@@ -146,7 +146,7 @@ public class Input {
             if (choice.toLowerCase().equals("false")) {
                 return false;
             }
-            System.err.println("Invalid input. Please enter true/false.");
+            System.err.print("Invalid input. Enter true/false: ");
         }
     }
 }

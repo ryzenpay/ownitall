@@ -25,10 +25,14 @@ public class Library {
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private ObjectMapper objectMapper;
+    /**
+     * a metric to see how efficient using stored artists, songs and albums was
+     */
+    private int hits;
 
     /**
      * arrays to save api queries if they already exist
-     * TODO: dump them and reload to save API queries
+     * TODO: dump them and reload to save API queries (cache)
      */
     private LinkedHashMap<Integer, Artist> artists;
     private LinkedHashMap<Integer, Song> songs;
@@ -49,6 +53,11 @@ public class Library {
         this.artists = new LinkedHashMap<>();
         this.songs = new LinkedHashMap<>();
         this.albums = new LinkedHashMap<>();
+        this.hits = 0;
+    }
+
+    public int getHits() {
+        return this.hits;
     }
 
     public static void setCredentials() {
@@ -58,11 +67,15 @@ public class Library {
     }
 
     public Artist getArtist(String artistName) {
+        if (artistName == null) {
+            return null;
+        }
         Artist tmpArtist = new Artist(artistName);
         if (!settings.useLibrary) {
             return tmpArtist;
         }
         if (this.artists.containsKey(tmpArtist.hashCode())) {
+            this.hits++;
             return this.artists.get(tmpArtist.hashCode());
         }
         Map<String, String> params = Map.of("artist", artistName, "limit", "1");
@@ -85,15 +98,26 @@ public class Library {
     }
 
     public Album getAlbum(String albumName, String artistName) {
+        if (albumName == null) {
+            return null;
+        }
         Album tmpAlbum = new Album(albumName);
-        tmpAlbum.addArtist(new Artist(artistName));
+        if (artistName != null) {
+            tmpAlbum.addArtist(new Artist(artistName));
+        }
         if (!settings.useLibrary) {
             return tmpAlbum;
         }
         if (this.albums.containsKey(tmpAlbum.hashCode())) {
+            this.hits++;
             return this.albums.get(tmpAlbum.hashCode());
         }
-        Map<String, String> params = Map.of("album", albumName, "artist", artistName, "limit", "1");
+        Map<String, String> params;
+        if (artistName != null) {
+            params = Map.of("album", albumName, "artist", artistName, "limit", "1");
+        } else {
+            params = Map.of("album", albumName, "limit", "1");
+        }
         String response = query("album.search", params);
         if (response != null) {
             try {
@@ -117,12 +141,18 @@ public class Library {
     }
 
     public Song getSong(String songName, String artistName) {
+        if (songName == null) {
+            return null;
+        }
         Song tmpSong = new Song(songName);
-        tmpSong.addArtist(new Artist(artistName));
+        if (artistName != null) {
+            tmpSong.addArtist(new Artist(artistName));
+        }
         if (!settings.useLibrary) {
             return tmpSong;
         }
         if (this.songs.containsKey(tmpSong.hashCode())) {
+            this.hits++;
             return this.songs.get(tmpSong.hashCode());
         }
         Map<String, String> params;

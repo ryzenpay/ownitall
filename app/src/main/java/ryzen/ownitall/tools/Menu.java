@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-public class Menu {
+public class Menu { // TODO: shutdownhook handling
 
     /**
      * standard option menu with little to no customizability
