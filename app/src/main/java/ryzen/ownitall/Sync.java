@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.Input;
 import ryzen.ownitall.tools.Menu;
 
@@ -138,8 +139,8 @@ public class Sync {
                 archiveFolders.put(file.getName(), file);
             }
         }
-        String choice = Menu.optionMenu(archiveFolders.keySet(), "ARCHIVING");
-        if (choice == "Exit") {
+        String choice = Menu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
+        if (choice.equals("Exit")) {
             return;
         } else {
             archive(true);
@@ -155,11 +156,29 @@ public class Sync {
     }
 
     public Collection importCollection() {
+        ProgressBar pb = Main.progressBar("Opening Saved Data", 3);
         Collection collection = new Collection();
+        pb.setExtraMessage("Albums");
         collection.mergeAlbums(this.importAlbums());
+        pb.setExtraMessage("Playlists").step();
         collection.mergePlaylists(this.importPlaylists());
+        pb.setExtraMessage("Liked Songs").step();
         collection.mergeLikedSongs(this.importLikedSongs());
+        pb.setExtraMessage("Done");
+        pb.close();
         return collection;
+    }
+
+    public void exportCollection(Collection collection) {
+        ProgressBar pb = Main.progressBar("Saving Data", 3);
+        pb.setExtraMessage("Albums");
+        this.exportAlbums(collection.getAlbums());
+        pb.setExtraMessage("Playlists").step();
+        this.exportPlaylists(collection.getPlaylists());
+        pb.setExtraMessage("Liked Songs").step();
+        this.exportLikedSongs(collection.getLikedSongs());
+        pb.setExtraMessage("Done");
+        pb.close();
     }
 
     /**

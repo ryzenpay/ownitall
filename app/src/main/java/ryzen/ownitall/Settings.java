@@ -50,8 +50,7 @@ public class Settings extends ryzen.ownitall.tools.Settings {
     protected int spotifyPlaylistLimit = 20;
 
     /**
-     * to get the profile picture of the artist, default to false as it hugely
-     * increases API requests
+     * to get the profile picture of playlists
      */
     protected boolean spotifyPlaylistSongCover = false; // TODO: get custom playlist image
     /**
@@ -65,6 +64,12 @@ public class Settings extends ryzen.ownitall.tools.Settings {
      * are equals (to merge or not)
      */
     protected double similarityPercentage = 90.0;
+
+    /**
+     * if to use lastFM to fact check all data
+     * 
+     */
+    protected boolean useLibrary = true;
 
     @JsonIgnore
     public static Settings load() {
@@ -182,6 +187,10 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public boolean isSpotifyPlaylistSongCover() {
         return spotifyPlaylistSongCover;
+    }
+
+    public boolean isUseLibrary() {
+        return useLibrary;
     }
 
     public void setSpotifyPlaylistSongCover(boolean spotifyPlaylistSongCover) {

@@ -6,25 +6,30 @@ import java.util.LinkedHashMap;
 import ryzen.ownitall.tools.Input;
 
 public class Tools {
+    private static Tools instance;
     private LinkedHashMap<String, Runnable> options;
-
-    private boolean status;
 
     public Tools() {
         this.options = new LinkedHashMap<>();
-        this.status = false;
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
-        while (!this.status) {
+        while (true) {
             String choice = promptMenu();
             if (choice != null) {
                 if (choice.equals("Exit")) {
-                    this.exit();
+                    break;
                 } else {
                     this.options.get(choice).run();
                 }
             }
         }
+    }
+
+    public static Tools load() {
+        if (instance == null) {
+            instance = new Tools();
+        }
+        return instance;
     }
 
     private String promptMenu() {
@@ -48,15 +53,9 @@ public class Tools {
 
     private void optionArchive() {
         Sync.load().archive();
-        this.status = true;
     }
 
     private void optionUnArchive() {
         Sync.load().unArchive();
-        this.status = true;
-    }
-
-    private void exit() {
-        this.status = true;
     }
 }

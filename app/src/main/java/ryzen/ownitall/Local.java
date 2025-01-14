@@ -178,9 +178,6 @@ public class Local {
                 String songName = tag.getFirst(FieldKey.TITLE);
                 String artistName = tag.getFirst(FieldKey.ARTIST);
                 song = Library.load().getSong(songName, artistName);
-                if (song == null) {
-                    song = new Song(tag.getFirst(FieldKey.TITLE));
-                }
             } else {
                 song = new Song(file.getName());
             }

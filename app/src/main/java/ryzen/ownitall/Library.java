@@ -20,6 +20,7 @@ import java.net.URL;
 
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
+    private static Settings settings = Settings.load();
     private static Credentials credentials = Credentials.load();
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
@@ -41,7 +42,7 @@ public class Library {
     }
 
     public Library() {
-        if (credentials.lastFMIsEmpty()) {
+        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             setCredentials();
         }
         this.objectMapper = new ObjectMapper();
@@ -58,6 +59,9 @@ public class Library {
 
     public Artist getArtist(String artistName) {
         Artist tmpArtist = new Artist(artistName);
+        if (!settings.useLibrary) {
+            return tmpArtist;
+        }
         if (this.artists.containsKey(tmpArtist.hashCode())) {
             return this.artists.get(tmpArtist.hashCode());
         }
@@ -70,21 +74,23 @@ public class Library {
 
                 if (artistNode != null) {
                     Artist artist = new Artist(artistNode.path("name").asText());
-                    this.artists.put(artist.hashCode(), artist);
+                    this.artists.put(tmpArtist.hashCode(), artist);
                     return artist;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parsing json while getting artist " + artistName + ": " + e);
             }
         }
-        return new Artist(artistName);
+        return tmpArtist;
     }
 
     public Album getAlbum(String albumName, String artistName) {
         Album tmpAlbum = new Album(albumName);
         tmpAlbum.addArtist(new Artist(artistName));
-        if (this.albums.containsKey(tmpAlbum.hashCode())) { // TODO: needs to be optimized (maybe use
-                                                            // tmpAlbum.hashcode() as key)
+        if (!settings.useLibrary) {
+            return tmpAlbum;
+        }
+        if (this.albums.containsKey(tmpAlbum.hashCode())) {
             return this.albums.get(tmpAlbum.hashCode());
         }
         Map<String, String> params = Map.of("album", albumName, "artist", artistName, "limit", "1");
@@ -97,24 +103,25 @@ public class Library {
                 if (albumNode != null) {
                     Album album = new Album(albumNode.path("name").asText());
                     String artist = albumNode.path("artist").asText();
-                    if (this.artists.containsKey(artist.hashCode())) {
-                        album.addArtist(this.artists.get(artist.hashCode()));
-                    } else {
-                        album.addArtist(this.getArtist(artist));
-                        // album.addArtist(new Artist(artist));
-                    }
-                    this.albums.put(album.hashCode(), album);
+                    album.addArtist(this.getArtist(artist));
+                    // uses tmp as it is more likely that the same "setup" will ask for same
+                    // response
+                    this.albums.put(tmpAlbum.hashCode(), album);
                     return album;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parsing json while getting album " + albumName + ": " + e);
             }
         }
-        return new Album(albumName);
+        return tmpAlbum;
     }
 
     public Song getSong(String songName, String artistName) {
         Song tmpSong = new Song(songName);
+        tmpSong.addArtist(new Artist(artistName));
+        if (!settings.useLibrary) {
+            return tmpSong;
+        }
         if (this.songs.containsKey(tmpSong.hashCode())) {
             return this.songs.get(tmpSong.hashCode());
         }
@@ -131,27 +138,17 @@ public class Library {
                 JsonNode trackNode = rootNode.path("results").path("trackmatches").path("track").get(0);
 
                 if (trackNode != null) {
-                    if (trackNode.has("error")) {
-                        this.handleApiError(rootNode.path("error").asInt(), rootNode.path("message").asText());
-                        return new Song(songName); // TODO: error handling
-                    }
                     Song song = new Song(trackNode.path("name").asText());
                     String artist = trackNode.path("artist").asText();
-                    if (this.artists.containsKey(artist.hashCode())) {
-                        song.addArtist(this.artists.get(artist.hashCode()));
-                    } else {
-                        if (artistName != null) {
-                            song.addArtist(this.getArtist(artistName));
-                        }
-                    }
-                    this.songs.put(song.hashCode(), song);
+                    song.addArtist(this.getArtist(artist));
+                    this.songs.put(tmpSong.hashCode(), song);
                     return song;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parshing json while getting song " + songName + ": " + e);
             }
         }
-        return new Song(songName);
+        return tmpSong;
     }
 
     private String query(String method, Map<String, String> params) {
@@ -178,15 +175,26 @@ public class Library {
                 response.append(line);
             }
             reader.close();
+            String jsonResponse = response.toString();
 
-            return response.toString();
+            // error handling
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            if (rootNode.has("error")) {
+                int errorCode = rootNode.path("error").asInt();
+                String errorMessage = rootNode.path("message").asText();
+                handleApiError(errorCode, errorMessage);
+                return null;
+            }
+
+            return jsonResponse;
         } catch (Exception e) {
             logger.error("Error querying API: " + e);
             return null;
         }
     }
 
-    private void handleApiError(int code, String message) {
+    private void handleApiError(int code, String message) { // TODO: error handling
         switch (code) {
             case 2:
                 logger.error("Invalid service - This service does not exist");

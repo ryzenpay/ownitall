@@ -7,11 +7,13 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.Menu;
 
-public class Import { // TODO: progress bar: https://github.com/ctongfei/progressbar
+public class Import {
     private static final Logger logger = LogManager.getLogger(Import.class);
-
+    private static Settings settings = Settings.load();
+    private static Credentials credentials = Credentials.load();
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Playlist> playlists;
     private LikedSongs likedSongs;
@@ -22,6 +24,10 @@ public class Import { // TODO: progress bar: https://github.com/ctongfei/progres
      * 
      */
     public Import() {
+        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
+            logger.info("No local LastFM API key found");
+            Library.setCredentials();
+        }
         this.albums = new LinkedHashSet<>();
         this.playlists = new LinkedHashSet<>();
         this.likedSongs = new LikedSongs();
@@ -32,7 +38,7 @@ public class Import { // TODO: progress bar: https://github.com/ctongfei/progres
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "IMPORT"); // TODO: add shutdownhook handling (pressing
                                                                          // cntr c)
-            if (choice == "Exit") {
+            if (choice.equals("Exit")) {
                 break;
             } else {
                 options.get(choice).run();
@@ -45,54 +51,63 @@ public class Import { // TODO: progress bar: https://github.com/ctongfei/progres
      */
     private void importYoutube() {
         Youtube youtube = new Youtube();
-        logger.info("Getting all Youtube liked songs, albums and playlists: ");
+        logger.info("Importing youtube music");
+        ProgressBar pb = Main.progressBar("Youtube Import", 3);
+        pb.setExtraMessage("Liked songs");
         LikedSongs youtubeLikedSongs = youtube
                 .getLikedSongs();
-        logger.info("   Processed " + youtubeLikedSongs.size() + " liked songs");
         likedSongs.addSongs(youtubeLikedSongs.getSongs());
         likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
+        pb.setExtraMessage("Saved Albums").step();
         LinkedHashSet<Album> youtubeAlbums = youtube
                 .getAlbums();
         albums.addAll(youtubeAlbums);
-        logger.info("   Processed " + youtubeAlbums.size() + " albums");
+        pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> youtubePlaylists = youtube
                 .getPlaylists();
-        logger.info("   Processed " + youtubePlaylists.size() + " playlists");
         playlists.addAll(youtubePlaylists);
+        pb.setExtraMessage("Done").step();
+        pb.close();
+        logger.info("Done importing youtube music");
     }
 
     /**
      * import music from spotify, getting or setting credentials as needed
      */
     private void importSpotify() {
+        logger.info("Importing Spotify music");
         Spotify spotify = new Spotify();
-        logger.info("Getting all spotify Playlists, Albums and liked songs: ");
+        ProgressBar pb = Main.progressBar("Spotify Import", 3);
+        pb.setExtraMessage("Liked Songs");
         LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
-        logger.info("   Processed " + spotifyLikedSongs.size() + " liked songs");
         likedSongs.addSongs(spotifyLikedSongs.getSongs());
         likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
+        pb.setExtraMessage("Saved Albums").step();
         LinkedHashSet<Album> spotifyAlbums = spotify.getAlbums();
-        logger.info("   Processed " + spotifyAlbums.size() + " albums");
         albums.addAll(spotifyAlbums);
+        pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> spotifyPlaylists = spotify.getPlaylists();
-        logger.info("   Processed " + spotifyPlaylists.size() + " playlists");
         playlists.addAll(spotifyPlaylists);
+        pb.setExtraMessage("Done").step();
+        pb.close();
+        logger.info("done importing Spotify music");
     }
 
     /**
      * import music from a local music library, prompting for location
      */
     private void importLocal() {
+        logger.info("Importing local music");
         Local local = new Local();
-        logger.info("Getting all music from your local library");
+        ProgressBar pb = Main.progressBar("Local Import", 3);
+        pb.setExtraMessage("Liked Songs");
         LikedSongs localLikedSongs = local.getLikedSongs();
-        logger.info("   Processed " + localLikedSongs.size() + " liked songs");
         likedSongs.addSongs(localLikedSongs.getSongs());
+        pb.setExtraMessage("Saved Albums").step();
         LinkedHashSet<Album> localAlbums = local.getAlbums();
-        logger.info("    Processed " + localAlbums.size() + " albums");
         albums.addAll(localAlbums);
+        pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
-        logger.info("    Processed " + localPlaylists.size() + " playlists");
         Iterator<Playlist> iterator = localPlaylists.iterator();
         while (iterator.hasNext()) { // filter out singles
             Playlist playlist = iterator.next();
@@ -102,6 +117,9 @@ public class Import { // TODO: progress bar: https://github.com/ctongfei/progres
             }
         }
         playlists.addAll(playlists);
+        pb.setExtraMessage("Done").step();
+        pb.close();
+        logger.info("done importing local music");
     }
 
     /**

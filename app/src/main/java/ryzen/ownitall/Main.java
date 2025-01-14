@@ -8,10 +8,13 @@ import ryzen.ownitall.tools.Menu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
+
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static Settings settings = Settings.load();
-    private static Credentials credentials = Credentials.load();
     private static Collection collection;
 
     public static void main(String[] args) {
@@ -23,10 +26,6 @@ public class Main {
             logger.info("No local data found");
             collection = new Collection();
         }
-        if (credentials.lastFMIsEmpty()) {
-            logger.info("No local LastFM API key found");
-            Library.setCredentials();
-        }
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
@@ -36,7 +35,7 @@ public class Main {
         options.put("Settings", Main::optionSettings);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-            if (choice == "Exit") {
+            if (choice.equals("Exit")) {
                 exit();
             } else {
                 options.get(choice).run();
@@ -63,9 +62,7 @@ public class Main {
     }
 
     private static void optionSave() {
-        Sync.load().exportAlbums(collection.getAlbums());
-        Sync.load().exportPlaylists(collection.getPlaylists());
-        Sync.load().exportLikedSongs(collection.getLikedSongs());
+        Sync.load().exportCollection(collection);
         try {
             settings.saveSettings();
             if (settings.saveCredentials) {
@@ -93,5 +90,14 @@ public class Main {
         System.out.println("Exiting program. Goodbye!");
         logger.info("Exiting program...");
         System.exit(0);
+    }
+
+    public static ProgressBar progressBar(String title, int maxStep) {
+        return new ProgressBarBuilder()
+                .setInitialMax(maxStep)
+                .setTaskName(title)
+                // .setConsumer(new DelegatingProgressBarConsumer(logger::info))
+                .setStyle(ProgressBarStyle.ASCII)
+                .build();
     }
 }

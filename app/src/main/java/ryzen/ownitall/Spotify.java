@@ -463,7 +463,6 @@ public class Spotify {
                                 song.addArtists(this.getArtists(track.getArtists()));
                             }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            // TODO: song cover
                             songs.add(song);
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();

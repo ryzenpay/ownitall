@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Album { // TODO: extend from playlist?
+public class Album { // extend from playlists?
     private static Settings settings = Settings.load();
     private String name;
     LinkedHashSet<Song> songs;
@@ -52,6 +52,9 @@ public class Album { // TODO: extend from playlist?
      * @param album - constructed Album to merge
      */
     public void mergeAlbum(Album album) {
+        if (album == null) {
+            return;
+        }
         this.addSongs(album.getSongs());
         this.addArtists(album.getArtists());
     }
@@ -81,6 +84,15 @@ public class Album { // TODO: extend from playlist?
      */
     public void addSongs(ArrayList<Song> songs) {
         this.songs.addAll(new LinkedHashSet<Song>(songs));
+    }
+
+    /**
+     * add single song to album's songs
+     * 
+     * @param song - constructed song
+     */
+    public void addSong(Song song) {
+        this.songs.add(song);
     }
 
     /**
