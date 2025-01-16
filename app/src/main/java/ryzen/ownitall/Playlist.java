@@ -2,30 +2,27 @@ package ryzen.ownitall;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.tools.Levenshtein;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
-    private static Settings settings = Settings.load();
     private String name;
     private URI coverArt;
-    private LinkedHashSet<Song> songs; // arraylist cuz it can contain duplicates //no longer arraylist for
-    // re-importing and merging capabilities
+    private SongSet songs;
 
     private String youtubePageToken; // TODO: create "update" method to save API requests
     private int spotifyPageOffset = -1;
+    double simularityPercentage;
 
     /**
      * Default playlist constructor
@@ -34,7 +31,28 @@ public class Playlist {
      */
     public Playlist(String name) {
         this.name = name;
-        this.songs = new LinkedHashSet<>();
+        this.songs = new SongSet();
+        this.simularityPercentage = Settings.load().similarityPercentage;
+    }
+
+    @JsonCreator
+    public Playlist(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("youtubePageToken") String youtubePageToken,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
+        this.name = name;
+        if (songs != null && !songs.isEmpty()) {
+            this.songs = new SongSet(songs);
+        } else {
+            this.songs = new SongSet();
+        }
+        if (youtubePageToken != null) {
+            this.youtubePageToken = youtubePageToken;
+        }
+        this.spotifyPageOffset = spotifyPageOffset;
+        if (coverArt != null) {
+            this.setCoverArt(coverArt);
+        }
+        this.simularityPercentage = Settings.load().similarityPercentage;
     }
 
     /**
@@ -45,7 +63,7 @@ public class Playlist {
     public void mergePlaylist(Playlist playlist) {
         this.addSongs(playlist.getSongs());
         if (this.coverArt == null) {
-            this.coverArt = playlist.getCoverart();
+            this.coverArt = playlist.getCoverArt();
         }
         if (playlist.getYoutubePageToken() != null) {
             this.youtubePageToken = playlist.getYoutubePageToken();
@@ -70,10 +88,13 @@ public class Playlist {
      * @param coverArt - String of coverart URL
      */
     public void setCoverArt(String coverArt) {
+        if (coverArt == null) {
+            return;
+        }
         try {
             this.coverArt = new URI(coverArt);
         } catch (URISyntaxException e) {
-            logger.error("Error parsing cover image: " + coverArt);
+            logger.error("Error parsing playlist cover image: " + coverArt);
         }
     }
 
@@ -82,7 +103,7 @@ public class Playlist {
      * 
      * @return - constructed URI
      */
-    public URI getCoverart() {
+    public URI getCoverArt() {
         return this.coverArt;
     }
 
@@ -91,8 +112,10 @@ public class Playlist {
      * 
      * @param songs - arraylist of constructed Song
      */
-    public void addSongs(ArrayList<Song> songs) {
-        this.songs.addAll(songs);
+    public void addSongs(LinkedHashSet<Song> songs) {
+        for (Song song : songs) {
+            this.addSong(song);
+        }
     }
 
     /**
@@ -101,7 +124,11 @@ public class Playlist {
      * @param song - constructed Song
      */
     public void addSong(Song song) {
-        this.songs.add(song);
+        if (this.songs.contains(song)) {
+            this.songs.get(song).mergeSong(song);
+        } else {
+            this.songs.add(song);
+        }
     }
 
     /**
@@ -109,6 +136,7 @@ public class Playlist {
      * 
      * @return - integer of size of playlist
      */
+    @JsonIgnore
     public int size() {
         return this.songs.size();
     }
@@ -118,8 +146,8 @@ public class Playlist {
      * 
      * @return - arraylist of constructed Song
      */
-    public ArrayList<Song> getSongs() {
-        return new ArrayList<>(this.songs);
+    public LinkedHashSet<Song> getSongs() {
+        return new SongSet(this.songs);
     }
 
     /**
@@ -159,11 +187,13 @@ public class Playlist {
     }
 
     @Override
+    @JsonIgnore
     public String toString() {
         return this.name;
     }
 
     @Override
+    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -174,33 +204,15 @@ public class Playlist {
             return true;
         }
         if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
-                settings.getSimilarityPercentage())) {
+                simularityPercentage)) {
             return true;
         }
         return false;
     }
 
     @Override
+    @JsonIgnore
     public int hashCode() {
         return this.name.toLowerCase().hashCode();
-    }
-
-    @JsonCreator
-    public Playlist(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
-        this.name = name;
-        if (songs != null && !songs.isEmpty()) {
-            this.songs = songs;
-        } else {
-            this.songs = new LinkedHashSet<>();
-        }
-        if (youtubePageToken != null) {
-            this.youtubePageToken = youtubePageToken;
-        }
-        this.spotifyPageOffset = spotifyPageOffset;
-        if (coverArt != null) {
-            this.setCoverArt(coverArt);
-        }
     }
 }

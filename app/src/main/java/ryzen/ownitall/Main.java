@@ -48,15 +48,7 @@ public class Main {
 
     private static void optionImport() {
         Import dataImport = new Import();
-        collection.mergeAlbums(dataImport.getAlbums());
-        collection.mergePlaylists(dataImport.getPlaylists());
-        collection.mergeLikedSongs(dataImport.getLikedSongs());
-        if (settings.useLibrary) {
-            int hits = Library.load().getHits();
-            int trackCount = collection.getTrackCount();
-            double efficiency = (double) hits / trackCount;
-            logger.info("Library usage efficiency: " + efficiency + " (" + hits + "/" + trackCount + ")");
-        }
+        collection.mergeCollection(dataImport.getCollection());
     }
 
     private static void optionExport() {

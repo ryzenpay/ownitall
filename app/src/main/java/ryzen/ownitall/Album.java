@@ -8,15 +8,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.tools.Levenshtein;
 
-import java.util.ArrayList;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Album { // extend from playlists?
-    private static Settings settings = Settings.load();
     private String name;
-    LinkedHashSet<Song> songs;
-    private LinkedHashSet<Artist> artists; // the first being the main, Set because no duplicates
+    SongSet songs;
+    Artist artist;
+    private double simularityPercentage;
 
     /**
      * Default constructor of album without album cover
@@ -25,25 +21,34 @@ public class Album { // extend from playlists?
      */
     public Album(String name) {
         this.name = name;
-        this.songs = new LinkedHashSet<>();
-        this.artists = new LinkedHashSet<>();
+        this.songs = new SongSet();
+        this.artist = null;
+        this.simularityPercentage = Settings.load().getSimilarityPercentage();
     }
 
+    /**
+     * full album constructor
+     * 
+     * @param name    - album name
+     * @param songs   - SongSet of songs
+     * @param artists - constructed Artist
+     */
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("artists") LinkedHashSet<Artist> artists) {
+            @JsonProperty("artist") Artist artist) {
         this.name = name;
         if (songs != null && !songs.isEmpty()) {
-            this.songs = songs;
+            this.songs = new SongSet(songs);
         } else {
-            this.songs = new LinkedHashSet<>();
+            this.songs = new SongSet();
         }
-        if (artists != null && !artists.isEmpty()) {
-            this.artists = artists;
+        if (artist != null && !artist.isEmpty()) {
+            this.artist = artist;
         } else {
-            this.artists = new LinkedHashSet<>();
+            artist = null;
         }
+        this.simularityPercentage = Settings.load().getSimilarityPercentage();
     }
 
     /**
@@ -56,7 +61,9 @@ public class Album { // extend from playlists?
             return;
         }
         this.addSongs(album.getSongs());
-        this.addArtists(album.getArtists());
+        if (this.artist == null && album.getArtist() != null) {
+            this.setArtist(album.getArtist());
+        }
     }
 
     /**
@@ -78,48 +85,38 @@ public class Album { // extend from playlists?
     }
 
     /**
-     * add array of songs to album's songs
+     * add songs to album
      * 
      * @param songs - arraylist of constructed Song
      */
-    public void addSongs(ArrayList<Song> songs) {
-        this.songs.addAll(new LinkedHashSet<Song>(songs));
+    public void addSongs(LinkedHashSet<Song> songs) {
+        for (Song song : songs) {
+            this.addSong(song);
+        }
     }
 
     /**
-     * add single song to album's songs
+     * add song to album with checking for merging
      * 
-     * @param song - constructed song
+     * @param song - constructed Song
      */
     public void addSong(Song song) {
-        this.songs.add(song);
+        if (this.songs.contains(song)) {
+            this.songs.get(song).mergeSong(song);
+        } else {
+            this.songs.add(song);
+        }
     }
 
-    /**
-     * set album class artists
-     * 
-     * @param artists - LinkedHashSet of artists
-     */
-    public void addArtists(ArrayList<Artist> artists) {
-        this.artists.addAll(new LinkedHashSet<Artist>(artists));
+    public void setArtist(Artist artist) {
+        if (artist == null || artist.isEmpty()) {
+            return;
+        }
+        this.artist = artist;
     }
 
-    /**
-     * add artist to albums artists
-     * 
-     * @param artist - artist object/string ;)
-     */
-    public void addArtist(Artist artist) {
-        this.artists.add(artist);
-    }
-
-    /**
-     * get all artists on the album
-     * 
-     * @return - arraylist of artists
-     */
-    public ArrayList<Artist> getArtists() {
-        return new ArrayList<Artist>(this.artists);
+    public Artist getArtist() {
+        return this.artist;
     }
 
     /**
@@ -127,21 +124,8 @@ public class Album { // extend from playlists?
      * 
      * @return - arraylist of constructed Song
      */
-    public ArrayList<Song> getSongs() {
-        return new ArrayList<>(this.songs);
-    }
-
-    /**
-     * gets albums main artist (first in array = first added)
-     * 
-     * @return - constructucted Artist
-     */
-    @JsonIgnore
-    public Artist getMainArtist() {
-        if (this.artists.isEmpty()) {
-            return null;
-        }
-        return artists.iterator().next();
+    public LinkedHashSet<Song> getSongs() {
+        return new SongSet(this.songs);
     }
 
     /**
@@ -149,20 +133,23 @@ public class Album { // extend from playlists?
      * 
      * @return - int of album size
      */
+    @JsonIgnore
     public int size() {
         return this.songs.size();
     }
 
     @Override
+    @JsonIgnore
     public String toString() {
         String output = this.name;
-        if (!this.artists.isEmpty()) {
-            output += " (" + this.getMainArtist().getName() + ")";
+        if (this.artist != null && !this.artist.isEmpty()) {
+            output += " (" + this.artist.getName() + ")";
         }
         return output;
     }
 
     @Override
+    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -173,17 +160,18 @@ public class Album { // extend from playlists?
             return true;
         }
         if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
-                settings.getSimilarityPercentage())) {
+                simularityPercentage)) {
             return true;
         }
         return false;
     }
 
     @Override
+    @JsonIgnore
     public int hashCode() {
         int hashCode = this.name.toLowerCase().hashCode();
-        if (!this.artists.isEmpty()) {
-            hashCode = this.getMainArtist().toString().toLowerCase().hashCode();
+        if (this.artist != null && !this.artist.isEmpty()) {
+            hashCode = this.artist.hashCode();
         }
         return hashCode;
     }

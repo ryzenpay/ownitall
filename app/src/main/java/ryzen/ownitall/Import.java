@@ -14,9 +14,7 @@ public class Import {
     private static final Logger logger = LogManager.getLogger(Import.class);
     private static Settings settings = Settings.load();
     private static Credentials credentials = Credentials.load();
-    private LinkedHashSet<Album> albums;
-    private LinkedHashSet<Playlist> playlists;
-    private LikedSongs likedSongs;
+    private Collection collection;
     private LinkedHashMap<String, Runnable> options;
 
     /**
@@ -28,9 +26,7 @@ public class Import {
             logger.info("No local LastFM API key found");
             Library.setCredentials();
         }
-        this.albums = new LinkedHashSet<>();
-        this.playlists = new LinkedHashSet<>();
-        this.likedSongs = new LikedSongs();
+        this.collection = new Collection();
         this.options = new LinkedHashMap<>();
         options.put("Youtube", this::importYoutube);
         options.put("Spotify", this::importSpotify);
@@ -54,18 +50,11 @@ public class Import {
         logger.info("Importing youtube music");
         ProgressBar pb = Main.progressBar("Youtube Import", 3);
         pb.setExtraMessage("Liked songs");
-        LikedSongs youtubeLikedSongs = youtube
-                .getLikedSongs();
-        likedSongs.addSongs(youtubeLikedSongs.getSongs());
-        likedSongs.setYoutubePageToken(youtubeLikedSongs.getYoutubePageToken());
+        collection.mergeLikedSongs(youtube.getLikedSongs());
         pb.setExtraMessage("Saved Albums").step();
-        LinkedHashSet<Album> youtubeAlbums = youtube
-                .getAlbums();
-        albums.addAll(youtubeAlbums);
+        collection.mergeAlbums(youtube.getAlbums());
         pb.setExtraMessage("Playlists").step();
-        LinkedHashSet<Playlist> youtubePlaylists = youtube
-                .getPlaylists();
-        playlists.addAll(youtubePlaylists);
+        collection.mergePlaylists(youtube.getPlaylists());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done importing youtube music");
@@ -79,15 +68,11 @@ public class Import {
         Spotify spotify = new Spotify();
         ProgressBar pb = Main.progressBar("Spotify Import", 3);
         pb.setExtraMessage("Liked Songs");
-        LikedSongs spotifyLikedSongs = spotify.getLikedSongs();
-        likedSongs.addSongs(spotifyLikedSongs.getSongs());
-        likedSongs.setSpotifyPageOffset(spotifyLikedSongs.getSpotifyPageOffset());
+        collection.mergeLikedSongs(spotify.getLikedSongs());
         pb.setExtraMessage("Saved Albums").step();
-        LinkedHashSet<Album> spotifyAlbums = spotify.getAlbums();
-        albums.addAll(spotifyAlbums);
+        collection.mergeAlbums(spotify.getAlbums());
         pb.setExtraMessage("Playlists").step();
-        LinkedHashSet<Playlist> spotifyPlaylists = spotify.getPlaylists();
-        playlists.addAll(spotifyPlaylists);
+        collection.mergePlaylists(spotify.getPlaylists());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done importing Spotify music");
@@ -102,68 +87,27 @@ public class Import {
         ProgressBar pb = Main.progressBar("Local Import", 3);
         pb.setExtraMessage("Liked Songs");
         LikedSongs localLikedSongs = local.getLikedSongs();
-        likedSongs.addSongs(localLikedSongs.getSongs());
         pb.setExtraMessage("Saved Albums").step();
         LinkedHashSet<Album> localAlbums = local.getAlbums();
-        albums.addAll(localAlbums);
+        collection.mergeAlbums(localAlbums);
         pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
         Iterator<Playlist> iterator = localPlaylists.iterator();
         while (iterator.hasNext()) { // filter out singles
             Playlist playlist = iterator.next();
             if (playlist.size() <= 1) {
-                likedSongs.addSongs(playlist.getSongs());
+                localLikedSongs.addSongs(playlist.getSongs());
                 iterator.remove();
             }
         }
-        playlists.addAll(playlists);
+        collection.mergePlaylists(localPlaylists);
+        collection.mergeLikedSongs(localLikedSongs);
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done importing local music");
     }
 
-    /**
-     * get imported albums
-     * 
-     * @return - linkedhashset of constructed Album
-     */
-    public LinkedHashSet<Album> getAlbums() {
-        return this.albums;
-    }
-
-    /**
-     * get imported playlists
-     * 
-     * @return - linkedhashset of constructed Playlist
-     */
-    public LinkedHashSet<Playlist> getPlaylists() {
-        return this.playlists;
-    }
-
-    /**
-     * get liked songs
-     * 
-     * @return - linkedhashset of constructed Song
-     */
-    public LikedSongs getLikedSongs() {
-        return likedSongs;
-    }
-
-    /**
-     * print overview of imported music
-     * similar to Collection inventory print with recursion 1
-     */
-    public void printOverview() {
-        int trackCount = 0;
-        for (Playlist playlist : this.playlists) {
-            trackCount += playlist.size();
-        }
-        for (Album album : this.albums) {
-            trackCount += album.size();
-        }
-        System.out.println("Imported " + this.albums.size() + " albums");
-        System.out.println("Imported " + this.playlists.size() + " playlists");
-        System.out.println("Imported " + this.likedSongs.size() + " liked songs");
-        System.out.println("With a total of: " + trackCount + " songs");
+    public Collection getCollection() {
+        return this.collection;
     }
 }

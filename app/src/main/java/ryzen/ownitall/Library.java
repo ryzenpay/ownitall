@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,18 +24,14 @@ public class Library {
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private ObjectMapper objectMapper;
-    /**
-     * a metric to see how efficient using stored artists, songs and albums was
-     */
-    private int hits;
 
     /**
      * arrays to save api queries if they already exist
      * TODO: dump them and reload to save API queries (cache)
      */
-    private LinkedHashMap<Integer, Artist> artists;
-    private LinkedHashMap<Integer, Song> songs;
-    private LinkedHashMap<Integer, Album> albums;
+    private ArtistSet artists;
+    private SongSet songs;
+    private AlbumSet albums;
 
     public static Library load() {
         if (instance == null) {
@@ -50,14 +45,9 @@ public class Library {
             setCredentials();
         }
         this.objectMapper = new ObjectMapper();
-        this.artists = new LinkedHashMap<>();
-        this.songs = new LinkedHashMap<>();
-        this.albums = new LinkedHashMap<>();
-        this.hits = 0;
-    }
-
-    public int getHits() {
-        return this.hits;
+        this.artists = new ArtistSet();
+        this.songs = new SongSet();
+        this.albums = new AlbumSet();
     }
 
     public static void setCredentials() {
@@ -74,9 +64,8 @@ public class Library {
         if (!settings.useLibrary) {
             return tmpArtist;
         }
-        if (this.artists.containsKey(tmpArtist.hashCode())) {
-            this.hits++;
-            return this.artists.get(tmpArtist.hashCode());
+        if (this.artists.contains(tmpArtist)) {
+            return this.artists.get(tmpArtist);
         }
         Map<String, String> params = Map.of("artist", artistName, "limit", "1");
         String response = query("artist.search", params);
@@ -87,13 +76,14 @@ public class Library {
 
                 if (artistNode != null) {
                     Artist artist = new Artist(artistNode.path("name").asText());
-                    this.artists.put(tmpArtist.hashCode(), artist);
+                    this.artists.add(artist);
                     return artist;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parsing json while getting artist " + artistName + ": " + e);
             }
         }
+        logger.info("Could not find artist " + artistName + " in Library");
         return tmpArtist;
     }
 
@@ -103,14 +93,13 @@ public class Library {
         }
         Album tmpAlbum = new Album(albumName);
         if (artistName != null) {
-            tmpAlbum.addArtist(new Artist(artistName));
+            tmpAlbum.setArtist(new Artist(artistName));
         }
         if (!settings.useLibrary) {
             return tmpAlbum;
         }
-        if (this.albums.containsKey(tmpAlbum.hashCode())) {
-            this.hits++;
-            return this.albums.get(tmpAlbum.hashCode());
+        if (this.albums.contains(tmpAlbum)) {
+            return this.albums.get(tmpAlbum);
         }
         Map<String, String> params;
         if (artistName != null) {
@@ -127,33 +116,39 @@ public class Library {
                 if (albumNode != null) {
                     Album album = new Album(albumNode.path("name").asText());
                     String artist = albumNode.path("artist").asText();
-                    album.addArtist(this.getArtist(artist));
-                    // uses tmp as it is more likely that the same "setup" will ask for same
-                    // response
-                    this.albums.put(tmpAlbum.hashCode(), album);
+                    album.setArtist(this.getArtist(artist));
+                    this.albums.add(album);
                     return album;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parsing json while getting album " + albumName + ": " + e);
             }
         }
+        logger.info("Could not find Album " + albumName + " in Library");
         return tmpAlbum;
     }
 
+    /**
+     * construct a song using the LastFM api and their search.
+     * constructs everything except the: duration
+     * 
+     * @param songName   - name of song to search
+     * @param artistName - optional artist to match with the song
+     * @return - constructed song
+     */
     public Song getSong(String songName, String artistName) {
         if (songName == null) {
             return null;
         }
         Song tmpSong = new Song(songName);
         if (artistName != null) {
-            tmpSong.addArtist(new Artist(artistName));
+            tmpSong.setArtist(new Artist(artistName));
         }
         if (!settings.useLibrary) {
             return tmpSong;
         }
-        if (this.songs.containsKey(tmpSong.hashCode())) {
-            this.hits++;
-            return this.songs.get(tmpSong.hashCode());
+        if (this.songs.contains(tmpSong)) {
+            return this.songs.get(tmpSong);
         }
         Map<String, String> params;
         if (artistName == null) {
@@ -170,14 +165,15 @@ public class Library {
                 if (trackNode != null) {
                     Song song = new Song(trackNode.path("name").asText());
                     String artist = trackNode.path("artist").asText();
-                    song.addArtist(this.getArtist(artist));
-                    this.songs.put(tmpSong.hashCode(), song);
+                    song.setArtist(this.getArtist(artist));
+                    this.songs.add(song);
                     return song;
                 }
             } catch (JsonProcessingException e) {
                 logger.error("Error parshing json while getting song " + songName + ": " + e);
             }
         }
+        logger.info("Could not find song " + songName + " in Library");
         return tmpSong;
     }
 

@@ -21,7 +21,6 @@ import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Episode;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
@@ -46,8 +45,9 @@ import java.awt.Desktop;
 
 public class Spotify {
     private static final Logger logger = LogManager.getLogger(Spotify.class);
-    private static Settings settings = Settings.load();
-    private static Credentials credentials = Credentials.load();
+    private static final Settings settings = Settings.load();
+    private static final Credentials credentials = Credentials.load();
+    private static Library library = Library.load();
     private SpotifyApi spotifyApi;
     private String code;
 
@@ -256,11 +256,7 @@ public class Spotify {
                 } else {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
-                        Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
-                        if (song == null) {
-                            song = new Song(track.getName());
-                            song.addArtists(this.getArtists(track.getArtists()));
-                        }
+                        Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         likedSongs.addSong(song);
                     }
@@ -308,12 +304,8 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
-                        Album album = Library.load().getAlbum(savedAlbum.getAlbum().getName(),
+                        Album album = library.getAlbum(savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
-                        if (album == null) {
-                            album = new Album(savedAlbum.getAlbum().getName());
-                            album.addArtists(this.getArtists(savedAlbum.getAlbum().getArtists()));
-                        }
                         album.addSongs(
                                 this.getAlbumSongs(savedAlbum.getAlbum().getId()));
                         albums.add(album);
@@ -331,14 +323,8 @@ public class Spotify {
         return albums;
     }
 
-    /**
-     * get all songs of an album
-     * 
-     * @param albumId - spotify ID of the album
-     * @return - arraylist of constructed Songs
-     */
-    public ArrayList<Song> getAlbumSongs(String albumId) {
-        ArrayList<Song> songs = new ArrayList<>();
+    public LinkedHashSet<Song> getAlbumSongs(String albumId) {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -357,11 +343,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
-                        Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
-                        if (song == null) {
-                            song = new Song(track.getName());
-                            song.addArtists(this.getArtists(track.getArtists()));
-                        }
+                        Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         songs.add(song);
                     }
@@ -437,8 +419,8 @@ public class Spotify {
      * @param playlistId - spotify ID for a playlist
      * @return - constructed array of Songs
      */
-    public ArrayList<Song> getPlaylistSongs(String playlistId) {
-        ArrayList<Song> songs = new ArrayList<>();
+    public LinkedHashSet<Song> getPlaylistSongs(String playlistId) {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = 50;
         int offset = 0;
         boolean hasMore = true;
@@ -457,19 +439,12 @@ public class Spotify {
                     for (PlaylistTrack playlistTrack : items) {
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
-                            Song song = Library.load().getSong(track.getName(), track.getArtists()[0].getName());
-                            if (song == null) {
-                                song = new Song(track.getName());
-                                song.addArtists(this.getArtists(track.getArtists()));
-                            }
+                            Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             songs.add(song);
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
-                            Song song = Library.load().getSong(episode.getName(), null);
-                            if (song == null) {
-                                song = new Song(episode.getName());
-                            }
+                            Song song = library.getSong(episode.getName(), null);
                             // String coverImage = episode.getImages()[0].getUrl(); doesnt seem to work with
                             // the current SpotifyAPI class (returns null)
                             song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
@@ -493,24 +468,5 @@ public class Spotify {
             }
         }
         return songs;
-    }
-
-    /**
-     * process array of SpotifyAPI artists to constructed Artist
-     * can also get artists pfp if set in settings
-     * 
-     * @param raw_artists - array of SpotifyAPI artists
-     * @return - arraylist of constructed Artist
-     */
-    public ArrayList<Artist> getArtists(ArtistSimplified[] raw_artists) {
-        ArrayList<Artist> artists = new ArrayList<>();
-        for (ArtistSimplified raw_artist : raw_artists) {
-            Artist artist = Library.load().getArtist(raw_artist.getName());
-            if (artist == null) {
-                artist = new Artist(raw_artist.getName());
-            }
-            artists.add(artist);
-        }
-        return artists;
     }
 }

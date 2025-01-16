@@ -1,5 +1,7 @@
 package ryzen.ownitall;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class LikedSongs extends Playlist { // different from playlist due to linkedhashset songs
 
     /**
@@ -16,15 +18,19 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
      * @param song - constructed Song to check
      * @return - true if liked, false if not
      */
-    public boolean checkLiked(Song song) {
+    @JsonIgnore
+    public boolean contains(Song song) {
         if (this.size() == 0) {
             return false;
         }
-        for (Song likedSong : this.getSongs()) {
-            if (likedSong.hashCode() == song.hashCode()) {
-                return true;
-            }
+        if (this.getSongs().contains(song)) {
+            return true;
         }
         return false;
+    }
+
+    public Song get(Song song) {
+        SongSet songSet = new SongSet(this.getSongs());
+        return songSet.get(song);
     }
 }

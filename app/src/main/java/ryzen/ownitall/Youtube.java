@@ -24,7 +24,6 @@ import ryzen.ownitall.tools.Input;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.LinkedHashSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.Duration;
 import java.util.List;
@@ -35,10 +34,10 @@ import org.apache.logging.log4j.Logger;
 
 public class Youtube {
     private static final Logger logger = LogManager.getLogger(Youtube.class);
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
+    private static final Credentials credentials = Credentials.load();
+    private static Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
-
-    private static Credentials credentials = Credentials.load();
     private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -134,13 +133,7 @@ public class Youtube {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            String songName = snippet.getTitle();
-                            String artistName = snippet.getChannelTitle();
-                            Song song = Library.load().getSong(songName, artistName);
-                            if (song == null) {
-                                song = new Song(snippet.getTitle());
-                                song.addArtist(new Artist(snippet.getChannelTitle()));
-                            }
+                            Song song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
                             song.setDuration(Duration.parse(contentDetails.getDuration()));
                             songs.addSong(song);
                         }
@@ -186,13 +179,11 @@ public class Youtube {
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
-                    ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
+                    LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (!songs.isEmpty()) {
                         Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                         playlist.addSongs(songs);
-                        if (!playlist.getSongs().isEmpty()) { // to filter out non music playlists
-                            playlists.add(playlist);
-                        }
+                        playlists.add(playlist);
                     }
                 }
 
@@ -210,8 +201,8 @@ public class Youtube {
      * @param playlistId - youtube id of playlist
      * @return - arraylist of constructed Song
      */
-    private ArrayList<Song> getPlaylistSongs(String playlistId) {
-        ArrayList<Song> songs = new ArrayList<>();
+    private LinkedHashSet<Song> getPlaylistSongs(String playlistId) {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         String nextPageToken = null;
         try {
             do {
@@ -227,13 +218,7 @@ public class Youtube {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        String songName = snippet.getTitle();
-                        String artistName = this.getVideoChannel(videoId);
-                        Song song = Library.load().getSong(songName, this.getVideoChannel(videoId));
-                        if (song == null) {
-                            song = new Song(songName);
-                            song.addArtist(new Artist(artistName));
-                        }
+                        Song song = library.getSong(snippet.getTitle(), this.getVideoChannel(videoId));
                         song.setDuration(this.getDuration(videoId));
                         songs.add(song);
                     }

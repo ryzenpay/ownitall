@@ -1,54 +1,48 @@
 package ryzen.ownitall;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import ryzen.ownitall.tools.MusicTime;
 
 public class Collection {
     private LikedSongs likedSongs;
-    private LinkedHashSet<Playlist> playlists;
-    private LinkedHashSet<Album> albums;
+    private PlaylistSet playlists;
+    private AlbumSet albums;
 
     public Collection() {
         this.likedSongs = new LikedSongs();
-        this.playlists = new LinkedHashSet<>();
-        this.albums = new LinkedHashSet<>();
+        this.playlists = new PlaylistSet();
+        this.albums = new AlbumSet();
     }
 
     public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
-        LinkedHashMap<Integer, Album> mappedAlbums = new LinkedHashMap<>();
-        for (Album album : this.albums) {
-            mappedAlbums.put(album.hashCode(), album);
-        }
         for (Album album : mergeAlbums) {
-            if (mappedAlbums.containsKey(album.hashCode())) {
-                mappedAlbums.get(album.hashCode()).mergeAlbum(album);
+            if (this.albums.contains(album)) {
+                this.albums.get(album).mergeAlbum(album);
             } else {
-                mappedAlbums.put(album.hashCode(), album);
+                this.albums.add(album);
             }
         }
-        this.albums = new LinkedHashSet<Album>(mappedAlbums.values());
     }
 
     public void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
-        LinkedHashMap<Integer, Playlist> mappedPlaylists = new LinkedHashMap<>();
         for (Playlist playlist : playlists) {
-            mappedPlaylists.put(playlist.hashCode(), playlist);
-        }
-        for (Playlist playlist : mergePlaylists) {
-            if (mappedPlaylists.containsKey(playlist.hashCode())) {
-                mappedPlaylists.get(playlist.hashCode()).mergePlaylist(playlist);
+            if (this.playlists.contains(playlist)) {
+                this.playlists.get(playlist).mergePlaylist(playlist);
             } else {
-                mappedPlaylists.put(playlist.hashCode(), playlist);
+                this.playlists.add(playlist);
             }
         }
-        this.playlists = new LinkedHashSet<>(mappedPlaylists.values());
     }
 
     public void mergeLikedSongs(LikedSongs mergeLikedSongs) {
-        this.likedSongs.addSongs(mergeLikedSongs.getSongs());
+        this.likedSongs.addSongs(mergeLikedSongs.getSongs()); // handled by playlist addSongs
+    }
+
+    public void mergeCollection(Collection collection) {
+        this.mergeAlbums(collection.getAlbums());
+        this.mergePlaylists(collection.getPlaylists());
+        this.mergeLikedSongs(collection.getLikedSongs());
     }
 
     public LikedSongs getLikedSongs() {
@@ -60,18 +54,18 @@ public class Collection {
      * 
      * @return - linkedhashset of standalone liked songs
      */
-    public ArrayList<Song> getStandaloneLikedSongs() {
-        ArrayList<Song> likedSongs = new ArrayList<>();
+    public LinkedHashSet<Song> getStandaloneLikedSongs() {
+        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
         for (Playlist playlist : this.playlists) {
             for (Song song : playlist.getSongs()) {
-                if (!this.likedSongs.checkLiked(song)) {
+                if (!this.likedSongs.contains(song)) {
                     likedSongs.add(song);
                 }
             }
         }
         for (Album album : this.albums) {
             for (Song song : album.getSongs()) {
-                if (!this.likedSongs.checkLiked(song)) {
+                if (!this.likedSongs.contains(song)) {
                     likedSongs.add(song);
                 }
             }
@@ -132,7 +126,9 @@ public class Collection {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
                                     + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
-                    System.out.println("    - Artists: " + album.getArtists().toString());
+                    if (album.getArtist() != null) {
+                        System.out.println("    - Artist: " + album.getArtist().toString());
+                    }
                     i++;
                 }
                 break;
@@ -142,7 +138,9 @@ public class Collection {
                 for (Song likedSong : this.likedSongs.getSongs()) {
                     System.out.println("    " + i + "/" + this.likedSongs.size() + " = " + likedSong.getName() + " | "
                             + MusicTime.musicTime(likedSong.getDuration()));
-                    System.out.println("        - Artists: " + likedSong.getArtists().toString());
+                    if (likedSong.getArtist() != null) {
+                        System.out.println("        - Artist: " + likedSong.getArtist().toString());
+                    }
                     i++;
                 }
                 System.out.println("Playlists (" + this.playlists.size() + "): (" + playlistTrackCount + " songs)");
@@ -157,14 +155,16 @@ public class Collection {
                                                     MusicTime.totalDuration(playlist.getSongs())));
                     i++;
                     for (Song song : playlist.getSongs()) {
-                        if (likedSongs.checkLiked(song)) {
+                        if (likedSongs.contains(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
                                 + MusicTime.musicTime(song.getDuration()));
-                        System.out.println("        - Artists: " + song.getArtists().toString());
+                        if (song.getArtist() != null) {
+                            System.out.println("        - Artist: " + song.getArtist().toString());
+                        }
                         y++;
                     }
                 }
@@ -177,14 +177,16 @@ public class Collection {
                                     + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
                     i++;
                     for (Song song : album.getSongs()) {
-                        if (likedSongs.checkLiked(song)) {
+                        if (likedSongs.contains(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
                                 + MusicTime.musicTime(song.getDuration()));
-                        System.out.println("        - Artists: " + song.getArtists().toString());
+                        if (song.getArtist() != null) {
+                            System.out.println("        - Artist: " + song.getArtist().toString());
+                        }
                         y++;
                     }
                 }

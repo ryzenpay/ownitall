@@ -28,7 +28,8 @@ public class Local {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
     private static final Logger logger = LogManager.getLogger(Local.class);
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
+    private static Library library = Library.load();
     private File localLibrary;
     private final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     // formats have to be lower case
@@ -115,14 +116,13 @@ public class Local {
      * 
      * @return - LinkedHashSet with constructed Playlist
      */
-    public LinkedHashSet<Playlist> getPlaylists() {
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+    public PlaylistSet getPlaylists() {
+        PlaylistSet playlists = new PlaylistSet();
         for (File file : this.getLibraryFolders()) {
             if (file.isDirectory()) {
                 if (!isAlbum(file)) {
-                    ArrayList<Song> songs = this.getSongs(file);
                     Playlist playlist = new Playlist(file.getName());
-                    playlist.addSongs(songs);
+                    playlist.addSongs(this.getSongs(file));
                     playlists.add(playlist);
                 }
             }
@@ -175,11 +175,10 @@ public class Local {
             AudioHeader audioHeader = audioFile.getAudioHeader();
             Tag tag = audioFile.getTag();
             if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                String songName = tag.getFirst(FieldKey.TITLE);
-                String artistName = tag.getFirst(FieldKey.ARTIST);
-                song = Library.load().getSong(songName, artistName);
+                song = library.getSong(tag.getFirst(FieldKey.TITLE), tag.getFirst(FieldKey.ARTIST));
             } else {
-                song = new Song(file.getName());
+                song = library.getSong(file.getName(), null); // TODO: kinda risky (remove filename extension)
+                // song = new Song(file.getName());
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (InvalidAudioFrameException | TagException e) {
@@ -192,14 +191,8 @@ public class Local {
         return song;
     }
 
-    /**
-     * parsing through library sub folder and construct Song for each file
-     * 
-     * @param folder - library sub folder to check
-     * @return - arraylist of constructed Song
-     */
-    public ArrayList<Song> getSongs(File folder) {
-        ArrayList<Song> songs = new ArrayList<>();
+    public LinkedHashSet<Song> getSongs(File folder) {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         if (folder.isFile() || !folder.exists()) {
             return songs;
         }
@@ -231,7 +224,9 @@ public class Local {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
-                foundAlbum = tag.getFirst(FieldKey.ALBUM);
+                if (tag != null) {
+                    foundAlbum = tag.getFirst(FieldKey.ALBUM);
+                }
             } catch (Exception e) {
                 break;
             }
@@ -245,7 +240,9 @@ public class Local {
                 }
             }
         }
-        if (album == null) {
+        if (album == null)
+
+        {
             return false;
         }
         return true;
@@ -266,7 +263,7 @@ public class Local {
                 if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
                     String albumName = tag.getFirst(FieldKey.ALBUM);
                     String artistName = tag.getFirst(FieldKey.ALBUM);
-                    album = Library.load().getAlbum(albumName, artistName);
+                    album = library.getAlbum(albumName, artistName);
                     return album;
                 }
             } catch (Exception e) {

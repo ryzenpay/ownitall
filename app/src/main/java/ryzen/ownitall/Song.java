@@ -2,19 +2,18 @@ package ryzen.ownitall;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import ryzen.ownitall.tools.Levenshtein;
 
 public class Song {
-    private static Settings settings = Settings.load();
     private String name;
-    private LinkedHashSet<Artist> artists; // the first being the main
+    private Artist artist;
     private Duration duration;
+    private double simularityPercentage;
 
     /**
      * default song constructor
@@ -23,8 +22,24 @@ public class Song {
      */
     public Song(String name) {
         this.name = name;
-        this.artists = new LinkedHashSet<>();
+        this.artist = null;
         this.duration = null;
+        this.simularityPercentage = Settings.load().getSimilarityPercentage();
+    }
+
+    @JsonCreator
+    public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
+            @JsonProperty("duration") Duration duration) {
+        this.name = name;
+        if (artist != null && !artist.isEmpty()) {
+            this.artist = artist;
+        } else {
+            this.artist = null;
+        }
+        if (duration != null) {
+            this.duration = duration;
+        }
+        this.simularityPercentage = Settings.load().getSimilarityPercentage();
     }
 
     /**
@@ -45,51 +60,15 @@ public class Song {
         this.name = name;
     }
 
-    /**
-     * add artist to songs artists
-     * 
-     * @param artist - artist object/string ;)
-     */
-    public void addArtist(Artist artist) {
+    public void setArtist(Artist artist) {
         if (artist == null) {
-            this.artists = new LinkedHashSet<>();
+            return;
         }
-        this.artists.add(artist);
+        this.artist = artist;
     }
 
-    /**
-     * set song artists
-     * 
-     * @param artists - LinkedHashSet of artists
-     */
-    public void addArtists(ArrayList<Artist> artists) {
-        if (this.artists == null) {
-            this.artists = new LinkedHashSet<>();
-        }
-        this.artists.addAll(new LinkedHashSet<Artist>(artists));
-    }
-
-    /**
-     * get all artists on the song
-     * 
-     * @return - arraylist of artists
-     */
-    public ArrayList<Artist> getArtists() {
-        if (this.artists == null) {
-            return new ArrayList<Artist>();
-        }
-        return new ArrayList<>(this.artists);
-    }
-
-    /**
-     * get main artist of song
-     * currently the first artist added
-     * 
-     * @return - constructed Artist
-     */
-    private Artist getMainArtist() {
-        ArrayList<Artist> artists = new ArrayList<>(this.artists);
-        return artists.get(0);
+    public Artist getArtist() {
+        return this.artist;
     }
 
     /**
@@ -123,16 +102,31 @@ public class Song {
         this.duration = duration;
     }
 
+    public void mergeSong(Song song) {
+        if (song == null) {
+            return;
+        }
+        if (song.isEmpty()) {
+            return;
+        }
+        if (this.artist == null && song.artist != null) { // if it has more info, no better way to check
+            this.name = song.name;
+            this.artist = song.artist;
+        }
+    }
+
     @Override
+    @JsonIgnore
     public String toString() {
         String output = this.name;
-        if (!this.artists.isEmpty()) {
-            output += " | " + this.getMainArtist();
+        if (this.artist != null) {
+            output += " | " + this.artist.getName();
         }
         return output;
     }
 
     @Override
+    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -143,17 +137,18 @@ public class Song {
             return true;
         }
         // also checks artists as they have their own "equals" and compare
-        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), settings.getSimilarityPercentage())) {
+        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
             return true;
         }
         return false;
     }
 
     @Override
+    @JsonIgnore
     public int hashCode() {
         int hashCode = name.toLowerCase().hashCode();
-        if (!this.artists.isEmpty()) {
-            hashCode += this.getMainArtist().toString().toLowerCase().hashCode();
+        if (this.artist != null) {
+            hashCode += this.artist.hashCode();
         }
         if (this.duration != null) {
             hashCode += duration.hashCode();
@@ -161,17 +156,11 @@ public class Song {
         return hashCode;
     }
 
-    @JsonCreator
-    public Song(@JsonProperty("name") String name, @JsonProperty("artists") LinkedHashSet<Artist> artists,
-            @JsonProperty("duration") Duration duration) {
-        this.name = name;
-        if (artists != null && !artists.isEmpty()) {
-            this.artists = artists;
-        } else {
-            this.artists = new LinkedHashSet<>();
+    @JsonIgnore
+    public boolean isEmpty() {
+        if (name.isEmpty()) {
+            return true;
         }
-        if (duration != null) {
-            this.duration = duration;
-        }
+        return false;
     }
 }
