@@ -56,6 +56,12 @@ public class Library {
         credentials.setLastFMApiKey(Input.request().getString());
     }
 
+    public void clear() {
+        this.artists = new ArtistSet();
+        this.songs = new SongSet();
+        this.albums = new AlbumSet();
+    }
+
     public Artist getArtist(String artistName) {
         if (artistName == null) {
             return null;
@@ -93,7 +99,7 @@ public class Library {
         }
         Album tmpAlbum = new Album(albumName);
         if (artistName != null) {
-            tmpAlbum.setArtist(new Artist(artistName));
+            tmpAlbum.addArtist(new Artist(artistName));
         }
         if (!settings.useLibrary) {
             return tmpAlbum;
@@ -116,7 +122,7 @@ public class Library {
                 if (albumNode != null) {
                     Album album = new Album(albumNode.path("name").asText());
                     String artist = albumNode.path("artist").asText();
-                    album.setArtist(this.getArtist(artist));
+                    album.addArtist(this.getArtist(artist));
                     this.albums.add(album);
                     return album;
                 }
@@ -269,5 +275,4 @@ public class Library {
                 break;
         }
     }
-
 }

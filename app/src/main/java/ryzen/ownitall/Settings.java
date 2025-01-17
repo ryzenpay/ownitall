@@ -29,6 +29,9 @@ public class Settings extends ryzen.ownitall.tools.Settings {
     protected String likedSongFile = "likedsongs";
     protected String playlistFile = "playlists";
 
+    protected String cacheFolderPath = ".cache";
+    protected String artistFile = "artists";
+    protected String songFile = "songs";
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
      * to prevent having to provide them each time
@@ -207,5 +210,9 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public double getSimilarityPercentage() {
         return similarityPercentage;
+    }
+
+    public String getCacheFolderPath() {
+        return this.cacheFolderPath;
     }
 }

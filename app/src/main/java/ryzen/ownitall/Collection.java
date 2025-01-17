@@ -18,7 +18,7 @@ public class Collection {
     public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
         for (Album album : mergeAlbums) {
             if (this.albums.contains(album)) {
-                this.albums.get(album).mergeAlbum(album);
+                this.albums.get(album).merge(album);
             } else {
                 this.albums.add(album);
             }
@@ -28,7 +28,7 @@ public class Collection {
     public void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
         for (Playlist playlist : playlists) {
             if (this.playlists.contains(playlist)) {
-                this.playlists.get(playlist).mergePlaylist(playlist);
+                this.playlists.get(playlist).merge(playlist);
             } else {
                 this.playlists.add(playlist);
             }
@@ -126,8 +126,8 @@ public class Collection {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
                                     + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
-                    if (album.getArtist() != null) {
-                        System.out.println("    - Artist: " + album.getArtist().toString());
+                    if (album.getArtists() != null) {
+                        System.out.println("    - Artist: " + album.getArtists().toString());
                     }
                     i++;
                 }

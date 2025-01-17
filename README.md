@@ -67,3 +67,17 @@ please fix any of the errors it throws as they show incomplete documentation
 ## Compile new jar file
 to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
 a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  
+
+## Install JRE 11  
+^ needed to run   
+this sums it up: https://stackoverflow.com/questions/52511778/how-to-install-openjdk-11-on-windows  
+download latest jdk: https://openjdk.org/install/  
+extract the contents to:  `C:\Program Files\OpenJDK`   
+    - example: `C:\Program Files\OpenJDK\jdk-22.0.2`
+set home variable to the extracted folder: settings -> system -> about -> advanced -> environment variables -> system variables -> "JAVA_HOME"  
+restart ur console (close and reopen)
+
+## Flight recorder  
+run `./gradlew build`  
+cd into `app/build/classes/java/main/ryzen/ownitall`  
+run `java -XX:+UnlockCommercialFeatures -XX:+FlightRecorder Main`

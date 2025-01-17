@@ -20,4 +20,15 @@ public class SongSet extends LinkedHashSet<Song> {
         }
         return null;
     }
+
+    public Song get(int i) {
+        int x = 0;
+        for (Song thisSong : this) {
+            if (x == i) {
+                return thisSong;
+            }
+            x++;
+        }
+        return null;
+    }
 }

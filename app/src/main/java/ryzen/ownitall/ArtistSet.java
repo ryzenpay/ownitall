@@ -8,11 +8,26 @@ public class ArtistSet extends LinkedHashSet<Artist> {
         super();
     }
 
+    public ArtistSet(LinkedHashSet<Artist> artists) {
+        super(artists);
+    }
+
     public Artist get(Artist artist) {
         for (Artist thisArtist : this) {
             if (thisArtist.equals(artist)) {
                 return thisArtist;
             }
+        }
+        return null;
+    }
+
+    public Artist get(int i) {
+        int x = 0;
+        for (Artist thisArtist : this) {
+            if (x == i) {
+                return thisArtist;
+            }
+            x++;
         }
         return null;
     }

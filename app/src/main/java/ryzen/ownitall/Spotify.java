@@ -2,7 +2,6 @@ package ryzen.ownitall;
 
 //https://developer.spotify.com/documentation/web-api
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.time.temporal.ChronoUnit;
 
@@ -161,8 +160,8 @@ public class Spotify {
             String code = extractCodeFromRequest(request.toString());
             if (code != null) {
                 this.code = code;
-                logger.info("Authorization code received"); // TODO: jframe force window on top
-                                                            // (frame.toFront(); frame.repaint();)
+                logger.info("Authorization code received");
+                // (frame.toFront(); frame.repaint();)
                 sendResponse(clientSocket, 200, "Authorization code received successfully.");
             } else {
                 logger.error("Failed to retrieve authorization code. Request: " + request.toString());

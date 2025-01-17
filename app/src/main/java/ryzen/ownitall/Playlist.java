@@ -55,21 +55,19 @@ public class Playlist {
         this.simularityPercentage = Settings.load().similarityPercentage;
     }
 
-    /**
-     * merge two playlist objects together
-     * 
-     * @param playlist - constructed playlist to merge
-     */
-    public void mergePlaylist(Playlist playlist) {
+    public void merge(Playlist playlist) {
+        if (playlist == null) {
+            return;
+        }
         this.addSongs(playlist.getSongs());
-        if (this.coverArt == null) {
-            this.coverArt = playlist.getCoverArt();
+        if (this.getCoverArt() == null && playlist.getCoverArt() != null) {
+            this.setCoverArt(playlist.getCoverArt());
         }
         if (playlist.getYoutubePageToken() != null) {
-            this.youtubePageToken = playlist.getYoutubePageToken();
+            this.setYoutubePageToken(playlist.getYoutubePageToken());
         }
-        if (playlist.getSpotifyPageOffset() > this.spotifyPageOffset) {
-            this.spotifyPageOffset = playlist.getSpotifyPageOffset();
+        if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
+            this.setSpotifyPageOffset(playlist.getSpotifyPageOffset());
         }
     }
 
@@ -96,6 +94,13 @@ public class Playlist {
         } catch (URISyntaxException e) {
             logger.error("Error parsing playlist cover image: " + coverArt);
         }
+    }
+
+    public void setCoverArt(URI coverArt) {
+        if (coverArt == null) {
+            return;
+        }
+        this.coverArt = coverArt;
     }
 
     /**
@@ -189,7 +194,7 @@ public class Playlist {
     @Override
     @JsonIgnore
     public String toString() {
-        return this.name;
+        return this.name.toString();
     }
 
     @Override

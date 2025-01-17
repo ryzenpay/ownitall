@@ -58,4 +58,6 @@ public class Tools {
     private void optionUnArchive() {
         Sync.load().unArchive();
     }
+
+    // TODO: when library caching implemented, add option to clear cache
 }
