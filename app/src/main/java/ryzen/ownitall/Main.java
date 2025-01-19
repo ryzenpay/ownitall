@@ -51,6 +51,7 @@ public class Main {
     }
 
     private static void optionImport() {
+        // TODO: import soundcloud, apple music?
         Import dataImport = new Import();
         collection.mergeCollection(dataImport.getCollection());
     }

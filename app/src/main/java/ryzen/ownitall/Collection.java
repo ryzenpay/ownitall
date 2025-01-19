@@ -2,9 +2,14 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashSet;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.MusicTime;
 
 public class Collection {
+    private static final Logger logger = LogManager.getLogger(Collection.class);
     private LikedSongs likedSongs;
     private PlaylistSet playlists;
     private AlbumSet albums;
@@ -40,9 +45,16 @@ public class Collection {
     }
 
     public void mergeCollection(Collection collection) {
+        logger.info("Updating Music Collection");
+        ProgressBar pb = Main.progressBar("Youtube Import", 3);
+        pb.setExtraMessage("Albums");
         this.mergeAlbums(collection.getAlbums());
+        pb.setExtraMessage("Playlists").step();
         this.mergePlaylists(collection.getPlaylists());
+        pb.setExtraMessage("Liked Songs").step();
         this.mergeLikedSongs(collection.getLikedSongs());
+        pb.setExtraMessage("Done").step();
+        pb.close();
     }
 
     public LikedSongs getLikedSongs() {
