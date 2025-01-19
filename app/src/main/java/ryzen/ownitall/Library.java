@@ -27,7 +27,6 @@ public class Library {
 
     /**
      * arrays to save api queries if they already exist
-     * TODO: dump them and reload to save API queries (cache)
      */
     private ArtistSet artists;
     private SongSet songs;
@@ -44,10 +43,18 @@ public class Library {
         if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             setCredentials();
         }
+        Sync sync = Sync.load();
         this.objectMapper = new ObjectMapper();
-        this.artists = new ArtistSet();
-        this.songs = new SongSet();
-        this.albums = new AlbumSet();
+        this.artists = sync.cacheArtists(new ArtistSet());
+        this.songs = sync.cacheSongs(new SongSet());
+        this.albums = sync.cacheAlbums(new AlbumSet());
+    }
+
+    public void save() {
+        Sync sync = Sync.load();
+        sync.cacheAlbums(this.albums);
+        sync.cacheSongs(this.songs);
+        sync.cacheArtists(this.artists);
     }
 
     public static void setCredentials() {
@@ -89,7 +96,7 @@ public class Library {
                 logger.error("Error parsing json while getting artist " + artistName + ": " + e);
             }
         }
-        logger.info("Could not find artist " + artistName + " in Library");
+        logger.info("Could not find artist '" + artistName + "' in Library");
         return tmpArtist;
     }
 
@@ -130,7 +137,7 @@ public class Library {
                 logger.error("Error parsing json while getting album " + albumName + ": " + e);
             }
         }
-        logger.info("Could not find Album " + albumName + " in Library");
+        logger.info("Could not find Album '" + albumName + "' in Library");
         return tmpAlbum;
     }
 
@@ -179,7 +186,7 @@ public class Library {
                 logger.error("Error parshing json while getting song " + songName + ": " + e);
             }
         }
-        logger.info("Could not find song " + songName + " in Library");
+        logger.info("Could not find song '" + songName + "' in Library");
         return tmpSong;
     }
 

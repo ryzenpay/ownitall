@@ -24,9 +24,7 @@ public class Sync {
     private static Settings settings = Settings.load();
     private static Sync instance;
     private File dataFolder;
-    private File albumFile;
-    private File playlistFile;
-    private File likedSongsFile;
+    private File cacheFolder;
     ObjectMapper objectMapper;
 
     /**
@@ -35,10 +33,9 @@ public class Sync {
      */
     public Sync() {
         this.dataFolder = new File(settings.getDataFolderPath());
+        this.cacheFolder = new File(settings.getCacheFolderPath());
         this.setDataFolder();
-        this.albumFile = new File(this.dataFolder, settings.getAlbumFile() + ".json");
-        this.playlistFile = new File(this.dataFolder, settings.getPlaylistFile() + ".json");
-        this.likedSongsFile = new File(this.dataFolder, settings.getLikedSongFile() + ".json");
+        this.setCacheFolder();
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
@@ -58,6 +55,12 @@ public class Sync {
     private void setDataFolder() {
         if (!this.dataFolder.exists()) { // create folder if it does not exist
             this.dataFolder.mkdirs();
+        }
+    }
+
+    private void setCacheFolder() {
+        if (!this.cacheFolder.exists()) {
+            this.cacheFolder.mkdirs();
         }
     }
 
@@ -188,8 +191,9 @@ public class Sync {
      */
     public void exportAlbums(LinkedHashSet<Album> albums) {
         this.setDataFolder();
+        File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
         try {
-            this.objectMapper.writeValue(this.albumFile, albums);
+            this.objectMapper.writeValue(albumFile, albums);
         } catch (IOException e) {
             logger.error("Error saving albums: " + e);
         }
@@ -202,18 +206,19 @@ public class Sync {
      */
     public LinkedHashSet<Album> importAlbums() {
         this.setDataFolder();
+        File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
         LinkedHashSet<Album> albums;
         if (!albumFile.exists()) {
             return null;
         }
         try {
-            albums = this.objectMapper.readValue(this.albumFile,
+            albums = this.objectMapper.readValue(albumFile,
                     new TypeReference<LinkedHashSet<Album>>() {
                     });
 
         } catch (IOException e) {
             logger.error("Error importing albums: " + e);
-            logger.info("If this persists, delete the file:" + this.albumFile.getAbsolutePath());
+            logger.info("If this persists, delete the file:" + albumFile.getAbsolutePath());
             return null;
         }
         return albums;
@@ -226,8 +231,9 @@ public class Sync {
      */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
         this.setDataFolder();
+        File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
         try {
-            this.objectMapper.writeValue(this.playlistFile, playlists);
+            this.objectMapper.writeValue(playlistFile, playlists);
         } catch (IOException e) {
             logger.error("Error saving playlists: " + e);
         }
@@ -240,18 +246,19 @@ public class Sync {
      */
     public LinkedHashSet<Playlist> importPlaylists() {
         this.setDataFolder();
+        File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
         LinkedHashSet<Playlist> playlists;
         if (!playlistFile.exists()) {
             return null;
         }
         try {
-            playlists = this.objectMapper.readValue(this.playlistFile,
+            playlists = this.objectMapper.readValue(playlistFile,
                     new TypeReference<LinkedHashSet<Playlist>>() {
                     });
 
         } catch (IOException e) {
             logger.error("Error importing playlists: " + e);
-            logger.info("If this persists, delete the file:" + this.playlistFile.getAbsolutePath());
+            logger.info("If this persists, delete the file:" + playlistFile.getAbsolutePath());
             return null;
         }
         return playlists;
@@ -264,8 +271,9 @@ public class Sync {
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
         this.setDataFolder();
+        File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
         try {
-            this.objectMapper.writeValue(this.likedSongsFile, likedSongs);
+            this.objectMapper.writeValue(likedSongFile, likedSongs);
         } catch (IOException e) {
             logger.error("Error saving liked songs: " + e);
         }
@@ -278,19 +286,83 @@ public class Sync {
      */
     public LikedSongs importLikedSongs() {
         this.setDataFolder();
+        File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
         LikedSongs likedSongs;
-        if (!likedSongsFile.exists()) {
+        if (!likedSongFile.exists()) {
             return null;
         }
         try {
-            likedSongs = this.objectMapper.readValue(this.likedSongsFile,
+            likedSongs = this.objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
 
         } catch (IOException e) {
             logger.error("Error importing liked songs: " + e);
-            logger.info("If this persists, delete the file:" + this.likedSongsFile.getAbsolutePath());
+            logger.info("If this persists, delete the file:" + likedSongFile.getAbsolutePath());
             return null;
         }
         return likedSongs;
+    }
+
+    public ArtistSet cacheArtists(ArtistSet artists) {
+        this.setCacheFolder();
+        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
+        ArtistSet cachedArtists = new ArtistSet();
+        if (artistFile.exists()) {
+            try {
+                cachedArtists = this.objectMapper.readValue(artistFile, ArtistSet.class);
+            } catch (IOException e) {
+                logger.error("Error importing Library Artists: " + e);
+                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
+            }
+        }
+        cachedArtists.addAll(artists);
+        try {
+            this.objectMapper.writeValue(artistFile, cachedArtists);
+        } catch (IOException e) {
+            logger.error("Error exporting Library Artists: " + e);
+        }
+        return cachedArtists;
+    }
+
+    public SongSet cacheSongs(SongSet songs) {
+        this.setCacheFolder();
+        File songFile = new File(this.cacheFolder, settings.songFile + ".json");
+        SongSet cachedSongs = new SongSet();
+        if (songFile.exists()) {
+            try {
+                cachedSongs = this.objectMapper.readValue(songFile, SongSet.class);
+            } catch (IOException e) {
+                logger.error("Error importing Library Songs: " + e);
+                logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
+            }
+        }
+        cachedSongs.addAll(songs);
+        try {
+            this.objectMapper.writeValue(songFile, cachedSongs);
+        } catch (IOException e) {
+            logger.error("Error exporting Library Songs: " + e);
+        }
+        return cachedSongs;
+    }
+
+    public AlbumSet cacheAlbums(AlbumSet albums) {
+        this.setCacheFolder();
+        File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
+        AlbumSet cachedAlbums = new AlbumSet();
+        if (albumFile.exists()) {
+            try {
+                cachedAlbums = this.objectMapper.readValue(albumFile, AlbumSet.class);
+            } catch (IOException e) {
+                logger.error("Error importing Library Albums: " + e);
+                logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());
+            }
+        }
+        cachedAlbums.addAll(albums);
+        try {
+            this.objectMapper.writeValue(albumFile, cachedAlbums);
+        } catch (IOException e) {
+            logger.error("Error exporting Library Albums: " + e);
+        }
+        return cachedAlbums;
     }
 }

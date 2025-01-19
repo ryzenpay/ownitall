@@ -19,8 +19,7 @@ public class Main {
 
     public static void main(String[] args) {
         // incase cntrl c is pressed, still save data
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::exit)); // TODO: make functions default return and remove
-                                                                      // this one
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::exit));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (Sync.load().checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
@@ -37,11 +36,16 @@ public class Main {
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-            if (choice.equals("Exit")) {
-                break;
-            } else {
-                options.get(choice).run();
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
+            } catch (Exception e) {
+                System.out.println("Interrupted: " + e);
+                exit();
             }
         }
     }
@@ -67,7 +71,10 @@ public class Main {
         try {
             settings.saveSettings();
             if (settings.saveCredentials) {
-                Credentials.load().saveCredentials();
+                Credentials.load().save();
+            }
+            if (settings.useLibrary) {
+                Library.load().save();
             }
         } catch (Exception e) {
             logger.error(e);

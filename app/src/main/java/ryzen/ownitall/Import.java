@@ -32,8 +32,7 @@ public class Import {
         options.put("Spotify", this::importSpotify);
         options.put("Local", this::importLocal);
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "IMPORT"); // TODO: add shutdownhook handling (pressing
-                                                                         // cntr c)
+            String choice = Menu.optionMenu(options.keySet(), "IMPORT");
             if (choice.equals("Exit")) {
                 break;
             } else {

@@ -54,7 +54,7 @@ public class Credentials extends ryzen.ownitall.tools.Settings {
         return instance;
     }
 
-    public void saveCredentials() {
+    public void save() {
         try {
             super.saveSettings(credentialsFilePath);
         } catch (Exception e) {

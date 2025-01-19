@@ -38,7 +38,7 @@ public class Local {
      * default local constructor asking for library path
      */
     public Local() {
-        System.out.println("Provide absolute path to local music library (folder): ");
+        System.out.print("Provide absolute path to local music library (folder): ");
         this.localLibrary = Input.request().getFile();
     }
 
@@ -170,6 +170,7 @@ public class Local {
      */
     public Song getSong(File file) {
         Song song;
+        String fileName = file.getName().substring(0, file.getName().length() - 4);
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             AudioHeader audioHeader = audioFile.getAudioHeader();
@@ -177,16 +178,17 @@ public class Local {
             if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
                 song = library.getSong(tag.getFirst(FieldKey.TITLE), tag.getFirst(FieldKey.ARTIST));
             } else {
-                song = library.getSong(file.getName(), null); // TODO: kinda risky (remove filename extension)
+
+                song = library.getSong(fileName, null);
                 // song = new Song(file.getName());
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-            song = new Song(file.getName());
+            song = new Song(fileName);
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {
             logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
-            song = new Song(file.getName());
+            song = new Song(fileName);
         }
         return song;
     }
