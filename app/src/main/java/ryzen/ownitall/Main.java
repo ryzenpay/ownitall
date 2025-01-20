@@ -38,9 +38,9 @@ public class Main {
             try {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
+                    optionSave();
                     System.out.println("Exiting program. Goodbye!");
                     logger.info("Exiting program...");
-                    // no need to save due to the shutdownhook handler
                     break;
                 } else {
                     options.get(choice).run();

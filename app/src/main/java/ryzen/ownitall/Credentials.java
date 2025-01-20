@@ -41,6 +41,13 @@ public class Credentials extends ryzen.ownitall.tools.Settings {
      */
     protected String lastFMApiKey = "";
 
+    /**
+     * soundcloud credentials
+     * 
+     */
+    protected String soundCloudClientId = "";
+    protected String soundCloudClientSecret = "";
+
     @JsonIgnore
     public static Credentials load() {
         if (instance == null) {
@@ -147,6 +154,22 @@ public class Credentials extends ryzen.ownitall.tools.Settings {
         this.lastFMApiKey = lastFMApiKey;
     }
 
+    public String getSoundCloudClientId() {
+        return this.soundCloudClientId;
+    }
+
+    public void setSoundCloudClientId(String clientId) {
+        this.soundCloudClientId = clientId;
+    }
+
+    public String getSoundCloudClientSecret() {
+        return this.soundCloudClientSecret;
+    }
+
+    public void setSoundCloudClientSecret(String clientSecret) {
+        this.soundCloudClientSecret = clientSecret;
+    }
+
     /**
      * check if youtube credentials empty (if successfully initialized)
      * 
@@ -188,4 +211,11 @@ public class Credentials extends ryzen.ownitall.tools.Settings {
         return false;
     }
 
+    @JsonIgnore
+    public boolean soundCloudIsEmpty() {
+        if (this.soundCloudClientId.isEmpty() || this.soundCloudClientSecret.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

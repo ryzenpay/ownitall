@@ -51,7 +51,7 @@ public class Youtube {
         this.youtubeApi = this.getService();
     }
 
-    public void setCredentials() {
+    private void setCredentials() {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Enter youtube application name: ");
         credentials.setYoutubeApplicationName(Input.request().getString());
@@ -66,21 +66,17 @@ public class Youtube {
      *
      * @return an authorized API client service
      */
-    public com.google.api.services.youtube.YouTube getService() {
+    private com.google.api.services.youtube.YouTube getService() {
         try {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
-            return new com.google.api.services.youtube.YouTube.Builder(httpTransport, this.getJsonFactory(), credential)
+            return new com.google.api.services.youtube.YouTube.Builder(httpTransport, this.JSON_FACTORY, credential)
                     .setApplicationName(credentials.getYoutubeApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Error logging in with youtube api: " + e);
             return null;
         }
-    }
-
-    public JsonFactory getJsonFactory() {
-        return this.JSON_FACTORY;
     }
 
     /**
@@ -90,10 +86,10 @@ public class Youtube {
      * @return an authorized Credential object.
      * @throws IOException - standard IOException
      */
-    public Credential authorize(final NetHttpTransport httpTransport) throws IOException { // TODO: jframe force window
-                                                                                           // on top
-                                                                                           // (frame.toFront();
-                                                                                           // frame.repaint();)
+    private Credential authorize(final NetHttpTransport httpTransport) throws IOException { // TODO: jframe force window
+                                                                                            // on top
+                                                                                            // (frame.toFront();
+                                                                                            // frame.repaint();)
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()

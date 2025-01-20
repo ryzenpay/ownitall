@@ -66,7 +66,7 @@ public class Spotify {
         this.setToken();
     }
 
-    public void setCredentials() {
+    private void setCredentials() {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Please provide your client id: ");
         credentials.setSpotifyClientId(Input.request().getString());

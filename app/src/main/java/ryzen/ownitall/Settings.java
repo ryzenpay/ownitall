@@ -61,6 +61,13 @@ public class Settings extends ryzen.ownitall.tools.Settings {
     protected Long youtubePlaylistLimit = 20L;
 
     /**
+     * to limit number of songs in each soundcloud API batch query
+     */
+    protected int soundCloudSongLimit = 50;
+    protected int soundCloudAlbumLimit = 20;
+    protected int soundCloudPlaylistLimit = 20;
+
+    /**
      * similarity percentage used to check if artists, songs, albums or playlists
      * are equals (to merge or not)
      */
@@ -211,5 +218,25 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public String getCacheFolderPath() {
         return this.cacheFolderPath;
+    }
+
+    public String getArtistFile() {
+        return artistFile;
+    }
+
+    public String getSongFile() {
+        return songFile;
+    }
+
+    public int getSoundCloudSongLimit() {
+        return soundCloudSongLimit;
+    }
+
+    public int getSoundCloudAlbumLimit() {
+        return soundCloudAlbumLimit;
+    }
+
+    public int getSoundCloudPlaylistLimit() {
+        return soundCloudPlaylistLimit;
     }
 }
