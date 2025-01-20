@@ -79,6 +79,21 @@ public class Settings extends ryzen.ownitall.tools.Settings {
      */
     protected boolean useLibrary = true;
 
+    /**
+     * youtube dl installation path
+     * 
+     */
+    protected String youtubedlPath = "";
+    /**
+     * download path of where to put downloaded music
+     */
+    protected String downloadPath = "";
+    /**
+     * format of music to download
+     * current supported: "mp3", "flac", "wav"
+     */
+    protected String downloadFormat = "mp3";
+
     @JsonIgnore
     public static Settings load() {
         if (instance == null) {
@@ -238,5 +253,29 @@ public class Settings extends ryzen.ownitall.tools.Settings {
 
     public int getSoundCloudPlaylistLimit() {
         return soundCloudPlaylistLimit;
+    }
+
+    public String getYoutubedlPath() {
+        return youtubedlPath;
+    }
+
+    public void setYoutubedlPath(String path) {
+        this.youtubedlPath = path;
+    }
+
+    public String getDownloadPath() {
+        return downloadPath;
+    }
+
+    public void setDownloadPath(String path) {
+        this.downloadPath = path;
+    }
+
+    public String getDownloadFormat() {
+        return downloadFormat;
+    }
+
+    public void setDownloadFormat(String format) {
+        this.downloadFormat = format;
     }
 }

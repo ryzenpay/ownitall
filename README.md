@@ -9,6 +9,10 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 # documentation
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
+## YoutubeDL  
+install youtubedl from the official repository: https://github.com/ytdl-org/youtube-dl  
+save the executable path and provide it when needed  
+
 ## LastFM  
 to get the best data possible, everything is checked with lastFM  
 to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  

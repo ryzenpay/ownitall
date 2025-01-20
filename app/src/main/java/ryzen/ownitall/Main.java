@@ -58,8 +58,7 @@ public class Main {
     }
 
     private static void optionExport() {
-        System.out.println("Export currently not supported");
-        // TODO: Implement export functionality
+        new Export(collection);
     }
 
     private static void optionInventory() {
