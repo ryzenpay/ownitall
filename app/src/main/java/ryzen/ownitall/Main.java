@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String[] args) {
         // incase cntrl c is pressed, still save data
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::exit));
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (Sync.load().checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
@@ -39,13 +39,15 @@ public class Main {
             try {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
+                    System.out.println("Exiting program. Goodbye!");
+                    logger.info("Exiting program...");
+                    // no need to save due to the shutdownhook handler
                     break;
                 } else {
                     options.get(choice).run();
                 }
             } catch (Exception e) {
                 System.out.println("Interrupted: " + e);
-                exit();
             }
         }
     }
@@ -92,12 +94,6 @@ public class Main {
         } catch (Exception e) {
             logger.error(e);
         }
-    }
-
-    private static void exit() {
-        optionSave();
-        System.out.println("Exiting program. Goodbye!");
-        logger.info("Exiting program...");
     }
 
     public static ProgressBar progressBar(String title, int maxStep) {

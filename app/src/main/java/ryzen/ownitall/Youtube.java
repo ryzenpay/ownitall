@@ -116,6 +116,9 @@ public class Youtube {
     public LikedSongs getLikedSongs() {
         LikedSongs songs = new LikedSongs();
         String pageToken = null;
+        if (youtubeApi == null) {
+            return songs;
+        }
         try {
             do {
                 YouTube.Videos.List request = youtubeApi.videos()
@@ -155,6 +158,9 @@ public class Youtube {
      */
     public LinkedHashSet<Album> getAlbums() { // currently not supported (no youtube music API)
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
+        if (youtubeApi == null) {
+            return albums;
+        }
         return albums;
     }
 
@@ -168,6 +174,9 @@ public class Youtube {
     public LinkedHashSet<Playlist> getPlaylists() {
         LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         String nextPageToken = null;
+        if (youtubeApi == null) {
+            return playlists;
+        }
         try {
             do {
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()

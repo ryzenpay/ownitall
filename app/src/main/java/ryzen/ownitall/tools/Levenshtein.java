@@ -1,56 +1,62 @@
 package ryzen.ownitall.tools;
 
-//https://www.geeksforgeeks.org/java-program-to-implement-levenshtein-distance-computing-algorithm/
-
-import java.util.Arrays;
-
 public class Levenshtein {
+    private static final int[][] dp = new int[1000][1000]; // Preallocate matrix
 
-    // Computes the Levenshtein distance between two strings
     public static int computeDistance(String str1, String str2) {
-        int[][] dp = new int[str1.length() + 1][str2.length() + 1];
+        int m = str1.length();
+        int n = str2.length();
 
-        for (int i = 0; i <= str1.length(); i++) {
-            for (int j = 0; j <= str2.length(); j++) {
-                if (i == 0) {
-                    dp[i][j] = j;
-                } else if (j == 0) {
-                    dp[i][j] = i;
-                } else {
-                    dp[i][j] = minmEdits(dp[i - 1][j - 1] + numOfReplacement(str1.charAt(i - 1), str2.charAt(j - 1)),
-                            dp[i - 1][j] + 1,
-                            dp[i][j - 1] + 1);
-                }
+        if (m > dp.length || n > dp[0].length) {
+            return computeDistanceLarge(str1, str2);
+        }
+
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 1; j <= n; j++) {
+            dp[0][j] = j;
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1),
+                        dp[i - 1][j - 1] + (str1.charAt(i - 1) == str2.charAt(j - 1) ? 0 : 1));
             }
         }
 
-        return dp[str1.length()][str2.length()];
+        return dp[m][n];
     }
 
-    // Calculates the similarity percentage based on Levenshtein distance
+    private static int computeDistanceLarge(String str1, String str2) {
+        int[] prev = new int[str2.length() + 1];
+        int[] curr = new int[str2.length() + 1];
+
+        for (int j = 0; j <= str2.length(); j++) {
+            prev[j] = j;
+        }
+
+        for (int i = 1; i <= str1.length(); i++) {
+            curr[0] = i;
+            for (int j = 1; j <= str2.length(); j++) {
+                curr[j] = Math.min(Math.min(prev[j] + 1, curr[j - 1] + 1),
+                        prev[j - 1] + (str1.charAt(i - 1) == str2.charAt(j - 1) ? 0 : 1));
+            }
+            int[] temp = prev;
+            prev = curr;
+            curr = temp;
+        }
+
+        return prev[str2.length()];
+    }
+
     public static double computeSimilarity(String str1, String str2) {
         int distance = computeDistance(str1, str2);
         int maxLength = Math.max(str1.length(), str2.length());
-        if (maxLength == 0)
-            return 100.0; // Both strings are empty
-        return (1.0 - (double) distance / maxLength) * 100;
+        return maxLength == 0 ? 100.0 : (1.0 - (double) distance / maxLength) * 100;
     }
 
-    public static boolean computeSimilarityCheck(String str1, String str2, double wantedSimularity) {
-        double simularity = computeSimilarity(str1, str2);
-        if (simularity >= wantedSimularity) {
-            return true;
-        }
-        return false;
-    }
-
-    // Determines if replacement is needed
-    private static int numOfReplacement(char c1, char c2) {
-        return c1 == c2 ? 0 : 1;
-    }
-
-    // Returns the minimum value among given numbers
-    private static int minmEdits(int... nums) {
-        return Arrays.stream(nums).min().orElse(Integer.MAX_VALUE);
+    public static boolean computeSimilarityCheck(String str1, String str2, double wantedSimilarity) {
+        return computeSimilarity(str1, str2) >= wantedSimilarity;
     }
 }

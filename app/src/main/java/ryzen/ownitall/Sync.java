@@ -72,12 +72,7 @@ public class Sync {
     public boolean checkDataFolder() {
         File dataFolder = new File(settings.getDataFolderPath());
         if (dataFolder.exists() && dataFolder.isDirectory()) {
-            File albumFile = new File(settings.getDataFolderPath(), settings.getAlbumFile() + ".json");
-            File playlistFile = new File(settings.getDataFolderPath(), settings.getPlaylistFile() + ".json");
-            File likedSongsFile = new File(settings.getDataFolderPath(), settings.getLikedSongFile() + ".json");
-            if (albumFile.exists() && playlistFile.exists() && likedSongsFile.exists()) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -303,13 +298,14 @@ public class Sync {
         return likedSongs;
     }
 
-    public ArtistSet cacheArtists(ArtistSet artists) {
+    public LinkedHashSet<Artist> cacheArtists(LinkedHashSet<Artist> artists) {
         this.setCacheFolder();
         File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
-        ArtistSet cachedArtists = new ArtistSet();
+        LinkedHashSet<Artist> cachedArtists = new LinkedHashSet<>();
         if (artistFile.exists()) {
             try {
-                cachedArtists = this.objectMapper.readValue(artistFile, ArtistSet.class);
+                cachedArtists = this.objectMapper.readValue(artistFile, new TypeReference<LinkedHashSet<Artist>>() {
+                });
             } catch (IOException e) {
                 logger.error("Error importing Library Artists: " + e);
                 logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
@@ -324,13 +320,14 @@ public class Sync {
         return cachedArtists;
     }
 
-    public SongSet cacheSongs(SongSet songs) {
+    public LinkedHashSet<Song> cacheSongs(LinkedHashSet<Song> songs) {
         this.setCacheFolder();
         File songFile = new File(this.cacheFolder, settings.songFile + ".json");
-        SongSet cachedSongs = new SongSet();
+        LinkedHashSet<Song> cachedSongs = new LinkedHashSet<>();
         if (songFile.exists()) {
             try {
-                cachedSongs = this.objectMapper.readValue(songFile, SongSet.class);
+                cachedSongs = this.objectMapper.readValue(songFile, new TypeReference<LinkedHashSet<Song>>() {
+                });
             } catch (IOException e) {
                 logger.error("Error importing Library Songs: " + e);
                 logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
@@ -345,13 +342,14 @@ public class Sync {
         return cachedSongs;
     }
 
-    public AlbumSet cacheAlbums(AlbumSet albums) {
+    public LinkedHashSet<Album> cacheAlbums(LinkedHashSet<Album> albums) {
         this.setCacheFolder();
         File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
-        AlbumSet cachedAlbums = new AlbumSet();
+        LinkedHashSet<Album> cachedAlbums = new LinkedHashSet<>();
         if (albumFile.exists()) {
             try {
-                cachedAlbums = this.objectMapper.readValue(albumFile, AlbumSet.class);
+                cachedAlbums = this.objectMapper.readValue(albumFile, new TypeReference<LinkedHashSet<Album>>() {
+                });
             } catch (IOException e) {
                 logger.error("Error importing Library Albums: " + e);
                 logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());

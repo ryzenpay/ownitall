@@ -116,14 +116,16 @@ public class Local {
      * 
      * @return - LinkedHashSet with constructed Playlist
      */
-    public PlaylistSet getPlaylists() {
-        PlaylistSet playlists = new PlaylistSet();
+    public LinkedHashSet<Playlist> getPlaylists() {
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         for (File file : this.getLibraryFolders()) {
             if (file.isDirectory()) {
                 if (!isAlbum(file)) {
                     Playlist playlist = new Playlist(file.getName());
                     playlist.addSongs(this.getSongs(file));
-                    playlists.add(playlist);
+                    if (!playlist.isEmpty()) {
+                        playlists.add(playlist);
+                    }
                 }
             }
         }
@@ -143,7 +145,9 @@ public class Local {
                 if (isAlbum(file)) {
                     Album album = this.getAlbum(file);
                     album.addSongs(this.getSongs(file));
-                    albums.add(album);
+                    if (!album.isEmpty()) {
+                        albums.add(album);
+                    }
                 }
             }
         }
@@ -214,40 +218,40 @@ public class Local {
      * @return - true if album, false if playlist
      */
     public boolean isAlbum(File folder) {
+        if (!folder.isDirectory() || folder.list().length <= 1) {
+            return false;
+        }
         String album = null;
-        if (folder.isFile() || !folder.exists()) {
+        boolean foundAnyAlbum = false;
+        File[] files = folder.listFiles((dir, name) -> extensions.contains(getExtension(new File(name))));
+        if (files == null || files.length <= 1) {
             return false;
         }
-        if (folder.list().length <= 1) { // empty or a single
-            return false;
-        }
-        for (File file : folder.listFiles()) {
-            String foundAlbum = "";
+        for (File file : files) {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
                 if (tag != null) {
-                    foundAlbum = tag.getFirst(FieldKey.ALBUM);
-                }
-            } catch (Exception e) {
-                break;
-            }
-            if (!foundAlbum.isEmpty()) {
-                if (album == null) {
-                    album = foundAlbum;
-                } else {
-                    if (!album.equals(foundAlbum)) {
+                    String foundAlbum = tag.getFirst(FieldKey.ALBUM);
+                    if (!foundAlbum.isEmpty()) {
+                        foundAnyAlbum = true;
+                        if (album == null) {
+                            album = foundAlbum;
+                        } else if (!album.equals(foundAlbum)) {
+                            return false;
+                        }
+                    } else if (foundAnyAlbum) {
                         return false;
                     }
+                } else if (foundAnyAlbum) {
+                    return false;
                 }
+            } catch (Exception e) {
+                logger.error("Error checking folder if album: " + e);
+                return false;
             }
         }
-        if (album == null)
-
-        {
-            return false;
-        }
-        return true;
+        return foundAnyAlbum;
     }
 
     /**
@@ -258,21 +262,24 @@ public class Local {
      */
     public Album getAlbum(File folder) {
         Album album;
-        for (File file : folder.listFiles()) {
-            try {
-                AudioFile audioFile = AudioFileIO.read(file);
-                Tag tag = audioFile.getTag();
-                if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-                    String albumName = tag.getFirst(FieldKey.ALBUM);
-                    String artistName = tag.getFirst(FieldKey.ALBUM);
-                    album = library.getAlbum(albumName, artistName);
-                    return album;
-                }
-            } catch (Exception e) {
-                break;
+        String albumName = null;
+        String artistName = null;
+        File albumSong = folder.listFiles()[0];
+        try {
+            AudioFile audioFile = AudioFileIO.read(albumSong);
+            Tag tag = audioFile.getTag();
+            if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
+                albumName = tag.getFirst(FieldKey.ALBUM);
+                artistName = tag.getFirst(FieldKey.ALBUM);
             }
+        } catch (Exception e) {
+            logger.error("Error parsing album: " + e);
         }
-        album = new Album(folder.getName()); // default to foldername
+        if (albumName != null) {
+            album = library.getAlbum(albumName, artistName);
+        } else {
+            album = library.getAlbum(folder.getName(), artistName);
+        }
         return album;
     }
 }

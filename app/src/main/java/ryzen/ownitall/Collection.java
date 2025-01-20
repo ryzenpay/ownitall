@@ -11,19 +11,22 @@ import ryzen.ownitall.tools.MusicTime;
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
     private LikedSongs likedSongs;
-    private PlaylistSet playlists;
-    private AlbumSet albums;
+    private LinkedHashSet<Playlist> playlists;
+    private LinkedHashSet<Album> albums;
 
     public Collection() {
         this.likedSongs = new LikedSongs();
-        this.playlists = new PlaylistSet();
-        this.albums = new AlbumSet();
+        this.playlists = new LinkedHashSet<>();
+        this.albums = new LinkedHashSet<>();
     }
 
     public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
+        if (mergeAlbums == null || mergeAlbums.isEmpty()) {
+            return;
+        }
         for (Album album : mergeAlbums) {
             if (this.albums.contains(album)) {
-                this.albums.get(album).merge(album);
+                this.getAlbum(album).merge(album);
             } else {
                 this.albums.add(album);
             }
@@ -31,9 +34,12 @@ public class Collection {
     }
 
     public void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
-        for (Playlist playlist : playlists) {
+        if (mergePlaylists == null || mergePlaylists.isEmpty()) {
+            return;
+        }
+        for (Playlist playlist : mergePlaylists) {
             if (this.playlists.contains(playlist)) {
-                this.playlists.get(playlist).merge(playlist);
+                this.getPlaylist(playlist).merge(playlist);
             } else {
                 this.playlists.add(playlist);
             }
@@ -41,12 +47,15 @@ public class Collection {
     }
 
     public void mergeLikedSongs(LikedSongs mergeLikedSongs) {
+        if (mergeLikedSongs == null || mergeLikedSongs.isEmpty()) {
+            return;
+        }
         this.likedSongs.addSongs(mergeLikedSongs.getSongs()); // handled by playlist addSongs
     }
 
     public void mergeCollection(Collection collection) {
         logger.info("Updating Music Collection");
-        ProgressBar pb = Main.progressBar("Youtube Import", 3);
+        ProgressBar pb = Main.progressBar("Update Collection", 3);
         pb.setExtraMessage("Albums");
         this.mergeAlbums(collection.getAlbums());
         pb.setExtraMessage("Playlists").step();
@@ -86,11 +95,29 @@ public class Collection {
     }
 
     public LinkedHashSet<Album> getAlbums() {
-        return this.albums;
+        return new LinkedHashSet<>(this.albums);
+    }
+
+    public Album getAlbum(Album album) {
+        for (Album thisAlbum : this.albums) {
+            if (thisAlbum.equals(album)) {
+                return thisAlbum;
+            }
+        }
+        return null;
     }
 
     public LinkedHashSet<Playlist> getPlaylists() {
-        return this.playlists;
+        return new LinkedHashSet<>(this.playlists);
+    }
+
+    public Playlist getPlaylist(Playlist playlist) {
+        for (Playlist thisPlaylist : this.playlists) {
+            if (thisPlaylist.equals(playlist)) {
+                return thisPlaylist;
+            }
+        }
+        return null;
     }
 
     /**
@@ -108,7 +135,7 @@ public class Collection {
         for (Album album : this.albums) {
             albumTrackCount += album.size();
         }
-        int trackCount = this.getTrackCount();
+        int trackCount = this.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
         int i = 1;
         int y = 1;
         switch (recursion) {
@@ -207,16 +234,5 @@ public class Collection {
                 System.err.println("Invalid recursion option.");
                 break;
         }
-    }
-
-    public int getTrackCount() {
-        int trackCount = 0;
-        for (Playlist playlist : this.playlists) {
-            trackCount += playlist.size();
-        }
-        for (Album album : this.albums) {
-            trackCount += album.size();
-        }
-        return this.getStandaloneLikedSongs().size() + trackCount;
     }
 }

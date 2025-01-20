@@ -49,11 +49,11 @@ public class Import {
         logger.info("Importing youtube music");
         ProgressBar pb = Main.progressBar("Youtube Import", 3);
         pb.setExtraMessage("Liked songs");
-        collection.mergeLikedSongs(youtube.getLikedSongs());
+        this.collection.mergeLikedSongs(youtube.getLikedSongs());
         pb.setExtraMessage("Saved Albums").step();
-        collection.mergeAlbums(youtube.getAlbums());
+        this.collection.mergeAlbums(youtube.getAlbums());
         pb.setExtraMessage("Playlists").step();
-        collection.mergePlaylists(youtube.getPlaylists());
+        this.collection.mergePlaylists(youtube.getPlaylists());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done importing youtube music");
@@ -67,11 +67,11 @@ public class Import {
         Spotify spotify = new Spotify();
         ProgressBar pb = Main.progressBar("Spotify Import", 3);
         pb.setExtraMessage("Liked Songs");
-        collection.mergeLikedSongs(spotify.getLikedSongs());
+        this.collection.mergeLikedSongs(spotify.getLikedSongs());
         pb.setExtraMessage("Saved Albums").step();
-        collection.mergeAlbums(spotify.getAlbums());
+        this.collection.mergeAlbums(spotify.getAlbums());
         pb.setExtraMessage("Playlists").step();
-        collection.mergePlaylists(spotify.getPlaylists());
+        this.collection.mergePlaylists(spotify.getPlaylists());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done importing Spotify music");
@@ -88,7 +88,7 @@ public class Import {
         LikedSongs localLikedSongs = local.getLikedSongs();
         pb.setExtraMessage("Saved Albums").step();
         LinkedHashSet<Album> localAlbums = local.getAlbums();
-        collection.mergeAlbums(localAlbums);
+        this.collection.mergeAlbums(localAlbums);
         pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> localPlaylists = local.getPlaylists();
         Iterator<Playlist> iterator = localPlaylists.iterator();
@@ -99,8 +99,8 @@ public class Import {
                 iterator.remove();
             }
         }
-        collection.mergePlaylists(localPlaylists);
-        collection.mergeLikedSongs(localLikedSongs);
+        this.collection.mergePlaylists(localPlaylists);
+        this.collection.mergeLikedSongs(localLikedSongs);
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done importing local music");

@@ -18,7 +18,7 @@ public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
     private String name;
     private URI coverArt;
-    private SongSet songs;
+    private LinkedHashSet<Song> songs;
 
     private String youtubePageToken; // TODO: create "update" method to save API requests
     private int spotifyPageOffset = -1;
@@ -31,7 +31,7 @@ public class Playlist {
      */
     public Playlist(String name) {
         this.name = name;
-        this.songs = new SongSet();
+        this.songs = new LinkedHashSet<>();
         this.simularityPercentage = Settings.load().similarityPercentage;
     }
 
@@ -41,9 +41,9 @@ public class Playlist {
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
         this.name = name;
         if (songs != null && !songs.isEmpty()) {
-            this.songs = new SongSet(songs);
+            this.songs = new LinkedHashSet<>(songs);
         } else {
-            this.songs = new SongSet();
+            this.songs = new LinkedHashSet<>();
         }
         if (youtubePageToken != null) {
             this.youtubePageToken = youtubePageToken;
@@ -56,7 +56,7 @@ public class Playlist {
     }
 
     public void merge(Playlist playlist) {
-        if (playlist == null) {
+        if (playlist == null || playlist.isEmpty()) {
             return;
         }
         this.addSongs(playlist.getSongs());
@@ -64,10 +64,10 @@ public class Playlist {
             this.setCoverArt(playlist.getCoverArt());
         }
         if (playlist.getYoutubePageToken() != null) {
-            this.setYoutubePageToken(playlist.getYoutubePageToken());
+            this.youtubePageToken = playlist.getYoutubePageToken();
         }
         if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
-            this.setSpotifyPageOffset(playlist.getSpotifyPageOffset());
+            this.spotifyPageOffset = playlist.spotifyPageOffset;
         }
     }
 
@@ -130,10 +130,19 @@ public class Playlist {
      */
     public void addSong(Song song) {
         if (this.songs.contains(song)) {
-            this.songs.get(song).mergeSong(song);
+            this.getSong(song).merge(song);
         } else {
             this.songs.add(song);
         }
+    }
+
+    public Song getSong(Song song) {
+        for (Song thisSong : this.songs) {
+            if (thisSong.equals(song)) {
+                return thisSong;
+            }
+        }
+        return null;
     }
 
     /**
@@ -152,7 +161,7 @@ public class Playlist {
      * @return - arraylist of constructed Song
      */
     public LinkedHashSet<Song> getSongs() {
-        return new SongSet(this.songs);
+        return new LinkedHashSet<>(this.songs);
     }
 
     /**
@@ -202,7 +211,7 @@ public class Playlist {
     public boolean equals(Object object) {
         if (this == object)
             return true;
-        if (object == null || getClass() != object.getClass())
+        if (object == null || this.getClass() != object.getClass())
             return false;
         Playlist playlist = (Playlist) object;
         if (this.hashCode() == playlist.hashCode()) {
@@ -219,5 +228,16 @@ public class Playlist {
     @JsonIgnore
     public int hashCode() {
         return this.name.toLowerCase().hashCode();
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        if (this.name.isEmpty()) {
+            return true;
+        }
+        if (this.songs.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }

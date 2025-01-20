@@ -61,7 +61,7 @@ public class Song {
     }
 
     public void setArtist(Artist artist) {
-        if (artist == null) {
+        if (artist == null || artist.isEmpty()) {
             return;
         }
         this.artist = artist;
@@ -102,8 +102,8 @@ public class Song {
         this.duration = duration;
     }
 
-    public void mergeSong(Song song) {
-        if (song == null) {
+    public void merge(Song song) {
+        if (song == null || song.isEmpty()) {
             return;
         }
         if (song.isEmpty()) {

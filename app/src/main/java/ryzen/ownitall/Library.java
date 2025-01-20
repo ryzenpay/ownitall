@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,9 +29,9 @@ public class Library {
     /**
      * arrays to save api queries if they already exist
      */
-    private ArtistSet artists;
-    private SongSet songs;
-    private AlbumSet albums;
+    private LinkedHashSet<Artist> artists;
+    private LinkedHashSet<Song> songs;
+    private LinkedHashSet<Album> albums;
 
     public static Library load() {
         if (instance == null) {
@@ -45,9 +46,9 @@ public class Library {
         }
         Sync sync = Sync.load();
         this.objectMapper = new ObjectMapper();
-        this.artists = sync.cacheArtists(new ArtistSet());
-        this.songs = sync.cacheSongs(new SongSet());
-        this.albums = sync.cacheAlbums(new AlbumSet());
+        this.artists = sync.cacheArtists(new LinkedHashSet<>());
+        this.songs = sync.cacheSongs(new LinkedHashSet<>());
+        this.albums = sync.cacheAlbums(new LinkedHashSet<>());
     }
 
     public void save() {
@@ -63,10 +64,13 @@ public class Library {
         credentials.setLastFMApiKey(Input.request().getString());
     }
 
-    public void clear() {
-        this.artists = new ArtistSet();
-        this.songs = new SongSet();
-        this.albums = new AlbumSet();
+    private Artist getArtist(Artist artist) {
+        for (Artist thisArtist : this.artists) {
+            if (thisArtist.equals(artist)) {
+                return thisArtist;
+            }
+        }
+        return null;
     }
 
     public Artist getArtist(String artistName) {
@@ -78,7 +82,7 @@ public class Library {
             return tmpArtist;
         }
         if (this.artists.contains(tmpArtist)) {
-            return this.artists.get(tmpArtist);
+            return this.getArtist(tmpArtist);
         }
         Map<String, String> params = Map.of("artist", artistName, "limit", "1");
         String response = query("artist.search", params);
@@ -100,6 +104,15 @@ public class Library {
         return tmpArtist;
     }
 
+    private Album getAlbum(Album album) {
+        for (Album thisAlbum : this.albums) {
+            if (thisAlbum.equals(album)) {
+                return thisAlbum;
+            }
+        }
+        return null;
+    }
+
     public Album getAlbum(String albumName, String artistName) {
         if (albumName == null) {
             return null;
@@ -112,7 +125,7 @@ public class Library {
             return tmpAlbum;
         }
         if (this.albums.contains(tmpAlbum)) {
-            return this.albums.get(tmpAlbum);
+            return this.getAlbum(tmpAlbum);
         }
         Map<String, String> params;
         if (artistName != null) {
@@ -141,6 +154,15 @@ public class Library {
         return tmpAlbum;
     }
 
+    private Song getSong(Song song) {
+        for (Song thisSong : this.songs) {
+            if (thisSong.equals(song)) {
+                return thisSong;
+            }
+        }
+        return null;
+    }
+
     /**
      * construct a song using the LastFM api and their search.
      * constructs everything except the: duration
@@ -161,7 +183,7 @@ public class Library {
             return tmpSong;
         }
         if (this.songs.contains(tmpSong)) {
-            return this.songs.get(tmpSong);
+            return this.getSong(tmpSong);
         }
         Map<String, String> params;
         if (artistName == null) {

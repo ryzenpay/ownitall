@@ -28,9 +28,4 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
         }
         return false;
     }
-
-    public Song get(Song song) {
-        SongSet songSet = new SongSet(this.getSongs());
-        return songSet.get(song);
-    }
 }

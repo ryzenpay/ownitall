@@ -1,5 +1,6 @@
 package ryzen.ownitall;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -9,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.tools.Levenshtein;
 
 public class Album extends Playlist {
-    ArtistSet artists;
+    LinkedHashSet<Artist> artists;
 
     /**
      * Default constructor of album without album cover
@@ -18,7 +19,7 @@ public class Album extends Playlist {
      */
     public Album(String name) {
         super(name);
-        this.artists = new ArtistSet();
+        this.artists = new LinkedHashSet<>();
     }
 
     /**
@@ -34,15 +35,15 @@ public class Album extends Playlist {
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, youtubePageToken, spotifyPageOffset, coverArt);
-        if (this.artists != null && !artists.isEmpty()) {
-            this.artists = new ArtistSet(artists);
+        if (artists != null && !artists.isEmpty()) {
+            this.artists = new LinkedHashSet<>(artists);
         } else {
-            this.artists = new ArtistSet();
+            this.artists = new LinkedHashSet<>();
         }
     }
 
     public void merge(Album album) {
-        if (album == null) {
+        if (album == null || album.isEmpty()) {
             return;
         }
         this.addSongs(album.getSongs());
@@ -68,19 +69,23 @@ public class Album extends Playlist {
     }
 
     public void addArtist(Artist artist) {
-        if (artist == null || artists.isEmpty()) {
+        if (artist == null || artist.isEmpty()) {
             return;
         }
         this.artists.add(artist);
     }
 
     public LinkedHashSet<Artist> getArtists() {
-        return new ArtistSet(this.artists);
+        return new LinkedHashSet<>(this.artists);
     }
 
     @JsonIgnore
     public Artist getMainArtist() {
-        return this.artists.get(0);
+        Iterator<Artist> iterator = this.artists.iterator();
+        if (iterator.hasNext()) {
+            return iterator.next();
+        }
+        return null;
     }
 
     @Override

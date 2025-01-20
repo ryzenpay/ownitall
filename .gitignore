@@ -27,6 +27,7 @@ replay_pid*
 data/**
 .env
 .appdata
+.cache
 app/logs
 logs
 
