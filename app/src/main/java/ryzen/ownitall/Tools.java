@@ -13,6 +13,7 @@ public class Tools {
         this.options = new LinkedHashMap<>();
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
+        options.put("Clear Cache", this::optionClearCache);
         while (true) {
             String choice = promptMenu();
             if (choice != null) {
@@ -59,5 +60,8 @@ public class Tools {
         Sync.load().unArchive();
     }
 
-    // TODO: when library caching implemented, add option to clear cache
+    private void optionClearCache() {
+        Sync.load().clearCache();
+        Library.load().clear();
+    }
 }

@@ -18,8 +18,6 @@ public class Main {
     private static Collection collection;
 
     public static void main(String[] args) {
-        // incase cntrl c is pressed, still save data
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (Sync.load().checkDataFolder()) {
             logger.info("Local data found, attempting to import...");

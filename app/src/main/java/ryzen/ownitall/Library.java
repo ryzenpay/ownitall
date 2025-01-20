@@ -58,6 +58,12 @@ public class Library {
         sync.cacheArtists(this.artists);
     }
 
+    public void clear() {
+        this.albums = new LinkedHashSet<>();
+        this.songs = new LinkedHashSet<>();
+        this.artists = new LinkedHashSet<>();
+    }
+
     public static void setCredentials() {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Please enter LastFM API key: ");

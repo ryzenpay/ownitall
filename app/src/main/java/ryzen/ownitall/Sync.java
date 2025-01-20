@@ -3,7 +3,9 @@ package ryzen.ownitall;
 import java.io.File;
 
 import java.io.IOException;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
@@ -144,13 +146,26 @@ public class Sync {
             archive(true);
             File unarchiveFolder = archiveFolders.get(choice);
             for (File file : unarchiveFolder.listFiles()) {
-                file.renameTo(new File(this.dataFolder, file.getName())); // TODO: this doesnt work, needs
-                                                                          // java.nio.File.move() (cant overwrite)
+                try {
+                    Path source = file.toPath();
+                    Path destination = new File(this.dataFolder, file.getName()).toPath();
+                    Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                    unarchiveFolder.delete();
+                } catch (IOException e) {
+                    logger.error("Error overwriting/moving file: " + e);
+                }
             }
         }
-        logger.info("Successfully unarchived music library from"); // TODO: doesnt work because after closing program it
-                                                                   // stores cached data
-        logger.info("Restart the program to see the unarchived data");
+        logger.info("Successfully unarchived music library");
+        logger.info("Restarting the program to see the unarchived data");
+        System.exit(0);
+    }
+
+    public void clearCache() {
+        this.setCacheFolder();
+        for (File file : this.cacheFolder.listFiles()) {
+            file.delete();
+        }
     }
 
     public Collection importCollection() {
