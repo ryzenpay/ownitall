@@ -1,7 +1,12 @@
 package ryzen.ownitall;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,10 +15,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.tools.Levenshtein;
 
 public class Song {
+    private static final Logger logger = LogManager.getLogger(Song.class);
+    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
     private Artist artist;
     private Duration duration;
-    private double simularityPercentage;
+    private URI coverImage;
 
     /**
      * default song constructor
@@ -24,12 +31,11 @@ public class Song {
         this.name = name;
         this.artist = null;
         this.duration = null;
-        this.simularityPercentage = Settings.load().getSimilarityPercentage();
     }
 
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
-            @JsonProperty("duration") Duration duration) {
+            @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         if (artist != null && !artist.isEmpty()) {
             this.artist = artist;
@@ -39,7 +45,9 @@ public class Song {
         if (duration != null) {
             this.duration = duration;
         }
-        this.simularityPercentage = Settings.load().getSimilarityPercentage();
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
@@ -102,6 +110,28 @@ public class Song {
         this.duration = duration;
     }
 
+    public void setCoverImage(String coverImage) {
+        if (coverImage == null) {
+            return;
+        }
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            logger.error("Error parsing Song cover image: " + coverImage);
+        }
+    }
+
+    public void setCoverImage(URI coverImage) {
+        if (coverImage == null) {
+            return;
+        }
+        this.coverImage = coverImage;
+    }
+
+    public URI getCoverImage() {
+        return this.coverImage;
+    }
+
     public void merge(Song song) {
         if (song == null || song.isEmpty()) {
             return;
@@ -112,6 +142,9 @@ public class Song {
         if (this.artist == null && song.artist != null) { // if it has more info, no better way to check
             this.name = song.name;
             this.artist = song.artist;
+        }
+        if (this.coverImage == null && song.getCoverImage() != null) {
+            this.coverImage = song.getCoverImage();
         }
     }
 

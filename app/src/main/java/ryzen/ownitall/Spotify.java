@@ -393,7 +393,7 @@ public class Spotify {
                         Playlist playlist = new Playlist(spotifyPlaylist.getName());
                         playlist.addSongs(this.getPlaylistSongs(spotifyPlaylist.getId()));
                         playlist.setSpotifyPageOffset(playlist.size());
-                        playlist.setCoverArt(spotifyPlaylist.getImages()[0].getUrl());
+                        playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
                         playlists.add(playlist);
                     }
                     offset += limit;

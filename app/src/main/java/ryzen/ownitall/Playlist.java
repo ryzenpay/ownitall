@@ -16,13 +16,19 @@ import org.apache.logging.log4j.Logger;
 
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
+    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
-    private URI coverArt;
+    private URI coverImage;
     private LinkedHashSet<Song> songs;
 
-    private String youtubePageToken; // TODO: create "update" method to save API requests
+    /**
+     * to save api requests
+     * TODO: implement update method to save API requests
+     * ^ this has no rush as is only greatly in use for very big music libraries
+     * ^^ wouldnt update to any songs removed after imported
+     */
+    private String youtubePageToken;
     private int spotifyPageOffset = -1;
-    double simularityPercentage;
 
     /**
      * Default playlist constructor
@@ -32,7 +38,6 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
-        this.simularityPercentage = Settings.load().similarityPercentage;
     }
 
     @JsonCreator
@@ -50,9 +55,8 @@ public class Playlist {
         }
         this.spotifyPageOffset = spotifyPageOffset;
         if (coverArt != null) {
-            this.setCoverArt(coverArt);
+            this.setCoverImage(coverArt);
         }
-        this.simularityPercentage = Settings.load().similarityPercentage;
     }
 
     public void merge(Playlist playlist) {
@@ -60,8 +64,8 @@ public class Playlist {
             return;
         }
         this.addSongs(playlist.getSongs());
-        if (this.getCoverArt() == null && playlist.getCoverArt() != null) {
-            this.setCoverArt(playlist.getCoverArt());
+        if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
+            this.setCoverImage(playlist.getCoverImage());
         }
         if (playlist.getYoutubePageToken() != null) {
             this.youtubePageToken = playlist.getYoutubePageToken();
@@ -85,22 +89,22 @@ public class Playlist {
      * 
      * @param coverArt - String of coverart URL
      */
-    public void setCoverArt(String coverArt) {
-        if (coverArt == null) {
+    public void setCoverImage(String coverImage) {
+        if (coverImage == null) {
             return;
         }
         try {
-            this.coverArt = new URI(coverArt);
+            this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {
-            logger.error("Error parsing playlist cover image: " + coverArt);
+            logger.error("Error parsing playlist cover image: " + coverImage);
         }
     }
 
-    public void setCoverArt(URI coverArt) {
-        if (coverArt == null) {
+    public void setCoverImage(URI coverImage) {
+        if (coverImage == null) {
             return;
         }
-        this.coverArt = coverArt;
+        this.coverImage = coverImage;
     }
 
     /**
@@ -108,8 +112,8 @@ public class Playlist {
      * 
      * @return - constructed URI
      */
-    public URI getCoverArt() {
-        return this.coverArt;
+    public URI getCoverImage() {
+        return this.coverImage;
     }
 
     /**

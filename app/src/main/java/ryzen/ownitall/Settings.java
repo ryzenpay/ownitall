@@ -53,10 +53,6 @@ public class Settings extends ryzen.ownitall.tools.Settings {
     protected int spotifyPlaylistLimit = 20;
 
     /**
-     * to get the profile picture of playlists
-     */
-    protected boolean spotifyPlaylistSongCover = false; // TODO: get custom playlist image
-    /**
      * to limit number of songs in each youtube API batch query
      */
     protected Long youtubeSongLimit = 50L;
@@ -188,16 +184,8 @@ public class Settings extends ryzen.ownitall.tools.Settings {
         return spotifyPlaylistLimit;
     }
 
-    public boolean isSpotifyPlaylistSongCover() {
-        return spotifyPlaylistSongCover;
-    }
-
     public boolean isUseLibrary() {
         return useLibrary;
-    }
-
-    public void setSpotifyPlaylistSongCover(boolean spotifyPlaylistSongCover) {
-        this.spotifyPlaylistSongCover = spotifyPlaylistSongCover;
     }
 
     public Long getYoutubeSongLimit() {

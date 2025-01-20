@@ -93,6 +93,11 @@ public class Library {
 
                 if (artistNode != null) {
                     Artist artist = new Artist(artistNode.path("name").asText());
+                    String artistImage = artistNode.path("image").get(artistNode.path("image").size() - 1).path("#text")
+                            .asText();
+                    if (artistImage != null && !artistImage.isEmpty()) {
+                        artist.setCoverImage(artistImage);
+                    }
                     this.artists.add(artist);
                     return artist;
                 }
@@ -142,7 +147,14 @@ public class Library {
                 if (albumNode != null) {
                     Album album = new Album(albumNode.path("name").asText());
                     String artist = albumNode.path("artist").asText();
-                    album.addArtist(this.getArtist(artist));
+                    if (artist != null && !artist.isEmpty()) {
+                        album.addArtist(this.getArtist(artist));
+                    }
+                    String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
+                            .asText();
+                    if (albumCover != null && !albumCover.isEmpty()) {
+                        album.setCoverImage(albumCover);
+                    }
                     this.albums.add(album);
                     return album;
                 }
@@ -200,7 +212,14 @@ public class Library {
                 if (trackNode != null) {
                     Song song = new Song(trackNode.path("name").asText());
                     String artist = trackNode.path("artist").asText();
-                    song.setArtist(this.getArtist(artist));
+                    if (artist != null && !artist.isEmpty()) {
+                        song.setArtist(this.getArtist(artist));
+                    }
+                    String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
+                            .asText();
+                    if (songCover != null && !songCover.isEmpty()) {
+                        song.setCoverImage(songCover);
+                    }
                     this.songs.add(song);
                     return song;
                 }
@@ -255,7 +274,7 @@ public class Library {
         }
     }
 
-    private void handleApiError(int code, String message) { // TODO: error handling
+    private void handleApiError(int code, String message) {
         switch (code) {
             case 2:
                 logger.error("Invalid service - This service does not exist");

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.tools.Levenshtein;
 
 public class Album extends Playlist {
+    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     LinkedHashSet<Artist> artists;
 
     /**
@@ -32,9 +33,9 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
-        super(name, songs, youtubePageToken, spotifyPageOffset, coverArt);
+        super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
         if (artists != null && !artists.isEmpty()) {
             this.artists = new LinkedHashSet<>(artists);
         } else {
@@ -47,8 +48,8 @@ public class Album extends Playlist {
             return;
         }
         this.addSongs(album.getSongs());
-        if (this.getCoverArt() == null && album.getCoverArt() != null) {
-            this.setCoverArt(album.getCoverArt());
+        if (this.getCoverImage() == null && album.getCoverImage() != null) {
+            this.setCoverImage(album.getCoverImage());
         }
         if (album.getYoutubePageToken() != null) {
             this.setYoutubePageToken(album.getYoutubePageToken());
