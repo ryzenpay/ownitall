@@ -3,9 +3,6 @@ package ryzen.ownitall;
 import java.io.File;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
@@ -146,15 +143,14 @@ public class Sync {
             archive(true);
             File unarchiveFolder = archiveFolders.get(choice);
             for (File file : unarchiveFolder.listFiles()) {
-                try {
-                    Path source = file.toPath();
-                    Path destination = new File(this.dataFolder, file.getName()).toPath();
-                    Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                    unarchiveFolder.delete();
-                } catch (IOException e) {
-                    logger.error("Error overwriting/moving file: " + e);
+                if (file.isFile()) {
+                    File destFile = new File(this.dataFolder, file.getName());
+                    destFile.delete();
+                    new File(this.dataFolder, file.getName()).delete(); // delete the file about to be overwritten
+                    file.renameTo(destFile);
                 }
             }
+            unarchiveFolder.delete();
         }
         logger.info("Successfully unarchived music library");
         logger.info("Restarting the program to see the unarchived data");

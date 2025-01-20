@@ -14,6 +14,8 @@ public class Tools {
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
         options.put("Clear Cache", this::optionClearCache);
+        options.put("Clear Saved Logins", this::optionClearCredentials);
+        options.put("Reset Settings", this::optionClearSettings);
         while (true) {
             String choice = promptMenu();
             if (choice != null) {
@@ -63,5 +65,13 @@ public class Tools {
     private void optionClearCache() {
         Sync.load().clearCache();
         Library.load().clear();
+    }
+
+    private void optionClearCredentials() {
+        Credentials.load().clear();
+    }
+
+    private void optionClearSettings() {
+        Settings.load().clear();
     }
 }

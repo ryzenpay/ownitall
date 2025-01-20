@@ -15,13 +15,14 @@ import me.tongfei.progressbar.ProgressBarStyle;
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static Settings settings = Settings.load();
+    private static Sync sync = Sync.load();
     private static Collection collection;
 
     public static void main(String[] args) {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        if (Sync.load().checkDataFolder()) {
+        if (sync.checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
-            collection = Sync.load().importCollection();
+            collection = sync.importCollection();
         } else {
             logger.info("No local data found");
             collection = new Collection();
@@ -68,7 +69,7 @@ public class Main {
     }
 
     private static void optionSave() {
-        Sync.load().exportCollection(collection);
+        sync.exportCollection(collection);
         try {
             settings.saveSettings();
             if (settings.saveCredentials) {

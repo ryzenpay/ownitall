@@ -2,6 +2,8 @@ package ryzen.ownitall;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -82,6 +84,13 @@ public class Settings extends ryzen.ownitall.tools.Settings {
             }
         }
         return instance;
+    }
+
+    @JsonIgnore
+    public void clear() {
+        instance = null;
+        File credentialsFile = new File(settingsFilePath);
+        credentialsFile.delete();
     }
 
     public void saveSettings() {

@@ -22,6 +22,7 @@ public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static Settings settings = Settings.load();
     private static Credentials credentials = Credentials.load();
+    private static Sync sync = Sync.load();
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private ObjectMapper objectMapper;
@@ -44,7 +45,6 @@ public class Library {
         if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             setCredentials();
         }
-        Sync sync = Sync.load();
         this.objectMapper = new ObjectMapper();
         this.artists = sync.cacheArtists(new LinkedHashSet<>());
         this.songs = sync.cacheSongs(new LinkedHashSet<>());
@@ -52,7 +52,6 @@ public class Library {
     }
 
     public void save() {
-        Sync sync = Sync.load();
         sync.cacheAlbums(this.albums);
         sync.cacheSongs(this.songs);
         sync.cacheArtists(this.artists);
