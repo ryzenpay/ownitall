@@ -44,17 +44,18 @@ public class Download {
         this.downloadPath = Input.request().getFile(false).getAbsolutePath();
     }
 
-    public void downloadSong(Song song, File path) {
+    public void downloadSong(Song song, File path) { // TODO: batch job
         String searchQuery = song.getName();
         if (song.getArtist() != null) {
             searchQuery = song.getArtist().toString() + " - " + searchQuery;
         }
+        searchQuery += " video"; // filters only videos
         List<String> command = new ArrayList<>();
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
         command.add(settings.getFfmpegPath());
-        command.add("ytsearch1:" + searchQuery); // Limit to 1 result
-        command.add("--no-playlist"); // TODO: still doing this, update search?
+        command.add("ytsearch1:" + searchQuery);
+        command.add("--no-playlist");
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
         command.add("--audio-format");
@@ -76,7 +77,8 @@ public class Download {
             String line;
             String lastLine = "";
             while ((line = reader.readLine()) != null) {
-                lastLine = line; // Store the last line for logging
+                lastLine = line;
+                // logger.info(line);
             }
 
             int exitCode = process.waitFor();
