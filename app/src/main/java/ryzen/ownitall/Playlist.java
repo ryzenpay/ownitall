@@ -140,6 +140,13 @@ public class Playlist {
         }
     }
 
+    public void removeSong(Song song) {
+        if (song.isEmpty()) {
+            return;
+        }
+        this.songs.remove(song);
+    }
+
     public Song getSong(Song song) {
         for (Song thisSong : this.songs) {
             if (thisSong.equals(song)) {

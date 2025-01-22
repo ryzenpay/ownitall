@@ -1,5 +1,7 @@
 package ryzen.ownitall;
 
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +58,21 @@ public class Youtubedl {
         command.add(baseFileName + ".%(ext)s");
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             Process process = processBuilder.start();
+
+            // Capture output for logging
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            String lastLine = "";
+            while ((line = reader.readLine()) != null) {
+                lastLine = line; // Store the last line for logging
+            }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
+                logger.error("Last output from youtube-dl: " + lastLine); // Log last line of output
                 return;
             }
         } catch (Exception e) {

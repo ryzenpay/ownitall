@@ -1,11 +1,13 @@
 package ryzen.ownitall;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
+import ryzen.ownitall.tools.Menu;
 import ryzen.ownitall.tools.MusicTime;
 
 public class Collection {
@@ -233,6 +235,82 @@ public class Collection {
             default:
                 System.err.println("Invalid recursion option.");
                 break;
+        }
+    }
+
+    public void editMenu() {
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
+        options.put("Delete Playlist", this::optionDeletePlaylist);
+        options.put("Merge Playlists", this::optionMergePlaylist);
+        options.put("Delete Album", this::optionDeleteAlbum);
+        options.put("Delete Liked Song", this::optionDeleteLikedSong);
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
+            }
+        }
+    }
+
+    private void optionDeletePlaylist() {
+        LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+        for (Playlist playlist : this.playlists) {
+            options.put(playlist.toString(), playlist);
+        }
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    return;
+                } else {
+                    this.playlists.remove(options.get(choice));
+                    return;
+                }
+            }
+        }
+    }
+
+    private void optionMergePlaylist() {
+
+    }
+
+    private void optionDeleteAlbum() {
+        LinkedHashMap<String, Album> options = new LinkedHashMap<>();
+        for (Album album : this.albums) {
+            options.put(album.toString(), album);
+        }
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "ALBUM SELECTION MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    return;
+                } else {
+                    this.albums.remove(options.get(choice));
+                    return;
+                }
+            }
+        }
+    }
+
+    private void optionDeleteLikedSong() {
+        LinkedHashMap<String, Song> options = new LinkedHashMap<>();
+        for (Song song : this.likedSongs.getSongs()) {
+            options.put(song.toString(), song);
+        }
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "SONG SELECTION MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    return;
+                } else {
+                    this.likedSongs.removeSong(options.get(choice));
+                    return;
+                }
+            }
         }
     }
 }

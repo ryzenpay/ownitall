@@ -19,6 +19,7 @@ public class Main {
     private static Collection collection;
 
     public static void main(String[] args) {
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (sync.checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
@@ -30,7 +31,8 @@ public class Main {
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
-        options.put("Print Inventory", Main::optionInventory);
+        options.put("Print Inventory", Main::optionPrintInventory);
+        options.put("Edit Inventory", Main::optionEditInventory);
         options.put("Save", Main::optionSave);
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
@@ -38,10 +40,9 @@ public class Main {
             try {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
-                    optionSave();
                     System.out.println("Exiting program. Goodbye!");
                     logger.info("Exiting program...");
-                    break;
+                    System.exit(0);
                 } else {
                     options.get(choice).run();
                 }
@@ -53,18 +54,22 @@ public class Main {
 
     private static void optionImport() {
         // TODO: import soundcloud, apple music?
-        Import dataImport = new Import();
+        ImportMenu dataImport = new ImportMenu();
         collection.mergeCollection(dataImport.getCollection());
     }
 
     private static void optionExport() {
-        new Export(collection);
+        new ExportMenu(collection);
     }
 
-    private static void optionInventory() {
+    private static void optionPrintInventory() {
         System.out.print("Select recursion (1-3): ");
         int recursion = Input.request().getInt(1, 3);
         collection.printInventory(recursion);
+    }
+
+    private static void optionEditInventory() {
+        collection.editMenu();
     }
 
     private static void optionSave() {

@@ -3,14 +3,18 @@ package ryzen.ownitall;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.Menu;
 
-public class Export {
+public class ExportMenu {
+    private static final Logger logger = LogManager.getLogger(ExportMenu.class);
     private LinkedHashMap<String, Runnable> options;
     private Collection collection;
 
-    public Export(Collection collection) {
+    public ExportMenu(Collection collection) {
         this.collection = collection;
         this.options = new LinkedHashMap<>();
         options.put("Download (YoutubeDL)", this::optionDownload);
@@ -25,6 +29,7 @@ public class Export {
     }
 
     private void optionDownload() {
+        logger.info("Downloading music...");
         Youtubedl youtubedl = new Youtubedl();
         ProgressBar pb = Main.progressBar("YoutubeDL Export", 3);
         pb.setExtraMessage("Liked songs");
@@ -52,5 +57,6 @@ public class Export {
         pbAlbum.close();
         pb.setExtraMessage("Done").step();
         pb.close();
+        logger.info("Done downloading music");
     }
 }

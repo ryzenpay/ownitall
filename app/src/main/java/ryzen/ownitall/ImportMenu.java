@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.Menu;
 
-public class Import {
-    private static final Logger logger = LogManager.getLogger(Import.class);
+public class ImportMenu {
+    private static final Logger logger = LogManager.getLogger(ImportMenu.class);
     private static Settings settings = Settings.load();
     private static Credentials credentials = Credentials.load();
     private Collection collection;
@@ -21,7 +21,7 @@ public class Import {
      * constructor for Import which also prompts user for import options
      * 
      */
-    public Import() {
+    public ImportMenu() {
         if (settings.useLibrary) {
             logger.info("No local LastFM API key found");
             credentials.setLastFMCredentials();

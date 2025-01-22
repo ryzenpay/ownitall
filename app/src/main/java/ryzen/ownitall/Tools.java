@@ -1,9 +1,8 @@
 package ryzen.ownitall;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.tools.Menu;
 
 public class Tools {
     private static Tools instance;
@@ -17,7 +16,7 @@ public class Tools {
         options.put("Clear Saved Logins", this::optionClearCredentials);
         options.put("Reset Settings", this::optionClearSettings);
         while (true) {
-            String choice = promptMenu();
+            String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
                     break;
@@ -33,25 +32,6 @@ public class Tools {
             instance = new Tools();
         }
         return instance;
-    }
-
-    private String promptMenu() {
-        System.out.println("Choose an option from the following: ");
-        int i = 1;
-        for (String option : options.keySet()) {
-            System.out.println("[" + i + "] " + option);
-            i++;
-        }
-        System.out.println("[0] Exit");
-        System.out.print("Enter your choice: ");
-        int choice = Input.request().getInt();
-        if (choice < 0 || choice > options.size()) {
-            System.out.println("Incorrect option, try again");
-            return null;
-        }
-        ArrayList<String> arrayOptions = new ArrayList<>(options.keySet());
-        arrayOptions.add(0, "Exit");
-        return arrayOptions.get(choice);
     }
 
     private void optionArchive() {
