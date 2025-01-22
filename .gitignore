@@ -30,6 +30,8 @@ data/**
 .cache
 app/logs
 logs
+fullCompile
+
 
 # Ignore Gradle project-specific cache directory
 .gradle
