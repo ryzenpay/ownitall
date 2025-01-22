@@ -12,7 +12,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.MusicTime;
+import ryzen.ownitall.util.MusicTools;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
@@ -162,7 +162,7 @@ public class Collection {
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
                                             + " - "
-                                            + MusicTime.musicTime(MusicTime.totalDuration(playlist.getSongs())));
+                                            + MusicTools.musicTime(MusicTools.totalDuration(playlist.getSongs())));
                     i++;
                 }
                 i = 1;
@@ -170,7 +170,7 @@ public class Collection {
                 for (Album album : this.albums) {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
+                                    + " - " + MusicTools.musicTime(MusicTools.totalDuration(album.getSongs())));
                     if (album.getArtists() != null) {
                         System.out.println("    - Artist: " + album.getArtists().toString());
                     }
@@ -182,7 +182,7 @@ public class Collection {
                 i = 1;
                 for (Song likedSong : this.likedSongs.getSongs()) {
                     System.out.println("    " + i + "/" + this.likedSongs.size() + " = " + likedSong.getName() + " | "
-                            + MusicTime.musicTime(likedSong.getDuration()));
+                            + MusicTools.musicTime(likedSong.getDuration()));
                     if (likedSong.getArtist() != null) {
                         System.out.println("        - Artist: " + likedSong.getArtist().toString());
                     }
@@ -196,8 +196,8 @@ public class Collection {
                             .println(
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
-                                            + " - " + MusicTime.musicTime(
-                                                    MusicTime.totalDuration(playlist.getSongs())));
+                                            + " - " + MusicTools.musicTime(
+                                                    MusicTools.totalDuration(playlist.getSongs())));
                     i++;
                     for (Song song : playlist.getSongs()) {
                         if (likedSongs.contains(song)) {
@@ -206,7 +206,7 @@ public class Collection {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
-                                + MusicTime.musicTime(song.getDuration()));
+                                + MusicTools.musicTime(song.getDuration()));
                         if (song.getArtist() != null) {
                             System.out.println("        - Artist: " + song.getArtist().toString());
                         }
@@ -219,7 +219,7 @@ public class Collection {
                     y = 1;
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTime.musicTime(MusicTime.totalDuration(album.getSongs())));
+                                    + " - " + MusicTools.musicTime(MusicTools.totalDuration(album.getSongs())));
                     i++;
                     for (Song song : album.getSongs()) {
                         if (likedSongs.contains(song)) {
@@ -228,7 +228,7 @@ public class Collection {
                             System.out.print(" ");
                         }
                         System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
-                                + MusicTime.musicTime(song.getDuration()));
+                                + MusicTools.musicTime(song.getDuration()));
                         if (song.getArtist() != null) {
                             System.out.println("        - Artist: " + song.getArtist().toString());
                         }
