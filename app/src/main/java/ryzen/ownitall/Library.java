@@ -14,8 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ryzen.ownitall.tools.Input;
-
 import java.net.URL;
 
 public class Library {
@@ -42,8 +40,8 @@ public class Library {
     }
 
     public Library() {
-        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
-            setCredentials();
+        if (settings.useLibrary) {
+            credentials.setLastFMCredentials();
         }
         this.objectMapper = new ObjectMapper();
         this.artists = sync.cacheArtists(new LinkedHashSet<>());
@@ -61,12 +59,6 @@ public class Library {
         this.albums = new LinkedHashSet<>();
         this.songs = new LinkedHashSet<>();
         this.artists = new LinkedHashSet<>();
-    }
-
-    public static void setCredentials() {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please enter LastFM API key: ");
-        credentials.setLastFMApiKey(Input.request().getString());
     }
 
     private Artist getArtist(Artist artist) {

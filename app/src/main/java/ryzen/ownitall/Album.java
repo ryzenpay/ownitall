@@ -62,6 +62,14 @@ public class Album extends Playlist {
         }
     }
 
+    @Override
+    public void addSong(Song song) {
+        super.addSong(song);
+        if (!this.artists.contains(song.getArtist())) {
+            this.artists.add(song.getArtist());
+        }
+    }
+
     public void addArtists(LinkedHashSet<Artist> artists) {
         if (artists == null || artists.isEmpty()) {
             return;

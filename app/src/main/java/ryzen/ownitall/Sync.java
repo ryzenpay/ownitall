@@ -31,8 +31,8 @@ public class Sync {
      * 
      */
     public Sync() {
-        this.dataFolder = new File(settings.getDataFolderPath());
-        this.cacheFolder = new File(settings.getCacheFolderPath());
+        this.dataFolder = new File(settings.dataFolderPath);
+        this.cacheFolder = new File(settings.cacheFolderPath);
         this.setDataFolder();
         this.setCacheFolder();
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -69,7 +69,7 @@ public class Sync {
      * @return - true if exist, false if not
      */
     public boolean checkDataFolder() {
-        File dataFolder = new File(settings.getDataFolderPath());
+        File dataFolder = new File(settings.dataFolderPath);
         if (dataFolder.exists() && dataFolder.isDirectory()) {
             return true;
         }

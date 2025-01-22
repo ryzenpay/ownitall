@@ -22,9 +22,9 @@ public class Import {
      * 
      */
     public Import() {
-        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
+        if (settings.useLibrary) {
             logger.info("No local LastFM API key found");
-            Library.setCredentials();
+            credentials.setLastFMCredentials();
         }
         this.collection = new Collection();
         this.options = new LinkedHashMap<>();

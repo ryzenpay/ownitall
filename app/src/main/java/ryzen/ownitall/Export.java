@@ -28,9 +28,8 @@ public class Export {
         Youtubedl youtubedl = new Youtubedl();
         ProgressBar pb = Main.progressBar("YoutubeDL Export", 3);
         pb.setExtraMessage("Liked songs");
-        youtubedl.downloadLikedSongs(this.collection.getLikedSongs()); // TODO: if song is liked + playlist/album it
-                                                                       // will
-        // download twice
+        // TODO: if song is liked + playlist/album it will download twice
+        youtubedl.downloadLikedSongs(this.collection.getLikedSongs());
         pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> playlists = this.collection.getPlaylists();
         ProgressBar pbPlaylist = Main.progressBar("Playlist Downloads", playlists.size());

@@ -2,6 +2,8 @@ package ryzen.ownitall;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import ryzen.ownitall.tools.Input;
+
 import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
-public class Settings extends ryzen.ownitall.tools.Settings {
+public class Settings extends ryzen.ownitall.tools.Settings { // TODO: non-interactive mode
     @JsonIgnore
     private static Settings instance;
     @JsonIgnore
@@ -83,7 +85,12 @@ public class Settings extends ryzen.ownitall.tools.Settings {
      * youtube dl installation path
      * 
      */
-    protected String youtubedlPath = "";
+    protected String youtubedlPath = ""; // TODO: default path from ./resources
+    /**
+     * ffmpeg path (required for youtubedl)
+     * 
+     */
+    protected String ffmpegPath = ""; // TODO: default path from ./resources
     /**
      * download path of where to put downloaded music
      */
@@ -93,6 +100,12 @@ public class Settings extends ryzen.ownitall.tools.Settings {
      * current supported: "mp3", "flac", "wav"
      */
     protected String downloadFormat = "mp3";
+    /**
+     * download quality of music
+     * 0 - best, 10 - worst
+     * also respectfully increases file size
+     */
+    protected int downloadQuality = 5;
 
     @JsonIgnore
     public static Settings load() {
@@ -123,159 +136,244 @@ public class Settings extends ryzen.ownitall.tools.Settings {
         }
     }
 
-    public void setDataFolderPath(String dataFolderPath) {
-        this.dataFolderPath = dataFolderPath;
-    }
-
-    public void setLikedSongName(String likedSongName) {
-        this.likedSongName = likedSongName;
-    }
-
-    public void setAlbumFile(String albumFile) {
-        this.albumFile = albumFile;
-    }
-
-    public void setLikedSongFile(String likedSongFile) {
-        this.likedSongFile = likedSongFile;
-    }
-
-    public void setPlaylistFile(String playlistFile) {
-        this.playlistFile = playlistFile;
-    }
-
-    public void setSpotifyShowDialog(boolean spotifyShowDialog) {
-        this.spotifyShowDialog = spotifyShowDialog;
-    }
-
-    public void setSpotifySongLimit(int spotifySongLimit) {
-        this.spotifySongLimit = spotifySongLimit;
-    }
-
-    public void setSpotifyAlbumLimit(int spotifyAlbumLimit) {
-        this.spotifyAlbumLimit = spotifyAlbumLimit;
-    }
-
-    public void setSpotifyPlaylistLimit(int spotifyPlaylistLimit) {
-        this.spotifyPlaylistLimit = spotifyPlaylistLimit;
-    }
-
-    public void setYoutubeSongLimit(Long youtubeSongLimit) {
-        this.youtubeSongLimit = youtubeSongLimit;
-    }
-
-    public void setYoutubePlaylistLimit(Long youtubePlaylistLimit) {
-        this.youtubePlaylistLimit = youtubePlaylistLimit;
-    }
-
-    public void setSaveCredentials(boolean saveCredentials) {
-        this.saveCredentials = saveCredentials;
-    }
-
-    public void setSimilarityPercentage(double similarityPercentage) {
-        this.similarityPercentage = similarityPercentage;
-    }
-
     public String getDataFolderPath() {
         return dataFolderPath;
+    }
+
+    public void setDataFolderPath(String dataFolderPath) {
+        this.dataFolderPath = dataFolderPath;
     }
 
     public String getLikedSongName() {
         return likedSongName;
     }
 
+    public void setLikedSongName(String likedSongName) {
+        this.likedSongName = likedSongName;
+    }
+
     public String getAlbumFile() {
         return albumFile;
+    }
+
+    public void setAlbumFile(String albumFile) {
+        this.albumFile = albumFile;
     }
 
     public String getLikedSongFile() {
         return likedSongFile;
     }
 
+    public void setLikedSongFile(String likedSongFile) {
+        this.likedSongFile = likedSongFile;
+    }
+
     public String getPlaylistFile() {
         return playlistFile;
     }
 
-    public boolean isSaveCredentials() {
-        return saveCredentials;
-    }
-
-    public boolean isSpotifyShowDialog() {
-        return spotifyShowDialog;
-    }
-
-    public int getSpotifySongLimit() {
-        return spotifySongLimit;
-    }
-
-    public int getSpotifyAlbumLimit() {
-        return spotifyAlbumLimit;
-    }
-
-    public int getSpotifyPlaylistLimit() {
-        return spotifyPlaylistLimit;
-    }
-
-    public boolean isUseLibrary() {
-        return useLibrary;
-    }
-
-    public Long getYoutubeSongLimit() {
-        return youtubeSongLimit;
-    }
-
-    public Long getYoutubePlaylistLimit() {
-        return youtubePlaylistLimit;
-    }
-
-    public double getSimilarityPercentage() {
-        return similarityPercentage;
+    public void setPlaylistFile(String playlistFile) {
+        this.playlistFile = playlistFile;
     }
 
     public String getCacheFolderPath() {
-        return this.cacheFolderPath;
+        return cacheFolderPath;
+    }
+
+    public void setCacheFolderPath(String cacheFolderPath) {
+        this.cacheFolderPath = cacheFolderPath;
     }
 
     public String getArtistFile() {
         return artistFile;
     }
 
+    public void setArtistFile(String artistFile) {
+        this.artistFile = artistFile;
+    }
+
     public String getSongFile() {
         return songFile;
+    }
+
+    public void setSongFile(String songFile) {
+        this.songFile = songFile;
+    }
+
+    public boolean isSaveCredentials() {
+        return saveCredentials;
+    }
+
+    public void setSaveCredentials(boolean saveCredentials) {
+        this.saveCredentials = saveCredentials;
+    }
+
+    public boolean isSpotifyShowDialog() {
+        return spotifyShowDialog;
+    }
+
+    public void setSpotifyShowDialog(boolean spotifyShowDialog) {
+        this.spotifyShowDialog = spotifyShowDialog;
+    }
+
+    public int getSpotifySongLimit() {
+        return spotifySongLimit;
+    }
+
+    public void setSpotifySongLimit(int spotifySongLimit) {
+        this.spotifySongLimit = spotifySongLimit;
+    }
+
+    public int getSpotifyAlbumLimit() {
+        return spotifyAlbumLimit;
+    }
+
+    public void setSpotifyAlbumLimit(int spotifyAlbumLimit) {
+        this.spotifyAlbumLimit = spotifyAlbumLimit;
+    }
+
+    public int getSpotifyPlaylistLimit() {
+        return spotifyPlaylistLimit;
+    }
+
+    public void setSpotifyPlaylistLimit(int spotifyPlaylistLimit) {
+        this.spotifyPlaylistLimit = spotifyPlaylistLimit;
+    }
+
+    public Long getYoutubeSongLimit() {
+        return youtubeSongLimit;
+    }
+
+    public void setYoutubeSongLimit(Long youtubeSongLimit) {
+        this.youtubeSongLimit = youtubeSongLimit;
+    }
+
+    public Long getYoutubePlaylistLimit() {
+        return youtubePlaylistLimit;
+    }
+
+    public void setYoutubePlaylistLimit(Long youtubePlaylistLimit) {
+        this.youtubePlaylistLimit = youtubePlaylistLimit;
     }
 
     public int getSoundCloudSongLimit() {
         return soundCloudSongLimit;
     }
 
+    public void setSoundCloudSongLimit(int soundCloudSongLimit) {
+        this.soundCloudSongLimit = soundCloudSongLimit;
+    }
+
     public int getSoundCloudAlbumLimit() {
         return soundCloudAlbumLimit;
+    }
+
+    public void setSoundCloudAlbumLimit(int soundCloudAlbumLimit) {
+        this.soundCloudAlbumLimit = soundCloudAlbumLimit;
     }
 
     public int getSoundCloudPlaylistLimit() {
         return soundCloudPlaylistLimit;
     }
 
+    public void setSoundCloudPlaylistLimit(int soundCloudPlaylistLimit) {
+        this.soundCloudPlaylistLimit = soundCloudPlaylistLimit;
+    }
+
+    public double getSimilarityPercentage() {
+        return similarityPercentage;
+    }
+
+    public void setSimilarityPercentage(double similarityPercentage) {
+        this.similarityPercentage = similarityPercentage;
+    }
+
+    public boolean isUseLibrary() {
+        return useLibrary;
+    }
+
+    public void setUseLibrary(boolean useLibrary) {
+        this.useLibrary = useLibrary;
+    }
+
     public String getYoutubedlPath() {
         return youtubedlPath;
     }
 
-    public void setYoutubedlPath(String path) {
-        this.youtubedlPath = path;
+    public void setYoutubedlPath(String youtubedlPath) {
+        this.youtubedlPath = youtubedlPath;
+    }
+
+    public void setYoutubedlPath() {
+        while (true) {
+            if (youtubedlPath.isEmpty()) {
+                logger.info("A guide to obtaining the following variables is in the readme");
+                System.out.print("Please provide local Youtube DL executable path: ");
+                youtubedlPath = Input.request().getFile().getAbsolutePath();
+            } else {
+                File file = new File(youtubedlPath);
+                if (file.exists()) {
+                    return;
+                }
+                logger.error("YoutubeDL not found with provided path: " + youtubedlPath);
+                youtubedlPath = "";
+            }
+        }
     }
 
     public String getDownloadPath() {
         return downloadPath;
     }
 
-    public void setDownloadPath(String path) {
-        this.downloadPath = path;
+    public void setDownloadPath(String downloadPath) {
+        this.downloadPath = downloadPath;
+    }
+
+    public void setDownloadPath() {
+        if (downloadPath.isEmpty()) {
+            System.out.print("Please provide path to save music: ");
+            downloadPath = Input.request().getFile().getAbsolutePath();
+        }
     }
 
     public String getDownloadFormat() {
         return downloadFormat;
     }
 
-    public void setDownloadFormat(String format) {
-        this.downloadFormat = format;
+    public void setDownloadFormat(String downloadFormat) {
+        this.downloadFormat = downloadFormat;
+    }
+
+    public int getDownloadQuality() {
+        return downloadQuality;
+    }
+
+    public void setDownloadQuality(int downloadQuality) {
+        this.downloadQuality = downloadQuality;
+    }
+
+    public String getFfmpegPath() {
+        return ffmpegPath;
+    }
+
+    public void setFfmpegPath(String ffmpegPath) {
+        this.ffmpegPath = ffmpegPath;
+    }
+
+    public void setFfmpegPath() {
+        while (true) {
+            if (ffmpegPath.isEmpty()) {
+                logger.info("A guide to obtaining the following variables is in the readme");
+                System.out.print("Please provide local FFMPEG executable path: ");
+                ffmpegPath = Input.request().getFile().getAbsolutePath();
+            } else {
+                File file = new File(ffmpegPath);
+                if (file.exists()) {
+                    return;
+                }
+                logger.error("FFMPEG not found with provided path: " + ffmpegPath);
+                ffmpegPath = "";
+            }
+        }
     }
 }

@@ -10,8 +10,10 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## YoutubeDL  
-install youtubedl from the official repository: https://github.com/ytdl-org/youtube-dl  
-save the executable path and provide it when needed  
+download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp 
+save the absolute executable path and provide it when needed  
+### requirements  
+- ffmpeg: https://www.ffmpeg.org/   
 
 ## LastFM  
 to get the best data possible, everything is checked with lastFM  

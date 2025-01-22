@@ -103,7 +103,7 @@ public class Local {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.likedSongName)) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }

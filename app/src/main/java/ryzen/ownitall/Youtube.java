@@ -19,8 +19,6 @@ import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 
-import ryzen.ownitall.tools.Input;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.LinkedHashSet;
@@ -45,20 +43,8 @@ public class Youtube {
      * default youtube constructor asking for user input
      */
     public Youtube() {
-        if (credentials.youtubeIsEmpty()) {
-            this.setCredentials();
-        }
+        credentials.setYoutubeCredentials();
         this.youtubeApi = this.getService();
-    }
-
-    private void setCredentials() {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Enter youtube application name: ");
-        credentials.setYoutubeApplicationName(Input.request().getString());
-        System.out.print("Enter youtube client id: ");
-        credentials.setYoutubeClientId(Input.request().getString());
-        System.out.print("Enter youtube client secret: ");
-        credentials.setYoutubeClientSecret(Input.request().getString());
     }
 
     /**
@@ -121,7 +107,7 @@ public class Youtube {
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
                         .setVideoCategoryId("10") // Category ID 10 is for Music
-                        .setMaxResults(settings.getYoutubeSongLimit())
+                        .setMaxResults(settings.youtubeSongLimit)
                         .setPageToken(pageToken)
                         .execute();
 
@@ -178,7 +164,7 @@ public class Youtube {
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
-                        .setMaxResults(settings.getYoutubePlaylistLimit())
+                        .setMaxResults(settings.youtubePlaylistLimit)
                         .setPageToken(nextPageToken);
 
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
@@ -214,7 +200,7 @@ public class Youtube {
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
-                        .setMaxResults(settings.getYoutubeSongLimit())
+                        .setMaxResults(settings.youtubeSongLimit)
                         .setPageToken(nextPageToken);
 
                 PlaylistItemListResponse itemResponse = itemRequest.execute();

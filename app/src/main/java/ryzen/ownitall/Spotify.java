@@ -54,9 +54,7 @@ public class Spotify {
      * Default spotify constructor asking for user input
      */
     public Spotify() {
-        if (credentials.spotifyIsEmpty()) {
-            this.setCredentials();
-        }
+        credentials.setSpotifyCredentials();
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(credentials.getSpotifyClientId())
                 .setClientSecret(credentials.getSpotifyClientSecret())
@@ -64,16 +62,6 @@ public class Spotify {
                 .build();
         this.requestCode();
         this.setToken();
-    }
-
-    private void setCredentials() {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please provide your client id: ");
-        credentials.setSpotifyClientId(Input.request().getString());
-        System.out.print("Please provide your client secret: ");
-        credentials.setSpotifyClientSecret(Input.request().getString());
-        System.out.print("Please provide redirect url:");
-        credentials.setSpotifyRedirectUrl(Input.request().getString());
     }
 
     /**
@@ -242,7 +230,7 @@ public class Spotify {
 
         while (hasMore) {
             GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                    .limit(settings.getSpotifySongLimit())
+                    .limit(settings.spotifySongLimit)
                     .offset(offset)
                     .build();
 
@@ -291,7 +279,7 @@ public class Spotify {
         while (hasMore) {
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
-                    .limit(settings.getSpotifyAlbumLimit())
+                    .limit(settings.spotifyAlbumLimit)
                     .offset(offset)
                     .build();
 
@@ -330,7 +318,7 @@ public class Spotify {
 
         while (hasMore) {
             GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
-                    .limit(settings.getSpotifySongLimit())
+                    .limit(settings.spotifySongLimit)
                     .offset(offset)
                     .build();
 
@@ -377,7 +365,7 @@ public class Spotify {
         while (hasMore) {
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
-                    .limit(settings.getSpotifyPlaylistLimit())
+                    .limit(settings.spotifyPlaylistLimit)
                     .offset(offset)
                     .build();
 
@@ -425,7 +413,7 @@ public class Spotify {
         boolean hasMore = true;
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
-                    .limit(settings.getSpotifySongLimit())
+                    .limit(settings.spotifySongLimit)
                     .offset(offset)
                     .build();
             try {
