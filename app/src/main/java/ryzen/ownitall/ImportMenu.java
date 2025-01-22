@@ -11,6 +11,7 @@ import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.library.Local;
 import ryzen.ownitall.library.Spotify;
 import ryzen.ownitall.library.Youtube;
 import ryzen.ownitall.util.Menu;

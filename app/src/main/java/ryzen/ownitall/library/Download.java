@@ -19,6 +19,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.MusicTools;
 
 public class Download {
     static {
@@ -121,11 +122,11 @@ public class Download {
         ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
         likedSongsFolder.mkdirs();
         for (Song song : likedSongs.getSongs()) {
-            pb.setExtraMessage(song.getName());
+            pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, likedSongsFolder);
-            pb.step();
         }
-        pb.setExtraMessage("Done").step();
+        this.cleanFolder(likedSongsFolder);
+        pb.setExtraMessage("Done");
         pb.close();
     }
 
@@ -134,11 +135,11 @@ public class Download {
         ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         playlistFolder.mkdirs();
         for (Song song : playlist.getSongs()) {
-            pb.setExtraMessage(song.getName());
+            pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, playlistFolder);
-            pb.step();
         }
-        pb.setExtraMessage("Done").step();
+        this.cleanFolder(playlistFolder);
+        pb.setExtraMessage("Done");
         pb.close();
     }
 
@@ -147,11 +148,28 @@ public class Download {
         File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
         for (Song song : album.getSongs()) {
-            pb.setExtraMessage(song.getName());
+            pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, albumFolder);
-            pb.step();
         }
-        pb.setExtraMessage("Done").step();
+        this.cleanFolder(albumFolder);
+        pb.setExtraMessage("Done");
         pb.close();
+    }
+
+    public void cleanFolder(File folder) {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            return;
+        }
+        for (File file : folder.listFiles()) {
+            if (file.isFile()) {
+                if (!MusicTools.getExtension(file).equals(settings.getDownloadFormat())) {
+                    if (file.delete()) {
+                        logger.info("Cleaned up file: " + file.getAbsolutePath());
+                    } else {
+                        logger.error("Failed to clean up file: " + file.getAbsolutePath());
+                    }
+                }
+            }
+        }
     }
 }

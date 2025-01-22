@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.library;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,14 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
+import ryzen.ownitall.Library;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.MusicTools;
 
 import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
@@ -101,13 +104,13 @@ public class Local {
     public LikedSongs getLikedSongs() {
         LikedSongs likedSongs = new LikedSongs();
         for (File file : this.localLibrary.listFiles()) {
-            if (file.isFile() && extensions.contains(getExtension(file))) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
                 Song song = this.getSong(file);
                 if (song != null) {
                     likedSongs.addSong(song);
                 }
             }
-            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.likedSongName)) {
+            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 likedSongs.addSongs(this.getSongs(file));
             }
         }
@@ -159,18 +162,6 @@ public class Local {
     }
 
     /**
-     * get file extension of a file
-     * 
-     * @param file - constructed File to get extension from
-     * @return - String of file extension
-     */
-    public String getExtension(File file) {
-        String fileName = file.getName();
-        int extensionIndex = fileName.lastIndexOf('.');
-        return fileName.substring(extensionIndex + 1).toLowerCase();
-    }
-
-    /**
      * getting metadata from music file: https://github.com/mpatric/mp3agic
      * 
      * @param file - file to get metadata from
@@ -207,7 +198,7 @@ public class Local {
             return songs;
         }
         for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(getExtension(file))) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
                 songs.add(getSong(file));
             }
         }
@@ -227,7 +218,7 @@ public class Local {
         }
         String album = null;
         boolean foundAnyAlbum = false;
-        File[] files = folder.listFiles((dir, name) -> extensions.contains(getExtension(new File(name))));
+        File[] files = folder.listFiles((dir, name) -> extensions.contains(MusicTools.getExtension(new File(name))));
         if (files == null || files.length <= 1) {
             return false;
         }

@@ -1,11 +1,12 @@
 package ryzen.ownitall.util;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 
 import ryzen.ownitall.classes.Song;
 
-public class MusicTime {
+public class MusicTools {
     /**
      * convert duration into music time (mm:ss)
      * 
@@ -30,5 +31,17 @@ public class MusicTime {
             totalDuration = totalDuration.plus(song.getDuration());
         }
         return totalDuration;
+    }
+
+    /**
+     * get file extension of a file
+     * 
+     * @param file - constructed File to get extension from
+     * @return - String of file extension
+     */
+    public static String getExtension(File file) {
+        String fileName = file.getName();
+        int extensionIndex = fileName.lastIndexOf('.');
+        return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 }
