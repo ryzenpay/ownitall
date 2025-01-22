@@ -7,7 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.tools.Menu;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.library.Download;
+import ryzen.ownitall.util.Menu;
 
 public class ExportMenu {
     private static final Logger logger = LogManager.getLogger(ExportMenu.class);

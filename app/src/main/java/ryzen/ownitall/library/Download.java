@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -10,7 +10,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.Main;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Input;
 
 public class Download {
     static {
@@ -21,10 +27,10 @@ public class Download {
     private String downloadPath;
 
     public Download() {
-        if (settings.youtubedlPath.isEmpty()) {
+        if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
         }
-        if (settings.ffmpegPath.isEmpty()) {
+        if (settings.getFfmpegPath().isEmpty()) {
             settings.setFfmpegPath();
         }
         this.setDownloadPath();
@@ -44,17 +50,17 @@ public class Download {
             searchQuery = song.getArtist().toString() + " - " + searchQuery;
         }
         List<String> command = new ArrayList<>();
-        command.add(settings.youtubedlPath);
+        command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
-        command.add(settings.ffmpegPath);
+        command.add(settings.getFfmpegPath());
         command.add("ytsearch1:" + searchQuery); // Limit to 1 result
         command.add("--no-playlist"); // TODO: still doing this, update search?
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
         command.add("--audio-format");
-        command.add(settings.downloadFormat);
+        command.add(settings.getDownloadFormat());
         command.add("--audio-quality");
-        command.add(String.valueOf(settings.downloadQuality));
+        command.add(String.valueOf(settings.getDownloadQuality()));
         command.add("--embed-metadata");
         command.add("--paths");
         command.add(path.getAbsolutePath());
@@ -86,7 +92,7 @@ public class Download {
     }
 
     public void downloadLikedSongs(LikedSongs likedSongs) {
-        File likedSongsFolder = new File(this.downloadPath, settings.likedSongFile);
+        File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
         ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
         likedSongsFolder.mkdirs();
         for (Song song : likedSongs.getSongs()) {

@@ -7,8 +7,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.tools.Menu;
-import ryzen.ownitall.tools.MusicTime;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.MusicTime;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);

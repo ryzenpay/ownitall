@@ -12,8 +12,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.tools.Input;
-import ryzen.ownitall.tools.Menu;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Menu;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

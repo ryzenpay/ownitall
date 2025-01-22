@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.library;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -18,6 +18,14 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
+
+import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Library;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -109,7 +117,7 @@ public class Youtube {
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
                         .setVideoCategoryId("10") // Category ID 10 is for Music
-                        .setMaxResults(settings.youtubeSongLimit)
+                        .setMaxResults(settings.getYoutubeSongLimit())
                         .setPageToken(pageToken)
                         .execute();
 
@@ -166,7 +174,7 @@ public class Youtube {
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
-                        .setMaxResults(settings.youtubePlaylistLimit)
+                        .setMaxResults(settings.getYoutubePlaylistLimit())
                         .setPageToken(nextPageToken);
 
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
@@ -202,7 +210,7 @@ public class Youtube {
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
-                        .setMaxResults(settings.youtubeSongLimit)
+                        .setMaxResults(settings.getYoutubeSongLimit())
                         .setPageToken(nextPageToken);
 
                 PlaylistItemListResponse itemResponse = itemRequest.execute();

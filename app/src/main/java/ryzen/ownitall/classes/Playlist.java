@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.classes;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,7 +9,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.tools.Levenshtein;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.util.Levenshtein;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

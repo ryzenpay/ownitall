@@ -2,7 +2,7 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.tools.Menu;
+import ryzen.ownitall.util.Menu;
 
 public class Tools {
     private static Tools instance;

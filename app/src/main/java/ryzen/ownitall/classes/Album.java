@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.classes;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.tools.Levenshtein;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.util.Levenshtein;
 
 public class Album extends Playlist {
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();

@@ -2,15 +2,14 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.tools.Input;
-import ryzen.ownitall.tools.Menu;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Menu;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);

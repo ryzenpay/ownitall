@@ -1,4 +1,4 @@
-package ryzen.ownitall.tools;
+package ryzen.ownitall.util;
 
 import java.util.ArrayList;
 import java.util.Map;

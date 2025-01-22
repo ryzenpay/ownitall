@@ -1,9 +1,9 @@
-package ryzen.ownitall.tools;
+package ryzen.ownitall.util;
 
 import java.time.Duration;
 import java.util.LinkedHashSet;
 
-import ryzen.ownitall.Song;
+import ryzen.ownitall.classes.Song;
 
 public class MusicTime {
     /**

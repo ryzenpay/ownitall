@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

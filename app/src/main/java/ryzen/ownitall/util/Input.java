@@ -1,4 +1,4 @@
-package ryzen.ownitall.tools;
+package ryzen.ownitall.util;
 
 import java.io.File;
 import java.util.Scanner;

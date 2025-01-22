@@ -2,7 +2,7 @@ package ryzen.ownitall;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.util.Input;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
-public class Settings extends ryzen.ownitall.tools.Settings { // TODO: non-interactive mode
+public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-interactive mode
     @JsonIgnore
     private static Settings instance;
     @JsonIgnore

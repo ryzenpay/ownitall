@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.library;
 
 //https://developer.spotify.com/documentation/web-api
 
@@ -32,7 +32,14 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Library;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Input;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -232,7 +239,7 @@ public class Spotify {
 
         while (hasMore) {
             GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
 
@@ -281,7 +288,7 @@ public class Spotify {
         while (hasMore) {
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
-                    .limit(settings.spotifyAlbumLimit)
+                    .limit(settings.getSpotifyAlbumLimit())
                     .offset(offset)
                     .build();
 
@@ -320,7 +327,7 @@ public class Spotify {
 
         while (hasMore) {
             GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
 
@@ -367,7 +374,7 @@ public class Spotify {
         while (hasMore) {
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
-                    .limit(settings.spotifyPlaylistLimit)
+                    .limit(settings.getSpotifyPlaylistLimit())
                     .offset(offset)
                     .build();
 
@@ -415,7 +422,7 @@ public class Spotify {
         boolean hasMore = true;
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
-                    .limit(settings.spotifySongLimit)
+                    .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
             try {

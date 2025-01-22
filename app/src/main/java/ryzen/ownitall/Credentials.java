@@ -2,7 +2,7 @@ package ryzen.ownitall;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import ryzen.ownitall.tools.Input;
+import ryzen.ownitall.util.Input;
 
 import java.io.File;
 import java.net.URI;
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
-public class Credentials extends ryzen.ownitall.tools.Settings {
+public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     private static Credentials instance;
     @JsonIgnore

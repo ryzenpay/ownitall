@@ -1,4 +1,4 @@
-package ryzen.ownitall.tools;
+package ryzen.ownitall.util;
 
 public class Levenshtein {
     private static final int[][] dp = new int[1000][1000]; // Preallocate matrix
