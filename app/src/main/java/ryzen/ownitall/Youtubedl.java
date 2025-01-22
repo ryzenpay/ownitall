@@ -50,6 +50,7 @@ public class Youtubedl {
         command.add("ytsearch1:" + searchQuery); // Limit to 1 result
         command.add("--no-playlist");
         command.add("--extract-audio");
+        command.add("--embed-thumbnail");
         command.add("--audio-format");
         command.add(settings.downloadFormat);
         command.add("--audio-quality");
