@@ -130,7 +130,7 @@ public class Download {
     }
 
     public void downloadPlaylist(Playlist playlist) {
-        File playlistFolder = new File(this.downloadPath, playlist.getName());
+        File playlistFolder = new File(this.downloadPath, playlist.getFileName());
         ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         playlistFolder.mkdirs();
         for (Song song : playlist.getSongs()) {
@@ -143,9 +143,8 @@ public class Download {
     }
 
     public void downloadAlbum(Album album) {
-        String albumFileName = album.getMainArtist() + " - " + album.getName();
         ProgressBar pb = Main.progressBar("Download Album: " + album.getName(), album.size());
-        File albumFolder = new File(this.downloadPath, albumFileName);
+        File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName());

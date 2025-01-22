@@ -85,6 +85,16 @@ public class Playlist {
         return this.name;
     }
 
+    @JsonIgnore
+    public String getFileName() {
+        String sanitized = this.toString().replaceAll("[<>:\"/\\|?*]", "_");
+        sanitized = sanitized.trim();
+        if (sanitized.length() > 255) {
+            sanitized = sanitized.substring(0, 255);
+        }
+        return sanitized;
+    }
+
     /**
      * set playlist cover art
      * 
