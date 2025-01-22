@@ -102,14 +102,18 @@ public class Input {
      * 
      * @return - constructed File to users path
      */
-    public File getFile() {
+    public File getFile(boolean exists) {
         while (true) {
             String path = getString();
             File file = new File(path);
-            if (file.exists()) {
-                return file;
+            if (exists) {
+                if (file.exists()) {
+                    return file;
+                } else {
+                    System.err.print("The specified file or folder does not exist. Try again: ");
+                }
             } else {
-                System.err.print("The specified file or folder does not exist. Try again: ");
+                return file;
             }
         }
     }

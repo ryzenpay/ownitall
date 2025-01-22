@@ -40,7 +40,7 @@ public class Library {
     }
 
     public Library() {
-        if (settings.useLibrary) {
+        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             credentials.setLastFMCredentials();
         }
         this.objectMapper = new ObjectMapper();

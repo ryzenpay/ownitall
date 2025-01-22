@@ -22,7 +22,7 @@ public class ImportMenu {
      * 
      */
     public ImportMenu() {
-        if (settings.useLibrary) {
+        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             logger.info("No local LastFM API key found");
             credentials.setLastFMCredentials();
         }

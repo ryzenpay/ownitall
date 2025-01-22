@@ -12,33 +12,33 @@ import org.apache.logging.log4j.Logger;
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.tools.Input;
 
-public class Youtubedl {
+public class Download {
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
-    private static final Logger logger = LogManager.getLogger(Youtubedl.class);
+    private static final Logger logger = LogManager.getLogger(Download.class);
     private static Settings settings = Settings.load();
+    private String downloadPath;
 
-    public static Youtubedl instance;
-
-    public Youtubedl() {
-        settings.setYoutubedlPath();
-        settings.setFfmpegPath();
-        settings.setDownloadPath();
+    public Download() {
+        if (settings.youtubedlPath.isEmpty()) {
+            settings.setYoutubedlPath();
+        }
+        if (settings.ffmpegPath.isEmpty()) {
+            settings.setFfmpegPath();
+        }
+        this.setDownloadPath();
         logger.info("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         Input.request().getAgreement();
     }
 
-    public static Youtubedl load() {
-        if (instance == null) {
-            instance = new Youtubedl();
-        }
-        return instance;
+    private void setDownloadPath() {
+        System.out.print("Please provide path to save music: ");
+        this.downloadPath = Input.request().getFile(false).getAbsolutePath();
     }
 
     public void downloadSong(Song song, File path) {
-        String baseFileName = path.getAbsolutePath() + "/" + song.getName();
         String searchQuery = song.getName();
         if (song.getArtist() != null) {
             searchQuery = song.getArtist().toString() + " - " + searchQuery;
@@ -48,7 +48,7 @@ public class Youtubedl {
         command.add("--ffmpeg-location");
         command.add(settings.ffmpegPath);
         command.add("ytsearch1:" + searchQuery); // Limit to 1 result
-        command.add("--no-playlist");
+        command.add("--no-playlist"); // TODO: still doing this, update search?
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
         command.add("--audio-format");
@@ -56,8 +56,10 @@ public class Youtubedl {
         command.add("--audio-quality");
         command.add(String.valueOf(settings.downloadQuality));
         command.add("--embed-metadata");
+        command.add("--paths");
+        command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(baseFileName + ".%(ext)s");
+        command.add(song.getName() + ".%(ext)s");
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
@@ -84,7 +86,7 @@ public class Youtubedl {
     }
 
     public void downloadLikedSongs(LikedSongs likedSongs) {
-        File likedSongsFolder = new File(settings.downloadPath, settings.likedSongFile);
+        File likedSongsFolder = new File(this.downloadPath, settings.likedSongFile);
         ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
         likedSongsFolder.mkdirs();
         for (Song song : likedSongs.getSongs()) {
@@ -97,7 +99,7 @@ public class Youtubedl {
     }
 
     public void downloadPlaylist(Playlist playlist) {
-        File playlistFolder = new File(settings.downloadPath, playlist.getName());
+        File playlistFolder = new File(this.downloadPath, playlist.getName());
         ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         playlistFolder.mkdirs();
         for (Song song : playlist.getSongs()) {
@@ -112,7 +114,7 @@ public class Youtubedl {
     public void downloadAlbum(Album album) {
         String albumFileName = album.getMainArtist() + " - " + album.getName();
         ProgressBar pb = Main.progressBar("Download Album: " + album.getName(), album.size());
-        File albumFolder = new File(settings.downloadPath, albumFileName);
+        File albumFolder = new File(this.downloadPath, albumFileName);
         albumFolder.mkdirs();
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName());

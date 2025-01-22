@@ -54,7 +54,9 @@ public class Spotify {
      * Default spotify constructor asking for user input
      */
     public Spotify() {
-        credentials.setSpotifyCredentials();
+        if (credentials.spotifyIsEmpty()) {
+            credentials.setSpotifyCredentials();
+        }
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(credentials.getSpotifyClientId())
                 .setClientSecret(credentials.getSpotifyClientSecret())

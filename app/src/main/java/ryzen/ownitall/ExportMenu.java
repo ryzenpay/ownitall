@@ -30,17 +30,17 @@ public class ExportMenu {
 
     private void optionDownload() {
         logger.info("Downloading music...");
-        Youtubedl youtubedl = new Youtubedl();
-        ProgressBar pb = Main.progressBar("YoutubeDL Export", 3);
+        Download download = new Download();
+        ProgressBar pb = Main.progressBar("Download music", 3);
         pb.setExtraMessage("Liked songs");
         // TODO: if song is liked + playlist/album it will download twice
-        youtubedl.downloadLikedSongs(this.collection.getLikedSongs());
+        download.downloadLikedSongs(this.collection.getLikedSongs());
         pb.setExtraMessage("Playlists").step();
         LinkedHashSet<Playlist> playlists = this.collection.getPlaylists();
         ProgressBar pbPlaylist = Main.progressBar("Playlist Downloads", playlists.size());
         for (Playlist playlist : playlists) {
             pbPlaylist.setExtraMessage(playlist.getName());
-            youtubedl.downloadPlaylist(playlist);
+            download.downloadPlaylist(playlist);
             pbPlaylist.step();
         }
         pbPlaylist.setExtraMessage("Done").step();
@@ -50,7 +50,7 @@ public class ExportMenu {
         ProgressBar pbAlbum = Main.progressBar("Album Downloads", albums.size());
         for (Album album : albums) {
             pbAlbum.setExtraMessage(album.getName());
-            youtubedl.downloadAlbum(album);
+            download.downloadAlbum(album);
             pbAlbum.step();
         }
         pbAlbum.setExtraMessage("Done").step();

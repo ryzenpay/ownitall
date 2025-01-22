@@ -43,7 +43,9 @@ public class Youtube {
      * default youtube constructor asking for user input
      */
     public Youtube() {
-        credentials.setYoutubeCredentials();
+        if (credentials.youtubeIsEmpty()) {
+            credentials.setYoutubeCredentials();
+        }
         this.youtubeApi = this.getService();
     }
 

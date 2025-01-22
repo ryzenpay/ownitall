@@ -92,10 +92,6 @@ public class Settings extends ryzen.ownitall.tools.Settings { // TODO: non-inter
      */
     protected String ffmpegPath = ""; // TODO: default path from ./resources
     /**
-     * download path of where to put downloaded music
-     */
-    protected String downloadPath = "";
-    /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
@@ -305,35 +301,9 @@ public class Settings extends ryzen.ownitall.tools.Settings { // TODO: non-inter
     }
 
     public void setYoutubedlPath() {
-        while (true) {
-            if (youtubedlPath.isEmpty()) {
-                logger.info("A guide to obtaining the following variables is in the readme");
-                System.out.print("Please provide local Youtube DL executable path: ");
-                youtubedlPath = Input.request().getFile().getAbsolutePath();
-            } else {
-                File file = new File(youtubedlPath);
-                if (file.exists()) {
-                    return;
-                }
-                logger.error("YoutubeDL not found with provided path: " + youtubedlPath);
-                youtubedlPath = "";
-            }
-        }
-    }
-
-    public String getDownloadPath() {
-        return downloadPath;
-    }
-
-    public void setDownloadPath(String downloadPath) {
-        this.downloadPath = downloadPath;
-    }
-
-    public void setDownloadPath() {
-        if (downloadPath.isEmpty()) {
-            System.out.print("Please provide path to save music: ");
-            downloadPath = Input.request().getFile().getAbsolutePath();
-        }
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please provide local Youtube DL executable path: ");
+        youtubedlPath = Input.request().getFile(true).getAbsolutePath();
     }
 
     public String getDownloadFormat() {
@@ -361,19 +331,9 @@ public class Settings extends ryzen.ownitall.tools.Settings { // TODO: non-inter
     }
 
     public void setFfmpegPath() {
-        while (true) {
-            if (ffmpegPath.isEmpty()) {
-                logger.info("A guide to obtaining the following variables is in the readme");
-                System.out.print("Please provide local FFMPEG executable path: ");
-                ffmpegPath = Input.request().getFile().getAbsolutePath();
-            } else {
-                File file = new File(ffmpegPath);
-                if (file.exists()) {
-                    return;
-                }
-                logger.error("FFMPEG not found with provided path: " + ffmpegPath);
-                ffmpegPath = "";
-            }
-        }
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please provide local FFMPEG executable path: ");
+        ffmpegPath = Input.request().getFile(true).getAbsolutePath();
+
     }
 }
