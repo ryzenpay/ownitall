@@ -1,8 +1,10 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +46,24 @@ public class Download {
         this.downloadPath = Input.request().getFile(false).getAbsolutePath();
     }
 
+    // TODO: musicbee playlist / album / liked songs generation
     public void downloadSong(Song song, File path) {
         File songFile = new File(path.getAbsolutePath(), song.getName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
             logger.debug("Already found downloaded file: " + songFile.getAbsolutePath());
             return;
+        }
+        File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
+        File likedSongFile = new File(likedSongsFolder, song.getName() + "." + settings.getDownloadFormat());
+        if (likedSongFile.exists()) {
+            try {
+                Files.copy(likedSongFile.toPath(), songFile.toPath());
+                logger.debug("Already found liked song downloaded: " + likedSongFile);
+                return;
+            } catch (IOException e) {
+                logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
+                        + songFile.getAbsolutePath() + " error: " + e);
+            }
         }
         List<String> command = new ArrayList<>();
         // executables
@@ -57,7 +72,7 @@ public class Download {
         command.add(settings.getFfmpegPath());
         command.add("--quiet");
         // search for video using the query
-        command.add("ytsearch1:" + song.toString());
+        command.add("ytsearch1:" + song.toString()); // TODO: cookies for age restriction
         // exclude any found playlists
         command.add("--no-playlist");
         command.add("--break-match-filters");
