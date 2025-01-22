@@ -41,7 +41,13 @@ public class Input {
      * @return - char of user input
      */
     public char getChar() {
-        return getString().charAt(0);
+        while (true) {
+            try {
+                return getString().charAt(0);
+            } catch (Exception e) {
+                System.err.print("Invalid Input. Please enter a valid character: ");
+            }
+        }
     }
 
     /**
@@ -52,9 +58,8 @@ public class Input {
     public int getInt() {
         while (true) {
             try {
-                int result = Integer.parseInt(getString());
-                return result;
-            } catch (NumberFormatException e) {
+                return Integer.parseInt(getString());
+            } catch (Exception e) {
                 System.err.print("Invalid input. Please enter a valid integer: ");
             }
         }
@@ -76,7 +81,7 @@ public class Input {
                 } else {
                     System.err.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
                 }
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 System.err.print("Invalid input. Please enter a valid integer: ");
             }
         }
@@ -91,7 +96,7 @@ public class Input {
         while (true) {
             try {
                 return Long.parseLong(getString());
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 System.err.print("Invalid input. Please enter a valid long: ");
             }
         }

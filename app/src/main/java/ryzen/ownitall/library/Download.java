@@ -44,18 +44,25 @@ public class Download {
         this.downloadPath = Input.request().getFile(false).getAbsolutePath();
     }
 
-    public void downloadSong(Song song, File path) { // TODO: batch job
-        String searchQuery = song.getName();
-        if (song.getArtist() != null) {
-            searchQuery = song.getArtist().toString() + " - " + searchQuery;
+    public void downloadSong(Song song, File path) {
+        File songFile = new File(path.getAbsolutePath(), song.getName() + "." + settings.getDownloadFormat());
+        if (songFile.exists()) { // dont download twice
+            logger.debug("Already found downloaded file: " + songFile.getAbsolutePath());
+            return;
         }
-        searchQuery += " video"; // filters only videos
         List<String> command = new ArrayList<>();
+        // executables
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
         command.add(settings.getFfmpegPath());
-        command.add("ytsearch1:" + searchQuery);
+        command.add("--quiet");
+        // search for video using the query
+        command.add("ytsearch1:" + song.toString());
+        // exclude any found playlists
         command.add("--no-playlist");
+        command.add("--break-match-filters");
+        command.add("playlist");
+        // metadata and formatting
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
         command.add("--audio-format");
@@ -63,6 +70,7 @@ public class Download {
         command.add("--audio-quality");
         command.add(String.valueOf(settings.getDownloadQuality()));
         command.add("--embed-metadata");
+        // download location
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
@@ -78,7 +86,7 @@ public class Download {
             String lastLine = "";
             while ((line = reader.readLine()) != null) {
                 lastLine = line;
-                // logger.info(line);
+                logger.debug(line);
             }
 
             int exitCode = process.waitFor();

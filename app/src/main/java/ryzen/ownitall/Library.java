@@ -107,7 +107,7 @@ public class Library {
                 logger.error("Error parsing json while getting artist " + artistName + ": " + e);
             }
         }
-        logger.info("Could not find artist '" + artistName + "' in Library");
+        logger.debug("Could not find artist '" + artistName + "' in Library");
         return tmpArtist;
     }
 
@@ -164,7 +164,7 @@ public class Library {
                 logger.error("Error parsing json while getting album " + albumName + ": " + e);
             }
         }
-        logger.info("Could not find Album '" + albumName + "' in Library");
+        logger.debug("Could not find Album '" + albumName + "' in Library");
         return tmpAlbum;
     }
 
@@ -229,7 +229,7 @@ public class Library {
                 logger.error("Error parshing json while getting song " + songName + ": " + e);
             }
         }
-        logger.info("Could not find song '" + songName + "' in Library");
+        logger.debug("Could not find song '" + songName + "' in Library");
         return tmpSong;
     }
 
