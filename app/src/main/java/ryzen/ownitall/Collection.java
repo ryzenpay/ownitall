@@ -262,20 +262,46 @@ public class Collection {
             options.put(playlist.toString(), playlist);
         }
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
+            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
                     return;
                 } else {
                     this.playlists.remove(options.get(choice));
-                    return;
+                    logger.info("Successfully removed playlist: " + choice);
+                    break;
                 }
             }
         }
     }
 
     private void optionMergePlaylist() {
-
+        LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+        for (Playlist playlist : this.playlists) {
+            options.put(playlist.toString(), playlist);
+        }
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    return;
+                } else {
+                    Playlist playlist = options.get(choice);
+                    options.remove(choice);
+                    String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
+                    if (choice2 != null) {
+                        if (choice2.equals("Exit")) {
+                            return;
+                        } else {
+                            playlist.merge(options.get(choice2));
+                            this.playlists.remove(options.get(choice2));
+                            logger.info("Successfully merged playlist: " + choice2 + " into: " + choice);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void optionDeleteAlbum() {
@@ -284,13 +310,14 @@ public class Collection {
             options.put(album.toString(), album);
         }
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "ALBUM SELECTION MENU");
+            String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
                     return;
                 } else {
                     this.albums.remove(options.get(choice));
-                    return;
+                    logger.info("Successfully removed album: " + choice);
+                    break;
                 }
             }
         }
@@ -302,13 +329,14 @@ public class Collection {
             options.put(song.toString(), song);
         }
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "SONG SELECTION MENU");
+            String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
                     return;
                 } else {
                     this.likedSongs.removeSong(options.get(choice));
-                    return;
+                    logger.info("Successfully removed liked song: " + choice);
+                    break;
                 }
             }
         }

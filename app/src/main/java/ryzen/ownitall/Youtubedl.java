@@ -48,6 +48,7 @@ public class Youtubedl {
         command.add("--ffmpeg-location");
         command.add(settings.ffmpegPath);
         command.add("ytsearch1:" + searchQuery); // Limit to 1 result
+        command.add("--no-playlist");
         command.add("--extract-audio");
         command.add("--audio-format");
         command.add(settings.downloadFormat);
@@ -96,7 +97,7 @@ public class Youtubedl {
 
     public void downloadPlaylist(Playlist playlist) {
         File playlistFolder = new File(settings.downloadPath, playlist.getName());
-        ProgressBar pb = Main.progressBar("Downloading Liked songs", playlist.size());
+        ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         playlistFolder.mkdirs();
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName());
@@ -109,7 +110,7 @@ public class Youtubedl {
 
     public void downloadAlbum(Album album) {
         String albumFileName = album.getMainArtist() + " - " + album.getName();
-        ProgressBar pb = Main.progressBar("Downloading Liked songs", album.size());
+        ProgressBar pb = Main.progressBar("Download Album: " + album.getName(), album.size());
         File albumFolder = new File(settings.downloadPath, albumFileName);
         albumFolder.mkdirs();
         for (Song song : album.getSongs()) {
