@@ -60,6 +60,16 @@ public class Song {
         return this.name;
     }
 
+    @JsonIgnore
+    public String getFileName() {
+        String sanitized = this.name.replaceAll("[<>:\"/\\|?*]", "_");
+        sanitized = sanitized.trim();
+        if (sanitized.length() > 255) {
+            sanitized = sanitized.substring(0, 255);
+        }
+        return sanitized;
+    }
+
     /**
      * set song name
      * 

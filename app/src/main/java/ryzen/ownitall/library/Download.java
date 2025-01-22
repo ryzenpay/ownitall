@@ -48,17 +48,17 @@ public class Download {
 
     // TODO: musicbee playlist / album / liked songs generation
     public void downloadSong(Song song, File path) {
-        File songFile = new File(path.getAbsolutePath(), song.getName() + "." + settings.getDownloadFormat());
+        File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
-            logger.debug("Already found downloaded file: " + songFile.getAbsolutePath());
+            logger.info("Already found downloaded file: " + songFile.getAbsolutePath());
             return;
         }
         File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
-        File likedSongFile = new File(likedSongsFolder, song.getName() + "." + settings.getDownloadFormat());
+        File likedSongFile = new File(likedSongsFolder, song.getFileName() + "." + settings.getDownloadFormat());
         if (likedSongFile.exists()) {
             try {
                 Files.copy(likedSongFile.toPath(), songFile.toPath());
-                logger.debug("Already found liked song downloaded: " + likedSongFile);
+                logger.info("Already found liked song downloaded: " + likedSongFile);
                 return;
             } catch (IOException e) {
                 logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
@@ -89,7 +89,7 @@ public class Download {
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(song.getName() + ".%(ext)s");
+        command.add(song.getFileName() + ".%(ext)s");
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
