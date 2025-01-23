@@ -26,7 +26,6 @@ public class Playlist {
      * to save api requests
      * TODO: implement update method to save API requests
      * ^ this has no rush as is only greatly in use for very big music libraries
-     * ^^ wouldnt update to any songs removed after imported
      */
     private String youtubePageToken;
     private int spotifyPageOffset = 0;

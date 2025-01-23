@@ -55,6 +55,7 @@ public class Download {
     /**
      * download a specified song
      * TODO: musicbee playlist / album / liked songs generation (M3U)
+     * TODO: album / playlist cover as cover.jpg
      * 
      * @param song - constructed song
      * @param path - folder of where to place
@@ -77,6 +78,7 @@ public class Download {
                         + songFile.getAbsolutePath() + " error: " + e);
             }
         }
+        String searchQuery = song.toString() + " -music audio";
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -84,7 +86,7 @@ public class Download {
         command.add(settings.getFfmpegPath());
         command.add("--quiet");
         // search for video using the query
-        command.add("ytsearch1:" + song.toString()); // TODO: cookies for age restriction
+        command.add("ytsearch1:" + searchQuery); // TODO: cookies for age restriction
         // exclude any found playlists
         command.add("--no-playlist");
         command.add("--break-match-filters");
@@ -120,8 +122,6 @@ public class Download {
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
                 logger.error("Last output from youtube-dl: " + lastLine); // Log last line of output
-                // TODO: clean up youtube dl files (song.getFileName() with different
-                // extensions)
                 return;
             }
         } catch (Exception e) {
