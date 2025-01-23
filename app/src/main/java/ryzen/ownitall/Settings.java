@@ -83,12 +83,12 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
      * youtube dl installation path
      * 
      */
-    protected String youtubedlPath = ""; // TODO: default path from ./resources
+    protected String youtubedlPath = "";
     /**
      * ffmpeg path (required for youtubedl)
      * 
      */
-    protected String ffmpegPath = ""; // TODO: default path from ./resources
+    protected String ffmpegPath = "";
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"

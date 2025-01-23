@@ -3,6 +3,8 @@ package ryzen.ownitall.library;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +56,6 @@ public class Download {
 
     /**
      * download a specified song
-     * TODO: musicbee playlist / album / liked songs generation (M3U)
      * TODO: album / playlist cover as cover.jpg
      * 
      * @param song - constructed song
@@ -139,6 +140,12 @@ public class Download {
         File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
         ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
         likedSongsFolder.mkdirs();
+        File likedM3UFile = new File(likedSongsFolder, "info.m3u");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(likedM3UFile))) {
+            writer.write(likedSongs.getM3U(likedSongsFolder.getAbsolutePath()));
+        } catch (IOException e) {
+            logger.error("Error writing playlist m3u: " + likedM3UFile.getAbsolutePath() + ": " + e);
+        }
         for (Song song : likedSongs.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, likedSongsFolder);
@@ -173,6 +180,12 @@ public class Download {
         File playlistFolder = new File(this.downloadPath, playlist.getFileName());
         ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         playlistFolder.mkdirs();
+        File playlistM3UFile = new File(playlistFolder, "info.m3u");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(playlistM3UFile))) {
+            writer.write(playlist.getM3U(playlistFolder.getAbsolutePath()));
+        } catch (IOException e) {
+            logger.error("Error writing playlist m3u: " + playlistM3UFile.getAbsolutePath() + ": " + e);
+        }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, playlistFolder);
@@ -197,6 +210,12 @@ public class Download {
         ProgressBar pb = Main.progressBar("Download Album: " + album.getName(), album.size());
         File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
+        File albumM3UFile = new File(albumFolder, "info.m3u");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(albumM3UFile))) {
+            writer.write(album.getM3U(albumFolder.getAbsolutePath()));
+        } catch (IOException e) {
+            logger.error("Error writing album m3u: " + albumM3UFile.getAbsolutePath() + ": " + e);
+        }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.downloadSong(song, albumFolder);

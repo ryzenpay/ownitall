@@ -1,5 +1,6 @@
 package ryzen.ownitall.classes;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
@@ -9,9 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
+import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
+    private static String downloadFormat = Settings.load().getDownloadFormat();
     LinkedHashSet<Artist> artists;
 
     /**
@@ -108,6 +111,26 @@ public class Album extends Playlist {
         if (this.getMainArtist() != null) {
             output += " (" + this.getMainArtist() + ")";
         }
+        return output;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getM3U(String albumPath) {
+        // m3u header
+        String output = "#EXTM3U\n";
+        // m3u album information
+        output += "#EXTALB:" + this.toString() + "\n";
+        output += "#EXTART:" + this.getMainArtist() + "\n";
+        // m3u album contents
+        for (Song song : this.getSongs()) {
+            File file = new File(albumPath, song.getFileName() + "." + downloadFormat);
+            output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
+                    + song.toString() + "\n";
+            output += file.getAbsolutePath() + "\n";
+        }
+        File cover = new File(albumPath, "cover.jpg");
+        output += "#EXTIMG:" + cover.getAbsolutePath();
         return output;
     }
 

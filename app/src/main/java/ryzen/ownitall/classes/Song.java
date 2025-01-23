@@ -164,7 +164,7 @@ public class Song {
     public String toString() {
         String output = this.name;
         if (this.artist != null) {
-            output += " | " + this.artist.getName();
+            output += " - " + this.artist.getName();
         }
         return output;
     }

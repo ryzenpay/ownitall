@@ -1,5 +1,6 @@
 package ryzen.ownitall.classes;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
+import ryzen.ownitall.util.MusicTools;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
+    private static String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private URI coverImage;
     private LinkedHashSet<Song> songs;
@@ -92,6 +95,24 @@ public class Playlist {
             sanitized = sanitized.substring(0, 255);
         }
         return sanitized;
+    }
+
+    @JsonIgnore
+    public String getM3U(String playlistPath) {
+        // m3u header
+        String output = "#EXTM3U\n";
+        // m3u playlist information
+        output += "#PLAYLIST:" + this.toString() + "\n";
+        // m3u playlist contents
+        for (Song song : this.songs) {
+            File file = new File(playlistPath, song.getFileName() + "." + downloadFormat);
+            output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
+                    + song.toString() + "\n";
+            output += file.getAbsolutePath() + "\n";
+        }
+        File cover = new File(playlistPath, "cover.jpg");
+        output += "#EXTIMG:" + cover.getAbsolutePath();
+        return output;
     }
 
     /**

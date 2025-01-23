@@ -41,17 +41,13 @@ public class Main {
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
         while (true) {
-            try {
-                String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-                if (choice.equals("Exit")) {
-                    System.out.println("Exiting program. Goodbye!");
-                    logger.info("Exiting program...");
-                    System.exit(0);
-                } else {
-                    options.get(choice).run();
-                }
-            } catch (Exception e) {
-                System.out.println("Interrupted: " + e);
+            String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
+            if (choice.equals("Exit")) {
+                System.out.println("Exiting program. Goodbye!");
+                logger.info("Exiting program...");
+                System.exit(0);
+            } else {
+                options.get(choice).run();
             }
         }
     }
@@ -93,16 +89,12 @@ public class Main {
      */
     private static void optionSave() {
         sync.exportCollection(collection);
-        try {
-            settings.saveSettings();
-            if (settings.saveCredentials) {
-                Credentials.load().save();
-            }
-            if (settings.useLibrary) {
-                Library.load().save();
-            }
-        } catch (Exception e) {
-            logger.error(e);
+        settings.saveSettings();
+        if (settings.saveCredentials) {
+            Credentials.load().save();
+        }
+        if (settings.useLibrary) {
+            Library.load().save();
         }
     }
 
