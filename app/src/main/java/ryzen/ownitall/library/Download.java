@@ -142,7 +142,7 @@ public class Download {
         likedSongsFolder.mkdirs();
         File likedM3UFile = new File(likedSongsFolder, "info.m3u");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(likedM3UFile))) {
-            writer.write(likedSongs.getM3U(likedSongsFolder.getAbsolutePath()));
+            writer.write(likedSongs.getM3U());
         } catch (IOException e) {
             logger.error("Error writing playlist m3u: " + likedM3UFile.getAbsolutePath() + ": " + e);
         }
@@ -182,7 +182,7 @@ public class Download {
         playlistFolder.mkdirs();
         File playlistM3UFile = new File(playlistFolder, "info.m3u");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(playlistM3UFile))) {
-            writer.write(playlist.getM3U(playlistFolder.getAbsolutePath()));
+            writer.write(playlist.getM3U());
         } catch (IOException e) {
             logger.error("Error writing playlist m3u: " + playlistM3UFile.getAbsolutePath() + ": " + e);
         }
@@ -212,7 +212,7 @@ public class Download {
         albumFolder.mkdirs();
         File albumM3UFile = new File(albumFolder, "info.m3u");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(albumM3UFile))) {
-            writer.write(album.getM3U(albumFolder.getAbsolutePath()));
+            writer.write(album.getM3U());
         } catch (IOException e) {
             logger.error("Error writing album m3u: " + albumM3UFile.getAbsolutePath() + ": " + e);
         }

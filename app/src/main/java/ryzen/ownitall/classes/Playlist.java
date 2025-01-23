@@ -98,19 +98,19 @@ public class Playlist {
     }
 
     @JsonIgnore
-    public String getM3U(String playlistPath) {
+    public String getM3U() {
         // m3u header
         String output = "#EXTM3U\n";
         // m3u playlist information
         output += "#PLAYLIST:" + this.toString() + "\n";
         // m3u playlist contents
         for (Song song : this.songs) {
-            File file = new File(playlistPath, song.getFileName() + "." + downloadFormat);
+            File file = new File(song.getFileName() + "." + downloadFormat);
             output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
                     + song.toString() + "\n";
             output += file.getAbsolutePath() + "\n";
         }
-        File cover = new File(playlistPath, "cover.jpg");
+        File cover = new File("cover.jpg");
         output += "#EXTIMG:" + cover.getAbsolutePath();
         return output;
     }

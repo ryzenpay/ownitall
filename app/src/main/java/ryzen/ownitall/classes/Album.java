@@ -116,7 +116,7 @@ public class Album extends Playlist {
 
     @Override
     @JsonIgnore
-    public String getM3U(String albumPath) {
+    public String getM3U() {
         // m3u header
         String output = "#EXTM3U\n";
         // m3u album information
@@ -124,12 +124,12 @@ public class Album extends Playlist {
         output += "#EXTART:" + this.getMainArtist() + "\n";
         // m3u album contents
         for (Song song : this.getSongs()) {
-            File file = new File(albumPath, song.getFileName() + "." + downloadFormat);
+            File file = new File(song.getFileName() + "." + downloadFormat);
             output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
                     + song.toString() + "\n";
             output += file.getAbsolutePath() + "\n";
         }
-        File cover = new File(albumPath, "cover.jpg");
+        File cover = new File("cover.jpg");
         output += "#EXTIMG:" + cover.getAbsolutePath();
         return output;
     }
