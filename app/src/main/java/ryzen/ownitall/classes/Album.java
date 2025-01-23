@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
-import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();

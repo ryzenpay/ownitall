@@ -1,7 +1,7 @@
 package ryzen.ownitall.classes;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +17,7 @@ public class Artist {
     private static final Logger logger = LogManager.getLogger(Artist.class);
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
-    private URI coverImage;
+    private URL coverImage;
 
     public Artist(String name) {
         this.name = name;
@@ -50,20 +50,20 @@ public class Artist {
             return;
         }
         try {
-            this.coverImage = new URI(coverImage);
-        } catch (URISyntaxException e) {
+            this.coverImage = new URL(coverImage);
+        } catch (MalformedURLException e) {
             logger.error("Error parsing Song cover image: " + coverImage);
         }
     }
 
-    public void setCoverImage(URI coverImage) {
+    public void setCoverImage(URL coverImage) {
         if (coverImage == null) {
             return;
         }
         this.coverImage = coverImage;
     }
 
-    public URI getCoverImage() {
+    public URL getCoverImage() {
         return this.coverImage;
     }
 

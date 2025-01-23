@@ -13,6 +13,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
@@ -34,17 +35,24 @@ public class Collection {
      * 
      * @param mergeAlbums - linkedhashset of albums to merge
      */
-    public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
+    public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
         if (mergeAlbums == null || mergeAlbums.isEmpty()) {
             return;
         }
         for (Album album : mergeAlbums) {
-            Album foundAlbum = getAlbum(this.albums, album);
-            if (foundAlbum != null) {
-                foundAlbum.merge(album);
-            } else {
-                this.albums.add(album);
-            }
+            addAlbum(album);
+        }
+    }
+
+    public void addAlbum(Album album) {
+        if (album == null || album.isEmpty()) {
+            return;
+        }
+        Album foundAlbum = this.getAlbum(album);
+        if (foundAlbum != null) {
+            foundAlbum.merge(album);
+        } else {
+            this.albums.add(album);
         }
     }
 
@@ -53,17 +61,24 @@ public class Collection {
      * 
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
-    public void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
+    public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
         if (mergePlaylists == null || mergePlaylists.isEmpty()) {
             return;
         }
         for (Playlist playlist : mergePlaylists) {
-            Playlist foundPlaylist = getPlaylist(this.playlists, playlist);
-            if (foundPlaylist != null) {
-                foundPlaylist.merge(playlist);
-            } else {
-                this.playlists.add(playlist);
-            }
+            this.addPlaylist(playlist);
+        }
+    }
+
+    public void addPlaylist(Playlist playlist) {
+        if (playlist == null || playlist.isEmpty()) {
+            return;
+        }
+        Playlist foundPlaylist = this.getPlaylist(playlist);
+        if (foundPlaylist != null) {
+            foundPlaylist.merge(playlist);
+        } else {
+            this.playlists.add(playlist);
         }
     }
 
@@ -72,11 +87,18 @@ public class Collection {
      * 
      * @param mergeLikedSongs - constructed LikedSongs
      */
-    public void mergeLikedSongs(LikedSongs mergeLikedSongs) {
-        if (mergeLikedSongs == null || mergeLikedSongs.isEmpty()) {
+    public void addLikedSongs(LinkedHashSet<Song> songs) {
+        if (songs == null || songs.isEmpty()) {
             return;
         }
-        this.likedSongs.addSongs(mergeLikedSongs.getSongs()); // handled by playlist addSongs
+        this.likedSongs.addSongs(songs); // handled by playlist addSongs
+    }
+
+    public void addLikedSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return;
+        }
+        this.likedSongs.addSong(song);
     }
 
     /**
@@ -87,13 +109,13 @@ public class Collection {
      */
     public void mergeCollection(Collection collection) {
         logger.info("Updating Music Collection");
-        ProgressBar pb = Main.progressBar("Update Collection", 3);
+        ProgressBar pb = Progressbar.progressBar("Update Collection", 3);
         pb.setExtraMessage("Albums");
-        this.mergeAlbums(collection.getAlbums());
+        this.addAlbums(collection.getAlbums());
         pb.setExtraMessage("Playlists").step();
-        this.mergePlaylists(collection.getPlaylists());
+        this.addPlaylists(collection.getPlaylists());
         pb.setExtraMessage("Liked Songs").step();
-        this.mergeLikedSongs(collection.getLikedSongs());
+        this.addLikedSongs(collection.getLikedSongs().getSongs());
         pb.setExtraMessage("Done").step();
         pb.close();
     }
@@ -158,6 +180,17 @@ public class Collection {
         return null;
     }
 
+    public Album getAlbum(Album album) {
+        if (this.albums.contains(album)) {
+            for (Album thisAlbum : this.albums) {
+                if (thisAlbum.equals(album)) {
+                    return thisAlbum;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * get this collections playlists
      * 
@@ -177,6 +210,17 @@ public class Collection {
     public static Playlist getPlaylist(LinkedHashSet<Playlist> playlists, Playlist playlist) {
         if (playlists.contains(playlist)) {
             for (Playlist thisPlaylist : playlists) {
+                if (thisPlaylist.equals(playlist)) {
+                    return thisPlaylist;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Playlist getPlaylist(Playlist playlist) {
+        if (this.playlists.contains(playlist)) {
+            for (Playlist thisPlaylist : this.playlists) {
                 if (thisPlaylist.equals(playlist)) {
                     return thisPlaylist;
                 }

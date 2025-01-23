@@ -94,12 +94,28 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
      * current supported: "mp3", "flac", "wav"
      */
     protected String downloadFormat = "mp3";
+
+    /**
+     * optional to hardcode local download path
+     */
+    protected String downloadFolder = "";
+
+    /**
+     * download all files in a hierachy method
+     * playlists get their own folders
+     */
+    protected boolean downloadHierachy = false;
     /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
     protected int downloadQuality = 5;
+
+    /**
+     * optional to hardcode local upload path
+     */
+    protected String uploadFolder = "";
 
     @JsonIgnore
     public static Settings load() {
@@ -331,5 +347,29 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
         System.out.print("Please provide local FFMPEG executable path: ");
         ffmpegPath = Input.request().getFile(true).getAbsolutePath();
 
+    }
+
+    public String getDownloadFolder() {
+        return downloadFolder;
+    }
+
+    public void setDownloadFolder(String downloadFolder) {
+        this.downloadFolder = downloadFolder;
+    }
+
+    public boolean isDownloadHierachy() {
+        return downloadHierachy;
+    }
+
+    public void setDownloadHierachy(boolean downloadHierachy) {
+        this.downloadHierachy = downloadHierachy;
+    }
+
+    public String getUploadFolder() {
+        return uploadFolder;
+    }
+
+    public void setUploadFolder(String uploadFolder) {
+        this.uploadFolder = uploadFolder;
     }
 }

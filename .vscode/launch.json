@@ -3,25 +3,27 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Attach",
-            "request": "attach",
-            "hostName": "localhost",
-            "port": "<debug port of the debuggee>"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=INFO"
-        },
-        {
-            "type": "java",
-            "name": "Main",
+            "name": "testing",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
             "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=INFO"
+        },
+        {
+            "type": "java",
+            "name": "production",
+            "request": "launch",
+            "mainClass": "ryzen.ownitall.Main",
+            "projectName": "app",
+            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=OFF"
+        },
+        {
+            "type": "java",
+            "name": "debug",
+            "request": "launch",
+            "mainClass": "ryzen.ownitall.Main",
+            "projectName": "app",
+            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=DEBUG"
         }
     ]
 }

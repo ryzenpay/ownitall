@@ -32,11 +32,11 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -56,11 +56,13 @@ public class Spotify {
     private static Library library = Library.load();
     private SpotifyApi spotifyApi;
     private String code;
+    private Collection collection;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
+        this.collection = new Collection();
         if (credentials.spotifyIsEmpty()) {
             credentials.setSpotifyCredentials();
         }
@@ -232,9 +234,9 @@ public class Spotify {
      * @param offset - offset to continue from, default to 0
      * @return - arraylist of constructed songs
      */
-    public LikedSongs getLikedSongs(int offset) {
-        LikedSongs likedSongs = new LikedSongs();
+    public void getLikedSongs() {
         int limit = 50;
+        int offset = this.collection.getLikedSongs().getSpotifyPageOffset();
         boolean hasMore = true;
 
         while (hasMore) {
@@ -254,14 +256,14 @@ public class Spotify {
                         Track track = savedTrack.getTrack();
                         Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        likedSongs.addSong(song);
+                        this.collection.addLikedSong(song);
                     }
                     offset += limit;
                 }
 
                 if (offset >= savedTrackPaging.getTotal()) {
                     hasMore = false;
-                    likedSongs.setSpotifyPageOffset(offset);
+                    this.collection.getLikedSongs().setSpotifyPageOffset(offset);
                 }
             } catch (TooManyRequestsException e) {
                 logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -271,7 +273,6 @@ public class Spotify {
                 hasMore = false;
             }
         }
-        return likedSongs;
     }
 
     /**
@@ -279,8 +280,7 @@ public class Spotify {
      * 
      * @return - arraylist of constructed albums
      */
-    public LinkedHashSet<Album> getAlbums() {
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+    public void getAlbums() {
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -301,11 +301,18 @@ public class Spotify {
                     for (SavedAlbum savedAlbum : items) {
                         Album album = library.getAlbum(savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
-                        LinkedHashSet<Song> songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(), 0);
+                        Album foundAlbum = this.collection.getAlbum(album);
+                        LinkedHashSet<Song> songs;
+                        if (foundAlbum != null) {
+                            songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(),
+                                    foundAlbum.getSpotifyPageOffset());
+                        } else {
+                            songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(), 0);
+                        }
                         if (!songs.isEmpty()) {
                             album.addSongs(songs);
                             album.setSpotifyPageOffset(songs.size());
-                            albums.add(album);
+                            this.collection.addAlbum(album);
                         }
                     }
                     offset += limit;
@@ -318,7 +325,6 @@ public class Spotify {
                 hasMore = false;
             }
         }
-        return albums;
     }
 
     /**
@@ -373,8 +379,7 @@ public class Spotify {
      * 
      * @return - arraylist of constructed Playlists
      */
-    public LinkedHashSet<Playlist> getPlaylists() {
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+    public void getPlaylists() {
         int limit = 20;
         int offset = 0;
         boolean hasMore = true;
@@ -396,12 +401,19 @@ public class Spotify {
                 } else {
                     for (PlaylistSimplified spotifyPlaylist : items) {
                         Playlist playlist = new Playlist(spotifyPlaylist.getName());
-                        LinkedHashSet<Song> songs = this.getPlaylistSongs(spotifyPlaylist.getId(), 0);
+                        Playlist foundPlaylist = this.collection.getPlaylist(playlist);
+                        LinkedHashSet<Song> songs;
+                        if (foundPlaylist != null) {
+                            songs = this.getPlaylistSongs(spotifyPlaylist.getId(),
+                                    foundPlaylist.getSpotifyPageOffset());
+                        } else {
+                            songs = this.getPlaylistSongs(spotifyPlaylist.getId(), 0);
+                        }
                         if (!songs.isEmpty()) {
                             playlist.addSongs(songs);
                             playlist.setSpotifyPageOffset(songs.size());
                             playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
-                            playlists.add(playlist);
+                            this.collection.addPlaylist(playlist);
                         }
                     }
                     offset += limit;
@@ -417,7 +429,6 @@ public class Spotify {
                 hasMore = false;
             }
         }
-        return playlists;
     }
 
     /**
@@ -475,5 +486,9 @@ public class Spotify {
             }
         }
         return songs;
+    }
+
+    public Collection getCollection() {
+        return this.collection;
     }
 }

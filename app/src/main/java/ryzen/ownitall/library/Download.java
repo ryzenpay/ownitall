@@ -3,8 +3,6 @@ package ryzen.ownitall.library;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.Main;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
@@ -23,6 +20,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.Progressbar;
 
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
@@ -40,7 +38,11 @@ public class Download {
         if (settings.getFfmpegPath().isEmpty()) {
             settings.setFfmpegPath();
         }
-        this.setDownloadPath();
+        if (settings.getDownloadFolder().isEmpty()) {
+            this.setDownloadPath();
+        } else {
+            this.downloadPath = settings.getDownloadFolder();
+        }
         logger.info("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         Input.request().getAgreement();
@@ -56,7 +58,6 @@ public class Download {
 
     /**
      * download a specified song
-     * TODO: album / playlist cover as cover.jpg
      * 
      * @param song - constructed song
      * @param path - folder of where to place
@@ -64,34 +65,32 @@ public class Download {
     public void downloadSong(Song song, File path) {
         File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
-            logger.debug("Already found downloaded file: " + songFile.getAbsolutePath());
             return;
         }
-        File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
-        File likedSongFile = new File(likedSongsFolder, song.getFileName() + "." + settings.getDownloadFormat());
-        if (path != likedSongsFolder && likedSongFile.exists()) { // to prevent overwriting from its own folder
+        File likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
+        if (likedSongFile.exists()) { // to prevent overwriting from its own folder
             try {
                 Files.copy(likedSongFile.toPath(), songFile.toPath());
-                logger.debug("Already found liked song downloaded: " + likedSongFile);
+                logger.debug("Already found liked song downloaded: " + likedSongFile.getAbsolutePath());
                 return;
             } catch (IOException e) {
                 logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
                         + songFile.getAbsolutePath() + " error: " + e);
             }
         }
-        String searchQuery = song.toString() + " -music audio";
+        String searchQuery = song.toString() + " #official"; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
         command.add(settings.getFfmpegPath());
-        command.add("--quiet");
+        // command.add("--quiet");
         // search for video using the query
-        command.add("ytsearch1:" + searchQuery); // TODO: cookies for age restriction
-        // exclude any found playlists
-        command.add("--no-playlist");
-        command.add("--break-match-filters");
-        command.add("playlist");
+        command.add("\"ytsearch1:" + searchQuery + "\""); // TODO: cookies for age restriction
+        // exclude any found playlists or shorts
+        command.add("--no-playlist"); // Prevent downloading playlists
+        command.add("--break-match-filter");
+        command.add("duration>=45"); // exclude shorts
         // metadata and formatting
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
@@ -113,17 +112,20 @@ public class Download {
             // Capture output for logging
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
-            String lastLine = "";
+            String completeLog = "";
             while ((line = reader.readLine()) != null) {
-                lastLine = line;
-                logger.debug(line);
+                completeLog += line + "\n";
             }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
-                logger.error("Last output from youtube-dl: " + lastLine); // Log last line of output
+                logger.error(completeLog); // Log last line of output
                 return;
+            }
+            if (!songFile.exists()) {
+                logger.error("Everything passed but the file " + songFile.getAbsolutePath() + "is still missing");
+                logger.error("Search Query: " + searchQuery + "\nComplete log: " + completeLog);
             }
         } catch (Exception e) {
             logger.error("Error handling youtubeDL: " + e);
@@ -137,14 +139,14 @@ public class Download {
      * @param likedSongs - constructed liked songs
      */
     public void downloadLikedSongs(LikedSongs likedSongs) {
-        File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
-        ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
+        File likedSongsFolder = new File(this.downloadPath);
+        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         likedSongsFolder.mkdirs();
-        File likedM3UFile = new File(likedSongsFolder, "info.m3u");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(likedM3UFile))) {
-            writer.write(likedSongs.getM3U());
-        } catch (IOException e) {
-            logger.error("Error writing playlist m3u: " + likedM3UFile.getAbsolutePath() + ": " + e);
+        try {
+            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), likedSongsFolder);
+        } catch (Exception e) {
+            logger.error(
+                    "Error writing Liked Songs (" + likedSongsFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
         for (Song song : likedSongs.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
@@ -161,7 +163,7 @@ public class Download {
      * @param playlists - linkedhashset of playlists to download
      */
     public void downloadPlaylists(LinkedHashSet<Playlist> playlists) {
-        ProgressBar pbPlaylist = Main.progressBar("Playlist Downloads", playlists.size());
+        ProgressBar pbPlaylist = Progressbar.progressBar("Playlist Downloads", playlists.size());
         for (Playlist playlist : playlists) {
             pbPlaylist.setExtraMessage(playlist.getName());
             this.downloadPlaylist(playlist);
@@ -177,14 +179,18 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
-        File playlistFolder = new File(this.downloadPath, playlist.getFileName());
-        ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
+        File playlistFolder;
+        if (settings.isDownloadHierachy()) {
+            playlistFolder = new File(this.downloadPath, playlist.getFileName());
+        } else {
+            playlistFolder = new File(this.downloadPath);
+        }
         playlistFolder.mkdirs();
-        File playlistM3UFile = new File(playlistFolder, "info.m3u");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(playlistM3UFile))) {
-            writer.write(playlist.getM3U());
-        } catch (IOException e) {
-            logger.error("Error writing playlist m3u: " + playlistM3UFile.getAbsolutePath() + ": " + e);
+        ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
+        try {
+            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), playlistFolder);
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
@@ -196,7 +202,7 @@ public class Download {
     }
 
     public void downloadAlbums(LinkedHashSet<Album> albums) {
-        ProgressBar pbAlbum = Main.progressBar("Album Downloads", albums.size());
+        ProgressBar pbAlbum = Progressbar.progressBar("Album Downloads", albums.size());
         for (Album album : albums) {
             pbAlbum.setExtraMessage(album.getName());
             this.downloadAlbum(album);
@@ -207,14 +213,16 @@ public class Download {
     }
 
     public void downloadAlbum(Album album) {
-        ProgressBar pb = Main.progressBar("Download Album: " + album.getName(), album.size());
+        ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
         File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
-        File albumM3UFile = new File(albumFolder, "info.m3u");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(albumM3UFile))) {
-            writer.write(album.getM3U());
-        } catch (IOException e) {
-            logger.error("Error writing album m3u: " + albumM3UFile.getAbsolutePath() + ": " + e);
+        try {
+            MusicTools.writeM3U(album.getFileName(), album.getM3U(), albumFolder);
+            if (album.getCoverImage() != null) {
+                MusicTools.downloadImage(album.getCoverImage(), albumFolder);
+            }
+        } catch (Exception e) {
+            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
@@ -230,9 +238,9 @@ public class Download {
             return;
         }
         for (File file : folder.listFiles()) {
-            if (file.isFile()) {
+            if (file.isFile() && !file.getName().equals("info.m3u") && !file.getName().equals("cover.png")) {
                 String extension = MusicTools.getExtension(file);
-                if (!extension.equals(settings.getDownloadFormat()) && !extension.equals("m3u")) {
+                if (!extension.equals(settings.getDownloadFormat())) {
                     if (file.delete()) {
                         logger.info("Cleaned up file: " + file.getAbsolutePath());
                     } else {

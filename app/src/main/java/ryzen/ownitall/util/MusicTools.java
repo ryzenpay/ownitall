@@ -1,6 +1,11 @@
 package ryzen.ownitall.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 
@@ -43,5 +48,25 @@ public class MusicTools {
         String fileName = file.getName();
         int extensionIndex = fileName.lastIndexOf('.');
         return fileName.substring(extensionIndex + 1).toLowerCase();
+    }
+
+    public static void writeM3U(String title, String M3UData, File folder) throws Exception {
+        if (!folder.exists()) {
+            return;
+        }
+        File M3UFile = new File(folder, title + ".m3u");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(M3UFile))) {
+            writer.write(M3UData);
+        }
+    }
+
+    public static void downloadImage(URL url, File folder) throws Exception {
+        if (!folder.exists()) {
+            return;
+        }
+        File imageFile = new File(folder, "cover.png");
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, imageFile.toPath());
+        }
     }
 }

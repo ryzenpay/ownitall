@@ -1,7 +1,6 @@
 package ryzen.ownitall;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,6 +18,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.Progressbar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -185,14 +185,14 @@ public class Sync {
      * @return - constructed collection
      */
     public Collection importCollection() {
-        ProgressBar pb = Main.progressBar("Opening Saved Data", 3);
+        ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3);
         Collection collection = new Collection();
         pb.setExtraMessage("Albums");
-        collection.mergeAlbums(this.importAlbums());
+        collection.addAlbums(this.importAlbums());
         pb.setExtraMessage("Playlists").step();
-        collection.mergePlaylists(this.importPlaylists());
+        collection.addPlaylists(this.importPlaylists());
         pb.setExtraMessage("Liked Songs").step();
-        collection.mergeLikedSongs(this.importLikedSongs());
+        collection.addLikedSongs(this.importLikedSongs().getSongs());
         pb.setExtraMessage("Done").step();
         pb.close();
         return collection;
@@ -205,7 +205,7 @@ public class Sync {
      * @param collection - constructed collection to save
      */
     public void exportCollection(Collection collection) {
-        ProgressBar pb = Main.progressBar("Saving Data", 3);
+        ProgressBar pb = Progressbar.progressBar("Saving Data", 3);
         pb.setExtraMessage("Albums");
         this.exportAlbums(collection.getAlbums());
         pb.setExtraMessage("Playlists").step();

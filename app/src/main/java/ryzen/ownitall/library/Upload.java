@@ -15,10 +15,10 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -30,33 +30,36 @@ import java.time.temporal.ChronoUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Local {
+public class Upload {
     // disable jaudiotagger logger
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
-    private static final Logger logger = LogManager.getLogger(Local.class);
+    private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
+    private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     private static Library library = Library.load();
+    private Collection collection;
     private File localLibrary;
-    private final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
+    private ArrayList<File> localLibraryFolders;
     // formats have to be lower case
 
     /**
      * default local constructor asking for library path
      */
-    public Local() {
-        System.out.print("Provide absolute path to local music library (folder): ");
-        this.localLibrary = Input.request().getFile(true);
+    public Upload() {
+        this.collection = new Collection();
+        if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
+            this.setLocalLibrary();
+        }
+        this.localLibraryFolders = this.getLibraryFolders();
     }
 
-    /**
-     * default local constructor with a known library path
-     * 
-     * @param localFolderPath - String with path location to local music library
-     */
-    public Local(String localFolderPath) {
-        this.localLibrary = new File(localFolderPath);
+    private void setLocalLibrary() {
+        while (this.localLibrary == null || !this.localLibrary.exists()) {
+            System.out.print("Provide absolute path to local music library (folder): ");
+            this.localLibrary = Input.request().getFile(true);
+        }
     }
 
     /**
@@ -102,64 +105,52 @@ public class Local {
      * 
      * @return - constructed LikedSongs
      */
-    public LikedSongs getLikedSongs() {
-        LikedSongs likedSongs = new LikedSongs();
+    public void getLikedSongs() {
         for (File file : this.localLibrary.listFiles()) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
-                Song song = this.getSong(file);
+                Song song = getSong(file);
                 if (song != null) {
-                    likedSongs.addSong(song);
+                    this.collection.addLikedSong(song);
                 }
             }
             if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
-                likedSongs.addSongs(this.getSongs(file));
+                this.collection.addLikedSongs(getSongs(file));
             }
         }
-        return likedSongs;
     }
 
-    /**
-     * get local playlists
-     * criteria for playlist is determined by isAlbum() = false
-     * 
-     * @return - LinkedHashSet with constructed Playlist
-     */
-    public LinkedHashSet<Playlist> getPlaylists() {
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
-        for (File file : this.getLibraryFolders()) {
-            if (file.isDirectory()) {
-                if (!isAlbum(file)) {
-                    Playlist playlist = new Playlist(file.getName());
-                    playlist.addSongs(this.getSongs(file));
-                    if (!playlist.isEmpty()) {
-                        playlists.add(playlist);
-                    }
-                }
-            }
-        }
-        return playlists;
-    }
-
-    /**
-     * get local albums
-     * criteria for album is determined by isAlbum() = true
-     * 
-     * @return - linkedhashset with constructed Album
-     */
-    public LinkedHashSet<Album> getAlbums() {
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
-        for (File file : this.getLibraryFolders()) {
+    public void processFolders() {
+        for (File file : this.localLibraryFolders) {
             if (file.isDirectory()) {
                 if (isAlbum(file)) {
-                    Album album = this.getAlbum(file);
-                    album.addSongs(this.getSongs(file));
+                    Album album = getAlbum(file);
                     if (!album.isEmpty()) {
-                        albums.add(album);
+                        this.collection.addAlbum(album);
+                    }
+                } else {
+                    Playlist playlist = getPlaylist(file);
+                    if (!playlist.isEmpty()) {
+                        if (playlist.size() <= 1) { // filter out singles
+                            this.collection.addLikedSongs(playlist.getSongs());
+                        } else {
+                            this.collection.addPlaylist(playlist);
+                        }
                     }
                 }
             }
         }
-        return albums;
+    }
+
+    public static Playlist getPlaylist(File folder) {
+        Playlist playlist = new Playlist(folder.getName());
+        playlist.addSongs(getSongs(folder));
+        return playlist;
+    }
+
+    public static Album getAlbum(File folder) {
+        Album album = constructAlbum(folder);
+        album.addSongs(getSongs(folder));
+        return album;
     }
 
     /**
@@ -168,7 +159,7 @@ public class Local {
      * @param file - file to get metadata from
      * @return - constructed Song
      */
-    public Song getSong(File file) {
+    public static Song getSong(File file) {
         Song song;
         String fileName = file.getName().substring(0, file.getName().length() - 4);
         try {
@@ -199,7 +190,7 @@ public class Local {
      * @param folder - folder to get all songs from
      * @return - linkedhashset of constructed songs
      */
-    public LinkedHashSet<Song> getSongs(File folder) {
+    public static LinkedHashSet<Song> getSongs(File folder) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         if (folder.isFile() || !folder.exists()) {
             return songs;
@@ -219,7 +210,7 @@ public class Local {
      * @param folder - folder of the playlist/album
      * @return - true if album, false if playlist
      */
-    public boolean isAlbum(File folder) {
+    public static boolean isAlbum(File folder) {
         if (!folder.isDirectory() || folder.list().length <= 1) {
             return false;
         }
@@ -262,7 +253,7 @@ public class Local {
      * @param folder - folder to get files from
      * @return - constructed Album without songs
      */
-    public Album getAlbum(File folder) {
+    public static Album constructAlbum(File folder) {
         Album album;
         String albumName = null;
         String artistName = null;
@@ -283,5 +274,9 @@ public class Local {
             album = library.getAlbum(folder.getName(), artistName);
         }
         return album;
+    }
+
+    public Collection getCollection() {
+        return this.collection;
     }
 }
