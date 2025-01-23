@@ -127,10 +127,10 @@ public class Album extends Playlist {
             File file = new File(song.getFileName() + "." + downloadFormat);
             output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
                     + song.toString() + "\n";
-            output += file + "\n";
+            output += file.getPath() + "\n";
         }
         File cover = new File("cover.jpg");
-        output += "#EXTIMG:" + cover;
+        output += "#EXTIMG:" + cover.getPath();
         return output;
     }
 
