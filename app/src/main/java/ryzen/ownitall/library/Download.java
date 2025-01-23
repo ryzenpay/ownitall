@@ -64,15 +64,15 @@ public class Download {
     public void downloadSong(Song song, File path) {
         File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
-            logger.info("Already found downloaded file: " + songFile.getAbsolutePath());
+            logger.debug("Already found downloaded file: " + songFile.getAbsolutePath());
             return;
         }
         File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
         File likedSongFile = new File(likedSongsFolder, song.getFileName() + "." + settings.getDownloadFormat());
-        if (likedSongFile.exists()) {
+        if (path != likedSongsFolder && likedSongFile.exists()) { // to prevent overwriting from its own folder
             try {
                 Files.copy(likedSongFile.toPath(), songFile.toPath());
-                logger.info("Already found liked song downloaded: " + likedSongFile);
+                logger.debug("Already found liked song downloaded: " + likedSongFile);
                 return;
             } catch (IOException e) {
                 logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
@@ -231,7 +231,8 @@ public class Download {
         }
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
-                if (!MusicTools.getExtension(file).equals(settings.getDownloadFormat())) {
+                String extension = MusicTools.getExtension(file);
+                if (!extension.equals(settings.getDownloadFormat()) && !extension.equals("m3u")) {
                     if (file.delete()) {
                         logger.info("Cleaned up file: " + file.getAbsolutePath());
                     } else {
