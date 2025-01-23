@@ -109,6 +109,8 @@ public class Download {
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
                 logger.error("Last output from youtube-dl: " + lastLine); // Log last line of output
+                // TODO: clean up youtube dl files (song.getFileName() with different
+                // extensions)
                 return;
             }
         } catch (Exception e) {

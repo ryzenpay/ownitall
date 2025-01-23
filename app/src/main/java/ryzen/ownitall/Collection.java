@@ -32,7 +32,7 @@ public class Collection {
         }
         for (Album album : mergeAlbums) {
             if (this.albums.contains(album)) {
-                this.getAlbum(album).merge(album);
+                getAlbum(this.albums, album).merge(album);
             } else {
                 this.albums.add(album);
             }
@@ -45,7 +45,7 @@ public class Collection {
         }
         for (Playlist playlist : mergePlaylists) {
             if (this.playlists.contains(playlist)) {
-                this.getPlaylist(playlist).merge(playlist);
+                getPlaylist(this.playlists, playlist).merge(playlist);
             } else {
                 this.playlists.add(playlist);
             }
@@ -104,8 +104,8 @@ public class Collection {
         return new LinkedHashSet<>(this.albums);
     }
 
-    public Album getAlbum(Album album) {
-        for (Album thisAlbum : this.albums) {
+    public static Album getAlbum(LinkedHashSet<Album> albums, Album album) {
+        for (Album thisAlbum : albums) {
             if (thisAlbum.equals(album)) {
                 return thisAlbum;
             }
@@ -117,8 +117,8 @@ public class Collection {
         return new LinkedHashSet<>(this.playlists);
     }
 
-    public Playlist getPlaylist(Playlist playlist) {
-        for (Playlist thisPlaylist : this.playlists) {
+    public static Playlist getPlaylist(LinkedHashSet<Playlist> playlists, Playlist playlist) {
+        for (Playlist thisPlaylist : playlists) {
             if (thisPlaylist.equals(playlist)) {
                 return thisPlaylist;
             }

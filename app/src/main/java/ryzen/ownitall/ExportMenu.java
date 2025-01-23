@@ -14,12 +14,11 @@ import ryzen.ownitall.util.Menu;
 
 public class ExportMenu {
     private static final Logger logger = LogManager.getLogger(ExportMenu.class);
-    private LinkedHashMap<String, Runnable> options;
     private Collection collection;
 
     public ExportMenu(Collection collection) {
         this.collection = collection;
-        this.options = new LinkedHashMap<>();
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download (YoutubeDL)", this::optionDownload);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "EXPORT");

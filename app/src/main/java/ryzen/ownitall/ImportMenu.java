@@ -21,7 +21,6 @@ public class ImportMenu {
     private static Settings settings = Settings.load();
     private static Credentials credentials = Credentials.load();
     private Collection collection;
-    private LinkedHashMap<String, Runnable> options;
 
     /**
      * constructor for Import which also prompts user for import options
@@ -33,7 +32,7 @@ public class ImportMenu {
             credentials.setLastFMCredentials();
         }
         this.collection = new Collection();
-        this.options = new LinkedHashMap<>();
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Youtube", this::importYoutube);
         options.put("Spotify", this::importSpotify);
         options.put("Local", this::importLocal);
@@ -55,7 +54,7 @@ public class ImportMenu {
         logger.info("Importing youtube music");
         ProgressBar pb = Main.progressBar("Youtube Import", 3);
         pb.setExtraMessage("Liked songs");
-        this.collection.mergeLikedSongs(youtube.getLikedSongs());
+        this.collection.mergeLikedSongs(youtube.getLikedSongs(null));
         pb.setExtraMessage("Saved Albums").step();
         this.collection.mergeAlbums(youtube.getAlbums());
         pb.setExtraMessage("Playlists").step();
@@ -73,7 +72,7 @@ public class ImportMenu {
         Spotify spotify = new Spotify();
         ProgressBar pb = Main.progressBar("Spotify Import", 3);
         pb.setExtraMessage("Liked Songs");
-        this.collection.mergeLikedSongs(spotify.getLikedSongs());
+        this.collection.mergeLikedSongs(spotify.getLikedSongs(0));
         pb.setExtraMessage("Saved Albums").step();
         this.collection.mergeAlbums(spotify.getAlbums());
         pb.setExtraMessage("Playlists").step();

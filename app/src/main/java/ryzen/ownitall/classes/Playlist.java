@@ -29,7 +29,7 @@ public class Playlist {
      * ^^ wouldnt update to any songs removed after imported
      */
     private String youtubePageToken;
-    private int spotifyPageOffset = -1;
+    private int spotifyPageOffset = 0;
 
     /**
      * Default playlist constructor
@@ -192,6 +192,9 @@ public class Playlist {
      * @return - String youtube page token
      */
     public String getYoutubePageToken() {
+        if (this.youtubePageToken == null) {
+            return null;
+        }
         return this.youtubePageToken;
     }
 

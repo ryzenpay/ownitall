@@ -33,7 +33,6 @@ import java.util.LinkedHashSet;
 import java.util.Arrays;
 import java.time.Duration;
 import java.util.List;
-import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +43,7 @@ public class Youtube {
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
-    private Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
+    private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     /**
@@ -105,9 +104,8 @@ public class Youtube {
      * 
      * @return - constructed LikedSongs
      */
-    public LikedSongs getLikedSongs() {
+    public LikedSongs getLikedSongs(String pageToken) {
         LikedSongs songs = new LikedSongs();
-        String pageToken = null;
         if (youtubeApi == null) {
             return songs;
         }
@@ -180,7 +178,7 @@ public class Youtube {
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
-                    LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
+                    LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId(), null);
                     if (!songs.isEmpty()) {
                         Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                         playlist.addSongs(songs);
@@ -202,16 +200,15 @@ public class Youtube {
      * @param playlistId - youtube id of playlist
      * @return - arraylist of constructed Song
      */
-    private LinkedHashSet<Song> getPlaylistSongs(String playlistId) {
+    private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        String nextPageToken = null;
         try {
             do {
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
                         .setMaxResults(settings.getYoutubeSongLimit())
-                        .setPageToken(nextPageToken);
+                        .setPageToken(pageToken);
 
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
 
@@ -224,8 +221,8 @@ public class Youtube {
                         songs.add(song);
                     }
                 }
-                nextPageToken = itemResponse.getNextPageToken();
-            } while (nextPageToken != null);
+                pageToken = itemResponse.getNextPageToken();
+            } while (pageToken != null);
         } catch (IOException e) {
             logger.error("Error retrieving playlist songs: " + e);
         }
