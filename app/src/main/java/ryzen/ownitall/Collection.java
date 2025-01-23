@@ -83,7 +83,7 @@ public class Collection {
      * merge a collection into the current collection
      * orchestrates the merge albums, playlists and liked songs
      * 
-     * @param collection
+     * @param collection - collection to get values to merge into this collection
      */
     public void mergeCollection(Collection collection) {
         logger.info("Updating Music Collection");

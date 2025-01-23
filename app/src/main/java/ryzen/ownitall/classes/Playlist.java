@@ -97,7 +97,7 @@ public class Playlist {
     /**
      * set playlist cover art
      * 
-     * @param coverArt - String of coverart URL
+     * @param coverImage - String of coverart URL
      */
     public void setCoverImage(String coverImage) {
         if (coverImage == null) {

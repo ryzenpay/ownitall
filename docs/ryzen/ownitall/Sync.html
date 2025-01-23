@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":9,"i11":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":9,"i16":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -193,65 +193,109 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cacheAlbums(java.util.LinkedHashSet)">cacheAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</code></th>
+<td class="colLast">
+<div class="block">cache albums
+ ^ syncs with local files</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cacheArtists(java.util.LinkedHashSet)">cacheArtists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</code></th>
+<td class="colLast">
+<div class="block">cache artists locally
+ ^ syncs with local files</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cacheSongs(java.util.LinkedHashSet)">cacheSongs</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs)</code></th>
+<td class="colLast">
+<div class="block">cache songs
+ ^ syncs with local files</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkDataFolder()">checkDataFolder</a></span>()</code></th>
 <td class="colLast">
 <div class="block">check if existing data files exist</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportAlbums(java.util.LinkedHashSet)">exportAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;&nbsp;albums)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearCache()">clearCache</a></span>()</code></th>
+<td class="colLast">
+<div class="block">clear cache files</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportAlbums(java.util.LinkedHashSet)">exportAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</code></th>
 <td class="colLast">
 <div class="block">save all albums</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportLikedSongs(ryzen.ownitall.LikedSongs)">exportLikedSongs</a></span>&#8203;(<a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a>&nbsp;likedSongs)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportCollection(ryzen.ownitall.Collection)">exportCollection</a></span>&#8203;(<a href="Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</code></th>
+<td class="colLast">
+<div class="block">save collection to local files
+ orchestrates export albums, playlists and liked songs</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportLikedSongs(ryzen.ownitall.classes.LikedSongs)">exportLikedSongs</a></span>&#8203;(<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;likedSongs)</code></th>
 <td class="colLast">
 <div class="block">save all liked songs</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportPlaylists(java.util.LinkedHashSet)">exportPlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;&nbsp;playlists)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#exportPlaylists(java.util.LinkedHashSet)">exportPlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</code></th>
 <td class="colLast">
 <div class="block">save all playlists</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;</code></td>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importAlbums()">importAlbums</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import saved albums</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="Collection.html" title="class in ryzen.ownitall">Collection</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importCollection()">importCollection</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">import collection from files
+ orchestrates import albums, playlists and liked songs</div>
+</td>
 </tr>
-<tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a></code></td>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code><a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importLikedSongs()">importLikedSongs</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import all saved liked songs</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;</code></td>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importPlaylists()">importPlaylists</a></span>()</code></th>
 <td class="colLast">
 <div class="block">import all saved playlists</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>static <a href="Sync.html" title="class in ryzen.ownitall">Sync</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load()">load</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">set instance</div>
+</td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unArchive()">unArchive</a></span>()</code></th>
 <td class="colLast">
@@ -311,6 +355,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>load</h4>
 <pre class="methodSignature">public static&nbsp;<a href="Sync.html" title="class in ryzen.ownitall">Sync</a>&nbsp;load()</pre>
+<div class="block">set instance</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- new or existing instance</dd>
+</dl>
 </li>
 </ul>
 <a id="checkDataFolder()">
@@ -347,6 +396,10 @@ extends java.lang.Object</pre>
 <pre class="methodSignature">public&nbsp;void&nbsp;archive&#8203;(boolean&nbsp;noUserInput)</pre>
 <div class="block">create archive folder (current date) in dataPath and move all current files
  to it with no user input</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>noUserInput</code> - - optional boolean to silence userinput</dd>
+</dl>
 </li>
 </ul>
 <a id="unArchive()">
@@ -361,6 +414,16 @@ extends java.lang.Object</pre>
  also archives current files with todays date to prevent data loss</div>
 </li>
 </ul>
+<a id="clearCache()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clearCache</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;clearCache()</pre>
+<div class="block">clear cache files</div>
+</li>
+</ul>
 <a id="importCollection()">
 <!--   -->
 </a>
@@ -368,6 +431,27 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>importCollection</h4>
 <pre class="methodSignature">public&nbsp;<a href="Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;importCollection()</pre>
+<div class="block">import collection from files
+ orchestrates import albums, playlists and liked songs</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed collection</dd>
+</dl>
+</li>
+</ul>
+<a id="exportCollection(ryzen.ownitall.Collection)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>exportCollection</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;exportCollection&#8203;(<a href="Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</pre>
+<div class="block">save collection to local files
+ orchestrates export albums, playlists and liked songs</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>collection</code> - - constructed collection to save</dd>
+</dl>
 </li>
 </ul>
 <a id="exportAlbums(java.util.LinkedHashSet)">
@@ -376,7 +460,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>exportAlbums</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;exportAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;&nbsp;albums)</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;exportAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</pre>
 <div class="block">save all albums</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -390,7 +474,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importAlbums</h4>
-<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&gt;&nbsp;importAlbums()</pre>
+<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;importAlbums()</pre>
 <div class="block">import saved albums</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -404,7 +488,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>exportPlaylists</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;exportPlaylists&#8203;(java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;&nbsp;playlists)</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;exportPlaylists&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</pre>
 <div class="block">save all playlists</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -418,7 +502,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importPlaylists</h4>
-<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="Playlist.html" title="class in ryzen.ownitall">Playlist</a>&gt;&nbsp;importPlaylists()</pre>
+<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;importPlaylists()</pre>
 <div class="block">import all saved playlists</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -426,13 +510,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="exportLikedSongs(ryzen.ownitall.LikedSongs)">
+<a id="exportLikedSongs(ryzen.ownitall.classes.LikedSongs)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>exportLikedSongs</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;exportLikedSongs&#8203;(<a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a>&nbsp;likedSongs)</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;exportLikedSongs&#8203;(<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;likedSongs)</pre>
 <div class="block">save all liked songs</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -443,14 +527,65 @@ extends java.lang.Object</pre>
 <a id="importLikedSongs()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>importLikedSongs</h4>
-<pre class="methodSignature">public&nbsp;<a href="LikedSongs.html" title="class in ryzen.ownitall">LikedSongs</a>&nbsp;importLikedSongs()</pre>
+<pre class="methodSignature">public&nbsp;<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;importLikedSongs()</pre>
 <div class="block">import all saved liked songs</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- constructed LikedSongs</dd>
+</dl>
+</li>
+</ul>
+<a id="cacheArtists(java.util.LinkedHashSet)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>cacheArtists</h4>
+<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;cacheArtists&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</pre>
+<div class="block">cache artists locally
+ ^ syncs with local files</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>artists</code> - - linkedhashset to cache</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- updated linkedhashset of artists</dd>
+</dl>
+</li>
+</ul>
+<a id="cacheSongs(java.util.LinkedHashSet)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>cacheSongs</h4>
+<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;cacheSongs&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs)</pre>
+<div class="block">cache songs
+ ^ syncs with local files</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songs</code> - - linkedhashset to offload</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- updated linkedhashset of songs</dd>
+</dl>
+</li>
+</ul>
+<a id="cacheAlbums(java.util.LinkedHashSet)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>cacheAlbums</h4>
+<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;cacheAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</pre>
+<div class="block">cache albums
+ ^ syncs with local files</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>albums</code> - - linkedhashset to offload</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- updated linkedhashset of albums</dd>
 </dl>
 </li>
 </ul>

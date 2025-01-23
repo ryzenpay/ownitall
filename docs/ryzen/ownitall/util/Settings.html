@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -115,7 +115,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <!-- ======== START OF CLASS DATA ======== -->
 <main role="main">
 <div class="header">
-<div class="subTitle"><span class="packageLabelInType">Package</span>&nbsp;<a href="package-summary.html">ryzen.ownitall.tools</a></div>
+<div class="subTitle"><span class="packageLabelInType">Package</span>&nbsp;<a href="package-summary.html">ryzen.ownitall.util</a></div>
 <h2 title="Class Settings" class="title">Class Settings</h2>
 </div>
 <div class="contentContainer">
@@ -123,7 +123,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>ryzen.ownitall.tools.Settings</li>
+<li>ryzen.ownitall.util.Settings</li>
 </ul>
 </li>
 </ul>
@@ -137,14 +137,30 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">Settings</span>
 extends java.lang.Object</pre>
-<div class="block">this is a default settings class which is made to easily extend and then add
- your own settings. all you would need to add in your own class are the
- private variables and their setters / getters
+<div class="block">This class serves as a default settings configuration that can be easily
+ extended
+ to include custom settings. To create your own settings class, simply define
+ the private variables along with their corresponding getters and setters.
  
- to make a "single instance"/singleton so all settings are syncronized, use
- the
- following in your extended class:
- {@code:</div>
+ To implement a singleton pattern, ensuring that all settings are
+ synchronized,
+ include the following method in your extended class:
+ 
+ public static Settings load() {
+ if (instance == null) {
+ instance = new Settings();
+ try {
+ instance.loadSettings(Settings.class); // Rename to your class if
+ not
+ "Settings"
+ } catch (Exception e) {
+ logger.error(e);
+ logger.info("If this persists, delete the file: " +
+ instance.getSettingsFilePath());
+ }
+ }
+ return instance;
+ }</div>
 </li>
 </ul>
 </div>
@@ -194,33 +210,40 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearSettings(java.lang.String)">clearSettings</a></span>&#8203;(java.lang.String&nbsp;filePath)</code></th>
+<td class="colLast">
+<div class="block">delete settings of predefined file</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;java.lang.reflect.Field&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAllSettings()">getAllSettings</a></span>()</code></th>
 <td class="colLast">
 <div class="block">flexibly get all settings</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSettingsFolderPath()">getSettingsFolderPath</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i3" class="rowColor">
-<td class="colFirst"><code>protected &lt;T extends <a href="Settings.html" title="class in ryzen.ownitall.tools">Settings</a>&gt;<br>void</code></td>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>protected &lt;T extends <a href="Settings.html" title="class in ryzen.ownitall.util">Settings</a>&gt;<br>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#importSettings(java.lang.Class,java.lang.String)">importSettings</a></span>&#8203;(java.lang.Class&lt;T&gt;&nbsp;settingsClass,
               java.lang.String&nbsp;filePath)</code></th>
 <td class="colLast">
 <div class="block">load settings from saved file</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isEmpty()">isEmpty</a></span>()</code></th>
 <td class="colLast">
 <div class="block">check if settings correctly imported</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveSettings(java.lang.String)">saveSettings</a></span>&#8203;(java.lang.String&nbsp;filePath)</code></th>
 <td class="colLast">
@@ -276,13 +299,18 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importSettings</h4>
-<pre class="methodSignature">protected&nbsp;&lt;T extends <a href="Settings.html" title="class in ryzen.ownitall.tools">Settings</a>&gt;&nbsp;void&nbsp;importSettings&#8203;(java.lang.Class&lt;T&gt;&nbsp;settingsClass,
+<pre class="methodSignature">protected&nbsp;&lt;T extends <a href="Settings.html" title="class in ryzen.ownitall.util">Settings</a>&gt;&nbsp;void&nbsp;importSettings&#8203;(java.lang.Class&lt;T&gt;&nbsp;settingsClass,
                                                    java.lang.String&nbsp;filePath)
                                             throws java.lang.Exception</pre>
 <div class="block">load settings from saved file</div>
 <dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>T</code> - - settings class</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>settingsClass</code> - - settings class</dd>
+<dd><code>filePath</code> - - filepath to save to</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.lang.Exception</code> - - incase of running into error while saving</dd>
 </dl>
 </li>
 </ul>
@@ -296,8 +324,24 @@ extends java.lang.Object</pre>
                      throws java.lang.Exception</pre>
 <div class="block">save settings to predefined file</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>filePath</code> - - filepath of settings file</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.lang.Exception</code> - - if unable to save to file</dd>
+</dl>
+</li>
+</ul>
+<a id="clearSettings(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clearSettings</h4>
+<pre class="methodSignature">protected&nbsp;void&nbsp;clearSettings&#8203;(java.lang.String&nbsp;filePath)</pre>
+<div class="block">delete settings of predefined file</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>filePath</code> - - filepath of settings file</dd>
 </dl>
 </li>
 </ul>
@@ -314,7 +358,8 @@ extends java.lang.Object</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- ArrayList of all setting varialbes as Object</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.lang.Exception</code> - - if get into error obtaining and setting settings
+                   accessibility</dd>
 </dl>
 </li>
 </ul>
@@ -329,7 +374,7 @@ extends java.lang.Object</pre>
 <div class="block">print menu of settings and values, prompt user for which to change</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.lang.Exception</code> - - exception if unable to modify setting</dd>
 </dl>
 </li>
 </ul>

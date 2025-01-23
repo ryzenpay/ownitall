@@ -102,6 +102,7 @@ public class Youtube {
     /**
      * get all youtube liked songs
      * 
+     * @param pageToken - token to continue from, default to null
      * @return - constructed LikedSongs
      */
     public LikedSongs getLikedSongs(String pageToken) {

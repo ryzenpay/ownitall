@@ -105,6 +105,7 @@ public class Input {
     /**
      * save user file path input
      * 
+     * @param exists - optional parameter to enforce if file has to exist or not
      * @return - constructed File to users path
      */
     public File getFile(boolean exists) {

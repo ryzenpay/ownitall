@@ -229,6 +229,7 @@ public class Spotify {
     /**
      * Get all liked songs from current spotify account
      * 
+     * @param offset - offset to continue from, default to 0
      * @return - arraylist of constructed songs
      */
     public LikedSongs getLikedSongs(int offset) {

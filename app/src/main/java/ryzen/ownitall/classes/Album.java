@@ -27,9 +27,12 @@ public class Album extends Playlist {
     /**
      * full album constructor
      * 
-     * @param name    - album name
-     * @param songs   - SongSet of songs
-     * @param artists - constructed Artist
+     * @param name              - album name
+     * @param songs             - linkedhashset of songs
+     * @param youtubePageToken  - youtube page token
+     * @param spotifyPageOffset - spotify page token
+     * @param coverImage        - cover art
+     * @param artists           - linkedhashset of artists
      */
     @JsonCreator
     public Album(@JsonProperty("name") String name, @JsonProperty("songs") LinkedHashSet<Song> songs,

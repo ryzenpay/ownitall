@@ -15,20 +15,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * this is a default settings class which is made to easily extend and then add
- * your own settings. all you would need to add in your own class are the
- * private variables and their setters / getters
+ * This class serves as a default settings configuration that can be easily
+ * extended
+ * to include custom settings. To create your own settings class, simply define
+ * the private variables along with their corresponding getters and setters.
  * 
- * to make a "single instance"/singleton so all settings are syncronized, use
- * the
- * following in your extended class:
- * {@code:
- * @JsonIgnore
+ * To implement a singleton pattern, ensuring that all settings are
+ * synchronized,
+ * include the following method in your extended class:
+ * 
  * public static Settings load() {
  * if (instance == null) {
  * instance = new Settings();
  * try {
- * instance.loadSettings(Settings.class); //rename to your class if not
+ * instance.loadSettings(Settings.class); // Rename to your class if
+ * not
  * "Settings"
  * } catch (Exception e) {
  * logger.error(e);
@@ -37,8 +38,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * }
  * }
  * return instance;
- * }}
+ * }
  */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
@@ -62,6 +64,11 @@ public class Settings {
 
     /**
      * load settings from saved file
+     * 
+     * @param <T>           - settings class
+     * @param settingsClass - settings class
+     * @param filePath      - filepath to save to
+     * @throws Exception - incase of running into error while saving
      */
     @JsonIgnore
     protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws Exception {
@@ -91,7 +98,8 @@ public class Settings {
     /**
      * save settings to predefined file
      * 
-     * @param - filepath of settings file
+     * @param filePath - filepath of settings file
+     * @throws Exception - if unable to save to file
      */
     @JsonIgnore
     protected void saveSettings(String filePath) throws Exception {
@@ -120,6 +128,8 @@ public class Settings {
      * flexibly get all settings
      * 
      * @return - ArrayList of all setting varialbes as Object
+     * @throws Exception - if get into error obtaining and setting settings
+     *                   accessibility
      */
     @JsonIgnore
     public ArrayList<Field> getAllSettings() throws Exception {
@@ -141,6 +151,8 @@ public class Settings {
 
     /**
      * print menu of settings and values, prompt user for which to change
+     * 
+     * @throws Exception - exception if unable to modify setting
      */
     @JsonIgnore
     public void changeSettings() throws Exception {

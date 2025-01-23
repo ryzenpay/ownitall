@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10,"i3":9,"i4":9};
+var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":9,"i5":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -154,7 +154,10 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Library</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">default Library constructor
+ initializes all values and loads from cache</div>
+</td>
 </tr>
 </table>
 </li>
@@ -175,31 +178,48 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code><a href="Album.html" title="class in ryzen.ownitall">Album</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAlbum(java.lang.String,java.lang.String)">getAlbum</a></span>&#8203;(java.lang.String&nbsp;albumName,
-        java.lang.String&nbsp;artistName)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clear()">clear</a></span>()</code></th>
+<td class="colLast">
+<div class="block">clear in memory cache</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code><a href="Artist.html" title="class in ryzen.ownitall">Artist</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getArtist(java.lang.String)">getArtist</a></span>&#8203;(java.lang.String&nbsp;artistName)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code><a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAlbum(java.lang.String,java.lang.String)">getAlbum</a></span>&#8203;(java.lang.String&nbsp;albumName,
+        java.lang.String&nbsp;artistName)</code></th>
+<td class="colLast">
+<div class="block">get constructed album backed up with music library</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code><a href="Song.html" title="class in ryzen.ownitall">Song</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSong(java.lang.String,java.lang.String)">getSong</a></span>&#8203;(java.lang.String&nbsp;songName,
-       java.lang.String&nbsp;artistName)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code><a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getArtist(java.lang.String)">getArtist</a></span>&#8203;(java.lang.String&nbsp;artistName)</code></th>
+<td class="colLast">
+<div class="block">get artist using music library</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>static <a href="Library.html" title="class in ryzen.ownitall">Library</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load()">load</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code><a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSong(java.lang.String,java.lang.String)">getSong</a></span>&#8203;(java.lang.String&nbsp;songName,
+       java.lang.String&nbsp;artistName)</code></th>
+<td class="colLast">
+<div class="block">construct a song using the LastFM api and their search.</div>
+</td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setCredentials()">setCredentials</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>static <a href="Library.html" title="class in ryzen.ownitall">Library</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load()">load</a></span>()</code></th>
+<td class="colLast">
+<div class="block">instance call method</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#save()">save</a></span>()</code></th>
+<td class="colLast">
+<div class="block">dump all data into cache</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -232,6 +252,8 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>Library</h4>
 <pre>public&nbsp;Library()</pre>
+<div class="block">default Library constructor
+ initializes all values and loads from cache</div>
 </li>
 </ul>
 </li>
@@ -251,15 +273,31 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>load</h4>
 <pre class="methodSignature">public static&nbsp;<a href="Library.html" title="class in ryzen.ownitall">Library</a>&nbsp;load()</pre>
+<div class="block">instance call method</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- new or existing Library</dd>
+</dl>
 </li>
 </ul>
-<a id="setCredentials()">
+<a id="save()">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setCredentials</h4>
-<pre class="methodSignature">public static&nbsp;void&nbsp;setCredentials()</pre>
+<h4>save</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;save()</pre>
+<div class="block">dump all data into cache</div>
+</li>
+</ul>
+<a id="clear()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clear</h4>
+<pre class="methodSignature">public&nbsp;void&nbsp;clear()</pre>
+<div class="block">clear in memory cache</div>
 </li>
 </ul>
 <a id="getArtist(java.lang.String)">
@@ -268,7 +306,15 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getArtist</h4>
-<pre class="methodSignature">public&nbsp;<a href="Artist.html" title="class in ryzen.ownitall">Artist</a>&nbsp;getArtist&#8203;(java.lang.String&nbsp;artistName)</pre>
+<pre class="methodSignature">public&nbsp;<a href="classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;getArtist&#8203;(java.lang.String&nbsp;artistName)</pre>
+<div class="block">get artist using music library</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>artistName</code> - - name of artist to find</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed artist backed with music library data or with the
+         provided name</dd>
+</dl>
 </li>
 </ul>
 <a id="getAlbum(java.lang.String,java.lang.String)">
@@ -277,8 +323,16 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAlbum</h4>
-<pre class="methodSignature">public&nbsp;<a href="Album.html" title="class in ryzen.ownitall">Album</a>&nbsp;getAlbum&#8203;(java.lang.String&nbsp;albumName,
+<pre class="methodSignature">public&nbsp;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;getAlbum&#8203;(java.lang.String&nbsp;albumName,
                       java.lang.String&nbsp;artistName)</pre>
+<div class="block">get constructed album backed up with music library</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>albumName</code> - - name of album</dd>
+<dd><code>artistName</code> - - optional to aid search</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed album backed by library or with provided values</dd>
+</dl>
 </li>
 </ul>
 <a id="getSong(java.lang.String,java.lang.String)">
@@ -287,8 +341,17 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getSong</h4>
-<pre class="methodSignature">public&nbsp;<a href="Song.html" title="class in ryzen.ownitall">Song</a>&nbsp;getSong&#8203;(java.lang.String&nbsp;songName,
+<pre class="methodSignature">public&nbsp;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;getSong&#8203;(java.lang.String&nbsp;songName,
                     java.lang.String&nbsp;artistName)</pre>
+<div class="block">construct a song using the LastFM api and their search.
+ constructs everything except the: duration</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songName</code> - - name of song to search</dd>
+<dd><code>artistName</code> - - optional artist to match with the song</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed song</dd>
+</dl>
 </li>
 </ul>
 </li>

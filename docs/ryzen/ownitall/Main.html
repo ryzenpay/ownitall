@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":9};
+var data = {"i0":9,"i1":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -177,7 +177,17 @@ extends java.lang.Object</pre>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#main(java.lang.String%5B%5D)">main</a></span>&#8203;(java.lang.String[]&nbsp;args)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">main function launching the main ownitall menu</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>static me.tongfei.progressbar.ProgressBar</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#progressBar(java.lang.String,int)">progressBar</a></span>&#8203;(java.lang.String&nbsp;title,
+           int&nbsp;maxStep)</code></th>
+<td class="colLast">
+<div class="block">standardized progressbar</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -225,10 +235,33 @@ extends java.lang.Object</pre>
 <a id="main(java.lang.String[])">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>main</h4>
 <pre class="methodSignature">public static&nbsp;void&nbsp;main&#8203;(java.lang.String[]&nbsp;args)</pre>
+<div class="block">main function launching the main ownitall menu</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>args</code> - - possible arguments to pass (not defined)</dd>
+</dl>
+</li>
+</ul>
+<a id="progressBar(java.lang.String,int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>progressBar</h4>
+<pre class="methodSignature">public static&nbsp;me.tongfei.progressbar.ProgressBar&nbsp;progressBar&#8203;(java.lang.String&nbsp;title,
+                                                             int&nbsp;maxStep)</pre>
+<div class="block">standardized progressbar</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>title</code> - - title of progress bar</dd>
+<dd><code>maxStep</code> - - max steps till completion</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed ProgressBar</dd>
+</dl>
 </li>
 </ul>
 </li>
