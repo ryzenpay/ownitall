@@ -37,6 +37,11 @@ public class Library {
     private LinkedHashSet<Song> songs;
     private LinkedHashSet<Album> albums;
 
+    /**
+     * instance call method
+     * 
+     * @return - new or existing Library
+     */
     public static Library load() {
         if (instance == null) {
             instance = new Library();
@@ -44,6 +49,10 @@ public class Library {
         return instance;
     }
 
+    /**
+     * default Library constructor
+     * initializes all values and loads from cache
+     */
     public Library() {
         if (settings.useLibrary && credentials.lastFMIsEmpty()) {
             credentials.setLastFMCredentials();
@@ -54,18 +63,30 @@ public class Library {
         this.albums = sync.cacheAlbums(new LinkedHashSet<>());
     }
 
+    /**
+     * dump all data into cache
+     */
     public void save() {
         sync.cacheAlbums(this.albums);
         sync.cacheSongs(this.songs);
         sync.cacheArtists(this.artists);
     }
 
+    /**
+     * clear in memory cache
+     */
     public void clear() {
-        this.albums = new LinkedHashSet<>();
-        this.songs = new LinkedHashSet<>();
-        this.artists = new LinkedHashSet<>();
+        this.albums.clear();
+        this.songs.clear();
+        this.artists.clear();
     }
 
+    /**
+     * get artist from cached artists
+     * 
+     * @param artist - constructed artist to find
+     * @return - constructed artist in array or null
+     */
     private Artist getArtist(Artist artist) {
         for (Artist thisArtist : this.artists) {
             if (thisArtist.equals(artist)) {
@@ -75,6 +96,13 @@ public class Library {
         return null;
     }
 
+    /**
+     * get artist using music library
+     * 
+     * @param artistName - name of artist to find
+     * @return - constructed artist backed with music library data or with the
+     *         provided name
+     */
     public Artist getArtist(String artistName) {
         if (artistName == null) {
             return null;
@@ -87,30 +115,30 @@ public class Library {
             return this.getArtist(tmpArtist);
         }
         Map<String, String> params = Map.of("artist", artistName, "limit", "1");
-        String response = query("artist.search", params);
+        JsonNode response = query("artist.search", params);
         if (response != null) {
-            try {
-                JsonNode rootNode = objectMapper.readTree(response);
-                JsonNode artistNode = rootNode.path("results").path("artistmatches").path("artist").get(0);
-
-                if (artistNode != null) {
-                    Artist artist = new Artist(artistNode.path("name").asText());
-                    String artistImage = artistNode.path("image").get(artistNode.path("image").size() - 1).path("#text")
-                            .asText();
-                    if (artistImage != null && !artistImage.isEmpty()) {
-                        artist.setCoverImage(artistImage);
-                    }
-                    this.artists.add(artist);
-                    return artist;
+            JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
+            if (artistNode != null) {
+                Artist artist = new Artist(artistNode.path("name").asText());
+                String artistImage = artistNode.path("image").get(artistNode.path("image").size() - 1).path("#text")
+                        .asText();
+                if (artistImage != null && !artistImage.isEmpty()) {
+                    artist.setCoverImage(artistImage);
                 }
-            } catch (JsonProcessingException e) {
-                logger.error("Error parsing json while getting artist " + artistName + ": " + e);
+                this.artists.add(artist);
+                return artist;
             }
         }
         logger.debug("Could not find artist '" + artistName + "' in Library");
         return tmpArtist;
     }
 
+    /**
+     * get album from cached albums
+     * 
+     * @param album - constructed album to find
+     * @return - constructed album or null
+     */
     private Album getAlbum(Album album) {
         for (Album thisAlbum : this.albums) {
             if (thisAlbum.equals(album)) {
@@ -120,6 +148,13 @@ public class Library {
         return null;
     }
 
+    /**
+     * get constructed album backed up with music library
+     * 
+     * @param albumName  - name of album
+     * @param artistName - optional to aid search
+     * @return - constructed album backed by library or with provided values
+     */
     public Album getAlbum(String albumName, String artistName) {
         if (albumName == null) {
             return null;
@@ -140,34 +175,34 @@ public class Library {
         } else {
             params = Map.of("album", albumName, "limit", "1");
         }
-        String response = query("album.search", params);
+        JsonNode response = query("album.search", params);
         if (response != null) {
-            try {
-                JsonNode rootNode = objectMapper.readTree(response);
-                JsonNode albumNode = rootNode.path("results").path("albummatches").path("album").get(0);
-
-                if (albumNode != null) {
-                    Album album = new Album(albumNode.path("name").asText());
-                    String artist = albumNode.path("artist").asText();
-                    if (artist != null && !artist.isEmpty()) {
-                        album.addArtist(this.getArtist(artist));
-                    }
-                    String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
-                            .asText();
-                    if (albumCover != null && !albumCover.isEmpty()) {
-                        album.setCoverImage(albumCover);
-                    }
-                    this.albums.add(album);
-                    return album;
+            JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
+            if (albumNode != null) {
+                Album album = new Album(albumNode.path("name").asText());
+                String artist = albumNode.path("artist").asText();
+                if (artist != null && !artist.isEmpty()) {
+                    album.addArtist(this.getArtist(artist));
                 }
-            } catch (JsonProcessingException e) {
-                logger.error("Error parsing json while getting album " + albumName + ": " + e);
+                String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
+                        .asText();
+                if (albumCover != null && !albumCover.isEmpty()) {
+                    album.setCoverImage(albumCover);
+                }
+                this.albums.add(album);
+                return album;
             }
         }
         logger.debug("Could not find Album '" + albumName + "' in Library");
         return tmpAlbum;
     }
 
+    /**
+     * get song from cache
+     * 
+     * @param song - constructed song to find
+     * @return - constructed song from cache or null
+     */
     private Song getSong(Song song) {
         for (Song thisSong : this.songs) {
             if (thisSong.equals(song)) {
@@ -205,35 +240,36 @@ public class Library {
         } else {
             params = Map.of("track", songName, "artist", artistName, "limit", "1");
         }
-        String response = query("track.search", params);
+        JsonNode response = query("track.search", params);
         if (response != null) {
-            try {
-                JsonNode rootNode = objectMapper.readTree(response);
-                JsonNode trackNode = rootNode.path("results").path("trackmatches").path("track").get(0);
-
-                if (trackNode != null) {
-                    Song song = new Song(trackNode.path("name").asText());
-                    String artist = trackNode.path("artist").asText();
-                    if (artist != null && !artist.isEmpty()) {
-                        song.setArtist(this.getArtist(artist));
-                    }
-                    String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
-                            .asText();
-                    if (songCover != null && !songCover.isEmpty()) {
-                        song.setCoverImage(songCover);
-                    }
-                    this.songs.add(song);
-                    return song;
+            JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
+            if (trackNode != null) {
+                Song song = new Song(trackNode.path("name").asText());
+                String artist = trackNode.path("artist").asText();
+                if (artist != null && !artist.isEmpty()) {
+                    song.setArtist(this.getArtist(artist));
                 }
-            } catch (JsonProcessingException e) {
-                logger.error("Error parshing json while getting song " + songName + ": " + e);
+                String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
+                        .asText();
+                if (songCover != null && !songCover.isEmpty()) {
+                    song.setCoverImage(songCover);
+                }
+                this.songs.add(song);
+                return song;
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
         return tmpSong;
     }
 
-    private String query(String method, Map<String, String> params) {
+    /**
+     * make a query to the music library
+     * 
+     * @param method - method (POST,...)
+     * @param params - search parameters
+     * @return - JsonNode response
+     */
+    private JsonNode query(String method, Map<String, String> params) {
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append("?method=").append(method);
@@ -269,13 +305,19 @@ public class Library {
                 return null;
             }
 
-            return jsonResponse;
+            return rootNode;
         } catch (Exception e) {
             logger.error("Error querying API: " + e);
             return null;
         }
     }
 
+    /**
+     * barebones method of handling library query response errors
+     * 
+     * @param code    - error code thrown
+     * @param message - additional message
+     */
     private void handleApiError(int code, String message) {
         switch (code) {
             case 2:

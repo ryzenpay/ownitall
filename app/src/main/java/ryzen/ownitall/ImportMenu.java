@@ -111,6 +111,11 @@ public class ImportMenu {
         logger.info("done importing local music");
     }
 
+    /**
+     * get constructed collection after imports
+     * 
+     * @return - constructed collection
+     */
     public Collection getCollection() {
         return this.collection;
     }

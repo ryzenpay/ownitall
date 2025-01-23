@@ -290,7 +290,6 @@ public class Spotify {
                     .limit(settings.getSpotifyAlbumLimit())
                     .offset(offset)
                     .build();
-
             try {
                 final Paging<SavedAlbum> savedAlbumPaging = getCurrentUsersSavedAlbumsRequest.execute();
                 SavedAlbum[] items = savedAlbumPaging.getItems();
@@ -302,9 +301,11 @@ public class Spotify {
                         Album album = library.getAlbum(savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
                         LinkedHashSet<Song> songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(), 0);
-                        album.addSongs(songs);
-                        album.setSpotifyPageOffset(songs.size());
-                        albums.add(album);
+                        if (!songs.isEmpty()) {
+                            album.addSongs(songs);
+                            album.setSpotifyPageOffset(songs.size());
+                            albums.add(album);
+                        }
                     }
                     offset += limit;
                 }
@@ -319,6 +320,13 @@ public class Spotify {
         return albums;
     }
 
+    /**
+     * get all songs in an album
+     * 
+     * @param albumId - spotify album id
+     * @param offset  - offset to start at (if saved in album)
+     * @return - linkedhashset of songs
+     */
     public LinkedHashSet<Song> getAlbumSongs(String albumId, int offset) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = 20;
@@ -388,10 +396,12 @@ public class Spotify {
                     for (PlaylistSimplified spotifyPlaylist : items) {
                         Playlist playlist = new Playlist(spotifyPlaylist.getName());
                         LinkedHashSet<Song> songs = this.getPlaylistSongs(spotifyPlaylist.getId(), 0);
-                        playlist.addSongs(songs);
-                        playlist.setSpotifyPageOffset(songs.size());
-                        playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
-                        playlists.add(playlist);
+                        if (!songs.isEmpty()) {
+                            playlist.addSongs(songs);
+                            playlist.setSpotifyPageOffset(songs.size());
+                            playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
+                            playlists.add(playlist);
+                        }
                     }
                     offset += limit;
                 }
@@ -413,6 +423,7 @@ public class Spotify {
      * get all songs from a playlist
      * 
      * @param playlistId - spotify ID for a playlist
+     * @param offset     - offset to update from (default to 0)
      * @return - constructed array of Songs
      */
     public LinkedHashSet<Song> getPlaylistSongs(String playlistId, int offset) {

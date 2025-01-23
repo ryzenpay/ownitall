@@ -20,38 +20,58 @@ public class Collection {
     private LinkedHashSet<Playlist> playlists;
     private LinkedHashSet<Album> albums;
 
+    /**
+     * default constructor initializing arrays
+     */
     public Collection() {
         this.likedSongs = new LikedSongs();
         this.playlists = new LinkedHashSet<>();
         this.albums = new LinkedHashSet<>();
     }
 
+    /**
+     * merge array of albums into current collection
+     * 
+     * @param mergeAlbums - linkedhashset of albums to merge
+     */
     public void mergeAlbums(LinkedHashSet<Album> mergeAlbums) {
         if (mergeAlbums == null || mergeAlbums.isEmpty()) {
             return;
         }
         for (Album album : mergeAlbums) {
-            if (this.albums.contains(album)) {
-                getAlbum(this.albums, album).merge(album);
+            Album foundAlbum = getAlbum(this.albums, album);
+            if (foundAlbum != null) {
+                foundAlbum.merge(album);
             } else {
                 this.albums.add(album);
             }
         }
     }
 
+    /**
+     * merge array of playlists into current collection
+     * 
+     * @param mergePlaylists - linkedhashset of playlists to merge
+     */
     public void mergePlaylists(LinkedHashSet<Playlist> mergePlaylists) {
         if (mergePlaylists == null || mergePlaylists.isEmpty()) {
             return;
         }
         for (Playlist playlist : mergePlaylists) {
-            if (this.playlists.contains(playlist)) {
-                getPlaylist(this.playlists, playlist).merge(playlist);
+            Playlist foundPlaylist = getPlaylist(this.playlists, playlist);
+            if (foundPlaylist != null) {
+                foundPlaylist.merge(playlist);
             } else {
                 this.playlists.add(playlist);
             }
         }
     }
 
+    /**
+     * merge liked songs into current collection
+     * 
+     * @param mergeLikedSongs - constructed LikedSongs
+     */
     public void mergeLikedSongs(LikedSongs mergeLikedSongs) {
         if (mergeLikedSongs == null || mergeLikedSongs.isEmpty()) {
             return;
@@ -59,6 +79,12 @@ public class Collection {
         this.likedSongs.addSongs(mergeLikedSongs.getSongs()); // handled by playlist addSongs
     }
 
+    /**
+     * merge a collection into the current collection
+     * orchestrates the merge albums, playlists and liked songs
+     * 
+     * @param collection
+     */
     public void mergeCollection(Collection collection) {
         logger.info("Updating Music Collection");
         ProgressBar pb = Main.progressBar("Update Collection", 3);
@@ -72,6 +98,11 @@ public class Collection {
         pb.close();
     }
 
+    /**
+     * get this collections likedsongs
+     * 
+     * @return - constructed LikedSongs
+     */
     public LikedSongs getLikedSongs() {
         return this.likedSongs;
     }
@@ -100,27 +131,55 @@ public class Collection {
         return likedSongs;
     }
 
+    /**
+     * get this collections albums
+     * 
+     * @return - linkedhashset of albums
+     */
     public LinkedHashSet<Album> getAlbums() {
         return new LinkedHashSet<>(this.albums);
     }
 
+    /**
+     * get specific album in passed array
+     * 
+     * @param albums - array to search from
+     * @param album  - album to find
+     * @return - found album or null
+     */
     public static Album getAlbum(LinkedHashSet<Album> albums, Album album) {
-        for (Album thisAlbum : albums) {
-            if (thisAlbum.equals(album)) {
-                return thisAlbum;
+        if (albums.contains(album)) {
+            for (Album thisAlbum : albums) {
+                if (thisAlbum.equals(album)) {
+                    return thisAlbum;
+                }
             }
         }
         return null;
     }
 
+    /**
+     * get this collections playlists
+     * 
+     * @return - linkedhashset of playlists
+     */
     public LinkedHashSet<Playlist> getPlaylists() {
         return new LinkedHashSet<>(this.playlists);
     }
 
+    /**
+     * get specific playlist in array of passed playlists
+     * 
+     * @param playlists - array of playlists
+     * @param playlist  - playlist to find in array of playlists
+     * @return - found playlist or null
+     */
     public static Playlist getPlaylist(LinkedHashSet<Playlist> playlists, Playlist playlist) {
-        for (Playlist thisPlaylist : playlists) {
-            if (thisPlaylist.equals(playlist)) {
-                return thisPlaylist;
+        if (playlists.contains(playlist)) {
+            for (Playlist thisPlaylist : playlists) {
+                if (thisPlaylist.equals(playlist)) {
+                    return thisPlaylist;
+                }
             }
         }
         return null;
@@ -242,6 +301,9 @@ public class Collection {
         }
     }
 
+    /**
+     * edit menu
+     */
     public void editMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Delete Playlist", this::optionDeletePlaylist);
@@ -260,6 +322,10 @@ public class Collection {
         }
     }
 
+    /**
+     * option to delete playlist
+     * lists all playlists with numbers and asks for an int input
+     */
     private void optionDeletePlaylist() {
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         for (Playlist playlist : this.playlists) {
@@ -279,6 +345,9 @@ public class Collection {
         }
     }
 
+    /**
+     * prompts lists of playlists twice to merge them
+     */
     private void optionMergePlaylist() {
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         for (Playlist playlist : this.playlists) {
@@ -308,6 +377,9 @@ public class Collection {
         }
     }
 
+    /**
+     * option to delete album
+     */
     private void optionDeleteAlbum() {
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
         for (Album album : this.albums) {
@@ -327,6 +399,9 @@ public class Collection {
         }
     }
 
+    /**
+     * option to delete liked song
+     */
     private void optionDeleteLikedSong() {
         LinkedHashMap<String, Song> options = new LinkedHashMap<>();
         for (Song song : this.likedSongs.getSongs()) {

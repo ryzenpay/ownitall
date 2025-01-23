@@ -6,10 +6,12 @@ import ryzen.ownitall.util.Menu;
 
 public class Tools {
     private static Tools instance;
-    private LinkedHashMap<String, Runnable> options;
 
+    /**
+     * default tools constructor prompting tools menu
+     */
     public Tools() {
-        this.options = new LinkedHashMap<>();
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
         options.put("Clear Cache", this::optionClearCache);
@@ -21,12 +23,17 @@ public class Tools {
                 if (choice.equals("Exit")) {
                     break;
                 } else {
-                    this.options.get(choice).run();
+                    options.get(choice).run();
                 }
             }
         }
     }
 
+    /**
+     * tools instance
+     * 
+     * @return - constructed or new tools instance
+     */
     public static Tools load() {
         if (instance == null) {
             instance = new Tools();
@@ -34,23 +41,38 @@ public class Tools {
         return instance;
     }
 
+    /**
+     * trigger sync archive
+     */
     private void optionArchive() {
         Sync.load().archive();
     }
 
+    /**
+     * trigger sync unarchive
+     */
     private void optionUnArchive() {
         Sync.load().unArchive();
     }
 
+    /**
+     * clear memory cache and local cache
+     */
     private void optionClearCache() {
         Sync.load().clearCache();
         Library.load().clear();
     }
 
+    /**
+     * clear memory credentials and local credentials
+     */
     private void optionClearCredentials() {
         Credentials.load().clear();
     }
 
+    /**
+     * clear memory settings and local settings
+     */
     private void optionClearSettings() {
         Settings.load().clear();
     }

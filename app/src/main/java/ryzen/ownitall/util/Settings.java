@@ -54,7 +54,7 @@ public class Settings {
      */
     @JsonIgnore
     private void setSettingsFolder() {
-        File settingsFolder = new File(this.getSettingsFolderPath());
+        File settingsFolder = new File(this.settingsFolderPath);
         if (!settingsFolder.exists()) {
             settingsFolder.mkdirs(); // Create folder if it does not exist
         }
@@ -90,6 +90,8 @@ public class Settings {
 
     /**
      * save settings to predefined file
+     * 
+     * @param - filepath of settings file
      */
     @JsonIgnore
     protected void saveSettings(String filePath) throws Exception {
@@ -100,6 +102,18 @@ public class Settings {
         } catch (IOException e) {
             throw new Exception("Error saving settings: " + e);
         }
+    }
+
+    /**
+     * delete settings of predefined file
+     * 
+     * @param filePath - filepath of settings file
+     */
+    @JsonIgnore
+    protected void clearSettings(String filePath) {
+        this.setSettingsFolder();
+        File settingsFile = new File(settingsFolderPath, filePath);
+        settingsFile.delete();
     }
 
     /**

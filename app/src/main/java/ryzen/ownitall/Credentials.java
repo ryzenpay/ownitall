@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ryzen.ownitall.util.Input;
 
-import java.io.File;
 import java.net.URI;
 
 import org.apache.logging.log4j.LogManager;
@@ -67,8 +66,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     public void clear() {
         instance = null;
-        File credentialsFile = new File(credentialsFilePath);
-        credentialsFile.delete();
+        this.clearSettings(credentialsFilePath);
     }
 
     public void save() {

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,13 +23,14 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 
 public class Download {
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-    }
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static Settings settings = Settings.load();
     private String downloadPath;
 
+    /**
+     * default download constructor
+     * setting all settings / credentials
+     */
     public Download() {
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
@@ -42,12 +44,21 @@ public class Download {
         Input.request().getAgreement();
     }
 
+    /**
+     * prompt of where to save downloaded music
+     */
     private void setDownloadPath() {
         System.out.print("Please provide path to save music: ");
         this.downloadPath = Input.request().getFile(false).getAbsolutePath();
     }
 
-    // TODO: musicbee playlist / album / liked songs generation
+    /**
+     * download a specified song
+     * TODO: musicbee playlist / album / liked songs generation (M3U)
+     * 
+     * @param song - constructed song
+     * @param path - folder of where to place
+     */
     public void downloadSong(Song song, File path) {
         File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
@@ -119,6 +130,11 @@ public class Download {
         }
     }
 
+    /**
+     * orchestrator of DownloadSong for all liked songs
+     * 
+     * @param likedSongs - constructed liked songs
+     */
     public void downloadLikedSongs(LikedSongs likedSongs) {
         File likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
         ProgressBar pb = Main.progressBar("Downloading Liked songs", likedSongs.size());
@@ -132,6 +148,27 @@ public class Download {
         pb.close();
     }
 
+    /**
+     * orchestrator of downloadPlaylist
+     * 
+     * @param playlists - linkedhashset of playlists to download
+     */
+    public void downloadPlaylists(LinkedHashSet<Playlist> playlists) {
+        ProgressBar pbPlaylist = Main.progressBar("Playlist Downloads", playlists.size());
+        for (Playlist playlist : playlists) {
+            pbPlaylist.setExtraMessage(playlist.getName());
+            this.downloadPlaylist(playlist);
+            pbPlaylist.step();
+        }
+        pbPlaylist.setExtraMessage("Done").step();
+        pbPlaylist.close();
+    }
+
+    /**
+     * orchestrator for downloading a playlist
+     * 
+     * @param playlist - constructed playlist to download
+     */
     public void downloadPlaylist(Playlist playlist) {
         File playlistFolder = new File(this.downloadPath, playlist.getFileName());
         ProgressBar pb = Main.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
@@ -143,6 +180,17 @@ public class Download {
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done");
         pb.close();
+    }
+
+    public void downloadAlbums(LinkedHashSet<Album> albums) {
+        ProgressBar pbAlbum = Main.progressBar("Album Downloads", albums.size());
+        for (Album album : albums) {
+            pbAlbum.setExtraMessage(album.getName());
+            this.downloadAlbum(album);
+            pbAlbum.step();
+        }
+        pbAlbum.setExtraMessage("Done").step();
+        pbAlbum.close();
     }
 
     public void downloadAlbum(Album album) {

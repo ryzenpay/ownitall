@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Local {
+    // disable jaudiotagger logger
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
@@ -192,6 +193,12 @@ public class Local {
         return song;
     }
 
+    /**
+     * get all songs in a folder
+     * 
+     * @param folder - folder to get all songs from
+     * @return - linkedhashset of constructed songs
+     */
     public LinkedHashSet<Song> getSongs(File folder) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         if (folder.isFile() || !folder.exists()) {

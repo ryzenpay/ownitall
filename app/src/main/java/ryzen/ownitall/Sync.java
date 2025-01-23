@@ -43,6 +43,11 @@ public class Sync {
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
+    /**
+     * set instance
+     * 
+     * @return - new or existing instance
+     */
     public static Sync load() {
         if (instance == null) {
             instance = new Sync();
@@ -53,8 +58,6 @@ public class Sync {
     /**
      * function which is called to check if datafolder exists and create if deleted
      * in middle of process
-     * for future improvements, use an interceptor but requires another class (bleh)
-     * ^ or a dynamic proxy whatever
      */
     private void setDataFolder() {
         if (!this.dataFolder.exists()) { // create folder if it does not exist
@@ -62,6 +65,9 @@ public class Sync {
         }
     }
 
+    /**
+     * set cache folder
+     */
     private void setCacheFolder() {
         if (!this.cacheFolder.exists()) {
             this.cacheFolder.mkdirs();
@@ -162,6 +168,9 @@ public class Sync {
         System.exit(0);
     }
 
+    /**
+     * clear cache files
+     */
     public void clearCache() {
         this.setCacheFolder();
         for (File file : this.cacheFolder.listFiles()) {
@@ -169,6 +178,12 @@ public class Sync {
         }
     }
 
+    /**
+     * import collection from files
+     * orchestrates import albums, playlists and liked songs
+     * 
+     * @return - constructed collection
+     */
     public Collection importCollection() {
         ProgressBar pb = Main.progressBar("Opening Saved Data", 3);
         Collection collection = new Collection();
@@ -183,6 +198,12 @@ public class Sync {
         return collection;
     }
 
+    /**
+     * save collection to local files
+     * orchestrates export albums, playlists and liked songs
+     * 
+     * @param collection - constructed collection to save
+     */
     public void exportCollection(Collection collection) {
         ProgressBar pb = Main.progressBar("Saving Data", 3);
         pb.setExtraMessage("Albums");
@@ -314,6 +335,13 @@ public class Sync {
         return likedSongs;
     }
 
+    /**
+     * cache artists locally
+     * ^ syncs with local files
+     * 
+     * @param artists - linkedhashset to cache
+     * @return - updated linkedhashset of artists
+     */
     public LinkedHashSet<Artist> cacheArtists(LinkedHashSet<Artist> artists) {
         this.setCacheFolder();
         File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
@@ -336,6 +364,13 @@ public class Sync {
         return cachedArtists;
     }
 
+    /**
+     * cache songs
+     * ^ syncs with local files
+     * 
+     * @param songs - linkedhashset to offload
+     * @return - updated linkedhashset of songs
+     */
     public LinkedHashSet<Song> cacheSongs(LinkedHashSet<Song> songs) {
         this.setCacheFolder();
         File songFile = new File(this.cacheFolder, settings.songFile + ".json");
@@ -358,6 +393,13 @@ public class Sync {
         return cachedSongs;
     }
 
+    /**
+     * cache albums
+     * ^ syncs with local files
+     * 
+     * @param albums - linkedhashset to offload
+     * @return - updated linkedhashset of albums
+     */
     public LinkedHashSet<Album> cacheAlbums(LinkedHashSet<Album> albums) {
         this.setCacheFolder();
         File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");

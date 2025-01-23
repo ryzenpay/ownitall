@@ -17,6 +17,11 @@ public class Main {
     private static Sync sync = Sync.load();
     private static Collection collection;
 
+    /**
+     * main function launching the main ownitall menu
+     * 
+     * @param args - possible arguments to pass (not defined)
+     */
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -51,26 +56,41 @@ public class Main {
         }
     }
 
+    /**
+     * import menu
+     */
     private static void optionImport() {
         // TODO: import soundcloud, apple music?
         ImportMenu dataImport = new ImportMenu();
         collection.mergeCollection(dataImport.getCollection());
     }
 
+    /**
+     * export menu
+     */
     private static void optionExport() {
         new ExportMenu(collection);
     }
 
+    /**
+     * print library of current imported music
+     */
     private static void optionPrintInventory() {
         System.out.print("Select recursion (1-3): ");
         int recursion = Input.request().getInt(1, 3);
         collection.printInventory(recursion);
     }
 
+    /**
+     * edit current library
+     */
     private static void optionEditInventory() {
         collection.editMenu();
     }
 
+    /**
+     * save current library to local files
+     */
     private static void optionSave() {
         sync.exportCollection(collection);
         try {
@@ -86,10 +106,16 @@ public class Main {
         }
     }
 
+    /**
+     * tools menu
+     */
     private static void optionTools() {
         new Tools();
     }
 
+    /**
+     * change settings menu
+     */
     private static void optionSettings() {
         try {
             settings.changeSettings();
@@ -98,6 +124,13 @@ public class Main {
         }
     }
 
+    /**
+     * standardized progressbar
+     * 
+     * @param title   - title of progress bar
+     * @param maxStep - max steps till completion
+     * @return - constructed ProgressBar
+     */
     public static ProgressBar progressBar(String title, int maxStep) {
         return new ProgressBarBuilder()
                 .setInitialMax(maxStep)
