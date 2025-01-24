@@ -50,9 +50,9 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
     /**
      * to limit number of songs in each spotify API batch query
      */
-    protected int spotifySongLimit = 50;
-    protected int spotifyAlbumLimit = 20;
-    protected int spotifyPlaylistLimit = 20;
+    protected Integer spotifySongLimit = 50;
+    protected Integer spotifyAlbumLimit = 20;
+    protected Integer spotifyPlaylistLimit = 20;
 
     /**
      * to limit number of songs in each youtube API batch query
@@ -63,9 +63,9 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
     /**
      * to limit number of songs in each soundcloud API batch query
      */
-    protected int soundCloudSongLimit = 50;
-    protected int soundCloudAlbumLimit = 20;
-    protected int soundCloudPlaylistLimit = 20;
+    protected Integer soundCloudSongLimit = 50;
+    protected Integer soundCloudAlbumLimit = 20;
+    protected Integer soundCloudPlaylistLimit = 20;
 
     /**
      * similarity percentage used to check if artists, songs, albums or playlists
@@ -110,7 +110,11 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
-    protected int downloadQuality = 5;
+    protected Integer downloadQuality = 5;
+    /**
+     * enable yt-dlp threading
+     */
+    protected Integer downloadThreads = 1;
 
     /**
      * optional to hardcode local upload path
@@ -371,5 +375,13 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
 
     public void setUploadFolder(String uploadFolder) {
         this.uploadFolder = uploadFolder;
+    }
+
+    public int getDownloadThreads() {
+        return downloadThreads;
+    }
+
+    public void setDownloadThreads(int downloadThreads) {
+        this.downloadThreads = downloadThreads;
     }
 }

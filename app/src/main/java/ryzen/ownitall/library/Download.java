@@ -91,6 +91,8 @@ public class Download {
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
         command.add(settings.getFfmpegPath());
+        command.add("--concurrent-fragments");
+        command.add(String.valueOf(settings.getDownloadThreads()));
         // command.add("--quiet");
         // search for video using the query
         command.add("\"ytsearch1:" + searchQuery + "\""); // TODO: cookies for age restriction
