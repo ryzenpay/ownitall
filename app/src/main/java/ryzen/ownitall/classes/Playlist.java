@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
-    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
-    private static String downloadFormat = Settings.load().getDownloadFormat();
+    protected static double simularityPercentage = Settings.load().getSimilarityPercentage();
+    protected static String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private URL coverImage;
     private LinkedHashSet<Song> songs;
@@ -100,19 +100,19 @@ public class Playlist {
     @JsonIgnore
     public String getM3U() {
         // m3u header
-        String output = "#EXTM3U\n";
+        StringBuilder output = new StringBuilder();
+        output.append("#EXTM3U").append("\n");
         // m3u playlist information
-        output += "#PLAYLIST:" + this.toString() + "\n";
+        output.append("#PLAYLIST:").append(this.toString()).append("\n");
         // m3u playlist contents
         for (Song song : this.songs) {
             File file = new File(song.getFileName() + "." + downloadFormat);
-            output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
-                    + song.toString() + "\n";
-            output += file.getPath() + "\n";
+            output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
+                    .append(song.toString()).append("\n");
+            output.append(file.getPath()).append("\n");
         }
-        File cover = new File("cover.jpg");
-        output += "#EXTIMG:" + cover.getPath();
-        return output;
+        output.append("#EXTIMG:").append("cover.jpg");
+        return output.toString();
     }
 
     /**

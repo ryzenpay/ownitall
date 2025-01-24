@@ -8,12 +8,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
 
 public class Album extends Playlist {
-    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
-    private static String downloadFormat = Settings.load().getDownloadFormat();
     LinkedHashSet<Artist> artists;
 
     /**
@@ -117,20 +114,20 @@ public class Album extends Playlist {
     @JsonIgnore
     public String getM3U() {
         // m3u header
-        String output = "#EXTM3U\n";
+        StringBuilder output = new StringBuilder();
+        output.append("#EXTM3U").append("\n");
         // m3u album information
-        output += "#EXTALB:" + this.toString() + "\n";
-        output += "#EXTART:" + this.getMainArtist() + "\n";
+        output.append("#EXTALB:").append(this.toString()).append("\n");
+        output.append("#EXTART:").append(this.getMainArtist()).append("\n");
         // m3u album contents
         for (Song song : this.getSongs()) {
             File file = new File(song.getFileName() + "." + downloadFormat);
-            output += "#EXTINF:" + String.valueOf(song.getDuration().toSeconds()) + ","
-                    + song.toString() + "\n";
-            output += file.getPath() + "\n";
+            output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
+                    .append(song.toString()).append("\n");
+            output.append(file.getPath()).append("\n");
         }
-        File cover = new File("cover.jpg");
-        output += "#EXTIMG:" + cover.getPath();
-        return output;
+        output.append("#EXTIMG:").append("cover.jpg");
+        return output.toString();
     }
 
     @Override

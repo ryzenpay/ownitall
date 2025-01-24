@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,24 +29,24 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static Settings settings = Settings.load();
-    private final ExecutorService executorService;
-    private final Semaphore semaphore;
+    private ExecutorService executor;
     private String downloadPath;
-    private LinkedHashMap<File, Song> failedSongs;
+    private LinkedHashMap<Song, String> failedSongs;
 
     /**
      * default download constructor
      * setting all settings / credentials
      */
     public Download() {
+        this.executor = new ThreadPoolExecutor(
+                settings.getDownloadThreads(),
+                settings.getDownloadThreads(),
+                0L,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
         this.failedSongs = new LinkedHashMap<>();
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
@@ -57,8 +62,6 @@ public class Download {
         logger.info("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         Input.request().getAgreement();
-        this.executorService = Executors.newFixedThreadPool(settings.getDownloadThreads());
-        this.semaphore = new Semaphore(settings.getDownloadThreads());
     }
 
     /**
@@ -70,15 +73,31 @@ public class Download {
     }
 
     public void threadDownload(Song song, File path) {
-        // Attempt to acquire a permit from the semaphore
+        while (true) {
+            try {
+                // Attempt to execute the task
+                executor.execute(() -> {
+                    this.downloadSong(song, path);
+                });
+                break;
+            } catch (RejectedExecutionException e) {
+                // If the queue is full, wait for a thread to become free
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    logger.error("Awaiting for free thread was interrupted" + ie);
+                }
+            }
+        }
+    }
+
+    public void threadShutdown() {
         try {
-            semaphore.acquire(); // Block until a permit is available
-            this.downloadSong(song, path); // Perform the download
+            executor.shutdown();
+            executor.awaitTermination(10, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Restore interrupted status
-            logger.error("Thread was interrupted while waiting to acquire semaphore.", e);
-        } finally {
-            semaphore.release(); // Ensure permit is released after download completes
+            logger.error("Awaiting for threads to finish was interrupted: " + e);
         }
     }
 
@@ -118,7 +137,7 @@ public class Download {
         command.add(settings.getFfmpegPath());
         command.add("--concurrent-fragments");
         command.add(String.valueOf(settings.getDownloadThreads()));
-        // command.add("--quiet");
+        command.add("--quiet");
         // search for video using the query
         command.add("\"ytsearch1:" + searchQuery + "\""); // TODO: cookies for age restriction
         // exclude any found playlists or shorts
@@ -144,31 +163,23 @@ public class Download {
             Process process = processBuilder.start();
 
             // Capture output for logging
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            String completeLog = "";
-            while ((line = reader.readLine()) != null) {
-                completeLog += line + "\n";
+            StringBuilder completeLog = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    completeLog.append(line).append("\n");
+                }
             }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
-                logger.debug(completeLog); // Log last line of output
-                this.failedSongs.put(songFile, song);
-            } else if (!songFile.exists()) {
-                logger.error("Everything passed but the file " + songFile.getAbsolutePath() + " is still missing");
-                logger.debug("Complete log: " + completeLog);
-                this.failedSongs.put(songFile, song);
+                logger.error("Error downloading song " + song + " with exit code: " + exitCode);
+                logger.debug("Process output: \n" + completeLog.toString());
+                this.failedSongs.put(song, completeLog.toString());
             }
         } catch (Exception e) {
-            logger.error("Error handling youtubeDL: " + e);
-            return;
+            logger.error("Error handling youtubeDL: ", e);
         }
-    }
-
-    public void shutdown() {
-        executorService.shutdown();
     }
 
     /**
@@ -194,11 +205,7 @@ public class Download {
             this.threadDownload(song, likedSongsFolder);
             // this.downloadSong(song, likedSongsFolder);
         }
-        try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.error("Threads were interrupted while awaiting termination" + e);
-        }
+        this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done");
         pb.close();
@@ -242,11 +249,7 @@ public class Download {
             this.threadDownload(song, playlistFolder);
             // this.downloadSong(song, playlistFolder);
         }
-        try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.error("Threads were interrupted while awaiting termination" + e);
-        }
+        this.threadShutdown();
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done");
         pb.close();
@@ -281,11 +284,7 @@ public class Download {
             this.threadDownload(song, albumFolder);
             // this.downloadSong(song, albumFolder);
         }
-        try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.error("Threads were interrupted while awaiting termination" + e);
-        }
+        this.threadShutdown();
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done");
         pb.close();

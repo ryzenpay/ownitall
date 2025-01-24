@@ -48,11 +48,9 @@ public class DownloadMenu {
         pb.setExtraMessage("Albums").step();
         download.downloadAlbums(collection.getAlbums());
         pb.setExtraMessage("Done").step();
-        download.shutdown();
         pb.close();
         logger.info("Done downloading music");
         download.getFailedSongsReport();
-        download.shutdown();
     }
 
     private void optionDownloadPlaylist() {
@@ -72,7 +70,6 @@ public class DownloadMenu {
         }
         logger.info("Done downloading playlist");
         download.getFailedSongsReport();
-        download.shutdown();
     }
 
     private void optionDownloadAlbum() {
@@ -92,7 +89,6 @@ public class DownloadMenu {
         }
         logger.info("Done donwloading album");
         download.getFailedSongsReport();
-        download.shutdown();
     }
 
     private void optionDownloadLikedSongs() {
@@ -100,6 +96,5 @@ public class DownloadMenu {
         download.downloadLikedSongs(collection.getLikedSongs());
         logger.info("Done downloading liked songs");
         download.getFailedSongsReport();
-        download.shutdown();
     }
 }
