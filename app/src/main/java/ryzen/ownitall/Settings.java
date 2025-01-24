@@ -104,7 +104,7 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
      * download all files in a hierachy method
      * playlists get their own folders
      */
-    protected boolean downloadHierachy = false;
+    protected boolean downloadHierachy = true;
     /**
      * download quality of music
      * 0 - best, 10 - worst

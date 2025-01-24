@@ -50,7 +50,8 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    public static void writeM3U(String title, String M3UData, File folder) throws Exception {
+    public static void writeM3U(String title, String M3UData, String folderPath) throws Exception {
+        File folder = new File(folderPath);
         if (!folder.exists()) {
             return;
         }

@@ -1,6 +1,7 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,7 +68,13 @@ public class Download {
         if (songFile.exists()) { // dont download twice
             return;
         }
-        File likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
+        File likedSongFile;
+        if (settings.isDownloadHierachy()) {
+            File likedSongFolder = new File(this.downloadPath, settings.getLikedSongFile());
+            likedSongFile = new File(likedSongFolder, song.getFileName() + "." + settings.getDownloadFormat());
+        } else {
+            likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
+        }
         if (likedSongFile.exists()) { // to prevent overwriting from its own folder
             try {
                 Files.copy(likedSongFile.toPath(), songFile.toPath());
@@ -140,10 +147,13 @@ public class Download {
      */
     public void downloadLikedSongs(LikedSongs likedSongs) {
         File likedSongsFolder = new File(this.downloadPath);
+        if (settings.isDownloadHierachy()) {
+            likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
+            likedSongsFolder.mkdirs();
+        }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
-        likedSongsFolder.mkdirs();
         try {
-            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), likedSongsFolder);
+            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), this.downloadPath);
         } catch (Exception e) {
             logger.error(
                     "Error writing Liked Songs (" + likedSongsFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
@@ -179,16 +189,14 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
-        File playlistFolder;
+        File playlistFolder = new File(this.downloadPath);
         if (settings.isDownloadHierachy()) {
             playlistFolder = new File(this.downloadPath, playlist.getFileName());
-        } else {
-            playlistFolder = new File(this.downloadPath);
+            playlistFolder.mkdirs();
         }
-        playlistFolder.mkdirs();
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
-            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), playlistFolder);
+            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), this.downloadPath);
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
@@ -217,10 +225,11 @@ public class Download {
         File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
         try {
-            MusicTools.writeM3U(album.getFileName(), album.getM3U(), albumFolder);
+            MusicTools.writeM3U(album.getFileName(), album.getM3U(), this.downloadPath);
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(), albumFolder);
             }
+        } catch (FileAlreadyExistsException e) {
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
