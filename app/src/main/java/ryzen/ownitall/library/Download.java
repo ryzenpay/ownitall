@@ -309,7 +309,10 @@ public class Download {
         }
     }
 
-    public LinkedHashMap<File, Song> getFailedSongs() {
-        return this.failedSongs;
+    public void getFailedSongsReport() {
+        if (!failedSongs.isEmpty()) {
+            logger.error("Failed songs: " + this.failedSongs.toString());
+            this.failedSongs.clear();
+        }
     }
 }
