@@ -16,8 +16,10 @@ import ryzen.ownitall.util.Progressbar;
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
     private static Collection collection = Collection.load();
+    private Download download;
 
     public DownloadMenu() {
+        this.download = new Download();
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download Library", this::optionDownloadCollection);
         options.put("Download Playlist", this::optionDownloadPlaylist);
@@ -38,7 +40,6 @@ public class DownloadMenu {
      */
     private void optionDownloadCollection() {
         logger.info("Downloading music...");
-        Download download = new Download();
         ProgressBar pb = Progressbar.progressBar("Download music", 3);
         pb.setExtraMessage("Liked songs");
         download.downloadLikedSongs(collection.getLikedSongs());
@@ -47,13 +48,14 @@ public class DownloadMenu {
         pb.setExtraMessage("Albums").step();
         download.downloadAlbums(collection.getAlbums());
         pb.setExtraMessage("Done").step();
+        download.shutdown();
         pb.close();
         logger.info("Done downloading music");
+        download.shutdown();
     }
 
     private void optionDownloadPlaylist() {
         logger.info("Download Playlist...");
-        Download download = new Download();
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         for (Playlist playlist : collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
@@ -68,11 +70,11 @@ public class DownloadMenu {
             }
         }
         logger.info("Done downloading playlist");
+        download.shutdown();
     }
 
     private void optionDownloadAlbum() {
         logger.info("Downloading album...");
-        Download download = new Download();
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
         for (Album album : collection.getAlbums()) {
             options.put(album.toString(), album);
@@ -87,12 +89,13 @@ public class DownloadMenu {
             }
         }
         logger.info("Done donwloading album");
+        download.shutdown();
     }
 
     private void optionDownloadLikedSongs() {
         logger.info("Downloading liked songs...");
-        Download download = new Download();
         download.downloadLikedSongs(collection.getLikedSongs());
         logger.info("Done downloading liked songs");
+        download.shutdown();
     }
 }

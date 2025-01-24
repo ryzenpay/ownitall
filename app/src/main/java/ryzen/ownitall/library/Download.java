@@ -23,9 +23,15 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static Settings settings = Settings.load();
+    private final ExecutorService executorService;
+    private final Semaphore semaphore;
     private String downloadPath;
 
     /**
@@ -47,6 +53,8 @@ public class Download {
         logger.info("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         Input.request().getAgreement();
+        this.executorService = Executors.newFixedThreadPool(settings.getDownloadThreads());
+        this.semaphore = new Semaphore(settings.getDownloadThreads());
     }
 
     /**
@@ -55,6 +63,19 @@ public class Download {
     private void setDownloadPath() {
         System.out.print("Please provide path to save music: ");
         this.downloadPath = Input.request().getFile(false).getAbsolutePath();
+    }
+
+    public void threadDownload(Song song, File path) {
+        // Attempt to acquire a permit from the semaphore
+        try {
+            semaphore.acquire(); // Block until a permit is available
+            this.downloadSong(song, path); // Perform the download
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            logger.error("Thread was interrupted while waiting to acquire semaphore.", e);
+        } finally {
+            semaphore.release(); // Ensure permit is released after download completes
+        }
     }
 
     /**
@@ -142,6 +163,10 @@ public class Download {
         }
     }
 
+    public void shutdown() {
+        executorService.shutdown();
+    }
+
     /**
      * orchestrator of DownloadSong for all liked songs
      * 
@@ -162,7 +187,8 @@ public class Download {
         }
         for (Song song : likedSongs.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.downloadSong(song, likedSongsFolder);
+            this.threadDownload(song, likedSongsFolder);
+            // this.downloadSong(song, likedSongsFolder);
         }
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done");
@@ -204,7 +230,8 @@ public class Download {
         }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.downloadSong(song, playlistFolder);
+            this.threadDownload(song, playlistFolder);
+            // this.downloadSong(song, playlistFolder);
         }
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done");
@@ -237,7 +264,8 @@ public class Download {
         }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.downloadSong(song, albumFolder);
+            this.threadDownload(song, albumFolder);
+            // this.downloadSong(song, albumFolder);
         }
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done");
