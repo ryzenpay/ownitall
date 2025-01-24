@@ -62,10 +62,13 @@ public class Song {
 
     @JsonIgnore
     public String getFileName() {
-        String sanitized = this.name.replaceAll("[<>:\"/\\|?*]", "_");
+        String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
         sanitized = sanitized.trim();
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
+        }
+        if (sanitized.isEmpty()) {
+            sanitized = String.valueOf(this.hashCode());
         }
         return sanitized;
     }

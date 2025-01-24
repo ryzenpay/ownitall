@@ -85,7 +85,7 @@ public class Download {
                         + songFile.getAbsolutePath() + " error: " + e);
             }
         }
-        String searchQuery = song.toString() + " #official"; // youtube search criteria
+        String searchQuery = song.toString() + " #official #audio"; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());

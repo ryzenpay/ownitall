@@ -26,8 +26,6 @@ public class Playlist {
 
     /**
      * to save api requests
-     * TODO: implement update method to save API requests
-     * ^ this has no rush as is only greatly in use for very big music libraries
      */
     private String youtubePageToken;
     private int spotifyPageOffset = 0;
@@ -88,10 +86,13 @@ public class Playlist {
 
     @JsonIgnore
     public String getFileName() {
-        String sanitized = this.toString().replaceAll("[<>:\"/\\|?*]", "_");
+        String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
         sanitized = sanitized.trim();
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
+        }
+        if (sanitized.isEmpty()) {
+            sanitized = String.valueOf(this.hashCode());
         }
         return sanitized;
     }
