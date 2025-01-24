@@ -91,7 +91,7 @@ public class Album extends Playlist {
     }
 
     public LinkedHashSet<Artist> getArtists() {
-        return new LinkedHashSet<>(this.artists);
+        return this.artists;
     }
 
     @JsonIgnore

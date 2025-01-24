@@ -120,12 +120,12 @@ public class Download {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
-                logger.error(completeLog); // Log last line of output
+                logger.debug(completeLog); // Log last line of output
                 return;
             }
             if (!songFile.exists()) {
                 logger.error("Everything passed but the file " + songFile.getAbsolutePath() + "is still missing");
-                logger.error("Search Query: " + searchQuery + "\nComplete log: " + completeLog);
+                logger.debug("Complete log: " + completeLog);
             }
         } catch (Exception e) {
             logger.error("Error handling youtubeDL: " + e);

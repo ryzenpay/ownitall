@@ -38,6 +38,12 @@ public class Collection {
         return instance;
     }
 
+    public void clear() {
+        this.likedSongs.clear();
+        this.playlists.clear();
+        this.albums.clear();
+    }
+
     /**
      * merge array of albums into current collection
      * 

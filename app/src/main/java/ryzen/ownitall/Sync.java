@@ -110,6 +110,7 @@ public class Sync {
                 file.renameTo(new File(archiveFolder, file.getName()));
             }
         }
+        Collection.load().clear();
         logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
     }
 
@@ -130,8 +131,8 @@ public class Sync {
                 file.renameTo(new File(archiveFolder, file.getName()));
             }
         }
+        Collection.load().clear();
         logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
-        logger.info("Restart the program to refresh the library");
     }
 
     /**
@@ -163,9 +164,10 @@ public class Sync {
             }
             unarchiveFolder.delete();
         }
+        Collection collection = Collection.load();
+        collection.clear();
+        collection.mergeCollection(this.importCollection());
         logger.info("Successfully unarchived music library");
-        logger.info("Restarting the program to see the unarchived data");
-        System.exit(0);
     }
 
     /**

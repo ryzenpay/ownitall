@@ -202,7 +202,7 @@ public class Playlist {
      * @return - arraylist of constructed Song
      */
     public LinkedHashSet<Song> getSongs() {
-        return new LinkedHashSet<>(this.songs);
+        return this.songs;
     }
 
     /**

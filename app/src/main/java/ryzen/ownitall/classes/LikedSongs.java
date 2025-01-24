@@ -28,4 +28,8 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
         }
         return false;
     }
+
+    public void clear() {
+        this.getSongs().clear();
+    }
 }
