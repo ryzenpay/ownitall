@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -34,12 +35,14 @@ public class Download {
     private final ExecutorService executorService;
     private final Semaphore semaphore;
     private String downloadPath;
+    private LinkedHashMap<File, Song> failedSongs;
 
     /**
      * default download constructor
      * setting all settings / credentials
      */
     public Download() {
+        this.failedSongs = new LinkedHashMap<>();
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
         }
@@ -152,11 +155,11 @@ public class Download {
             if (exitCode != 0) {
                 logger.error("Error downloading song " + song.toString() + " with error: " + exitCode);
                 logger.debug(completeLog); // Log last line of output
-                return;
-            }
-            if (!songFile.exists()) {
+                this.failedSongs.put(songFile, song);
+            } else if (!songFile.exists()) {
                 logger.error("Everything passed but the file " + songFile.getAbsolutePath() + " is still missing");
                 logger.debug("Complete log: " + completeLog);
+                this.failedSongs.put(songFile, song);
             }
         } catch (Exception e) {
             logger.error("Error handling youtubeDL: " + e);
@@ -304,5 +307,9 @@ public class Download {
                 }
             }
         }
+    }
+
+    public LinkedHashMap<File, Song> getFailedSongs() {
+        return this.failedSongs;
     }
 }

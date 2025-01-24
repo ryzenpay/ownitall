@@ -1,5 +1,6 @@
 package ryzen.ownitall.library.menu;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,7 @@ import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Download;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
@@ -51,6 +53,11 @@ public class DownloadMenu {
         download.shutdown();
         pb.close();
         logger.info("Done downloading music");
+        LinkedHashMap<File, Song> failedSongs = download.getFailedSongs();
+        if (!failedSongs.isEmpty()) {
+            logger.error("Failed songs: " + download.getFailedSongs().toString());
+            download.getFailedSongs().clear();
+        }
         download.shutdown();
     }
 
@@ -70,6 +77,11 @@ public class DownloadMenu {
             }
         }
         logger.info("Done downloading playlist");
+        LinkedHashMap<File, Song> failedSongs = download.getFailedSongs();
+        if (!failedSongs.isEmpty()) {
+            logger.error("Failed songs: " + download.getFailedSongs().toString());
+            download.getFailedSongs().clear();
+        }
         download.shutdown();
     }
 
@@ -89,6 +101,11 @@ public class DownloadMenu {
             }
         }
         logger.info("Done donwloading album");
+        LinkedHashMap<File, Song> failedSongs = download.getFailedSongs();
+        if (!failedSongs.isEmpty()) {
+            logger.error("Failed songs: " + download.getFailedSongs().toString());
+            download.getFailedSongs().clear();
+        }
         download.shutdown();
     }
 
@@ -96,6 +113,11 @@ public class DownloadMenu {
         logger.info("Downloading liked songs...");
         download.downloadLikedSongs(collection.getLikedSongs());
         logger.info("Done downloading liked songs");
+        LinkedHashMap<File, Song> failedSongs = download.getFailedSongs();
+        if (!failedSongs.isEmpty()) {
+            logger.error("Failed songs: " + download.getFailedSongs().toString());
+            download.getFailedSongs().clear();
+        }
         download.shutdown();
     }
 }
