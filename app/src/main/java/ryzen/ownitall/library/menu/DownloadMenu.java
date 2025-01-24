@@ -50,6 +50,7 @@ public class DownloadMenu {
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done downloading music");
+        // TODO: error handling for failed songs
         download.getFailedSongsReport();
     }
 

@@ -67,6 +67,27 @@ public class Download {
     }
 
     public void threadDownload(Song song, File path) {
+        File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
+        if (songFile.exists()) { // dont download twice
+            return;
+        }
+        File likedSongFile;
+        if (settings.isDownloadHierachy()) {
+            File likedSongFolder = new File(this.downloadPath, settings.getLikedSongFile());
+            likedSongFile = new File(likedSongFolder, song.getFileName() + "." + settings.getDownloadFormat());
+        } else {
+            likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
+        }
+        if (likedSongFile.exists()) { // to prevent overwriting from its own folder
+            try {
+                Files.copy(likedSongFile.toPath(), songFile.toPath());
+                logger.debug("Already found liked song downloaded: " + likedSongFile.getAbsolutePath());
+                return;
+            } catch (IOException e) {
+                logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
+                        + songFile.getAbsolutePath() + " error: " + e);
+            }
+        }
         if (this.executor == null || this.executor.isShutdown()) {
             this.executor = new ThreadPoolExecutor(
                     settings.getDownloadThreads(),
@@ -110,27 +131,6 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) {
-        File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
-        if (songFile.exists()) { // dont download twice
-            return;
-        }
-        File likedSongFile;
-        if (settings.isDownloadHierachy()) {
-            File likedSongFolder = new File(this.downloadPath, settings.getLikedSongFile());
-            likedSongFile = new File(likedSongFolder, song.getFileName() + "." + settings.getDownloadFormat());
-        } else {
-            likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
-        }
-        if (likedSongFile.exists()) { // to prevent overwriting from its own folder
-            try {
-                Files.copy(likedSongFile.toPath(), songFile.toPath());
-                logger.debug("Already found liked song downloaded: " + likedSongFile.getAbsolutePath());
-                return;
-            } catch (IOException e) {
-                logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
-                        + songFile.getAbsolutePath() + " error: " + e);
-            }
-        }
         String searchQuery = song.toString() + " #official #audio"; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
