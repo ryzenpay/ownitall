@@ -6,15 +6,12 @@ import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.library.menu.*;
 
 public class ExportMenu {
-    private Collection collection;
-
     /**
      * default constructor
      * 
      * @param collection - known library to export
      */
-    public ExportMenu(Collection collection) {
-        this.collection = collection;
+    public ExportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download (YoutubeDL)", this::optionDownload);
         while (true) {
@@ -28,6 +25,6 @@ public class ExportMenu {
     }
 
     private void optionDownload() {
-        new DownloadMenu(this.collection);
+        new DownloadMenu();
     }
 }

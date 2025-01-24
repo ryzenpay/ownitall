@@ -6,18 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.Collection;
 import ryzen.ownitall.library.Spotify;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class SpotifyMenu {
     private static final Logger logger = LogManager.getLogger(SpotifyMenu.class);
-    private Collection collection;
     private Spotify spotify;
 
     public SpotifyMenu() {
-        this.collection = new Collection();
         this.spotify = new Spotify();
     }
 
@@ -44,7 +41,6 @@ public class SpotifyMenu {
         pb.setExtraMessage("Playlists").step();
         spotify.getPlaylists();
         pb.setExtraMessage("Done").step();
-        this.collection.mergeCollection(spotify.getCollection());
         pb.close();
         logger.info("done importing Spotify music");
     }
@@ -54,15 +50,4 @@ public class SpotifyMenu {
      * ^ requires redesign of spotify class to return album rather than array of
      * songs
      */
-    private void optionImportAlbum() {
-        logger.info("Importing Spotify Album...");
-    }
-
-    private void optionImportPlaylist() {
-        logger.info("Importing Spotify Playlist...");
-    }
-
-    public Collection getCollection() {
-        return this.collection;
-    }
 }

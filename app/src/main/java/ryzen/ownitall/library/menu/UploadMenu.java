@@ -15,10 +15,9 @@ import ryzen.ownitall.util.Progressbar;
 
 public class UploadMenu {
     private static final Logger logger = LogManager.getLogger(UploadMenu.class);
-    private Collection collection;
+    private Collection collection = Collection.load();
 
     public UploadMenu() {
-        this.collection = new Collection();
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Upload Library", this::optionUploadCollection);
         options.put("Upload Playlist", this::optionUploadPlaylist);
@@ -42,7 +41,6 @@ public class UploadMenu {
         upload.getLikedSongs();
         pb.setExtraMessage("Saved Albums & Playlists").step();
         upload.processFolders();
-        this.collection.mergeCollection(upload.getCollection());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done uploading local music");
@@ -71,9 +69,5 @@ public class UploadMenu {
         File folder = Input.request().getFile(true);
         this.collection.addLikedSongs(Upload.getSongs(folder));
         logger.info("Done Uploading Liked Songs");
-    }
-
-    public Collection getCollection() {
-        return this.collection;
     }
 }

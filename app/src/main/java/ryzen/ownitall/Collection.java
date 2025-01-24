@@ -17,6 +17,7 @@ import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
+    private static Collection instance;
     private LikedSongs likedSongs;
     private LinkedHashSet<Playlist> playlists;
     private LinkedHashSet<Album> albums;
@@ -28,6 +29,13 @@ public class Collection {
         this.likedSongs = new LikedSongs();
         this.playlists = new LinkedHashSet<>();
         this.albums = new LinkedHashSet<>();
+    }
+
+    public static Collection load() {
+        if (instance == null) {
+            instance = new Collection();
+        }
+        return instance;
     }
 
     /**

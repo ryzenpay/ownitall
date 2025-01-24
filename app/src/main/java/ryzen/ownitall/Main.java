@@ -12,7 +12,7 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static Settings settings = Settings.load();
     private static Sync sync = Sync.load();
-    private static Collection collection;
+    private static Collection collection = Collection.load();
 
     /**
      * main function launching the main ownitall menu
@@ -24,10 +24,7 @@ public class Main {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         if (sync.checkDataFolder()) {
             logger.info("Local data found, attempting to import...");
-            collection = sync.importCollection();
-        } else {
-            logger.info("No local data found");
-            collection = new Collection();
+            collection.mergeCollection(sync.importCollection());
         }
         // main menu
         options.put("Import", Main::optionImport);
@@ -53,16 +50,14 @@ public class Main {
      * import menu
      */
     private static void optionImport() {
-        // TODO: import soundcloud, apple music?
-        ImportMenu dataImport = new ImportMenu();
-        collection.mergeCollection(dataImport.getCollection());
+        new ImportMenu();
     }
 
     /**
      * export menu
      */
     private static void optionExport() {
-        new ExportMenu(collection);
+        new ExportMenu();
     }
 
     /**

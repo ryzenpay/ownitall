@@ -41,16 +41,15 @@ public class Youtube {
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
+    private static Collection collection = Collection.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private Collection collection;
 
     /**
      * default youtube constructor asking for user input
      */
     public Youtube() {
-        this.collection = new Collection();
         if (credentials.youtubeIsEmpty()) {
             credentials.setYoutubeCredentials();
         }
@@ -110,7 +109,7 @@ public class Youtube {
         if (youtubeApi == null) {
             return;
         }
-        String pageToken = this.collection.getLikedSongs().getYoutubePageToken();
+        String pageToken = collection.getLikedSongs().getYoutubePageToken();
         try {
             do {
                 YouTube.Videos.List request = youtubeApi.videos()
@@ -130,11 +129,11 @@ public class Youtube {
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
                             song.setDuration(Duration.parse(contentDetails.getDuration()));
-                            this.collection.addLikedSong(song);
+                            collection.addLikedSong(song);
                         }
                     }
                 }
-                this.collection.getLikedSongs().setYoutubePageToken(pageToken);
+                collection.getLikedSongs().setYoutubePageToken(pageToken);
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
@@ -177,7 +176,7 @@ public class Youtube {
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
-                    Playlist foundPlaylist = this.collection.getPlaylist(playlist);
+                    Playlist foundPlaylist = collection.getPlaylist(playlist);
                     LinkedHashSet<Song> songs;
                     if (foundPlaylist != null) {
                         songs = this.getPlaylistSongs(currentPlaylist.getId(),
@@ -187,7 +186,7 @@ public class Youtube {
                     }
                     if (!songs.isEmpty()) {
                         playlist.addSongs(songs);
-                        this.collection.addPlaylist(playlist);
+                        collection.addPlaylist(playlist);
                     }
                 }
                 pageToken = playlistResponse.getNextPageToken();
@@ -298,9 +297,5 @@ public class Youtube {
             logger.error("Error retrieving video details for " + videoId + ": " + e);
         }
         return null;
-    }
-
-    public Collection getCollection() {
-        return this.collection;
     }
 }

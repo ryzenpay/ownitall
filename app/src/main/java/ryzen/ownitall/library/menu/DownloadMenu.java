@@ -15,10 +15,9 @@ import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
-    private Collection collection;
+    private static Collection collection = Collection.load();
 
-    public DownloadMenu(Collection collection) {
-        this.collection = collection;
+    public DownloadMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download Library", this::optionDownloadCollection);
         options.put("Download Playlist", this::optionDownloadPlaylist);
@@ -42,11 +41,11 @@ public class DownloadMenu {
         Download download = new Download();
         ProgressBar pb = Progressbar.progressBar("Download music", 3);
         pb.setExtraMessage("Liked songs");
-        download.downloadLikedSongs(this.collection.getLikedSongs());
+        download.downloadLikedSongs(collection.getLikedSongs());
         pb.setExtraMessage("Playlists").step();
-        download.downloadPlaylists(this.collection.getPlaylists());
+        download.downloadPlaylists(collection.getPlaylists());
         pb.setExtraMessage("Albums").step();
-        download.downloadAlbums(this.collection.getAlbums());
+        download.downloadAlbums(collection.getAlbums());
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done downloading music");
@@ -56,7 +55,7 @@ public class DownloadMenu {
         logger.info("Download Playlist...");
         Download download = new Download();
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-        for (Playlist playlist : this.collection.getPlaylists()) {
+        for (Playlist playlist : collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }
         while (true) {
@@ -75,7 +74,7 @@ public class DownloadMenu {
         logger.info("Downloading album...");
         Download download = new Download();
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
-        for (Album album : this.collection.getAlbums()) {
+        for (Album album : collection.getAlbums()) {
             options.put(album.toString(), album);
         }
         while (true) {
@@ -93,7 +92,7 @@ public class DownloadMenu {
     private void optionDownloadLikedSongs() {
         logger.info("Downloading liked songs...");
         Download download = new Download();
-        download.downloadLikedSongs(this.collection.getLikedSongs());
+        download.downloadLikedSongs(collection.getLikedSongs());
         logger.info("Done downloading liked songs");
     }
 }

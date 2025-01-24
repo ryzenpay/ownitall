@@ -54,15 +54,14 @@ public class Spotify {
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
+    private static Collection collection = Collection.load();
     private SpotifyApi spotifyApi;
     private String code;
-    private Collection collection;
 
     /**
      * Default spotify constructor asking for user input
      */
     public Spotify() {
-        this.collection = new Collection();
         if (credentials.spotifyIsEmpty()) {
             credentials.setSpotifyCredentials();
         }
@@ -236,7 +235,7 @@ public class Spotify {
      */
     public void getLikedSongs() {
         int limit = 50;
-        int offset = this.collection.getLikedSongs().getSpotifyPageOffset();
+        int offset = collection.getLikedSongs().getSpotifyPageOffset();
         boolean hasMore = true;
 
         while (hasMore) {
@@ -256,14 +255,14 @@ public class Spotify {
                         Track track = savedTrack.getTrack();
                         Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        this.collection.addLikedSong(song);
+                        collection.addLikedSong(song);
                     }
                     offset += limit;
                 }
 
                 if (offset >= savedTrackPaging.getTotal()) {
                     hasMore = false;
-                    this.collection.getLikedSongs().setSpotifyPageOffset(offset);
+                    collection.getLikedSongs().setSpotifyPageOffset(offset);
                 }
             } catch (TooManyRequestsException e) {
                 logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -301,7 +300,7 @@ public class Spotify {
                     for (SavedAlbum savedAlbum : items) {
                         Album album = library.getAlbum(savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
-                        Album foundAlbum = this.collection.getAlbum(album);
+                        Album foundAlbum = collection.getAlbum(album);
                         LinkedHashSet<Song> songs;
                         if (foundAlbum != null) {
                             songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(),
@@ -312,7 +311,7 @@ public class Spotify {
                         if (!songs.isEmpty()) {
                             album.addSongs(songs);
                             album.setSpotifyPageOffset(songs.size());
-                            this.collection.addAlbum(album);
+                            collection.addAlbum(album);
                         }
                     }
                     offset += limit;
@@ -401,7 +400,7 @@ public class Spotify {
                 } else {
                     for (PlaylistSimplified spotifyPlaylist : items) {
                         Playlist playlist = new Playlist(spotifyPlaylist.getName());
-                        Playlist foundPlaylist = this.collection.getPlaylist(playlist);
+                        Playlist foundPlaylist = collection.getPlaylist(playlist);
                         LinkedHashSet<Song> songs;
                         if (foundPlaylist != null) {
                             songs = this.getPlaylistSongs(spotifyPlaylist.getId(),
@@ -413,7 +412,7 @@ public class Spotify {
                             playlist.addSongs(songs);
                             playlist.setSpotifyPageOffset(songs.size());
                             playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
-                            this.collection.addPlaylist(playlist);
+                            collection.addPlaylist(playlist);
                         }
                     }
                     offset += limit;
@@ -486,9 +485,5 @@ public class Spotify {
             }
         }
         return songs;
-    }
-
-    public Collection getCollection() {
-        return this.collection;
     }
 }

@@ -39,7 +39,7 @@ public class Upload {
     private static final Settings settings = Settings.load();
     private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
     private static Library library = Library.load();
-    private Collection collection;
+    private static Collection collection = Collection.load();
     private File localLibrary;
     private ArrayList<File> localLibraryFolders;
     // formats have to be lower case
@@ -48,7 +48,6 @@ public class Upload {
      * default local constructor asking for library path
      */
     public Upload() {
-        this.collection = new Collection();
         if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
             this.setLocalLibrary();
         }
@@ -110,11 +109,11 @@ public class Upload {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
                 Song song = getSong(file);
                 if (song != null) {
-                    this.collection.addLikedSong(song);
+                    collection.addLikedSong(song);
                 }
             }
             if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
-                this.collection.addLikedSongs(getSongs(file));
+                collection.addLikedSongs(getSongs(file));
             }
         }
     }
@@ -125,15 +124,15 @@ public class Upload {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (!album.isEmpty()) {
-                        this.collection.addAlbum(album);
+                        collection.addAlbum(album);
                     }
                 } else {
                     Playlist playlist = getPlaylist(file);
                     if (!playlist.isEmpty()) {
                         if (playlist.size() <= 1) { // filter out singles
-                            this.collection.addLikedSongs(playlist.getSongs());
+                            collection.addLikedSongs(playlist.getSongs());
                         } else {
-                            this.collection.addPlaylist(playlist);
+                            collection.addPlaylist(playlist);
                         }
                     }
                 }
@@ -274,9 +273,5 @@ public class Upload {
             album = library.getAlbum(folder.getName(), artistName);
         }
         return album;
-    }
-
-    public Collection getCollection() {
-        return this.collection;
     }
 }
