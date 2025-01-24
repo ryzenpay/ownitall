@@ -21,8 +21,9 @@ public class SpotifyMenu {
     public void SpotifyImportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
+        options.put("Import liked songs", this::optionImportLikedSongs);
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "SPOTIFY");
+            String choice = Menu.optionMenu(options.keySet(), "IMPORT SPOTIFY");
             if (choice.equals("Exit")) {
                 break;
             } else {
@@ -43,6 +44,12 @@ public class SpotifyMenu {
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("done importing Spotify music");
+    }
+
+    private void optionImportLikedSongs() {
+        logger.info("Importing Spotify Liked Songs...");
+        spotify.getLikedSongs();
+        logger.info("done importing Spotify Liked songs");
     }
 
     /**

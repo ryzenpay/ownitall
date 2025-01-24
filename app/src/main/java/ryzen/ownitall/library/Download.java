@@ -238,9 +238,9 @@ public class Download {
             return;
         }
         for (File file : folder.listFiles()) {
-            if (file.isFile() && !file.getName().equals("info.m3u") && !file.getName().equals("cover.png")) {
+            if (file.isFile() && !file.getName().equals("cover.png")) {
                 String extension = MusicTools.getExtension(file);
-                if (!extension.equals(settings.getDownloadFormat())) {
+                if (!extension.equals(settings.getDownloadFormat()) && !extension.equals("m3u")) {
                     if (file.delete()) {
                         logger.info("Cleaned up file: " + file.getAbsolutePath());
                     } else {

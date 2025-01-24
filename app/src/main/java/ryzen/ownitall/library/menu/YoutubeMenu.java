@@ -21,8 +21,9 @@ public class YoutubeMenu {
     public void youtubeImportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
+        options.put("Import Liked Songs", this::optionImportLikedSongs);
         while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "YOUTUBE");
+            String choice = Menu.optionMenu(options.keySet(), "IMPORT YOUTUBE");
             if (choice.equals("Exit")) {
                 break;
             } else {
@@ -43,5 +44,11 @@ public class YoutubeMenu {
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done importing youtube music");
+    }
+
+    private void optionImportLikedSongs() {
+        logger.info("Importing youtube liked songs...");
+        this.youtube.getLikedSongs();
+        logger.info("Done importing youtube liked songs");
     }
 }
