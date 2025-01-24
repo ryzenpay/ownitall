@@ -41,12 +41,6 @@ public class Download {
      * setting all settings / credentials
      */
     public Download() {
-        this.executor = new ThreadPoolExecutor(
-                settings.getDownloadThreads(),
-                settings.getDownloadThreads(),
-                0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
         this.failedSongs = new LinkedHashMap<>();
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
@@ -73,6 +67,14 @@ public class Download {
     }
 
     public void threadDownload(Song song, File path) {
+        if (this.executor == null || this.executor.isShutdown()) {
+            this.executor = new ThreadPoolExecutor(
+                    settings.getDownloadThreads(),
+                    settings.getDownloadThreads(),
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
+        }
         while (true) {
             try {
                 // Attempt to execute the task
