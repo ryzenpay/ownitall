@@ -26,6 +26,7 @@ import ryzen.ownitall.util.Progressbar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
@@ -190,6 +191,11 @@ public class Download {
             this.threadDownload(song, likedSongsFolder);
             // this.downloadSong(song, likedSongsFolder);
         }
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            logger.error("Threads were interrupted while awaiting termination" + e);
+        }
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done");
         pb.close();
@@ -233,6 +239,11 @@ public class Download {
             this.threadDownload(song, playlistFolder);
             // this.downloadSong(song, playlistFolder);
         }
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            logger.error("Threads were interrupted while awaiting termination" + e);
+        }
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done");
         pb.close();
@@ -266,6 +277,11 @@ public class Download {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
             // this.downloadSong(song, albumFolder);
+        }
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            logger.error("Threads were interrupted while awaiting termination" + e);
         }
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done");
