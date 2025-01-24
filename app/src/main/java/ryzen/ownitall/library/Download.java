@@ -131,7 +131,7 @@ public class Download {
                 return;
             }
             if (!songFile.exists()) {
-                logger.error("Everything passed but the file " + songFile.getAbsolutePath() + "is still missing");
+                logger.error("Everything passed but the file " + songFile.getAbsolutePath() + " is still missing");
                 logger.debug("Complete log: " + completeLog);
             }
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class Download {
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         try {
-            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), this.downloadPath);
+            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), likedSongsFolder);
         } catch (Exception e) {
             logger.error(
                     "Error writing Liked Songs (" + likedSongsFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
@@ -196,7 +196,7 @@ public class Download {
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
-            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), this.downloadPath);
+            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), playlistFolder);
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
@@ -225,7 +225,7 @@ public class Download {
         File albumFolder = new File(this.downloadPath, album.getFileName());
         albumFolder.mkdirs();
         try {
-            MusicTools.writeM3U(album.getFileName(), album.getM3U(), this.downloadPath);
+            MusicTools.writeM3U(album.getFileName(), album.getM3U(), albumFolder);
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(), albumFolder);
             }
