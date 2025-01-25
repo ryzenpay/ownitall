@@ -141,16 +141,6 @@ public class Library {
                     artist.setId(artistNode.path("artist").path("id").asText());
                     album.addArtist(artist);
                 }
-                JsonNode relations = response.path("relations");
-                if (relations != null && relations.isArray()) {
-                    for (JsonNode relation : relations) {
-                        if (relation.path("type").asText().equals("url")) {
-                            String urlType = relation.path("type-id").asText();
-                            String url = relation.path("url").path("resource").asText();
-                            album.addLink(urlType, url);
-                        }
-                    }
-                }
                 this.albums.add(album);
                 return album;
             }
