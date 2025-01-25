@@ -2,9 +2,13 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ryzen.ownitall.util.Menu;
 
 public class Tools {
+    private static final Logger logger = LogManager.getLogger(Tools.class);
     private static Tools instance;
 
     /**
@@ -59,8 +63,10 @@ public class Tools {
      * clear memory cache and local cache
      */
     private void optionClearCache() {
+        logger.info("Clearing cache...");
         Sync.load().clearCache();
         Library.load().clear();
+        logger.info("Done clearing cache");
     }
 
     /**
@@ -68,6 +74,7 @@ public class Tools {
      */
     private void optionClearCredentials() {
         Credentials.load().clear();
+        logger.info("Cleared credentials");
     }
 
     /**
@@ -75,5 +82,6 @@ public class Tools {
      */
     private void optionClearSettings() {
         Settings.load().clear();
+        logger.info("Cleared settings");
     }
 }

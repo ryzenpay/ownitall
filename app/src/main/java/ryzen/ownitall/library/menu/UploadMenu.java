@@ -34,8 +34,8 @@ public class UploadMenu {
     }
 
     private void optionUploadCollection() {
-        logger.info("Uploading local music...");
         Upload upload = new Upload();
+        logger.info("Uploading local music...");
         ProgressBar pb = Progressbar.progressBar("Upload", 2);
         pb.setExtraMessage("Liked Songs");
         upload.getLikedSongs();
@@ -47,26 +47,26 @@ public class UploadMenu {
     }
 
     private void optionUploadPlaylist() {
-        logger.info("Uploading local Playlist...");
         System.out.print("Please provide playlist path: ");
         File folder = Input.request().getFile(true);
+        logger.info("Uploading local Playlist...");
         this.collection.addPlaylist(Upload.getPlaylist(folder));
         logger.info("done uploading playlist");
     }
 
     private void optionUploadAlbum() {
-        logger.info("Uploading local Album...");
         System.out.print("Please provide album path: ");
         File folder = Input.request().getFile(true);
+        logger.info("Uploading local Album...");
         this.collection.addAlbum(Upload.getAlbum(folder));
         logger.info("Done uploading Album");
 
     }
 
     private void optionUploadLikedSongs() {
-        logger.info("Uploading Liked Songs...");
         System.out.print("Please provide folder path: ");
         File folder = Input.request().getFile(true);
+        logger.info("Uploading Liked Songs..."); // TODO: time taken
         this.collection.addLikedSongs(Upload.getSongs(folder));
         logger.info("Done Uploading Liked Songs");
     }

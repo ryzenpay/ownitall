@@ -7,7 +7,7 @@
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=INFO"
+            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_info.xml"
         },
         {
             "type": "java",
@@ -15,7 +15,7 @@
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=OFF"
+            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_off.xml"
         },
         {
             "type": "java",
@@ -23,7 +23,7 @@
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log4j2.xml -Dlog4j2.level=DEBUG"
+            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_debug.xml"
         }
     ]
 }

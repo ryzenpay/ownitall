@@ -143,6 +143,7 @@ public class Upload {
     public static Playlist getPlaylist(File folder) {
         Playlist playlist = new Playlist(folder.getName());
         playlist.addSongs(getSongs(folder));
+        // TODO: covert local cover.jpg to the coverimage (URL)
         return playlist;
     }
 

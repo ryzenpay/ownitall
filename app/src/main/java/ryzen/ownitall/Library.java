@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.LinkedHashSet;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -213,12 +215,12 @@ public class Library {
             // what type of entity to return (artist, recording, album)
             urlBuilder.append(type);
             // what to search for
-            urlBuilder.append("?query=").append(query);
+            urlBuilder.append("?query=").append(URLEncoder.encode(query, StandardCharsets.UTF_8));
             // result limit & offset
             urlBuilder.append("&limit=").append(1);
             urlBuilder.append("&offset=").append(0);
             // response format
-            urlBuilder.append("&fmt=").append("json");
+            // urlBuilder.append("&fmt=").append("json");
             // get external links
             urlBuilder.append("inc=").append("url-rels");
 
@@ -226,8 +228,8 @@ public class Library {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             // required by their documentation
-            connection.setRequestProperty("User-Agent", "ownitall/1.0 ( https://github.com/ryzenpay/ownitall )");
-
+            connection.setRequestProperty("User-Agent", "OwnitAll/1.0 (https://github.com/ryzenpay/ownitall)");
+            connection.setRequestProperty("Accept", "application/json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
@@ -236,6 +238,7 @@ public class Library {
                 response.append(line);
             }
             reader.close();
+            logger.debug(response.toString());
             String jsonResponse = response.toString();
 
             // error handling
@@ -250,7 +253,7 @@ public class Library {
 
             return rootNode;
         } catch (Exception e) {
-            logger.error("Error querying API: " + e);
+            logger.error("Error querying Library API: " + e);
             return null;
         }
     }
