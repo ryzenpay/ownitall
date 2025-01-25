@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashSet;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -87,6 +89,7 @@ public class Playlist {
     @JsonIgnore
     public String getFileName() {
         String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
+        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
         sanitized = sanitized.trim();
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
@@ -94,7 +97,7 @@ public class Playlist {
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        return sanitized;
+        return new String(sanByte, UTF_8);
     }
 
     @JsonIgnore

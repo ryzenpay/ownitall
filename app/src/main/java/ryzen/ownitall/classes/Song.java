@@ -6,6 +6,9 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,6 +86,7 @@ public class Song {
     @JsonIgnore
     public String getFileName() {
         String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
+        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
         sanitized = sanitized.trim();
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
@@ -90,7 +94,7 @@ public class Song {
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        return sanitized;
+        return new String(sanByte, UTF_8);
     }
 
     /**
