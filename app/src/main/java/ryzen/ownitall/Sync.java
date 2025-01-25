@@ -241,9 +241,9 @@ public class Sync {
     public LinkedHashSet<Album> importAlbums() {
         this.setDataFolder();
         File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
-        LinkedHashSet<Album> albums;
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         if (!albumFile.exists()) {
-            return null;
+            return albums;
         }
         try {
             albums = this.objectMapper.readValue(albumFile,
@@ -281,9 +281,9 @@ public class Sync {
     public LinkedHashSet<Playlist> importPlaylists() {
         this.setDataFolder();
         File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
-        LinkedHashSet<Playlist> playlists;
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         if (!playlistFile.exists()) {
-            return null;
+            return playlists;
         }
         try {
             playlists = this.objectMapper.readValue(playlistFile,
@@ -321,9 +321,9 @@ public class Sync {
     public LikedSongs importLikedSongs() {
         this.setDataFolder();
         File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
-        LikedSongs likedSongs;
+        LikedSongs likedSongs = new LikedSongs();
         if (!likedSongFile.exists()) {
-            return null;
+            return likedSongs;
         }
         try {
             likedSongs = this.objectMapper.readValue(likedSongFile,
