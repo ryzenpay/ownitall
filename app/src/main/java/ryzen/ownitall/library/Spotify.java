@@ -37,6 +37,7 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -253,10 +254,19 @@ public class Spotify {
                 } else {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
-                        Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
-                        song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        song.addLink("spotify", track.getUri());
-                        collection.addLikedSong(song);
+                        Song song = null;
+                        if (settings.isUseLibrary()) {
+                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
+                        }
+                        if (song == null && !settings.isLibraryVerified()) {
+                            song = new Song(track.getName());
+                            song.setArtist(new Artist(track.getArtists()[0].getName()));
+                        }
+                        if (song != null) {
+                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                            song.addLink("spotify", track.getUri());
+                            collection.addLikedSong(song);
+                        }
                     }
                     offset += limit;
                 }
@@ -299,21 +309,30 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
-                        Album album = library.getAlbum(savedAlbum.getAlbum().getName(),
-                                savedAlbum.getAlbum().getArtists()[0].getName());
-                        Album foundAlbum = collection.getAlbum(album);
-                        LinkedHashSet<Song> songs;
-                        if (foundAlbum != null) {
-                            songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(),
-                                    foundAlbum.getSpotifyPageOffset());
-                        } else {
-                            songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(), 0);
+                        Album album = null;
+                        if (settings.isUseLibrary()) {
+                            album = library.getAlbum(savedAlbum.getAlbum().getName(),
+                                    savedAlbum.getAlbum().getArtists()[0].getName());
                         }
-                        if (!songs.isEmpty()) {
-                            album.addSongs(songs);
-                            album.setSpotifyPageOffset(songs.size());
-                            album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());
-                            collection.addAlbum(album);
+                        if (album == null && !settings.isLibraryVerified()) {
+                            album = new Album(savedAlbum.getAlbum().getName());
+                            album.addArtist(new Artist(savedAlbum.getAlbum().getArtists()[0].getName()));
+                        }
+                        if (album != null) {
+                            Album foundAlbum = collection.getAlbum(album);
+                            LinkedHashSet<Song> songs;
+                            if (foundAlbum != null) {
+                                songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(),
+                                        foundAlbum.getSpotifyPageOffset());
+                            } else {
+                                songs = this.getAlbumSongs(savedAlbum.getAlbum().getId(), 0);
+                            }
+                            if (!songs.isEmpty()) {
+                                album.addSongs(songs);
+                                album.setSpotifyPageOffset(songs.size());
+                                album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());
+                                collection.addAlbum(album);
+                            }
                         }
                     }
                     offset += limit;
@@ -354,10 +373,19 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
-                        Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
-                        song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        song.addLink("spotify", track.getUri());
-                        songs.add(song);
+                        Song song = null;
+                        if (settings.isUseLibrary()) {
+                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
+                        }
+                        if (song == null && !settings.isLibraryVerified()) {
+                            song = new Song(track.getName());
+                            song.setArtist(new Artist(track.getArtists()[0].getName()));
+                        }
+                        if (song != null) {
+                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                            song.addLink("spotify", track.getUri());
+                            songs.add(song);
+                        }
                     }
                     offset += limit;
                 }
@@ -457,22 +485,38 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
+                        Song song = null;
+                        String trackName;
+                        String artistName;
+                        int duration;
+                        String link;
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
-                            Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", track.getUri());
-                            songs.add(song);
+                            trackName = track.getName();
+                            artistName = track.getArtists()[0].getName();
+                            duration = track.getDurationMs();
+                            link = track.getUri();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
-                            Song song = library.getSong(episode.getName(), null);
-                            // String coverImage = episode.getImages()[0].getUrl(); doesnt seem to work with
-                            // the current SpotifyAPI class (returns null)
-                            song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", episode.getUri());
-                            songs.add(song);
+                            trackName = episode.getName();
+                            artistName = null;
+                            duration = episode.getDurationMs();
+                            link = episode.getUri();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
+                            break;
+                        }
+                        if (settings.isUseLibrary()) {
+                            song = library.getSong(trackName, artistName);
+                        }
+                        if (song == null && !settings.isLibraryVerified()) {
+                            song = new Song(trackName);
+                            song.setArtist(new Artist(artistName));
+                        }
+                        if (song != null) {
+                            song.setDuration(duration, ChronoUnit.MILLIS);
+                            song.addLink("spotify", link);
+                            songs.add(song);
                         }
                     }
                     offset += limit;

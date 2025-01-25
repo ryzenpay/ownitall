@@ -107,9 +107,6 @@ public class Library {
             return null;
         }
         Artist tmpArtist = new Artist(artistName);
-        if (!settings.useLibrary) {
-            return tmpArtist;
-        }
         if (this.artists.contains(tmpArtist)) {
             return this.getArtist(tmpArtist);
         }
@@ -124,7 +121,7 @@ public class Library {
             }
         }
         logger.debug("Could not find artist '" + artistName + "' in Library");
-        return tmpArtist;
+        return null;
     }
 
     /**
@@ -157,9 +154,6 @@ public class Library {
         if (artistName != null) {
             tmpAlbum.addArtist(new Artist(artistName));
         }
-        if (!settings.useLibrary) {
-            return tmpAlbum;
-        }
         if (this.albums.contains(tmpAlbum)) {
             return this.getAlbum(tmpAlbum);
         }
@@ -188,7 +182,7 @@ public class Library {
             }
         }
         logger.debug("Could not find Album '" + albumName + "' in Library");
-        return tmpAlbum;
+        return null;
     }
 
     /**
@@ -222,9 +216,6 @@ public class Library {
         if (artistName != null) {
             tmpSong.setArtist(new Artist(artistName));
         }
-        if (!settings.useLibrary) {
-            return tmpSong;
-        }
         if (this.songs.contains(tmpSong)) {
             return this.getSong(tmpSong);
         }
@@ -253,9 +244,6 @@ public class Library {
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
-        // TODO: reject if not found in library
-        // ^ these are the problem with the weird shorts
-        // ^^ make this a setting
         return null;
     }
 

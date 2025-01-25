@@ -10,18 +10,10 @@ import ryzen.ownitall.util.Levenshtein;
 public class Artist {
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
-    private String id;
-
-    public Artist(String name) {
-        this.name = name;
-    }
 
     @JsonCreator
-    public Artist(@JsonProperty("name") String name, @JsonProperty("id") String id) {
+    public Artist(@JsonProperty("name") String name) {
         this.name = name;
-        if (id != null) {
-            this.id = id;
-        }
     }
 
     /**
@@ -36,14 +28,6 @@ public class Artist {
     @Override
     public String toString() {
         return this.name;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     @Override

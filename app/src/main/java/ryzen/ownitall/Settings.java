@@ -80,6 +80,11 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
     protected boolean useLibrary = true;
 
     /**
+     * only put songs in collection if they are library verified
+     */
+    protected boolean libraryVerified = true;
+
+    /**
      * youtube dl installation path
      * 
      */
@@ -382,6 +387,46 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
     }
 
     public void setDownloadThreads(int downloadThreads) {
+        this.downloadThreads = downloadThreads;
+    }
+
+    public void setSpotifySongLimit(Integer spotifySongLimit) {
+        this.spotifySongLimit = spotifySongLimit;
+    }
+
+    public void setSpotifyAlbumLimit(Integer spotifyAlbumLimit) {
+        this.spotifyAlbumLimit = spotifyAlbumLimit;
+    }
+
+    public void setSpotifyPlaylistLimit(Integer spotifyPlaylistLimit) {
+        this.spotifyPlaylistLimit = spotifyPlaylistLimit;
+    }
+
+    public void setSoundCloudSongLimit(Integer soundCloudSongLimit) {
+        this.soundCloudSongLimit = soundCloudSongLimit;
+    }
+
+    public void setSoundCloudAlbumLimit(Integer soundCloudAlbumLimit) {
+        this.soundCloudAlbumLimit = soundCloudAlbumLimit;
+    }
+
+    public void setSoundCloudPlaylistLimit(Integer soundCloudPlaylistLimit) {
+        this.soundCloudPlaylistLimit = soundCloudPlaylistLimit;
+    }
+
+    public boolean isLibraryVerified() {
+        return libraryVerified;
+    }
+
+    public void setLibraryVerified(boolean libraryVerified) {
+        this.libraryVerified = libraryVerified;
+    }
+
+    public void setDownloadQuality(Integer downloadQuality) {
+        this.downloadQuality = downloadQuality;
+    }
+
+    public void setDownloadThreads(Integer downloadThreads) {
         this.downloadThreads = downloadThreads;
     }
 }

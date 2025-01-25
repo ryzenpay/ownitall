@@ -123,7 +123,7 @@ public class Upload {
             if (file.isDirectory()) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
-                    if (!album.isEmpty()) {
+                    if (album != null && !album.isEmpty()) {
                         collection.addAlbum(album);
                     }
                 } else {
@@ -149,7 +149,12 @@ public class Upload {
 
     public static Album getAlbum(File folder) {
         Album album = constructAlbum(folder);
-        album.addSongs(getSongs(folder));
+        if (album == null && !settings.isLibraryVerified()) {
+            album = new Album(folder.getName());
+        }
+        if (album != null) {
+            album.addSongs(getSongs(folder));
+        }
         return album;
     }
 
@@ -169,17 +174,18 @@ public class Upload {
             if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
                 song = library.getSong(tag.getFirst(FieldKey.TITLE), tag.getFirst(FieldKey.ARTIST));
             } else {
-
                 song = library.getSong(fileName, null);
-                // song = new Song(file.getName());
+            }
+            if (song == null) {
+                return null;
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-            song = new Song(fileName);
+            return null;
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {
             logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
-            song = new Song(fileName);
+            return null;
         }
         return song;
     }
@@ -197,7 +203,13 @@ public class Upload {
         }
         for (File file : folder.listFiles()) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
-                songs.add(getSong(file));
+                Song song = getSong(file);
+                if (song == null && !settings.isLibraryVerified()) {
+                    song = new Song(file.getName());
+                }
+                if (song != null) {
+                    songs.add(getSong(file));
+                }
             }
         }
         return songs;

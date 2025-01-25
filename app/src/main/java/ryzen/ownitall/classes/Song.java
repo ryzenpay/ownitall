@@ -23,7 +23,6 @@ public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
-    private String id;
     private Artist artist;
     private Duration duration;
     private URI coverImage;
@@ -41,13 +40,10 @@ public class Song {
     }
 
     @JsonCreator
-    public Song(@JsonProperty("name") String name, @JsonProperty("id") String id, @JsonProperty("artist") Artist artist,
+    public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        if (id != null) {
-            this.id = id;
-        }
         if (artist != null && !artist.isEmpty()) {
             this.artist = artist;
         } else {
@@ -73,14 +69,6 @@ public class Song {
      */
     public String getName() {
         return this.name;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     @JsonIgnore

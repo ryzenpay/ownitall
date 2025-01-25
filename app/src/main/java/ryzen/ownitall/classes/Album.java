@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.util.Levenshtein;
 
 public class Album extends Playlist {
-    private String id;
     LinkedHashSet<Artist> artists;
 
     /**
@@ -35,15 +34,12 @@ public class Album extends Playlist {
      * @param artists           - linkedhashset of artists
      */
     @JsonCreator
-    public Album(@JsonProperty("name") String name, @JsonProperty("id") String id,
+    public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
-        if (id != null) {
-            this.id = id;
-        }
         if (artists != null && !artists.isEmpty()) {
             this.artists = new LinkedHashSet<>(artists);
         } else {
@@ -68,14 +64,6 @@ public class Album extends Playlist {
         if (this.artists == null && album.getArtists() != null) {
             this.addArtists(album.getArtists());
         }
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     @Override

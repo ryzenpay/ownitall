@@ -141,7 +141,7 @@ public class Download {
         command.add(String.valueOf(settings.getDownloadThreads()));
         command.add("--quiet");
         // search for video using the query
-        command.add("ytsearch1:" + searchQuery); // TODO: use other search algorithm
+        command.add("ytsearch1:" + searchQuery);
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
@@ -155,7 +155,7 @@ public class Download {
         command.add(settings.getDownloadFormat());
         command.add("--audio-quality");
         command.add(String.valueOf(settings.getDownloadQuality()));
-        command.add("--embed-metadata");
+        command.add("--embed-metadata"); // TODO: write our own, library's metadata is better than youtubes :muscle:
         // download location
         command.add("--paths");
         command.add(path.getAbsolutePath());
@@ -188,6 +188,8 @@ public class Download {
 
     /**
      * orchestrator of DownloadSong for all liked songs
+     * TODO: only download standaloneLikedSongs()
+     * ^ maybe make setting
      * 
      * @param likedSongs - constructed liked songs
      */
