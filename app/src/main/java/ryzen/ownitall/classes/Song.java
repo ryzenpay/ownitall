@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import org.apache.logging.log4j.LogManager;
@@ -81,7 +80,7 @@ public class Song {
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
+        byte[] sanByte = sanitized.getBytes(UTF_8);
         return new String(sanByte, UTF_8);
     }
 

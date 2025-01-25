@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashSet;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -96,7 +95,7 @@ public class Playlist {
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
+        byte[] sanByte = sanitized.getBytes(UTF_8);
         return new String(sanByte, UTF_8);
     }
 

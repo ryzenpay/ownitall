@@ -408,11 +408,11 @@ public class Collection {
      * lists all playlists with numbers and asks for an int input
      */
     private void optionDeletePlaylist() {
-        LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-        for (Playlist playlist : this.playlists) {
-            options.put(playlist.toString(), playlist);
-        }
         while (true) {
+            LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+            for (Playlist playlist : this.playlists) {
+                options.put(playlist.toString(), playlist);
+            }
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
@@ -461,11 +461,11 @@ public class Collection {
      * option to delete album
      */
     private void optionDeleteAlbum() {
-        LinkedHashMap<String, Album> options = new LinkedHashMap<>();
-        for (Album album : this.albums) {
-            options.put(album.toString(), album);
-        }
         while (true) {
+            LinkedHashMap<String, Album> options = new LinkedHashMap<>();
+            for (Album album : this.albums) {
+                options.put(album.toString(), album);
+            }
             String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
@@ -482,11 +482,11 @@ public class Collection {
      * option to delete liked song
      */
     private void optionDeleteLikedSong() {
-        LinkedHashMap<String, Song> options = new LinkedHashMap<>();
-        for (Song song : this.likedSongs.getSongs()) {
-            options.put(song.toString(), song);
-        }
         while (true) {
+            LinkedHashMap<String, Song> options = new LinkedHashMap<>();
+            for (Song song : this.likedSongs.getSongs()) {
+                options.put(song.toString(), song);
+            }
             String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
             if (choice != null) {
                 if (choice.equals("Exit")) {
