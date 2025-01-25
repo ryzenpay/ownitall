@@ -253,7 +253,10 @@ public class Library {
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
-        return tmpSong;
+        // TODO: reject if not found in library
+        // ^ these are the problem with the weird shorts
+        // ^^ make this a setting
+        return null;
     }
 
     /**

@@ -220,8 +220,6 @@ public class Youtube {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        // TODO: reject if not found in library
-                        // ^ these are the problem with the weird shorts
                         Song song = library.getSong(snippet.getTitle(), this.getVideoChannel(videoId));
                         song.setDuration(this.getDuration(videoId));
                         String videoLink = "https://www.youtube.com/watch?v=" + item.getContentDetails().getVideoId();

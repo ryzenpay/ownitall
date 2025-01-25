@@ -89,7 +89,6 @@ public class Playlist {
     @JsonIgnore
     public String getFileName() {
         String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
-        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
         sanitized = sanitized.trim();
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
@@ -97,6 +96,7 @@ public class Playlist {
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
+        byte[] sanByte = sanitized.getBytes(ISO_8859_1);
         return new String(sanByte, UTF_8);
     }
 
