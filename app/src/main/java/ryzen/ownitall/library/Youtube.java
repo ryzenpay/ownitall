@@ -23,6 +23,7 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
@@ -127,11 +128,20 @@ public class Youtube {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            Song song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
-                            song.setDuration(Duration.parse(contentDetails.getDuration()));
-                            String videoLink = "https://www.youtube.com/watch?v=" + video.getId();
-                            song.addLink("youtube", videoLink);
-                            collection.addLikedSong(song);
+                            Song song = null;
+                            if (settings.isUseLibrary()) {
+                                song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
+                            }
+                            if (song == null && !settings.isLibraryVerified()) {
+                                song = new Song(snippet.getTitle());
+                                song.setArtist(new Artist(snippet.getChannelTitle()));
+                            }
+                            if (song != null) {
+                                song.setDuration(Duration.parse(contentDetails.getDuration()));
+                                String videoLink = "https://www.youtube.com/watch?v=" + video.getId();
+                                song.addLink("youtube", videoLink);
+                                collection.addLikedSong(song);
+                            }
                         }
                     }
                 }
@@ -220,11 +230,22 @@ public class Youtube {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        Song song = library.getSong(snippet.getTitle(), this.getVideoChannel(videoId));
-                        song.setDuration(this.getDuration(videoId));
-                        String videoLink = "https://www.youtube.com/watch?v=" + item.getContentDetails().getVideoId();
-                        song.addLink("youtube", videoLink);
-                        songs.add(song);
+                        Song song = null;
+                        String artistName = this.getVideoChannel(videoId);
+                        if (settings.isUseLibrary()) {
+                            song = library.getSong(snippet.getTitle(), artistName);
+                        }
+                        if (song == null && !settings.isUseLibrary()) {
+                            song = new Song(snippet.getTitle());
+                            song.setArtist(new Artist(artistName));
+                        }
+                        if (song != null) {
+                            song.setDuration(this.getDuration(videoId));
+                            String videoLink = "https://www.youtube.com/watch?v="
+                                    + item.getContentDetails().getVideoId();
+                            song.addLink("youtube", videoLink);
+                            songs.add(song);
+                        }
                     }
                 }
                 pageToken = itemResponse.getNextPageToken();

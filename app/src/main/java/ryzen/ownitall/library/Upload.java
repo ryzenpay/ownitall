@@ -19,6 +19,7 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -128,7 +129,7 @@ public class Upload {
                     }
                 } else {
                     Playlist playlist = getPlaylist(file);
-                    if (!playlist.isEmpty()) {
+                    if (playlist != null && !playlist.isEmpty()) {
                         if (playlist.size() <= 1) { // filter out singles
                             collection.addLikedSongs(playlist.getSongs());
                         } else {
@@ -142,9 +143,13 @@ public class Upload {
 
     public static Playlist getPlaylist(File folder) {
         Playlist playlist = new Playlist(folder.getName());
-        playlist.addSongs(getSongs(folder));
+        LinkedHashSet<Song> songs = getSongs(folder);
         // TODO: covert local cover.jpg to the coverimage (URL)
-        return playlist;
+        if (songs.size() != 0) {
+            playlist.addSongs(getSongs(folder));
+            return playlist;
+        }
+        return null;
     }
 
     public static Album getAlbum(File folder) {
@@ -165,29 +170,36 @@ public class Upload {
      * @return - constructed Song
      */
     public static Song getSong(File file) {
-        Song song;
-        String fileName = file.getName().substring(0, file.getName().length() - 4);
+        Song song = null;
+        String songName = file.getName().substring(0, file.getName().length() - 4);
+        String artistName = null;
+        long duration = 0L;
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             AudioHeader audioHeader = audioFile.getAudioHeader();
             Tag tag = audioFile.getTag();
             if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                song = library.getSong(tag.getFirst(FieldKey.TITLE), tag.getFirst(FieldKey.ARTIST));
-            } else {
-                song = library.getSong(fileName, null);
+                songName = tag.getFirst(FieldKey.TITLE);
+                artistName = tag.getFirst(FieldKey.ARTIST);
             }
-            if (song == null) {
-                return null;
-            }
-            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
+            duration = audioHeader.getTrackLength();
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-            return null;
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {
             logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
-            return null;
         }
-        return song;
+        if (settings.isUseLibrary()) {
+            song = library.getSong(songName, artistName);
+        }
+        if (song == null && !settings.isLibraryVerified()) {
+            song = new Song(songName);
+            song.setArtist(new Artist(artistName));
+        }
+        if (song != null) {
+            song.setDuration(duration, ChronoUnit.SECONDS);
+            return song;
+        }
+        return null;
     }
 
     /**
@@ -208,7 +220,7 @@ public class Upload {
                     song = new Song(file.getName());
                 }
                 if (song != null) {
-                    songs.add(getSong(file));
+                    songs.add(song);
                 }
             }
         }

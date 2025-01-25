@@ -244,7 +244,6 @@ public class Spotify {
                     .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
-
             try {
                 final Paging<SavedTrack> savedTrackPaging = getUsersSavedTracksRequest.execute();
                 SavedTrack[] items = savedTrackPaging.getItems();
@@ -504,7 +503,7 @@ public class Spotify {
                             link = episode.getUri();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
-                            break;
+                            continue;
                         }
                         if (settings.isUseLibrary()) {
                             song = library.getSong(trackName, artistName);
