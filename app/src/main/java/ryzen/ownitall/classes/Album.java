@@ -2,7 +2,6 @@ package ryzen.ownitall.classes;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,11 +37,10 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name, @JsonProperty("id") String id,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
-        super(name, songs, links, youtubePageToken, spotifyPageOffset, coverImage);
+        super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
         if (id != null) {
             this.id = id;
         }
@@ -70,7 +68,6 @@ public class Album extends Playlist {
         if (this.artists == null && album.getArtists() != null) {
             this.addArtists(album.getArtists());
         }
-        this.addLinks(album.getLinks());
     }
 
     public String getId() {

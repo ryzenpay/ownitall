@@ -189,7 +189,6 @@ public class Youtube {
                     if (!songs.isEmpty()) {
                         playlist.addSongs(songs);
                         String playlistUrl = "https://www.youtube.com/playlist?list=" + currentPlaylist.getId();
-                        playlist.addLink("youtube", playlistUrl);
                         collection.addPlaylist(playlist);
                     }
                 }

@@ -3,7 +3,6 @@ package ryzen.ownitall.classes;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -23,7 +22,6 @@ public class Playlist {
     private String name;
     private URL coverImage;
     private LinkedHashSet<Song> songs;
-    private LinkedHashMap<String, String> links;
 
     /**
      * to save api requests
@@ -39,13 +37,11 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
-        this.links = new LinkedHashMap<>();
     }
 
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
         this.name = name;
@@ -53,11 +49,6 @@ public class Playlist {
             this.songs = new LinkedHashSet<>(songs);
         } else {
             this.songs = new LinkedHashSet<>();
-        }
-        if (links != null && !links.isEmpty()) {
-            this.links = new LinkedHashMap<>(links);
-        } else {
-            this.links = new LinkedHashMap<>();
         }
         if (youtubePageToken != null) {
             this.youtubePageToken = youtubePageToken;
@@ -82,7 +73,6 @@ public class Playlist {
         if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.spotifyPageOffset = playlist.spotifyPageOffset;
         }
-        this.addLinks(playlist.getLinks());
     }
 
     /**
@@ -195,22 +185,6 @@ public class Playlist {
             }
         }
         return null;
-    }
-
-    public void addLink(String key, String url) {
-        this.links.put(key, url);
-    }
-
-    public void addLinks(LinkedHashMap<String, String> links) {
-        this.links.putAll(links);
-    }
-
-    public String getLink(String key) {
-        return this.links.get(key);
-    }
-
-    public LinkedHashMap<String, String> getLinks() {
-        return this.links;
     }
 
     /**

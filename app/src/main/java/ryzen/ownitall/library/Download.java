@@ -130,7 +130,7 @@ public class Download {
      * @param song - constructed song
      * @param path - folder of where to place
      */
-    public void downloadSong(Song song, File path) {
+    public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
         String searchQuery = song.toString() + " #official #audio"; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
@@ -141,7 +141,7 @@ public class Download {
         command.add(String.valueOf(settings.getDownloadThreads()));
         command.add("--quiet");
         // search for video using the query
-        command.add("\"ytsearch1:" + searchQuery + "\""); // TODO: cookies for age restriction
+        command.add("\"ytsearch1:" + searchQuery + "\""); // TODO: use other search algorithm
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");

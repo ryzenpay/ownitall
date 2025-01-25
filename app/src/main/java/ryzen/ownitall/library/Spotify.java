@@ -312,7 +312,6 @@ public class Spotify {
                         if (!songs.isEmpty()) {
                             album.addSongs(songs);
                             album.setSpotifyPageOffset(songs.size());
-                            album.addLink("spotify", savedAlbum.getAlbum().getUri());
                             album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());
                             collection.addAlbum(album);
                         }
@@ -416,7 +415,6 @@ public class Spotify {
                             playlist.addSongs(songs);
                             playlist.setSpotifyPageOffset(songs.size());
                             playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
-                            playlist.addLink("spotify", spotifyPlaylist.getUri());
                             collection.addPlaylist(playlist);
                         }
                     }
