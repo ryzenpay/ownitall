@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,9 +20,11 @@ public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
     private static double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
+    private String id;
     private Artist artist;
     private Duration duration;
     private URI coverImage;
+    private LinkedHashMap<String, String> links;
 
     /**
      * default song constructor
@@ -30,18 +33,27 @@ public class Song {
      */
     public Song(String name) {
         this.name = name;
-        this.artist = null;
-        this.duration = null;
+        this.links = new LinkedHashMap<>();
+
     }
 
     @JsonCreator
-    public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
+    public Song(@JsonProperty("name") String name, @JsonProperty("id") String id, @JsonProperty("artist") Artist artist,
+            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
+        if (id != null) {
+            this.id = id;
+        }
         if (artist != null && !artist.isEmpty()) {
             this.artist = artist;
         } else {
             this.artist = null;
+        }
+        if (links != null && !links.isEmpty()) {
+            this.links = links;
+        } else {
+            this.links = new LinkedHashMap<>();
         }
         if (duration != null) {
             this.duration = duration;
@@ -58,6 +70,14 @@ public class Song {
      */
     public String getName() {
         return this.name;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @JsonIgnore
@@ -91,6 +111,22 @@ public class Song {
 
     public Artist getArtist() {
         return this.artist;
+    }
+
+    public void addLink(String key, String url) {
+        this.links.put(key, url);
+    }
+
+    public void addLinks(LinkedHashMap<String, String> links) {
+        this.links.putAll(links);
+    }
+
+    public String getLink(String key) {
+        return this.links.get(key);
+    }
+
+    public LinkedHashMap<String, String> getLinks() {
+        return this.links;
     }
 
     /**
@@ -160,6 +196,7 @@ public class Song {
         if (this.coverImage == null && song.getCoverImage() != null) {
             this.coverImage = song.getCoverImage();
         }
+        this.addLinks(song.getLinks());
     }
 
     @Override

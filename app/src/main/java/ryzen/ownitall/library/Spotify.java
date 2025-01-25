@@ -255,6 +255,7 @@ public class Spotify {
                         Track track = savedTrack.getTrack();
                         Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                        song.addLink("spotify", track.getUri());
                         collection.addLikedSong(song);
                     }
                     offset += limit;
@@ -311,6 +312,8 @@ public class Spotify {
                         if (!songs.isEmpty()) {
                             album.addSongs(songs);
                             album.setSpotifyPageOffset(songs.size());
+                            album.addLink("spotify", savedAlbum.getAlbum().getUri());
+                            album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());
                             collection.addAlbum(album);
                         }
                     }
@@ -354,6 +357,7 @@ public class Spotify {
                     for (TrackSimplified track : items) {
                         Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                        song.addLink("spotify", track.getUri());
                         songs.add(song);
                     }
                     offset += limit;
@@ -412,6 +416,7 @@ public class Spotify {
                             playlist.addSongs(songs);
                             playlist.setSpotifyPageOffset(songs.size());
                             playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
+                            playlist.addLink("spotify", spotifyPlaylist.getUri());
                             collection.addPlaylist(playlist);
                         }
                     }
@@ -458,6 +463,7 @@ public class Spotify {
                             Track track = (Track) playlistTrack.getTrack();
                             Song song = library.getSong(track.getName(), track.getArtists()[0].getName());
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                            song.addLink("spotify", track.getUri());
                             songs.add(song);
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
@@ -465,6 +471,7 @@ public class Spotify {
                             // String coverImage = episode.getImages()[0].getUrl(); doesnt seem to work with
                             // the current SpotifyAPI class (returns null)
                             song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
+                            song.addLink("spotify", episode.getUri());
                             songs.add(song);
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);

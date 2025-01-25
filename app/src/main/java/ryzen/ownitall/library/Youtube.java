@@ -129,6 +129,8 @@ public class Youtube {
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
                             song.setDuration(Duration.parse(contentDetails.getDuration()));
+                            String videoLink = "https://www.youtube.com/watch?v=" + video.getId();
+                            song.addLink("youtube", videoLink);
                             collection.addLikedSong(song);
                         }
                     }
@@ -186,6 +188,8 @@ public class Youtube {
                     }
                     if (!songs.isEmpty()) {
                         playlist.addSongs(songs);
+                        String playlistUrl = "https://www.youtube.com/playlist?list=" + currentPlaylist.getId();
+                        playlist.addLink("youtube", playlistUrl);
                         collection.addPlaylist(playlist);
                     }
                 }
@@ -220,6 +224,8 @@ public class Youtube {
                         PlaylistItemSnippet snippet = item.getSnippet();
                         Song song = library.getSong(snippet.getTitle(), this.getVideoChannel(videoId));
                         song.setDuration(this.getDuration(videoId));
+                        String videoLink = "https://www.youtube.com/watch?v=" + item.getContentDetails().getVideoId();
+                        song.addLink("youtube", videoLink);
                         songs.add(song);
                     }
                 }

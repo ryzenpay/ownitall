@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -237,6 +238,28 @@ public class Collection {
             for (Playlist thisPlaylist : this.playlists) {
                 if (thisPlaylist.equals(playlist)) {
                     return thisPlaylist;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Song getSong(LinkedHashSet<Song> songs, Song song) {
+        if (songs.contains(song)) {
+            for (Song thisSong : songs) {
+                if (thisSong.equals(song)) {
+                    return thisSong;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Artist getArtist(LinkedHashSet<Artist> artists, Artist artist) {
+        if (artists.contains(artist)) {
+            for (Artist thisArtist : artists) {
+                if (thisArtist.equals(artist)) {
+                    return thisArtist;
                 }
             }
         }

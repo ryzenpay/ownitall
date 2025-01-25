@@ -37,12 +37,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     protected String youtubeClientSecret = "";
 
     /**
-     * Last FM credentials
-     * 
-     */
-    protected String lastFMApiKey = "";
-
-    /**
      * soundcloud credentials
      * 
      */
@@ -130,14 +124,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         this.youtubeClientSecret = youtubeClientSecret;
     }
 
-    public String getLastFMApiKey() {
-        return lastFMApiKey;
-    }
-
-    public void setLastFMApiKey(String lastFMApiKey) {
-        this.lastFMApiKey = lastFMApiKey;
-    }
-
     public String getSoundCloudClientId() {
         return this.soundCloudClientId;
     }
@@ -197,25 +183,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     public boolean spotifyIsEmpty() {
         if (this.spotifyClientId.isEmpty() || this.spotifyClientSecret.isEmpty()
                 || this.spotifyRedirectUrl.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
-    public void setLastFMCredentials() {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please enter LastFM API key: ");
-        lastFMApiKey = Input.request().getString();
-    }
-
-    /**
-     * check if Last FM credentials empty (if successfully initialized)
-     * 
-     * @return - true if empty, false if not
-     */
-    @JsonIgnore
-    public boolean lastFMIsEmpty() {
-        if (this.lastFMApiKey.isEmpty()) {
             return true;
         }
         return false;

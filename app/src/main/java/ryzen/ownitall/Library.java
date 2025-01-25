@@ -3,9 +3,7 @@ package ryzen.ownitall;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,10 +21,9 @@ import java.net.URL;
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static Settings settings = Settings.load();
-    private static Credentials credentials = Credentials.load();
     private static Sync sync = Sync.load();
     private static Library instance;
-    private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
+    private final String baseUrl = "https://musicbrainz.org/ws/2/";
     private ObjectMapper objectMapper;
 
     /**
@@ -53,9 +50,6 @@ public class Library {
      * initializes all values and loads from cache
      */
     public Library() {
-        if (settings.useLibrary && credentials.lastFMIsEmpty()) {
-            credentials.setLastFMCredentials();
-        }
         this.objectMapper = new ObjectMapper();
         this.artists = sync.cacheArtists(new LinkedHashSet<>());
         this.songs = sync.cacheSongs(new LinkedHashSet<>());
@@ -81,21 +75,6 @@ public class Library {
     }
 
     /**
-     * get artist from cached artists
-     * 
-     * @param artist - constructed artist to find
-     * @return - constructed artist in array or null
-     */
-    private Artist getArtist(Artist artist) {
-        for (Artist thisArtist : this.artists) {
-            if (thisArtist.equals(artist)) {
-                return thisArtist;
-            }
-        }
-        return null;
-    }
-
-    /**
      * get artist using music library
      * 
      * @param artistName - name of artist to find
@@ -110,41 +89,22 @@ public class Library {
         if (!settings.useLibrary) {
             return tmpArtist;
         }
-        if (this.artists.contains(tmpArtist)) {
-            return this.getArtist(tmpArtist);
+        Artist foundArtist = Collection.getArtist(artists, tmpArtist);
+        if (foundArtist != null) {
+            return foundArtist;
         }
-        Map<String, String> params = Map.of("artist", artistName, "limit", "1");
-        JsonNode response = query("artist.search", params);
+        JsonNode response = query("artist", tmpArtist.getName());
         if (response != null) {
-            JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
+            JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null) {
                 Artist artist = new Artist(artistNode.path("name").asText());
-                String artistImage = artistNode.path("image").get(artistNode.path("image").size() - 1).path("#text")
-                        .asText();
-                if (artistImage != null && !artistImage.isEmpty()) {
-                    artist.setCoverImage(artistImage);
-                }
+                artist.setId(artistNode.path("id").asText());
                 this.artists.add(artist);
                 return artist;
             }
         }
         logger.debug("Could not find artist '" + artistName + "' in Library");
         return tmpArtist;
-    }
-
-    /**
-     * get album from cached albums
-     * 
-     * @param album - constructed album to find
-     * @return - constructed album or null
-     */
-    private Album getAlbum(Album album) {
-        for (Album thisAlbum : this.albums) {
-            if (thisAlbum.equals(album)) {
-                return thisAlbum;
-            }
-        }
-        return null;
     }
 
     /**
@@ -165,28 +125,31 @@ public class Library {
         if (!settings.useLibrary) {
             return tmpAlbum;
         }
-        if (this.albums.contains(tmpAlbum)) {
-            return this.getAlbum(tmpAlbum);
+        Album foundAlbum = Collection.getAlbum(albums, tmpAlbum);
+        if (foundAlbum != null) {
+            return foundAlbum;
         }
-        Map<String, String> params;
-        if (artistName != null) {
-            params = Map.of("album", albumName, "artist", artistName, "limit", "1");
-        } else {
-            params = Map.of("album", albumName, "limit", "1");
-        }
-        JsonNode response = query("album.search", params);
+        JsonNode response = query("release", tmpAlbum.toString());
         if (response != null) {
-            JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
+            JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null) {
-                Album album = new Album(albumNode.path("name").asText());
-                String artist = albumNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    album.addArtist(this.getArtist(artist));
+                Album album = new Album(albumNode.path("title").asText());
+                album.setId(albumNode.path("id").asText());
+                JsonNode artistsNode = albumNode.path("artist-credit");
+                for (JsonNode artistNode : artistsNode) {
+                    Artist artist = new Artist(artistNode.path("artist").path("name").asText());
+                    artist.setId(artistNode.path("artist").path("id").asText());
+                    album.addArtist(artist);
                 }
-                String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
-                        .asText();
-                if (albumCover != null && !albumCover.isEmpty()) {
-                    album.setCoverImage(albumCover);
+                JsonNode relations = response.path("relations");
+                if (relations != null && relations.isArray()) {
+                    for (JsonNode relation : relations) {
+                        if (relation.path("type").asText().equals("url")) {
+                            String urlType = relation.path("type-id").asText();
+                            String url = relation.path("url").path("resource").asText();
+                            album.addLink(urlType, url);
+                        }
+                    }
                 }
                 this.albums.add(album);
                 return album;
@@ -194,21 +157,6 @@ public class Library {
         }
         logger.debug("Could not find Album '" + albumName + "' in Library");
         return tmpAlbum;
-    }
-
-    /**
-     * get song from cache
-     * 
-     * @param song - constructed song to find
-     * @return - constructed song from cache or null
-     */
-    private Song getSong(Song song) {
-        for (Song thisSong : this.songs) {
-            if (thisSong.equals(song)) {
-                return thisSong;
-            }
-        }
-        return null;
     }
 
     /**
@@ -230,28 +178,29 @@ public class Library {
         if (!settings.useLibrary) {
             return tmpSong;
         }
-        if (this.songs.contains(tmpSong)) {
-            return this.getSong(tmpSong);
+        Song foundSong = Collection.getSong(songs, tmpSong);
+        if (foundSong != null) {
+            return foundSong;
         }
-        Map<String, String> params;
-        if (artistName == null) {
-            params = Map.of("track", songName, "limit", "1");
-        } else {
-            params = Map.of("track", songName, "artist", artistName, "limit", "1");
-        }
-        JsonNode response = query("track.search", params);
+        JsonNode response = query("recording", tmpSong.toString());
         if (response != null) {
-            JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
+            JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null) {
-                Song song = new Song(trackNode.path("name").asText());
-                String artist = trackNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    song.setArtist(this.getArtist(artist));
-                }
-                String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
-                        .asText();
-                if (songCover != null && !songCover.isEmpty()) {
-                    song.setCoverImage(songCover);
+                Song song = new Song(trackNode.path("title").asText());
+                song.setId(trackNode.path("id").asText());
+                JsonNode artistNode = trackNode.path("artist-credit").get(0);
+                Artist artist = new Artist(artistNode.path("artist").path("name").asText());
+                artist.setId(artistNode.path("artist").path("id").asText());
+                song.setArtist(artist);
+                JsonNode relations = response.path("relations");
+                if (relations != null && relations.isArray()) {
+                    for (JsonNode relation : relations) {
+                        if (relation.path("type").asText().equals("url")) {
+                            String urlType = relation.path("type-id").asText();
+                            String url = relation.path("url").path("resource").asText();
+                            song.addLink(urlType, url);
+                        }
+                    }
                 }
                 this.songs.add(song);
                 return song;
@@ -268,21 +217,26 @@ public class Library {
      * @param params - search parameters
      * @return - JsonNode response
      */
-    private JsonNode query(String method, Map<String, String> params) {
+    private JsonNode query(String type, String query) {
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
-            urlBuilder.append("?method=").append(method);
-            urlBuilder.append("&api_key=").append(credentials.lastFMApiKey);
-            urlBuilder.append("&format=json");
-
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                urlBuilder.append("&").append(entry.getKey()).append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
+            // what type of entity to return (artist, recording, album)
+            urlBuilder.append(type);
+            // what to search for
+            urlBuilder.append("?query=").append(query);
+            // result limit & offset
+            urlBuilder.append("&limit=").append(1);
+            urlBuilder.append("&offset=").append(0);
+            // response format
+            urlBuilder.append("&fmt=").append("json");
+            // get external links
+            urlBuilder.append("inc=").append("url-rels");
 
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            // required by their documentation
+            connection.setRequestProperty("User-Agent", "ownitall/1.0 ( https://github.com/ryzenpay/ownitall )");
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -297,8 +251,8 @@ public class Library {
             // error handling
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
-            if (rootNode.has("error")) {
-                int errorCode = rootNode.path("error").asInt();
+            if (rootNode.path("status").asText().equals("error")) {
+                int errorCode = rootNode.path("code").asInt();
                 String errorMessage = rootNode.path("message").asText();
                 handleApiError(errorCode, errorMessage);
                 return null;
@@ -318,51 +272,9 @@ public class Library {
      * @param message - additional message
      */
     private void handleApiError(int code, String message) {
-        switch (code) {
-            case 2:
-                logger.error("Invalid service - This service does not exist");
-                break;
-            case 3:
-                logger.error("Invalid Method - No method with that name in this package");
-                break;
-            case 4:
-                logger.error("Authentication Failed - You do not have permissions to access the service");
-                break;
-            case 5:
-                logger.error("Invalid format - This service doesn't exist in that format");
-                break;
-            case 6:
-                logger.error("Invalid parameters - Your request is missing a required parameter");
-                break;
-            case 7:
-                logger.error("Invalid resource specified");
-                break;
-            case 8:
-                logger.error("Operation failed - Something else went wrong");
-                break;
-            case 9:
-                logger.error("Invalid session key - Please re-authenticate");
-                break;
-            case 10:
-                logger.error("Invalid API key - You must be granted a valid key by last.fm");
-                break;
-            case 11:
-                logger.error("Service Offline - This service is temporarily offline. Try again later");
-                break;
-            case 13:
-                logger.error("Invalid method signature supplied");
-                break;
-            case 16:
-                logger.error("There was a temporary error processing your request. Please try again");
-                break;
-            case 26:
-                logger.error("Suspended API key - Access for your account has been suspended, please contact Last.fm");
-                break;
-            case 29:
-                logger.error("Rate limit exceeded - Your IP has made too many requests in a short period");
-                break;
+        switch (code) { // TODO: error handling
             default:
-                logger.error("Unknown error: " + message);
+                logger.error("Unknown error (" + code + "): " + message);
                 break;
         }
     }
