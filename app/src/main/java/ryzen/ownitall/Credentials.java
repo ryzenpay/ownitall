@@ -42,6 +42,11 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      */
     protected String soundCloudClientId = "";
     protected String soundCloudClientSecret = "";
+    /**
+     * Last FM credentials
+     * 
+     */
+    protected String lastFMApiKey = "";
 
     @JsonIgnore
     public static Credentials load() {
@@ -140,6 +145,14 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         this.soundCloudClientSecret = clientSecret;
     }
 
+    public String getLastFMApiKey() {
+        return lastFMApiKey;
+    }
+
+    public void setLastFMApiKey(String lastFMApiKey) {
+        this.lastFMApiKey = lastFMApiKey;
+    }
+
     public void setYoutubeCredentials() {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Enter youtube application name: ");
@@ -148,6 +161,22 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         youtubeClientId = Input.request().getString();
         System.out.print("Enter youtube client secret: ");
         youtubeClientSecret = Input.request().getString();
+    }
+
+    public void setSpotifyCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please provide your client id: ");
+        spotifyClientId = Input.request().getString();
+        System.out.print("Please provide your client secret: ");
+        spotifyClientSecret = Input.request().getString();
+        System.out.print("Please provide redirect url:");
+        spotifyRedirectUrl = Input.request().getString();
+    }
+
+    public void setLastFMCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("Please enter LastFM API key: ");
+        lastFMApiKey = Input.request().getString();
     }
 
     /**
@@ -162,16 +191,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
             return true;
         }
         return false;
-    }
-
-    public void setSpotifyCredentials() {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please provide your client id: ");
-        spotifyClientId = Input.request().getString();
-        System.out.print("Please provide your client secret: ");
-        spotifyClientSecret = Input.request().getString();
-        System.out.print("Please provide redirect url:");
-        spotifyRedirectUrl = Input.request().getString();
     }
 
     /**
@@ -191,6 +210,19 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     public boolean soundCloudIsEmpty() {
         if (this.soundCloudClientId.isEmpty() || this.soundCloudClientSecret.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * check if Last FM credentials empty (if successfully initialized)
+     * 
+     * @return - true if empty, false if not
+     */
+    @JsonIgnore
+    public boolean lastFMIsEmpty() {
+        if (this.lastFMApiKey.isEmpty()) {
             return true;
         }
         return false;
