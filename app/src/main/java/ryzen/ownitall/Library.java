@@ -287,6 +287,7 @@ public class Library {
                 response.append(line);
             }
             reader.close();
+            logger.debug(response.toString());
             String jsonResponse = response.toString();
 
             // error handling

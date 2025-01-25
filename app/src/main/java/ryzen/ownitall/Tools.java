@@ -65,7 +65,7 @@ public class Tools {
     private void optionClearCache() {
         logger.info("Clearing cache...");
         Sync.load().clearCache();
-        Library.load().clear();
+        Library.load().clear(); // TODO: requires login if not yet done, make static
         logger.info("Done clearing cache");
     }
 

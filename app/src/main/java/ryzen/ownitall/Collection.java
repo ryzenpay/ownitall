@@ -420,7 +420,6 @@ public class Collection {
                 } else {
                     this.playlists.remove(options.get(choice));
                     logger.info("Successfully removed playlist: " + choice);
-                    break;
                 }
             }
         }
@@ -474,7 +473,6 @@ public class Collection {
                 } else {
                     this.albums.remove(options.get(choice));
                     logger.info("Successfully removed album: " + choice);
-                    break;
                 }
             }
         }
@@ -496,7 +494,6 @@ public class Collection {
                 } else {
                     this.likedSongs.removeSong(options.get(choice));
                     logger.info("Successfully removed liked song: " + choice);
-                    break;
                 }
             }
         }
