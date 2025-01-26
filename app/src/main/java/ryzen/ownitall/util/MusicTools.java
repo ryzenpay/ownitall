@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 
@@ -88,11 +86,11 @@ public class MusicTools {
             sanitized = sanitized.substring(0, 255);
         }
         // Validate path
-        try {
-            Paths.get(sanitized);
-        } catch (InvalidPathException | NullPointerException e) {
-            sanitized = "";
-        }
+        // try {
+        // Paths.get(sanitized);
+        // } catch (InvalidPathException | NullPointerException e) {
+        // sanitized = "";
+        // }
         // Fallback if the sanitized name is empty
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(fileName.hashCode());

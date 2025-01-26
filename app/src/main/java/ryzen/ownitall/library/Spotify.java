@@ -263,7 +263,7 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", track.getUri());
+                            song.addLink("spotify", track.getHref());
                             collection.addLikedSong(song);
                         }
                     }
@@ -382,7 +382,7 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", track.getUri());
+                            song.addLink("spotify", track.getHref());
                             songs.add(song);
                         }
                     }
@@ -494,13 +494,13 @@ public class Spotify {
                             trackName = track.getName();
                             artistName = track.getArtists()[0].getName();
                             duration = track.getDurationMs();
-                            link = track.getUri();
+                            link = track.getHref();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
                             trackName = episode.getName();
                             artistName = null;
                             duration = episode.getDurationMs();
-                            link = episode.getUri();
+                            link = episode.getHref();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
                             continue;
