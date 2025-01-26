@@ -67,6 +67,9 @@ public class Download {
     }
 
     public void threadDownload(Song song, File path) {
+        if (this.executor == null || this.executor.isShutdown()) {
+            this.threadInit();
+        }
         File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
             return;
@@ -88,14 +91,6 @@ public class Download {
                         + songFile.getAbsolutePath() + " error: " + e);
             }
         }
-        if (this.executor == null || this.executor.isShutdown()) {
-            this.executor = new ThreadPoolExecutor(
-                    settings.getDownloadThreads(),
-                    settings.getDownloadThreads(),
-                    0L,
-                    TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
-        }
         while (true) {
             try {
                 // Attempt to execute the task
@@ -115,7 +110,19 @@ public class Download {
         }
     }
 
+    public void threadInit() {
+        this.executor = new ThreadPoolExecutor(
+                settings.getDownloadThreads(),
+                settings.getDownloadThreads(),
+                0L,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
+    }
+
     public void threadShutdown() {
+        if (this.executor == null || this.executor.isShutdown()) {
+            return;
+        }
         try {
             executor.shutdown();
             executor.awaitTermination(10, TimeUnit.MINUTES);
@@ -141,7 +148,9 @@ public class Download {
         command.add(String.valueOf(settings.getDownloadThreads()));
         command.add("--quiet");
         // search for video using the query
-        command.add("ytsearch1:" + searchQuery);
+        command.add("--default-search");
+        command.add("ytsearch1");
+        command.add(searchQuery);
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
@@ -164,25 +173,46 @@ public class Download {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
-            Process process = processBuilder.start();
-
-            // Capture output for logging
+            int retries = 0;
+            File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
             StringBuilder completeLog = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    completeLog.append(line).append("\n");
+            while (!songFile.exists() && retries < 3) {
+                Process process = processBuilder.start();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    // Capture output for logging
+                    while ((line = reader.readLine()) != null) {
+                        completeLog.append(line).append("\n");
+                    }
                 }
-            }
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                logger.error("Error downloading song " + song + " with exit code: " + exitCode);
-                logger.debug("Process output: \n" + completeLog.toString());
+                int exitCode = process.waitFor();
+                if (exitCode != 0) {
+                    if (exitCode == 2) {
+                        logger.error("Error with user provided options: " + command.toString());
+                        break;
+                    } else if (exitCode == 100) {
+                        logger.error("Your yt-dlp needs to update");
+                        break;
+                    } else if (exitCode == 101) {
+                        logger.error("Download cancelled due to boundary criteria: " + searchQuery);
+                        break;
+                        // TODO: search library?
+                    } else {
+                        logger.error("Unkown error while downloading song: " + song + "with code: " + exitCode);
+                        logger.error(completeLog.toString());
+                    }
+                    logger.error("Attempt: " + retries);
+                } else {
+                    break;
+                }
+                retries++;
+            }
+            if (!songFile.exists()) {
                 this.failedSongs.put(song, completeLog.toString());
             }
         } catch (Exception e) {
-            logger.error("Error handling youtubeDL: ", e);
+            logger.error("Error preparing yt-dlp: ", e);
         }
     }
 
@@ -213,8 +243,7 @@ public class Download {
         }
         this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
-        pb.setExtraMessage("Done");
-        pb.close();
+        pb.setExtraMessage("Done").close();
     }
 
     /**
@@ -229,8 +258,7 @@ public class Download {
             this.downloadPlaylist(playlist);
             pbPlaylist.step();
         }
-        pbPlaylist.setExtraMessage("Done").step();
-        pbPlaylist.close();
+        pbPlaylist.setExtraMessage("Done").step().close();
     }
 
     /**
@@ -247,6 +275,9 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
             MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), playlistFolder);
+            if (playlist.getCoverImage() != null) {
+                MusicTools.downloadImage(playlist.getCoverImage(), playlistFolder);
+            }
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
         }
@@ -257,8 +288,7 @@ public class Download {
         }
         this.threadShutdown();
         this.cleanFolder(playlistFolder);
-        pb.setExtraMessage("Done");
-        pb.close();
+        pb.setExtraMessage("Done").close();
     }
 
     public void downloadAlbums(LinkedHashSet<Album> albums) {
@@ -268,8 +298,7 @@ public class Download {
             this.downloadAlbum(album);
             pbAlbum.step();
         }
-        pbAlbum.setExtraMessage("Done").step();
-        pbAlbum.close();
+        pbAlbum.setExtraMessage("Done").step().close();
     }
 
     public void downloadAlbum(Album album) {
@@ -292,8 +321,7 @@ public class Download {
         }
         this.threadShutdown();
         this.cleanFolder(albumFolder);
-        pb.setExtraMessage("Done");
-        pb.close();
+        pb.setExtraMessage("Done").close();
     }
 
     public void cleanFolder(File folder) {
@@ -316,7 +344,11 @@ public class Download {
 
     public void getFailedSongsReport() {
         if (!failedSongs.isEmpty()) {
-            logger.error("Failed songs: " + this.failedSongs.toString());
+            logger.error("Failed songs: ");
+            for (Song song : this.failedSongs.keySet()) {
+                logger.error("- " + song.toString() + ": ");
+                logger.error(this.failedSongs.get(song).toString());
+            }
             this.failedSongs.clear();
         }
     }

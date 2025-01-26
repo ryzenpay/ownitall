@@ -3,6 +3,7 @@ package ryzen.ownitall.classes;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -87,16 +88,21 @@ public class Playlist {
 
     @JsonIgnore
     public String getFileName() {
-        String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
-        sanitized = sanitized.trim();
+        // Sanitize the name by removing invalid characters
+        byte[] utf8Bytes = this.name.getBytes(StandardCharsets.UTF_8);
+        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
+        // remove any invalid characters
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", "");
+        // Limit length to 255 characters
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
         }
+
+        // Fallback if the sanitized name is empty
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        byte[] sanByte = sanitized.getBytes(UTF_8);
-        return new String(sanByte, UTF_8);
+        return sanitized;
     }
 
     @JsonIgnore
@@ -106,6 +112,8 @@ public class Playlist {
         output.append("#EXTM3U").append("\n");
         // m3u playlist information
         output.append("#PLAYLIST:").append(this.toString()).append("\n");
+        // m3u playlist cover
+        output.append("#EXTIMG:").append("cover.jpg").append("\n");
         // m3u playlist contents
         for (Song song : this.songs) {
             File file = new File(song.getFileName() + "." + downloadFormat);
@@ -113,7 +121,6 @@ public class Playlist {
                     .append(song.toString()).append("\n");
             output.append(file.getPath()).append("\n");
         }
-        output.append("#EXTIMG:").append("cover.jpg");
         return output.toString();
     }
 

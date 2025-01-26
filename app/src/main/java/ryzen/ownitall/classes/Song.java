@@ -2,11 +2,10 @@ package ryzen.ownitall.classes;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,16 +71,21 @@ public class Song {
 
     @JsonIgnore
     public String getFileName() {
-        String sanitized = this.name.replaceAll("[^a-zA-Z0-9()\\[\\].,;:!?'\"\\-_ ]", "");
-        sanitized = sanitized.trim();
+        // Sanitize the name by removing invalid characters
+        byte[] utf8Bytes = this.name.getBytes(StandardCharsets.UTF_8);
+        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
+        // remove any invalid characters
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", "");
+        // Limit length to 255 characters
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
         }
+
+        // Fallback if the sanitized name is empty
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());
         }
-        byte[] sanByte = sanitized.getBytes(UTF_8);
-        return new String(sanByte, UTF_8);
+        return sanitized;
     }
 
     /**

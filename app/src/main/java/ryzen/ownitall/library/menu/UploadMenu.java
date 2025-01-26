@@ -66,7 +66,7 @@ public class UploadMenu {
     private void optionUploadLikedSongs() {
         System.out.print("Please provide folder path: ");
         File folder = Input.request().getFile(true);
-        logger.info("Uploading Liked Songs..."); // TODO: time taken
+        logger.info("Uploading Liked Songs...");
         this.collection.addLikedSongs(Upload.getSongs(folder));
         logger.info("Done Uploading Liked Songs");
     }
