@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -90,13 +92,19 @@ public class Playlist {
         // Sanitize the name by removing invalid characters
         byte[] utf8Bytes = this.name.getBytes(StandardCharsets.UTF_8);
         String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        // remove any invalid characters
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", "");
+        // Remove any invalid characters including pipe "|"
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
+        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
         // Limit length to 255 characters
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
         }
-
+        // Validate path
+        try {
+            Paths.get(sanitized);
+        } catch (InvalidPathException | NullPointerException e) {
+            sanitized = "";
+        }
         // Fallback if the sanitized name is empty
         if (sanitized.isEmpty()) {
             sanitized = String.valueOf(this.hashCode());

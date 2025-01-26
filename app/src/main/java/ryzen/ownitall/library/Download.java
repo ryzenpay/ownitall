@@ -138,10 +138,9 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
-        if (!path.exists()) {
-            path.mkdirs();
-        }
-        String searchQuery = "\"" + song.toString() + " (official audio)\""; // youtube search criteria
+        String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
+        // search query filters
+        searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -149,11 +148,9 @@ public class Download {
         command.add(settings.getFfmpegPath());
         command.add("--concurrent-fragments");
         command.add(String.valueOf(settings.getDownloadThreads()));
-        command.add("--quiet");
-        // search for video using the query
+        // set up youtube searching and only 1 result
         command.add("--default-search");
         command.add("ytsearch1");
-        command.add(searchQuery);
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
@@ -173,6 +170,10 @@ public class Download {
         command.add(path.getAbsolutePath());
         command.add("--output");
         command.add(song.getFileName() + ".%(ext)s");
+        // search for video using the query / use url
+        // ^^ keep this at the end, incase of fucked up syntax making the other flags
+        // drop
+        command.add(searchQuery);
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
