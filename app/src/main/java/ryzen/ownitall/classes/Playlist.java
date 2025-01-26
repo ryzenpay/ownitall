@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
+import ryzen.ownitall.util.MusicTools;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -88,31 +89,6 @@ public class Playlist {
     }
 
     @JsonIgnore
-    public String getFileName() {
-        // Sanitize the name by removing invalid characters
-        byte[] utf8Bytes = this.name.getBytes(StandardCharsets.UTF_8);
-        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        // Remove any invalid characters including pipe "|"
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
-        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
-        // Limit length to 255 characters
-        if (sanitized.length() > 255) {
-            sanitized = sanitized.substring(0, 255);
-        }
-        // Validate path
-        try {
-            Paths.get(sanitized);
-        } catch (InvalidPathException | NullPointerException e) {
-            sanitized = "";
-        }
-        // Fallback if the sanitized name is empty
-        if (sanitized.isEmpty()) {
-            sanitized = String.valueOf(this.hashCode());
-        }
-        return sanitized;
-    }
-
-    @JsonIgnore
     public String getM3U() {
         // m3u header
         StringBuilder output = new StringBuilder();
@@ -123,7 +99,7 @@ public class Playlist {
         output.append("#EXTIMG:").append("cover.jpg").append("\n");
         // m3u playlist contents
         for (Song song : this.songs) {
-            File file = new File(song.getFileName() + "." + downloadFormat);
+            File file = new File(MusicTools.sanitizeFileName(song.getName()) + "." + downloadFormat);
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
             output.append(file.getPath()).append("\n");

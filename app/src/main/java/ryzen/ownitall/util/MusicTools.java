@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.LinkedHashSet;
 
@@ -66,7 +69,34 @@ public class MusicTools {
         }
         File imageFile = new File(folder, "cover.png");
         try (InputStream in = url.openStream()) {
-            Files.copy(in, imageFile.toPath());
+            Files.copy(in, imageFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    public static String sanitizeFileName(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+        // Sanitize the name by removing invalid characters
+        byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
+        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
+        // Remove any invalid characters including pipe "|"
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
+        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
+        // Limit length to 255 characters
+        if (sanitized.length() > 255) {
+            sanitized = sanitized.substring(0, 255);
+        }
+        // Validate path
+        try {
+            Paths.get(sanitized);
+        } catch (InvalidPathException | NullPointerException e) {
+            sanitized = "";
+        }
+        // Fallback if the sanitized name is empty
+        if (sanitized.isEmpty()) {
+            sanitized = String.valueOf(fileName.hashCode());
+        }
+        return sanitized;
     }
 }

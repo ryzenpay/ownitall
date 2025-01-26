@@ -70,16 +70,17 @@ public class Download {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
+        String songFileName = MusicTools.sanitizeFileName(song.getName());
+        File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
         if (songFile.exists()) { // dont download twice
             return;
         }
         File likedSongFile;
         if (settings.isDownloadHierachy()) {
             File likedSongFolder = new File(this.downloadPath, settings.getLikedSongFile());
-            likedSongFile = new File(likedSongFolder, song.getFileName() + "." + settings.getDownloadFormat());
+            likedSongFile = new File(likedSongFolder, songFileName + "." + settings.getDownloadFormat());
         } else {
-            likedSongFile = new File(this.downloadPath, song.getFileName() + "." + settings.getDownloadFormat());
+            likedSongFile = new File(this.downloadPath, songFileName + "." + settings.getDownloadFormat());
         }
         if (likedSongFile.exists()) { // to prevent overwriting from its own folder
             try {
@@ -138,6 +139,7 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
+        String songFileName = MusicTools.sanitizeFileName(song.getName());
         String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
         // search query filters
         searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
@@ -169,7 +171,7 @@ public class Download {
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(song.getFileName() + ".%(ext)s");
+        command.add(songFileName + ".%(ext)s");
         // search for video using the query / use url
         // ^^ keep this at the end, incase of fucked up syntax making the other flags
         // drop
@@ -178,7 +180,7 @@ public class Download {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
-            File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
+            File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
                 Process process = processBuilder.start();
@@ -236,7 +238,8 @@ public class Download {
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         try {
-            MusicTools.writeM3U(likedSongs.getFileName(), likedSongs.getM3U(), likedSongsFolder);
+            MusicTools.writeM3U(MusicTools.sanitizeFileName(likedSongs.getName()), likedSongs.getM3U(),
+                    likedSongsFolder);
         } catch (Exception e) {
             logger.error(
                     "Error writing Liked Songs (" + likedSongsFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
@@ -273,13 +276,14 @@ public class Download {
      */
     public void downloadPlaylist(Playlist playlist) {
         File playlistFolder = new File(this.downloadPath);
+        String playlistFolderName = MusicTools.sanitizeFileName(playlist.getName());
         if (settings.isDownloadHierachy()) {
-            playlistFolder = new File(this.downloadPath, playlist.getFileName());
+            playlistFolder = new File(this.downloadPath, playlistFolderName);
             playlistFolder.mkdirs();
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
-            MusicTools.writeM3U(playlist.getFileName(), playlist.getM3U(), playlistFolder);
+            MusicTools.writeM3U(playlistFolderName, playlist.getM3U(), playlistFolder);
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(), playlistFolder);
             }
@@ -308,10 +312,11 @@ public class Download {
 
     public void downloadAlbum(Album album) {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
-        File albumFolder = new File(this.downloadPath, album.getFileName());
+        String albumFolderName = MusicTools.sanitizeFileName(album.getName());
+        File albumFolder = new File(this.downloadPath, albumFolderName);
         albumFolder.mkdirs();
         try {
-            MusicTools.writeM3U(album.getFileName(), album.getM3U(), albumFolder);
+            MusicTools.writeM3U(albumFolderName, album.getM3U(), albumFolder);
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(), albumFolder);
             }

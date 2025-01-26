@@ -71,31 +71,6 @@ public class Song {
         return this.name;
     }
 
-    @JsonIgnore
-    public String getFileName() {
-        // Sanitize the name by removing invalid characters
-        byte[] utf8Bytes = this.name.getBytes(StandardCharsets.UTF_8);
-        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        // Remove any invalid characters including pipe "|"
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
-        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
-        // Limit length to 255 characters
-        if (sanitized.length() > 255) {
-            sanitized = sanitized.substring(0, 255);
-        }
-        // Validate path
-        try {
-            Paths.get(sanitized);
-        } catch (InvalidPathException | NullPointerException e) {
-            sanitized = "";
-        }
-        // Fallback if the sanitized name is empty
-        if (sanitized.isEmpty()) {
-            sanitized = String.valueOf(this.hashCode());
-        }
-        return sanitized;
-    }
-
     /**
      * set song name
      * 

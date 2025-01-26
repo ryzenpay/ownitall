@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.util.Levenshtein;
+import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     LinkedHashSet<Artist> artists;
@@ -124,7 +125,7 @@ public class Album extends Playlist {
         output.append("#EXTIMG:").append("cover.jpg").append("\n");
         // m3u album contents
         for (Song song : this.getSongs()) {
-            File file = new File(song.getFileName() + "." + downloadFormat);
+            File file = new File(MusicTools.sanitizeFileName(song.getName()) + "." + downloadFormat);
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
             output.append(file.getPath()).append("\n");
