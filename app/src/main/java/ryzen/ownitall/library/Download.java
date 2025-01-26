@@ -138,6 +138,9 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
+        if (!path.exists()) {
+            path.mkdirs();
+        }
         String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
@@ -166,10 +169,8 @@ public class Download {
         command.add(String.valueOf(settings.getDownloadQuality()));
         command.add("--embed-metadata"); // TODO: write our own, library's metadata is better than youtubes :muscle:
         // download location
-        command.add("--paths");
-        command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(song.getFileName() + ".%(ext)s");
+        command.add(path.getAbsolutePath() + File.separator + song.getFileName() + ".%(ext)s");
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
@@ -200,6 +201,7 @@ public class Download {
                         // TODO: search library?
                     } else {
                         logger.error("Unkown error while downloading song: " + song + "with code: " + exitCode);
+                        logger.error(command.toString());
                         logger.error(completeLog.toString());
                     }
                     logger.error("Attempt: " + retries);
