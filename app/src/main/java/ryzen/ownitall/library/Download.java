@@ -141,7 +141,7 @@ public class Download {
         if (!path.exists()) {
             path.mkdirs();
         }
-        String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
+        String searchQuery = "\"" + song.toString() + " (official audio)\""; // youtube search criteria
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -169,8 +169,10 @@ public class Download {
         command.add(String.valueOf(settings.getDownloadQuality()));
         command.add("--embed-metadata"); // TODO: write our own, library's metadata is better than youtubes :muscle:
         // download location
+        command.add("--paths");
+        command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(path.getAbsolutePath() + File.separator + song.getFileName() + ".%(ext)s");
+        command.add(song.getFileName() + ".%(ext)s");
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
