@@ -1,9 +1,11 @@
 package ryzen.ownitall;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -11,6 +13,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -181,6 +188,7 @@ public class Library {
                 String link = albumNode.path("url").asText();
                 if (link != null && !link.isEmpty()) {
                     album.addLink("lastfm", link);
+                    album.addLinks(this.getExternalLinks(link));
                 }
                 this.albums.add(album);
                 return album;
@@ -247,6 +255,7 @@ public class Library {
                 String link = trackNode.path("url").asText();
                 if (link != null && !link.isEmpty()) {
                     song.addLink("lastfm", link);
+                    song.addLinks(this.getExternalLinks(link));
                 }
                 this.songs.add(song);
                 return song;
@@ -361,5 +370,25 @@ public class Library {
                 logger.error("Unknown error: " + message);
                 break;
         }
+    }
+
+    public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
+        LinkedHashMap<String, String> links = new LinkedHashMap<>();
+        try {
+            Document doc = Jsoup.connect(lastFMUrl).get();
+            Element playThisTrackSection = doc.selectFirst("section.play-this-track-section");
+            if (playThisTrackSection != null) {
+                Elements linkElements = playThisTrackSection.select("a[href]");
+
+                for (Element linkElement : linkElements) {
+                    String key = linkElement.text().trim();
+                    String value = linkElement.attr("href");
+                    links.put(key, value);
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Error parsing external links: " + e);
+        }
+        return links;
     }
 }

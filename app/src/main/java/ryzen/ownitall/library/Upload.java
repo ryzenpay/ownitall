@@ -172,7 +172,7 @@ public class Upload {
     }
 
     /**
-     * getting metadata from music file: https://github.com/mpatric/mp3agic
+     * getting metadata from music file
      * 
      * @param file - file to get metadata from
      * @return - constructed Song

@@ -29,6 +29,9 @@
         implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
         implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
 
+        //json + web scraping
+        implementation("org.jsoup:jsoup:1.18.3")
+
         //logging
         implementation("org.apache.logging.log4j:log4j-api:2.20.0")
         implementation("org.apache.logging.log4j:log4j-core:2.20.0")
