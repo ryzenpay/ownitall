@@ -3,9 +3,6 @@ package ryzen.ownitall.classes;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;

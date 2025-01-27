@@ -3,6 +3,7 @@ package ryzen.ownitall.library;
 import java.io.InputStreamReader;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +19,20 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -140,16 +151,17 @@ public class Download {
      */
     public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
         String songFileName = MusicTools.sanitizeFileName(song.getName());
-        String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
         // search query filters
+        String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
+        // prevent any search impacting triggers + pipeline starters
         searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
         command.add(settings.getFfmpegPath());
-        command.add("--concurrent-fragments");
-        command.add(String.valueOf(settings.getDownloadThreads()));
+        // command.add("--concurrent-fragments");
+        // command.add(String.valueOf(settings.getDownloadThreads()));
         // set up youtube searching and only 1 result
         command.add("--default-search");
         command.add("ytsearch1");
@@ -166,16 +178,24 @@ public class Download {
         command.add(settings.getDownloadFormat());
         command.add("--audio-quality");
         command.add(String.valueOf(settings.getDownloadQuality()));
-        command.add("--embed-metadata"); // TODO: write our own, library's metadata is better than youtubes :muscle:
+        command.add("--embed-metadata"); // metadata we have overwrites this
+        command.add("--no-write-comments");
         // download location
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
         command.add(songFileName + ".%(ext)s");
-        // search for video using the query / use url
-        // ^^ keep this at the end, incase of fucked up syntax making the other flags
-        // drop
-        command.add(searchQuery);
+        /**
+         * search for video using the query / use url
+         * ^ keep this at the end, incase of fucked up syntax making the other flags
+         * drop
+         */
+        String youtubeLink = song.getLink("youtube");
+        if (youtubeLink == null) {
+            command.add(searchQuery);
+        } else {
+            command.add(youtubeLink);
+        }
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
@@ -217,6 +237,8 @@ public class Download {
             }
             if (!songFile.exists()) {
                 this.failedSongs.put(song, completeLog.toString());
+            } else {
+                this.writeMetaData(song, songFile);
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
@@ -349,6 +371,26 @@ public class Download {
                     }
                 }
             }
+        }
+    }
+
+    public void writeMetaData(Song song, File songFile) {
+        if (!songFile.exists()) {
+            return;
+        }
+        try {
+            AudioFile audioFile = AudioFileIO.read(songFile);
+            Tag tag = audioFile.getTag();
+            tag.setField(FieldKey.TITLE, song.getName());
+            Artist artist = song.getArtist();
+            if (artist != null) {
+                tag.setField(FieldKey.ARTIST, artist.toString());
+            }
+            // TODO: cover image
+        } catch (InvalidAudioFrameException | TagException e) {
+            logger.error("File " + songFile.getAbsolutePath() + " is not an audio file or has incorrect metadata");
+        } catch (IOException | CannotReadException | ReadOnlyFileException e) {
+            logger.error("Error processing file: " + songFile.getAbsolutePath() + " error: " + e);
         }
     }
 

@@ -38,7 +38,7 @@ public class Upload {
     }
     private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
-    private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav")); // https://bitbucket.org/ijabz/jaudiotagger/src/master/
+    private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav"));
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
     private File localLibrary;
@@ -144,22 +144,30 @@ public class Upload {
     public static Playlist getPlaylist(File folder) {
         Playlist playlist = new Playlist(folder.getName());
         LinkedHashSet<Song> songs = getSongs(folder);
-        // TODO: covert local cover.jpg to the coverimage (URL)
-        if (songs.size() != 0) {
-            playlist.addSongs(getSongs(folder));
-            return playlist;
+        if (songs.size() == 0) {
+            return null;
         }
-        return null;
+        playlist.addSongs(songs);
+        // TODO: make this work
+        // File coverFile = new File(folder, "cover.jpg");
+        // if (coverFile.exists()) {
+        // playlist.setCoverImage(coverFile);
+        // }
+        return playlist;
     }
 
     public static Album getAlbum(File folder) {
         Album album = constructAlbum(folder);
         if (album == null && !settings.isLibraryVerified()) {
             album = new Album(folder.getName());
+        } else if (album == null) {
+            return null;
         }
-        if (album != null) {
-            album.addSongs(getSongs(folder));
+        LinkedHashSet<Song> songs = getSongs(folder);
+        if (songs.size() == 0) {
+            return null;
         }
+        album.addSongs(songs);
         return album;
     }
 

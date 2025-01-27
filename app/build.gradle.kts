@@ -17,7 +17,7 @@
 
         // spotify wrapper
         implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
-        // audio metadata
+        // audio metadata: https://bitbucket.org/ijabz/jaudiotagger/src/master/ | http://www.jthink.net/jaudiotagger/
         implementation("net.jthink:jaudiotagger:3.0.1")
 
         //google api
