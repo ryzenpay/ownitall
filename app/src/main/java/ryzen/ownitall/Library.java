@@ -373,6 +373,8 @@ public class Library {
         }
     }
 
+    // TODO: this does not work
+    // does the page need to load?
     public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
         LinkedHashMap<String, String> links = new LinkedHashMap<>();
         try {
