@@ -1,6 +1,7 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.io.BufferedReader;
@@ -26,6 +27,8 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.images.ArtworkFactory;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Settings;
@@ -149,10 +152,6 @@ public class Download {
      */
     public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
         String songFileName = MusicTools.sanitizeFileName(song.getName());
-        // search query filters
-        String searchQuery = song.toString() + " (official audio)"; // youtube search criteria
-        // prevent any search impacting triggers + pipeline starters
-        searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -188,12 +187,15 @@ public class Download {
          * ^ keep this at the end, incase of fucked up syntax making the other flags
          * drop
          */
-        String youtubeLink = song.getLink("youtube");
-        if (youtubeLink == null) {
+        String searchQuery = song.getLink("youtube");
+        if (searchQuery == null) {
+            // search query filters
+            searchQuery = song.toString() + " (official audio)"; // youtube search criteria
+            // prevent any search impacting triggers + pipeline starters
+            searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
             command.add(searchQuery);
-        } else {
-            command.add(youtubeLink);
         }
+        command.add(searchQuery);
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
@@ -221,7 +223,7 @@ public class Download {
                     } else if (exitCode == 101) {
                         logger.error("Download cancelled due to boundary criteria: " + searchQuery);
                         break;
-                        // TODO: search library?
+                        // TODO: search library again?
                     } else {
                         logger.error("Unkown error while downloading song: " + song + "with code: " + exitCode);
                         logger.error(command.toString());
@@ -384,7 +386,11 @@ public class Download {
             if (artist != null) {
                 tag.setField(FieldKey.ARTIST, artist.toString());
             }
-            // TODO: cover image
+            URL coverImage = song.getCoverImage();
+            if (coverImage != null) {
+                Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(song.getCoverImage().toString());
+                tag.setField(artwork);
+            }
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + songFile.getAbsolutePath() + " is not an audio file or has incorrect metadata");
         } catch (IOException | CannotReadException | ReadOnlyFileException e) {

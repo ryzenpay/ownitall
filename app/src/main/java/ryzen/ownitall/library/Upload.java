@@ -148,7 +148,7 @@ public class Upload {
             return null;
         }
         playlist.addSongs(songs);
-        // TODO: make this work
+        // TODO: make this work (local cover image)
         // File coverFile = new File(folder, "cover.jpg");
         // if (coverFile.exists()) {
         // playlist.setCoverImage(coverFile);

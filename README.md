@@ -55,7 +55,7 @@ Youtube will provide you with all by doing the following:  (can also be done fol
         - application type: desktop app  
     9. save the client id and secret  
 
-When doing this, read every TOS as you are using them at the risk of your own spotify account  
+When doing this, read every TOS as you are using them at the risk of your own youtube account  
 ## Local
 the current format to importing your local music library is currently strict  
     - if you have a "liked songs" folder, name it "liked songs"  
@@ -82,8 +82,3 @@ extract the contents to:  `C:\Program Files\OpenJDK`
     - example: `C:\Program Files\OpenJDK\jdk-22.0.2`
 set home variable to the extracted folder: settings -> system -> about -> advanced -> environment variables -> system variables -> "JAVA_HOME"  
 restart ur console (close and reopen)
-
-## Flight recorder  
-run `./gradlew build`  
-cd into `app/build/classes/java/main/ryzen/ownitall`  
-run `java -XX:+UnlockCommercialFeatures -XX:+FlightRecorder Main`
