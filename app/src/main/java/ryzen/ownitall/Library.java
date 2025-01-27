@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.net.URL;
 
+// TODO: convert lastfm link to external link (youtube, spotify,...) (only if use library)
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static Settings settings = Settings.load();
@@ -177,6 +178,10 @@ public class Library {
                 if (albumCover != null && !albumCover.isEmpty()) {
                     album.setCoverImage(albumCover);
                 }
+                String link = albumNode.path("url").asText();
+                if (link != null && !link.isEmpty()) {
+                    album.addLink("lastfm", link);
+                }
                 this.albums.add(album);
                 return album;
             }
@@ -238,6 +243,10 @@ public class Library {
                         .asText();
                 if (songCover != null && !songCover.isEmpty()) {
                     song.setCoverImage(songCover);
+                }
+                String link = trackNode.path("url").asText();
+                if (link != null && !link.isEmpty()) {
+                    song.addLink("lastfm", link);
                 }
                 this.songs.add(song);
                 return song;

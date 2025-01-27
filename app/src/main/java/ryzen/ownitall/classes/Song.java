@@ -96,6 +96,7 @@ public class Song {
         this.links.putAll(links);
     }
 
+    @JsonIgnore
     public String getLink(String key) {
         return this.links.get(key);
     }

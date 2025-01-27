@@ -2,6 +2,7 @@ package ryzen.ownitall.classes;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -13,6 +14,7 @@ import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     LinkedHashSet<Artist> artists;
+    private LinkedHashMap<String, String> links;
 
     /**
      * Default constructor of album without album cover
@@ -22,6 +24,7 @@ public class Album extends Playlist {
     public Album(String name) {
         super(name);
         this.artists = new LinkedHashSet<>();
+        this.links = new LinkedHashMap<>();
     }
 
     /**
@@ -37,6 +40,7 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
@@ -45,6 +49,11 @@ public class Album extends Playlist {
             this.artists = new LinkedHashSet<>(artists);
         } else {
             this.artists = new LinkedHashSet<>();
+        }
+        if (links != null && !links.isEmpty()) {
+            this.links = new LinkedHashMap<>(links);
+        } else {
+            this.links = new LinkedHashMap<>();
         }
     }
 
@@ -100,6 +109,23 @@ public class Album extends Playlist {
             return iterator.next();
         }
         return null;
+    }
+
+    public void addLink(String key, String url) {
+        this.links.put(key, url);
+    }
+
+    public void addLinks(LinkedHashMap<String, String> links) {
+        this.links.putAll(links);
+    }
+
+    @JsonIgnore
+    public String getLink(String key) {
+        return this.links.get(key);
+    }
+
+    public LinkedHashMap<String, String> getLinks() {
+        return this.links;
     }
 
     @Override
