@@ -57,6 +57,13 @@ public class Album extends Playlist {
         }
     }
 
+    public Album(Album album) {
+        super(album.getName(), album.getSongs(), album.getYoutubePageToken(), album.getSpotifyPageOffset(),
+                album.getCoverImage().toString());
+        this.artists = new LinkedHashSet<>(album.getArtists());
+        this.links = new LinkedHashMap<>(album.getLinks());
+    }
+
     public void merge(Album album) {
         if (album == null || album.isEmpty()) {
             return;

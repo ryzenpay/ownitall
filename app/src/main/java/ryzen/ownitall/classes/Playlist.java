@@ -60,6 +60,14 @@ public class Playlist {
         }
     }
 
+    public Playlist(Playlist playlist) {
+        this.name = playlist.getName();
+        this.songs = new LinkedHashSet<>(playlist.getSongs());
+        this.youtubePageToken = playlist.getYoutubePageToken();
+        this.spotifyPageOffset = playlist.getSpotifyPageOffset();
+        this.coverImage = playlist.getCoverImage();
+    }
+
     public void merge(Playlist playlist) {
         if (playlist == null || playlist.isEmpty()) {
             return;

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import ryzen.ownitall.classes.Album;
@@ -125,7 +126,7 @@ public class Library {
             if (artistNode != null) {
                 Artist artist = new Artist(artistNode.path("name").asText());
                 this.artists.add(artist);
-                return artist;
+                return new Artist(artist);
             }
         }
         logger.debug("Could not find artist '" + artistName + "' in Library");
@@ -188,10 +189,9 @@ public class Library {
                 String link = albumNode.path("url").asText();
                 if (link != null && !link.isEmpty()) {
                     album.addLink("lastfm", link);
-                    album.addLinks(this.getExternalLinks(link));
                 }
                 this.albums.add(album);
-                return album;
+                return new Album(album);
             }
         }
         logger.debug("Could not find Album '" + albumName + "' in Library");
@@ -255,10 +255,11 @@ public class Library {
                 String link = trackNode.path("url").asText();
                 if (link != null && !link.isEmpty()) {
                     song.addLink("lastfm", link);
-                    song.addLinks(this.getExternalLinks(link));
+                    // song.addLinks(this.getExternalLinks(link));
+                    // ^ takes too long
                 }
                 this.songs.add(song);
-                return song;
+                return new Song(song);
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
@@ -375,16 +376,15 @@ public class Library {
     public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
         LinkedHashMap<String, String> links = new LinkedHashMap<>();
         try {
-            Document doc = Jsoup.connect(lastFMUrl).get();
-            Element playThisTrackSection = doc.selectFirst("section.play-this-track-section");
-            if (playThisTrackSection != null) {
-                Elements linkElements = playThisTrackSection.select("a[href]");
+            // Only parse the body of the document
+            Document doc = Jsoup.connect(lastFMUrl)
+                    .parser(Parser.htmlParser())
+                    .get();
+            // Use a more specific CSS selector to directly target the links
+            Elements linkElements = doc.select("section.play-this-track-section a[href]");
 
-                for (Element linkElement : linkElements) {
-                    String key = linkElement.text().trim();
-                    String value = linkElement.attr("href");
-                    links.put(key, value);
-                }
+            for (Element linkElement : linkElements) {
+                links.put(linkElement.text().trim(), linkElement.attr("href"));
             }
         } catch (IOException e) {
             logger.error("Error parsing external links: " + e);

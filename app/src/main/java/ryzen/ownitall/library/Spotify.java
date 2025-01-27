@@ -220,6 +220,7 @@ public class Spotify {
      * @param seconds - long amount of seconds to sleep for
      */
     private void sleep(long seconds) {
+        logger.debug("Spotify timeout sleeping for: " + seconds + "s");
         long msec = seconds * 1000;
         try {
             Thread.sleep(msec);

@@ -16,6 +16,10 @@ public class Artist {
         this.name = name;
     }
 
+    public Artist(Artist artist) {
+        this.name = artist.getName();
+    }
+
     /**
      * get artist name
      * 

@@ -59,6 +59,14 @@ public class Song {
         }
     }
 
+    public Song(Song song) {
+        this.name = song.getName();
+        this.artist = song.getArtist();
+        this.links = new LinkedHashMap<>(song.getLinks());
+        this.duration = song.getDuration();
+        this.coverImage = song.getCoverImage();
+    }
+
     /**
      * get the name of the current song class
      * 
@@ -209,9 +217,6 @@ public class Song {
         int hashCode = name.toLowerCase().hashCode();
         if (this.artist != null) {
             hashCode += this.artist.hashCode();
-        }
-        if (this.duration != null) {
-            hashCode += duration.hashCode();
         }
         return hashCode;
     }
