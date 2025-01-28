@@ -150,6 +150,13 @@ public class Collection {
         return likedSongs;
     }
 
+    public boolean isLiked(Song song) {
+        if (song == null) {
+            return false;
+        }
+        return this.likedSongs.contains(song);
+    }
+
     /**
      * get this collections albums
      * 

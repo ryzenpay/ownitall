@@ -110,6 +110,12 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
      * playlists get their own folders
      */
     protected boolean downloadHierachy = true;
+
+    /**
+     * dump all liked songs into liked songs (true) or only the standalone ones
+     */
+    protected boolean downloadAllLikedSongs = false;
+
     /**
      * download quality of music
      * 0 - best, 10 - worst
@@ -428,5 +434,13 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
 
     public void setDownloadThreads(Integer downloadThreads) {
         this.downloadThreads = downloadThreads;
+    }
+
+    public boolean isDownloadAllLikedSongs() {
+        return downloadAllLikedSongs;
+    }
+
+    public void setDownloadAllLikedSongs(boolean downloadAllLikedSongs) {
+        this.downloadAllLikedSongs = downloadAllLikedSongs;
     }
 }

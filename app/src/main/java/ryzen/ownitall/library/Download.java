@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
@@ -31,10 +32,10 @@ import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 
 import me.tongfei.progressbar.ProgressBar;
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
-import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -44,6 +45,7 @@ import ryzen.ownitall.util.Progressbar;
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static final Settings settings = Settings.load();
+    private static final Collection collection = Collection.load();
     private ExecutorService executor;
     private String downloadPath;
     private LinkedHashMap<Song, String> failedSongs;
@@ -233,8 +235,6 @@ public class Download {
                         logger.error(completeLog.toString());
                     }
                     logger.error("Attempt: " + retries);
-                } else {
-                    break;
                 }
                 retries++;
             }
@@ -249,30 +249,26 @@ public class Download {
     }
 
     /**
-     * orchestrator of DownloadSong for all liked songs
-     * TODO: only download standaloneLikedSongs()
-     * ^ maybe make setting, find m3u liked songs fix
+     * orchestrator of DownloadSong for all standalone liked songs
      * 
      * @param likedSongs - constructed liked songs
      */
-    public void downloadLikedSongs(LikedSongs likedSongs) {
+    public void downloadLikedSongs() {
+        LinkedHashSet<Song> likedSongs;
+        if (settings.isDownloadAllLikedSongs()) {
+            likedSongs = collection.getLikedSongs().getSongs();
+        } else {
+            likedSongs = collection.getStandaloneLikedSongs();
+        }
         File likedSongsFolder = new File(this.downloadPath);
         if (settings.isDownloadHierachy()) {
             likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
             likedSongsFolder.mkdirs();
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
-        try {
-            MusicTools.writeM3U(MusicTools.sanitizeFileName(likedSongs.getName()), likedSongs.getM3U(),
-                    likedSongsFolder);
-        } catch (Exception e) {
-            logger.error(
-                    "Error writing Liked Songs (" + likedSongsFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
-        }
-        for (Song song : likedSongs.getSongs()) {
+        for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, likedSongsFolder);
-            // this.downloadSong(song, likedSongsFolder);
         }
         this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
@@ -318,7 +314,6 @@ public class Download {
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, playlistFolder);
-            // this.downloadSong(song, playlistFolder);
         }
         this.threadShutdown();
         this.cleanFolder(playlistFolder);
@@ -352,7 +347,6 @@ public class Download {
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
-            // this.downloadSong(song, albumFolder);
         }
         this.threadShutdown();
         this.cleanFolder(albumFolder);
@@ -394,9 +388,13 @@ public class Download {
                 Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(song.getCoverImage().toString());
                 tag.setField(artwork);
             }
+            if (collection.isLiked(song)) {
+                tag.setField(FieldKey.RATING, "5");
+            }
+            AudioFileIO.write(audioFile);
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + songFile.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-        } catch (IOException | CannotReadException | ReadOnlyFileException e) {
+        } catch (IOException | CannotReadException | CannotWriteException | ReadOnlyFileException e) {
             logger.error("Error processing file: " + songFile.getAbsolutePath() + " error: " + e);
         }
     }

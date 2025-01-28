@@ -21,6 +21,7 @@ import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPla
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Episode;
+import se.michaelthelin.spotify.model_objects.specification.Image;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
@@ -332,7 +333,10 @@ public class Spotify {
                             if (!songs.isEmpty()) {
                                 album.addSongs(songs);
                                 album.setSpotifyPageOffset(songs.size());
-                                album.setCoverImage(savedAlbum.getAlbum().getImages()[0].getUrl());
+                                Image[] images = savedAlbum.getAlbum().getImages();
+                                if (images != null && images.length > 0) {
+                                    album.setCoverImage(images[images.length - 1].getUrl());
+                                }
                                 collection.addAlbum(album);
                             }
                         }
@@ -444,7 +448,10 @@ public class Spotify {
                         if (!songs.isEmpty()) {
                             playlist.addSongs(songs);
                             playlist.setSpotifyPageOffset(songs.size());
-                            playlist.setCoverImage(spotifyPlaylist.getImages()[0].getUrl());
+                            Image[] images = spotifyPlaylist.getImages();
+                            if (images != null && images.length > 0) {
+                                playlist.setCoverImage(images[images.length - 1].getUrl());
+                            }
                             collection.addPlaylist(playlist);
                         }
                     }

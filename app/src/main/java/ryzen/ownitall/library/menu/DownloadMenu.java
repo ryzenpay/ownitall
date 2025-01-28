@@ -42,7 +42,7 @@ public class DownloadMenu {
         logger.info("Downloading music...");
         ProgressBar pb = Progressbar.progressBar("Download music", 3);
         pb.setExtraMessage("Liked songs");
-        download.downloadLikedSongs(collection.getLikedSongs());
+        download.downloadLikedSongs();
         pb.setExtraMessage("Playlists").step();
         download.downloadPlaylists(collection.getPlaylists());
         pb.setExtraMessage("Albums").step();
@@ -94,7 +94,7 @@ public class DownloadMenu {
 
     private void optionDownloadLikedSongs() {
         logger.info("Downloading liked songs...");
-        download.downloadLikedSongs(collection.getLikedSongs());
+        download.downloadLikedSongs();
         logger.info("Done downloading liked songs");
         download.getFailedSongsReport();
     }
