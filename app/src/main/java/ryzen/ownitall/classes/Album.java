@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,13 +56,6 @@ public class Album extends Playlist {
         } else {
             this.links = new LinkedHashMap<>();
         }
-    }
-
-    public Album(Album album) {
-        super(album.getName(), album.getSongs(), album.getYoutubePageToken(), album.getSpotifyPageOffset(),
-                album.getCoverImage().toString());
-        this.artists = new LinkedHashSet<>(album.getArtists());
-        this.links = new LinkedHashMap<>(album.getLinks());
     }
 
     public void merge(Album album) {
@@ -171,26 +165,20 @@ public class Album extends Playlist {
     public boolean equals(Object object) {
         if (this == object)
             return true;
-        if (object == null || getClass() != object.getClass())
+        if (!(object instanceof Album)) {
             return false;
+        }
         Album album = (Album) object;
         if (this.hashCode() == album.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
-                simularityPercentage)) {
-            return true;
-        }
-        return false;
+        return Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
+                simularityPercentage);
     }
 
     @Override
     @JsonIgnore
     public int hashCode() {
-        int hashCode = super.hashCode();
-        if (this.artists != null && !this.artists.isEmpty()) {
-            hashCode += this.artists.hashCode();
-        }
-        return hashCode;
+        return Objects.hash(super.hashCode(), artists);
     }
 }

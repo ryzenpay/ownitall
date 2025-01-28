@@ -49,7 +49,7 @@ public class Tools {
      * trigger sync archive
      */
     private void optionArchive() {
-        Sync.load().archive();
+        Sync.load().archive(true);
     }
 
     /**

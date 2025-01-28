@@ -256,7 +256,7 @@ public class Spotify {
                         Track track = savedTrack.getTrack();
                         Song song = null;
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
+                            song = library.searchSong(track.getName(), track.getArtists()[0].getName());
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(track.getName());
@@ -264,7 +264,9 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", track.getHref());
+                            String videoLink = "https://open.spotify.com/track/"
+                                    + track.getId();
+                            song.addLink("spotify", videoLink);
                             collection.addLikedSong(song);
                         }
                     }
@@ -311,7 +313,7 @@ public class Spotify {
                     for (SavedAlbum savedAlbum : items) {
                         Album album = null;
                         if (settings.isUseLibrary()) {
-                            album = library.getAlbum(savedAlbum.getAlbum().getName(),
+                            album = library.searchAlbum(savedAlbum.getAlbum().getName(),
                                     savedAlbum.getAlbum().getArtists()[0].getName());
                         }
                         if (album == null && !settings.isLibraryVerified()) {
@@ -375,7 +377,7 @@ public class Spotify {
                     for (TrackSimplified track : items) {
                         Song song = null;
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
+                            song = library.searchSong(track.getName(), track.getArtists()[0].getName());
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(track.getName());
@@ -507,7 +509,7 @@ public class Spotify {
                             continue;
                         }
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(trackName, artistName);
+                            song = library.searchSong(trackName, artistName);
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(trackName);

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +19,7 @@ import ryzen.ownitall.util.Levenshtein;
 
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
-    private static double simularityPercentage = Settings.load().getSimilarityPercentage();
+    private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
     private Artist artist;
     private Duration duration;
@@ -59,14 +60,6 @@ public class Song {
         }
     }
 
-    public Song(Song song) {
-        this.name = song.getName();
-        this.artist = song.getArtist();
-        this.links = new LinkedHashMap<>(song.getLinks());
-        this.duration = song.getDuration();
-        this.coverImage = song.getCoverImage();
-    }
-
     /**
      * get the name of the current song class
      * 
@@ -86,10 +79,9 @@ public class Song {
     }
 
     public void setArtist(Artist artist) {
-        if (artist == null || artist.isEmpty()) {
-            return;
+        if (artist != null && !artist.isEmpty()) {
+            this.artist = artist;
         }
-        this.artist = artist;
     }
 
     public Artist getArtist() {
@@ -135,15 +127,6 @@ public class Song {
         this.duration = Duration.of(duration, unit);
     }
 
-    /**
-     * set songs duration with constructed Duration
-     * 
-     * @param duration - constructed Duration
-     */
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
     public void setCoverImage(String coverImage) {
         if (coverImage == null) {
             return;
@@ -155,22 +138,12 @@ public class Song {
         }
     }
 
-    public void setCoverImage(URL coverImage) {
-        if (coverImage == null) {
-            return;
-        }
-        this.coverImage = coverImage;
-    }
-
     public URL getCoverImage() {
         return this.coverImage;
     }
 
     public void merge(Song song) {
         if (song == null || song.isEmpty()) {
-            return;
-        }
-        if (song.isEmpty()) {
             return;
         }
         if (this.artist == null && song.artist != null) { // if it has more info, no better way to check
@@ -198,34 +171,25 @@ public class Song {
     public boolean equals(Object object) {
         if (this == object)
             return true;
-        if (object == null || getClass() != object.getClass())
+        if (!(object instanceof Song)) {
             return false;
+        }
         Song song = (Song) object;
         if (this.hashCode() == song.hashCode()) {
             return true;
         }
         // also checks artists as they have their own "equals" and compare
-        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
-            return true;
-        }
-        return false;
+        return Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage);
     }
 
     @Override
     @JsonIgnore
     public int hashCode() {
-        int hashCode = name.toLowerCase().hashCode();
-        if (this.artist != null) {
-            hashCode += this.artist.hashCode();
-        }
-        return hashCode;
+        return Objects.hash(this.name.toLowerCase(), artist);
     }
 
     @JsonIgnore
     public boolean isEmpty() {
-        if (name.isEmpty()) {
-            return true;
-        }
-        return false;
+        return this.name.isEmpty();
     }
 }

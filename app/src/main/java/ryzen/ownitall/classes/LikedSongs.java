@@ -23,13 +23,6 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
         if (this.size() == 0) {
             return false;
         }
-        if (this.getSongs().contains(song)) {
-            return true;
-        }
-        return false;
-    }
-
-    public void clear() {
-        this.getSongs().clear();
+        return this.getSongs().contains(song);
     }
 }

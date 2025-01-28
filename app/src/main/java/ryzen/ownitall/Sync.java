@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -25,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Sync {
     private static final Logger logger = LogManager.getLogger(Sync.class);
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
     private static Sync instance;
     private File dataFolder;
     private File cacheFolder;
@@ -77,28 +76,17 @@ public class Sync {
     }
 
     /**
-     * check if existing data files exist
-     * 
-     * @return - true if exist, false if not
-     */
-    public boolean checkDataFolder() {
-        File dataFolder = new File(settings.dataFolderPath);
-        if (dataFolder.exists() && dataFolder.isDirectory()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * create archive folder (current date) in dataPath and move all current files
-     * to it
+     * to it with no user input
+     * 
+     * @param noUserInput - optional boolean to silence userinput
      */
-    public void archive() {
+    public void archive(boolean userInput) {
         this.setDataFolder();
         LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        File archiveFolder = new File(this.dataFolder, currentDate.format(formatter).toString());
-        if (archiveFolder.exists()) {
+        String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        File archiveFolder = new File(this.dataFolder, folderName);
+        if (archiveFolder.exists() && !userInput) {
             System.out.println(
                     "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
             System.out.print("Are you sure y/N: ");
@@ -106,29 +94,6 @@ public class Sync {
                 return;
             }
         }
-        archiveFolder.mkdir();
-        logger.debug("Created archive folder: " + archiveFolder.getAbsolutePath());
-        for (File file : this.dataFolder.listFiles()) {
-            if (file.isFile()) {
-                file.renameTo(new File(archiveFolder, file.getName()));
-                logger.debug("Renamed file: " + file.getAbsolutePath());
-            }
-        }
-        Collection.load().clear();
-        logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
-    }
-
-    /**
-     * create archive folder (current date) in dataPath and move all current files
-     * to it with no user input
-     * 
-     * @param noUserInput - optional boolean to silence userinput
-     */
-    public void archive(boolean noUserInput) {
-        this.setDataFolder();
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        File archiveFolder = new File(this.dataFolder, currentDate.format(formatter).toString());
         archiveFolder.mkdir();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
@@ -157,16 +122,13 @@ public class Sync {
         if (choice.equals("Exit")) {
             return;
         } else {
-            archive(true);
+            archive(false);
             File unarchiveFolder = archiveFolders.get(choice);
             for (File file : unarchiveFolder.listFiles()) {
                 if (file.isFile()) {
                     File destFile = new File(this.dataFolder, file.getName());
-                    destFile.delete();
-                    logger.debug("deleted file: " + destFile.getAbsolutePath());
-                    File newFile = new File(this.dataFolder, file.getName());
-                    if (newFile.exists()) {
-                        newFile.delete();
+                    if (destFile.exists()) {
+                        destFile.delete();
                         logger.debug("deleted old file: " + destFile.getAbsolutePath());
                     }
                     file.renameTo(destFile);
@@ -199,16 +161,16 @@ public class Sync {
      * @return - constructed collection
      */
     public Collection importCollection() {
-        ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3);
         Collection collection = new Collection();
-        pb.setExtraMessage("Albums");
-        collection.addAlbums(this.importAlbums());
-        pb.setExtraMessage("Playlists").step();
-        collection.addPlaylists(this.importPlaylists());
-        pb.setExtraMessage("Liked Songs").step();
-        collection.addLikedSongs(this.importLikedSongs().getSongs());
-        pb.setExtraMessage("Done").step();
-        pb.close();
+        try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
+            pb.setExtraMessage("Albums");
+            collection.addAlbums(importAlbums());
+            pb.setExtraMessage("Playlists").step();
+            collection.addPlaylists(importPlaylists());
+            pb.setExtraMessage("Liked Songs").step();
+            collection.addLikedSongs(importLikedSongs().getSongs());
+            pb.setExtraMessage("Done").step();
+        }
         return collection;
     }
 
@@ -219,15 +181,15 @@ public class Sync {
      * @param collection - constructed collection to save
      */
     public void exportCollection(Collection collection) {
-        ProgressBar pb = Progressbar.progressBar("Saving Data", 3);
-        pb.setExtraMessage("Albums");
-        this.exportAlbums(collection.getAlbums());
-        pb.setExtraMessage("Playlists").step();
-        this.exportPlaylists(collection.getPlaylists());
-        pb.setExtraMessage("Liked Songs").step();
-        this.exportLikedSongs(collection.getLikedSongs());
-        pb.setExtraMessage("Done").step();
-        pb.close();
+        try (ProgressBar pb = Progressbar.progressBar("Saving Data", 3)) {
+            pb.setExtraMessage("Albums");
+            exportAlbums(collection.getAlbums());
+            pb.setExtraMessage("Playlists").step();
+            exportPlaylists(collection.getPlaylists());
+            pb.setExtraMessage("Liked Songs").step();
+            exportLikedSongs(collection.getLikedSongs());
+            pb.setExtraMessage("Done").step();
+        }
     }
 
     /**
@@ -349,37 +311,6 @@ public class Sync {
             return null;
         }
         return likedSongs;
-    }
-
-    /**
-     * cache artists locally
-     * ^ syncs with local files
-     * 
-     * @param artists - linkedhashset to cache
-     * @return - updated linkedhashset of artists
-     */
-    public LinkedHashSet<Artist> cacheArtists(LinkedHashSet<Artist> artists) {
-        this.setCacheFolder();
-        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
-        LinkedHashSet<Artist> cachedArtists = new LinkedHashSet<>();
-        if (artistFile.exists()) {
-            try {
-                cachedArtists = this.objectMapper.readValue(artistFile, new TypeReference<LinkedHashSet<Artist>>() {
-                });
-                logger.debug("loaded cached artists from: " + artistFile);
-            } catch (IOException e) {
-                logger.error("Error importing Library Artists: " + e);
-                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
-            }
-        }
-        cachedArtists.addAll(artists);
-        try {
-            this.objectMapper.writeValue(artistFile, cachedArtists);
-            logger.debug("saved cached artists to: " + artistFile);
-        } catch (IOException e) {
-            logger.error("Error exporting Library Artists: " + e);
-        }
-        return cachedArtists;
     }
 
     /**

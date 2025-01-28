@@ -51,18 +51,12 @@ public class Collection {
      * @param mergeAlbums - linkedhashset of albums to merge
      */
     public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
-        if (mergeAlbums == null || mergeAlbums.isEmpty()) {
-            return;
-        }
         for (Album album : mergeAlbums) {
-            addAlbum(album);
+            this.addAlbum(album);
         }
     }
 
     public void addAlbum(Album album) {
-        if (album == null || album.isEmpty()) {
-            return;
-        }
         Album foundAlbum = this.getAlbum(album);
         if (foundAlbum != null) {
             foundAlbum.merge(album);
@@ -77,18 +71,12 @@ public class Collection {
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
     public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
-        if (mergePlaylists == null || mergePlaylists.isEmpty()) {
-            return;
-        }
         for (Playlist playlist : mergePlaylists) {
             this.addPlaylist(playlist);
         }
     }
 
     public void addPlaylist(Playlist playlist) {
-        if (playlist == null || playlist.isEmpty()) {
-            return;
-        }
         Playlist foundPlaylist = this.getPlaylist(playlist);
         if (foundPlaylist != null) {
             foundPlaylist.merge(playlist);
@@ -103,16 +91,10 @@ public class Collection {
      * @param mergeLikedSongs - constructed LikedSongs
      */
     public void addLikedSongs(LinkedHashSet<Song> songs) {
-        if (songs == null || songs.isEmpty()) {
-            return;
-        }
         this.likedSongs.addSongs(songs); // handled by playlist addSongs
     }
 
     public void addLikedSong(Song song) {
-        if (song == null || song.isEmpty()) {
-            return;
-        }
         this.likedSongs.addSong(song);
     }
 

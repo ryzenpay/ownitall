@@ -10,7 +10,7 @@ import ryzen.ownitall.util.Menu;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
     private static Sync sync = Sync.load();
     private static Collection collection = Collection.load();
 
@@ -22,10 +22,7 @@ public class Main {
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        if (sync.checkDataFolder()) {
-            logger.info("Local data found, attempting to import...");
-            collection.mergeCollection(sync.importCollection());
-        }
+        collection.mergeCollection(sync.importCollection());
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);

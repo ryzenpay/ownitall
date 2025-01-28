@@ -31,9 +31,9 @@ import java.net.URL;
 // TODO: convert lastfm link to external link (youtube, spotify,...) (only if use library)
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
-    private static Settings settings = Settings.load();
-    private static Credentials credentials = Credentials.load();
-    private static Sync sync = Sync.load();
+    private static final Settings settings = Settings.load();
+    private static final Credentials credentials = Credentials.load();
+    private static final Sync sync = Sync.load();
     private static Library instance;
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private ObjectMapper objectMapper;
@@ -41,7 +41,6 @@ public class Library {
     /**
      * arrays to save api queries if they already exist
      */
-    private LinkedHashSet<Artist> artists;
     private LinkedHashSet<Song> songs;
     private LinkedHashSet<Album> albums;
 
@@ -66,7 +65,6 @@ public class Library {
             credentials.setLastFMCredentials();
         }
         this.objectMapper = new ObjectMapper();
-        this.artists = sync.cacheArtists(new LinkedHashSet<>());
         this.songs = sync.cacheSongs(new LinkedHashSet<>());
         this.albums = sync.cacheAlbums(new LinkedHashSet<>());
     }
@@ -77,7 +75,6 @@ public class Library {
     public void save() {
         sync.cacheAlbums(this.albums);
         sync.cacheSongs(this.songs);
-        sync.cacheArtists(this.artists);
     }
 
     /**
@@ -86,51 +83,6 @@ public class Library {
     public void clear() {
         this.albums.clear();
         this.songs.clear();
-        this.artists.clear();
-    }
-
-    /**
-     * get artist from cached artists
-     * 
-     * @param artist - constructed artist to find
-     * @return - constructed artist in array or null
-     */
-    private Artist getArtist(Artist artist) {
-        for (Artist thisArtist : this.artists) {
-            if (thisArtist.equals(artist)) {
-                return thisArtist;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * get artist using music library
-     * 
-     * @param artistName - name of artist to find
-     * @return - constructed artist backed with music library data or with the
-     *         provided name
-     */
-    public Artist getArtist(String artistName) {
-        if (artistName == null) {
-            return null;
-        }
-        Artist tmpArtist = new Artist(artistName);
-        if (this.artists.contains(tmpArtist)) {
-            return this.getArtist(tmpArtist);
-        }
-        Map<String, String> params = Map.of("artist", artistName, "limit", "1");
-        JsonNode response = query("artist.search", params);
-        if (response != null) {
-            JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
-            if (artistNode != null) {
-                Artist artist = new Artist(artistNode.path("name").asText());
-                this.artists.add(artist);
-                return new Artist(artist);
-            }
-        }
-        logger.debug("Could not find artist '" + artistName + "' in Library");
-        return null;
     }
 
     /**
@@ -155,7 +107,7 @@ public class Library {
      * @param artistName - optional to aid search
      * @return - constructed album backed by library or with provided values
      */
-    public Album getAlbum(String albumName, String artistName) {
+    public Album searchAlbum(String albumName, String artistName) {
         if (albumName == null) {
             return null;
         }
@@ -179,7 +131,7 @@ public class Library {
                 Album album = new Album(albumNode.path("name").asText());
                 String artist = albumNode.path("artist").asText();
                 if (artist != null && !artist.isEmpty()) {
-                    album.addArtist(this.getArtist(artist));
+                    album.addArtist(new Artist(artist));
                 }
                 String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
                         .asText();
@@ -191,10 +143,10 @@ public class Library {
                     album.addLink("lastfm", link);
                 }
                 this.albums.add(album);
-                return new Album(album);
+                return album;
             }
         }
-        logger.debug("Could not find Album '" + albumName + "' in Library");
+        logger.debug("Could not find Album: '" + albumName + "' in Library");
         return null;
     }
 
@@ -221,7 +173,7 @@ public class Library {
      * @param artistName - optional artist to match with the song
      * @return - constructed song
      */
-    public Song getSong(String songName, String artistName) {
+    public Song searchSong(String songName, String artistName) {
         if (songName == null) {
             return null;
         }
@@ -245,7 +197,7 @@ public class Library {
                 Song song = new Song(trackNode.path("name").asText());
                 String artist = trackNode.path("artist").asText();
                 if (artist != null && !artist.isEmpty()) {
-                    song.setArtist(this.getArtist(artist));
+                    song.setArtist(new Artist(artist));
                 }
                 String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
                         .asText();
@@ -256,10 +208,9 @@ public class Library {
                 if (link != null && !link.isEmpty()) {
                     song.addLink("lastfm", link);
                     // song.addLinks(this.getExternalLinks(link));
-                    // ^ takes too long
                 }
                 this.songs.add(song);
-                return new Song(song);
+                return song;
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
@@ -296,12 +247,10 @@ public class Library {
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
-            reader.close();
             logger.debug(response.toString());
-            String jsonResponse = response.toString();
 
             // error handling
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            JsonNode rootNode = objectMapper.readTree(response.toString());
 
             if (rootNode.has("error")) {
                 int errorCode = rootNode.path("error").asInt();
@@ -375,6 +324,7 @@ public class Library {
 
     // TODO: this does not work
     // does the page need to load?
+    // also greatly impacts performance
     public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
         LinkedHashMap<String, String> links = new LinkedHashMap<>();
         try {

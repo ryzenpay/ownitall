@@ -32,6 +32,7 @@ import java.security.GeneralSecurityException;
 import java.util.LinkedHashSet;
 import java.util.Arrays;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -130,14 +131,15 @@ public class Youtube {
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = null;
                             if (settings.isUseLibrary()) {
-                                song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
+                                song = library.searchSong(snippet.getTitle(), snippet.getChannelTitle());
                             }
                             if (song == null && !settings.isLibraryVerified()) {
                                 song = new Song(snippet.getTitle());
                                 song.setArtist(new Artist(snippet.getChannelTitle()));
                             }
                             if (song != null) {
-                                song.setDuration(Duration.parse(contentDetails.getDuration()));
+                                song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
+                                        ChronoUnit.SECONDS);
                                 String videoLink = "https://www.youtube.com/watch?v=" + video.getId();
                                 song.addLink("youtube", videoLink);
                                 collection.addLikedSong(song);
@@ -233,14 +235,14 @@ public class Youtube {
                         Song song = null;
                         String artistName = this.getVideoChannel(videoId);
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(snippet.getTitle(), artistName);
+                            song = library.searchSong(snippet.getTitle(), artistName);
                         }
                         if (song == null && !settings.isUseLibrary()) {
                             song = new Song(snippet.getTitle());
                             song.setArtist(new Artist(artistName));
                         }
                         if (song != null) {
-                            song.setDuration(this.getDuration(videoId));
+                            song.setDuration(this.getDuration(videoId).getSeconds(), ChronoUnit.SECONDS);
                             String videoLink = "https://www.youtube.com/watch?v="
                                     + item.getContentDetails().getVideoId();
                             song.addLink("youtube", videoLink);

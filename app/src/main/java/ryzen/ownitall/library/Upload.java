@@ -197,7 +197,7 @@ public class Upload {
             logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
         }
         if (settings.isUseLibrary()) {
-            song = library.getSong(songName, artistName);
+            song = library.searchSong(songName, artistName);
         }
         if (song == null && !settings.isLibraryVerified()) {
             song = new Song(songName);
@@ -286,7 +286,7 @@ public class Upload {
      * @return - constructed Album without songs
      */
     public static Album constructAlbum(File folder) {
-        Album album;
+        Album album = null;
         String albumName = null;
         String artistName = null;
         File albumSong = folder.listFiles()[0];
@@ -300,10 +300,22 @@ public class Upload {
         } catch (Exception e) {
             logger.error("Error parsing album: " + e);
         }
-        if (albumName != null) {
-            album = library.getAlbum(albumName, artistName);
-        } else {
-            album = library.getAlbum(folder.getName(), artistName);
+        if (settings.isUseLibrary()) {
+            if (albumName != null) {
+                album = library.searchAlbum(albumName, artistName);
+            } else {
+                album = library.searchAlbum(folder.getName(), artistName);
+            }
+        }
+        if (album == null && !settings.isLibraryVerified()) {
+            if (albumName != null) {
+                album = new Album(albumName);
+            } else {
+                album = new Album(folder.getName());
+            }
+            if (artistName != null) {
+                album.addArtist(new Artist(artistName));
+            }
         }
         return album;
     }

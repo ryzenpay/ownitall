@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,8 +19,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
-    protected static double simularityPercentage = Settings.load().getSimilarityPercentage();
-    protected static String downloadFormat = Settings.load().getDownloadFormat();
+    protected static final double simularityPercentage = Settings.load().getSimilarityPercentage();
+    protected static final String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private URL coverImage;
     private LinkedHashSet<Song> songs;
@@ -58,14 +59,6 @@ public class Playlist {
         if (coverArt != null) {
             this.setCoverImage(coverArt);
         }
-    }
-
-    public Playlist(Playlist playlist) {
-        this.name = playlist.getName();
-        this.songs = new LinkedHashSet<>(playlist.getSongs());
-        this.youtubePageToken = playlist.getYoutubePageToken();
-        this.spotifyPageOffset = playlist.getSpotifyPageOffset();
-        this.coverImage = playlist.getCoverImage();
     }
 
     public void merge(Playlist playlist) {
@@ -253,23 +246,21 @@ public class Playlist {
     public boolean equals(Object object) {
         if (this == object)
             return true;
-        if (object == null || this.getClass() != object.getClass())
+        if (!(object instanceof Playlist)) {
             return false;
+        }
         Playlist playlist = (Playlist) object;
         if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
-                simularityPercentage)) {
-            return true;
-        }
-        return false;
+        return Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
+                simularityPercentage);
     }
 
     @Override
     @JsonIgnore
     public int hashCode() {
-        return this.name.toLowerCase().hashCode();
+        return Objects.hash(this.name.toLowerCase());
     }
 
     @JsonIgnore
@@ -277,9 +268,10 @@ public class Playlist {
         if (this.name.isEmpty()) {
             return true;
         }
-        if (this.songs.isEmpty()) {
-            return true;
-        }
-        return false;
+        return this.songs.isEmpty();
+    }
+
+    public void clear() {
+        this.songs.clear();
     }
 }

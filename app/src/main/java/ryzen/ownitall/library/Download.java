@@ -43,7 +43,7 @@ import ryzen.ownitall.util.Progressbar;
 
 public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
     private ExecutorService executor;
     private String downloadPath;
     private LinkedHashMap<Song, String> failedSongs;
