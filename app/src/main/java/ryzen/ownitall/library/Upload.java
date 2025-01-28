@@ -39,7 +39,9 @@ public class Upload {
     private static Collection collection = Collection.load();
     private File localLibrary;
     private ArrayList<File> localLibraryFolders;
-    // formats have to be lower case
+    static {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
+    }
 
     /**
      * default local constructor asking for library path

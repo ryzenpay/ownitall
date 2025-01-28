@@ -1,7 +1,7 @@
 package ryzen.ownitall.classes;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ public class Song {
     private String name;
     private Artist artist;
     private Duration duration;
-    private URL coverImage;
+    private URI coverImage;
     private LinkedHashMap<String, String> links;
 
     /**
@@ -132,13 +132,13 @@ public class Song {
             return;
         }
         try {
-            this.coverImage = new URL(coverImage);
-        } catch (MalformedURLException e) {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
             logger.error("Error parsing Song cover image: " + coverImage);
         }
     }
 
-    public URL getCoverImage() {
+    public URI getCoverImage() {
         return this.coverImage;
     }
 

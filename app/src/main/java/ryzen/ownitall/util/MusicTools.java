@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -62,12 +62,12 @@ public class MusicTools {
         }
     }
 
-    public static void downloadImage(URL url, File folder) throws Exception {
+    public static void downloadImage(URI url, File folder) throws Exception {
         if (!folder.exists()) {
             return;
         }
         File imageFile = new File(folder, "cover.png");
-        try (InputStream in = url.openStream()) {
+        try (InputStream in = url.toURL().openStream()) {
             Files.copy(in, imageFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }
     }

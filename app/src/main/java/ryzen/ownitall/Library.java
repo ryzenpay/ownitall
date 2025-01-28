@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,8 +26,6 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import java.net.URL;
 
 // TODO: convert lastfm link to external link (youtube, spotify,...) (only if use library)
 public class Library {
@@ -236,8 +235,8 @@ public class Library {
                         .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
             }
 
-            URL url = new URL(urlBuilder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URI url = new URI(urlBuilder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

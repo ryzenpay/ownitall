@@ -13,11 +13,6 @@ public class Main {
     private static final Settings settings = Settings.load();
     private static Sync sync = Sync.load();
     private static Collection collection = Collection.load();
-    // disabling used library loggers
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-        java.util.logging.Logger.getLogger("me.tongfei.progressbar").setLevel(java.util.logging.Level.OFF);
-    }
 
     /**
      * main function launching the main ownitall menu

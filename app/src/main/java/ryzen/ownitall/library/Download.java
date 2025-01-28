@@ -1,7 +1,7 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.io.BufferedReader;
@@ -47,6 +47,9 @@ public class Download {
     private ExecutorService executor;
     private String downloadPath;
     private LinkedHashMap<Song, String> failedSongs;
+    static {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
+    }
 
     /**
      * default download constructor
@@ -386,7 +389,7 @@ public class Download {
             if (artist != null) {
                 tag.setField(FieldKey.ARTIST, artist.toString());
             }
-            URL coverImage = song.getCoverImage();
+            URI coverImage = song.getCoverImage();
             if (coverImage != null) {
                 Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(song.getCoverImage().toString());
                 tag.setField(artwork);

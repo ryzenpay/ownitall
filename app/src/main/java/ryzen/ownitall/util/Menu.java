@@ -10,6 +10,11 @@ import org.apache.logging.log4j.Logger;
 public class Menu { // TODO: shutdownhook handling
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     /**
      * standard option menu with little to no customizability
      * 
@@ -21,6 +26,7 @@ public class Menu { // TODO: shutdownhook handling
      * 
      */
     public static String optionMenu(Set<String> setOptions, String menuName) {
+        clearScreen();
         ArrayList<String> options = new ArrayList<>(setOptions);
         int i = 1;
         int choice;
@@ -46,6 +52,7 @@ public class Menu { // TODO: shutdownhook handling
     }
 
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) {
+        clearScreen();
         ArrayList<String> options = new ArrayList<>(setOptions.keySet());
         int i = 1;
         int choice;

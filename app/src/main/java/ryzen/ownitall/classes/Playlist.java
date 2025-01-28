@@ -1,8 +1,8 @@
 package ryzen.ownitall.classes;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
@@ -22,7 +22,7 @@ public class Playlist {
     protected static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     protected static final String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
-    private URL coverImage;
+    private URI coverImage;
     private LinkedHashSet<Song> songs;
 
     /**
@@ -115,13 +115,13 @@ public class Playlist {
             return;
         }
         try {
-            this.coverImage = new URL(coverImage);
-        } catch (MalformedURLException e) {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
             logger.error("Error parsing playlist cover image: " + coverImage);
         }
     }
 
-    public void setCoverImage(URL coverImage) {
+    public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
             return;
         }
@@ -133,7 +133,7 @@ public class Playlist {
      * 
      * @return - constructed URI
      */
-    public URL getCoverImage() {
+    public URI getCoverImage() {
         return this.coverImage;
     }
 
