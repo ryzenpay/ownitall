@@ -367,7 +367,7 @@ public class Download {
                 tag.setField(artwork);
             }
             if (collection.isLiked(song)) {
-                tag.setField(FieldKey.RATING, "5");
+                tag.setField(FieldKey.RATING, "255");
             }
             AudioFileIO.write(audioFile);
         } catch (InvalidAudioFrameException | TagException e) {
