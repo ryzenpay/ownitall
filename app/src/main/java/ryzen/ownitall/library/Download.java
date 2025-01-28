@@ -207,7 +207,7 @@ public class Download {
             int retries = 0;
             File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
             StringBuilder completeLog = new StringBuilder();
-            while (!songFile.exists() && retries < 3) {
+            while (!songFile.exists() || retries < 3) {
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
