@@ -87,28 +87,6 @@ public class Download {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        String songFileName = MusicTools.sanitizeFileName(song.getName());
-        File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
-        if (songFile.exists()) { // dont download twice
-            return;
-        }
-        File likedSongFile;
-        if (settings.isDownloadHierachy()) {
-            File likedSongFolder = new File(this.downloadPath, settings.getLikedSongFile());
-            likedSongFile = new File(likedSongFolder, songFileName + "." + settings.getDownloadFormat());
-        } else {
-            likedSongFile = new File(this.downloadPath, songFileName + "." + settings.getDownloadFormat());
-        }
-        if (likedSongFile.exists()) { // to prevent overwriting from its own folder
-            try {
-                Files.copy(likedSongFile.toPath(), songFile.toPath());
-                logger.debug("Already found liked song downloaded: " + likedSongFile.getAbsolutePath());
-                return;
-            } catch (IOException e) {
-                logger.error("Error moving found music file: " + likedSongFile.getAbsolutePath() + " to: "
-                        + songFile.getAbsolutePath() + " error: " + e);
-            }
-        }
         while (true) {
             try {
                 // Attempt to execute the task
@@ -207,7 +185,7 @@ public class Download {
             int retries = 0;
             File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
             StringBuilder completeLog = new StringBuilder();
-            while (!songFile.exists() || retries < 3) {
+            while (!songFile.exists() && retries < 3) {
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
@@ -238,10 +216,10 @@ public class Download {
                 }
                 retries++;
             }
-            if (!songFile.exists()) {
-                this.failedSongs.put(song, completeLog.toString());
-            } else {
+            if (songFile.exists()) {
                 this.writeMetaData(song, songFile);
+            } else {
+                this.failedSongs.put(song, completeLog.toString());
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
