@@ -282,11 +282,15 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
             MusicTools.writeM3U(playlistFolderName, playlist.getM3U(), playlistFolder);
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u: " + e);
+        }
+        try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(), playlistFolder);
             }
         } catch (Exception e) {
-            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
+            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") coverimage: " + e);
         }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
@@ -314,12 +318,15 @@ public class Download {
         albumFolder.mkdirs();
         try {
             MusicTools.writeM3U(albumFolderName, album.getM3U(), albumFolder);
+        } catch (Exception e) {
+            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
+        }
+        try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(), albumFolder);
             }
-        } catch (FileAlreadyExistsException e) {
         } catch (Exception e) {
-            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u +/ coverimage: " + e);
+            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
         }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();

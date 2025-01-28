@@ -51,11 +51,11 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    public static void writeM3U(String title, String M3UData, File folder) throws Exception {
+    public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
         if (!folder.exists()) {
             return;
         }
-        File M3UFile = new File(folder, title + ".m3u");
+        File M3UFile = new File(folder, fileName + ".m3u");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(M3UFile))) {
             writer.write(M3UData);
         }
