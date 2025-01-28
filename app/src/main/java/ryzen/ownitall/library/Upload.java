@@ -32,10 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Upload {
-    // disable jaudiotagger logger
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-    }
     private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
     private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav"));
