@@ -3,7 +3,6 @@ package ryzen.ownitall.library;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -369,7 +368,7 @@ public class Download {
             if (collection.isLiked(song)) {
                 tag.setField(FieldKey.RATING, "255");
             }
-            AudioFileIO.write(audioFile);
+            audioFile.commit();
         } catch (InvalidAudioFrameException | TagException e) {
             logger.error("File " + songFile.getAbsolutePath() + " is not an audio file or has incorrect metadata");
         } catch (IOException | CannotReadException | CannotWriteException | ReadOnlyFileException e) {

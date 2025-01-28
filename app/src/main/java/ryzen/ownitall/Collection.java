@@ -329,7 +329,7 @@ public class Collection {
                                                     MusicTools.totalDuration(playlist.getSongs())));
                     i++;
                     for (Song song : playlist.getSongs()) {
-                        if (likedSongs.contains(song)) {
+                        if (this.isLiked(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
@@ -351,7 +351,7 @@ public class Collection {
                                     + " - " + MusicTools.musicTime(MusicTools.totalDuration(album.getSongs())));
                     i++;
                     for (Song song : album.getSongs()) {
-                        if (likedSongs.contains(song)) {
+                        if (this.isLiked(song)) {
                             System.out.print("*");
                         } else {
                             System.out.print(" ");
