@@ -68,7 +68,7 @@ public class Download {
         } else {
             this.downloadPath = settings.getDownloadFolder();
         }
-        logger.info("This is where i reccomend you to connect to VPN / use proxies");
+        System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         Input.request().getAgreement();
     }
@@ -218,13 +218,13 @@ public class Download {
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     if (exitCode == 2) {
-                        logger.error("Error with user provided options: " + command.toString());
+                        logger.debug("Error with user provided options: " + command.toString());
                         break;
                     } else if (exitCode == 100) {
                         logger.error("Your yt-dlp needs to update");
                         break;
                     } else if (exitCode == 101) {
-                        logger.error("Download cancelled due to boundary criteria: " + searchQuery);
+                        logger.debug("Download cancelled due to boundary criteria: " + searchQuery);
                         break;
                         // TODO: search library again?
                     } else {
@@ -251,7 +251,7 @@ public class Download {
     /**
      * orchestrator of DownloadSong for all liked songs
      * TODO: only download standaloneLikedSongs()
-     * ^ maybe make setting
+     * ^ maybe make setting, find m3u liked songs fix
      * 
      * @param likedSongs - constructed liked songs
      */

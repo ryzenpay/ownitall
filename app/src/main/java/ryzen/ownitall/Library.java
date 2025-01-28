@@ -27,7 +27,6 @@ import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// TODO: convert lastfm link to external link (youtube, spotify,...) (only if use library)
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Settings settings = Settings.load();

@@ -51,7 +51,6 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    // TODO: song order
     public static void writeM3U(String title, String M3UData, File folder) throws Exception {
         if (!folder.exists()) {
             return;
