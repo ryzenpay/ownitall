@@ -54,6 +54,13 @@ public class Library {
         return instance;
     }
 
+    public static boolean checkInstance() {
+        if (instance != null) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * default Library constructor
      * initializes all values and loads from cache

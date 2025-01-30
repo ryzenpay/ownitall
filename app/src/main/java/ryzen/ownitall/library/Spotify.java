@@ -265,9 +265,9 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            String videoLink = "https://open.spotify.com/track/"
+                            String link = "https://open.spotify.com/track/"
                                     + track.getId();
-                            song.addLink("spotify", videoLink);
+                            song.addLink("spotify", link);
                             collection.addLikedSong(song);
                         }
                     }
@@ -404,7 +404,8 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addLink("spotify", track.getHref());
+                            String link = "https://open.spotify.com/track/" + track.getId();
+                            song.addLink("spotify", link);
                             songs.add(song);
                         }
                     }
@@ -533,13 +534,13 @@ public class Spotify {
                             trackName = track.getName();
                             artistName = track.getArtists()[0].getName();
                             duration = track.getDurationMs();
-                            link = track.getHref();
+                            link = "https://open.spotify.com/track/" + track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
                             trackName = episode.getName();
                             artistName = null;
                             duration = episode.getDurationMs();
-                            link = episode.getHref();
+                            link = "https://open.spotify.com/episode/" + episode.getId();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
                             continue;
