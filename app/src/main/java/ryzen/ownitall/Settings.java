@@ -106,6 +106,16 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
     protected String downloadFolder = "";
 
     /**
+     * option to hardcode cookies file
+     */
+    protected String downloadCookiesFile = "";
+
+    /**
+     * option to hardcode browser to get cookies from
+     */
+    protected String downloadCookiesBrowser = "";
+
+    /**
      * download all files in a hierachy method
      * playlists get their own folders
      */
@@ -442,5 +452,21 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
 
     public void setDownloadAllLikedSongs(boolean downloadAllLikedSongs) {
         this.downloadAllLikedSongs = downloadAllLikedSongs;
+    }
+
+    public String getDownloadCookiesFile() {
+        return downloadCookiesFile;
+    }
+
+    public void setDownloadCookiesFile(String downloadCookiesFile) {
+        this.downloadCookiesFile = downloadCookiesFile;
+    }
+
+    public String getDownloadCookiesBrowser() {
+        return downloadCookiesBrowser;
+    }
+
+    public void setDownloadCookiesBrowser(String downloadCookiesBrowser) {
+        this.downloadCookiesBrowser = downloadCookiesBrowser;
     }
 }

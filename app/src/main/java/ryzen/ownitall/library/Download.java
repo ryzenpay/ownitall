@@ -131,7 +131,7 @@ public class Download {
      * @param song - constructed song
      * @param path - folder of where to place
      */
-    public void downloadSong(Song song, File path) { // TODO: cookies for age restriction
+    public void downloadSong(Song song, File path) {
         String songFileName = MusicTools.sanitizeFileName(song.getName());
         List<String> command = new ArrayList<>();
         // executables
@@ -147,6 +147,13 @@ public class Download {
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
         command.add("duration>=45"); // exclude shorts
+        if (!settings.getDownloadCookiesFile().isEmpty()) {
+            command.add("--cookies");
+            command.add(settings.getDownloadCookiesFile());
+        } else if (!settings.getDownloadCookiesBrowser().isEmpty()) {
+            command.add("--cookies-from-browser");
+            command.add(settings.getDownloadCookiesBrowser());
+        }
         // metadata and formatting
         command.add("--extract-audio");
         command.add("--embed-thumbnail");
