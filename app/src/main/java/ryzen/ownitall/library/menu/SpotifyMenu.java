@@ -6,12 +6,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
+import ryzen.ownitall.Collection;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.library.Spotify;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class SpotifyMenu {
     private static final Logger logger = LogManager.getLogger(SpotifyMenu.class);
+    private static final Collection collection = Collection.load();
     private Spotify spotify;
 
     public SpotifyMenu() {
@@ -22,6 +27,8 @@ public class SpotifyMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
+        options.put("Import Album", this::optionImportAlbum);
+        options.put("Import Playlist", this::optionImportPlaylist);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "IMPORT SPOTIFY");
             if (choice.equals("Exit")) {
@@ -52,9 +59,25 @@ public class SpotifyMenu {
         logger.info("done importing Spotify Liked songs");
     }
 
-    /**
-     * TODO: allow import of album by passing album id
-     * ^ requires redesign of spotify class to return album rather than array of
-     * songs
-     */
+    private void optionImportAlbum() {
+        System.out.print("Enter Spotify Album name: ");
+        String albumName = Input.request().getString();
+        System.out.print("Enter Spotify Album ID: ");
+        String albumId = Input.request().getString();
+        logger.info("Importing Spotify Album...");
+        Album album = spotify.getAlbum(albumId, albumName, null, null);
+        collection.addAlbum(album);
+        logger.info("Done importing Spotify album");
+    }
+
+    private void optionImportPlaylist() {
+        System.out.print("Enter Spotify Playlist name: ");
+        String playlistName = Input.request().getString();
+        System.out.print("Enter Spotify Playlist ID: ");
+        String playlistId = Input.request().getString();
+        logger.info("Importing Spotify Playlist...");
+        Playlist playlist = spotify.getPlaylist(playlistId, playlistName, null);
+        collection.addPlaylist(playlist);
+        logger.info("Done importing Spotify Playlist");
+    }
 }
