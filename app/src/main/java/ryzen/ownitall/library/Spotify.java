@@ -143,7 +143,7 @@ public class Spotify {
     /**
      * start temporary local server to "intercept" spotify api code
      */
-    public void startLocalServer() { // TODO: make this work (cors error)
+    public void startLocalServer() {
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
             logger.info("Waiting for the authorization code...");
             Socket clientSocket = serverSocket.accept();

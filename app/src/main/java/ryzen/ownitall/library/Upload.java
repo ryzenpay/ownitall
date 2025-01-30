@@ -105,7 +105,7 @@ public class Upload {
      */
     public void getLikedSongs() {
         for (File file : this.localLibrary.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+            if (file.isFile()) {
                 Song song = getSong(file);
                 if (song != null) {
                     collection.addLikedSong(song);
@@ -146,11 +146,10 @@ public class Upload {
             return null;
         }
         playlist.addSongs(songs);
-        // TODO: make this work (local cover image)
-        // File coverFile = new File(folder, "cover.png");
-        // if (coverFile.exists()) {
-        // playlist.setCoverImage(coverFile);
-        // }
+        File coverFile = new File(folder, "cover.png");
+        if (coverFile.exists()) {
+            playlist.setCoverImage(coverFile.toURI());
+        }
         return playlist;
     }
 
@@ -165,6 +164,10 @@ public class Upload {
         if (songs.size() == 0) {
             return null;
         }
+        File coverFile = new File(folder, "cover.png");
+        if (coverFile.exists()) {
+            album.setCoverImage(coverFile.toURI());
+        }
         album.addSongs(songs);
         return album;
     }
@@ -176,6 +179,9 @@ public class Upload {
      * @return - constructed Song
      */
     public static Song getSong(File file) {
+        if (!extensions.contains(MusicTools.getExtension(file))) {
+            return null;
+        }
         Song song = null;
         String songName = file.getName().substring(0, file.getName().length() - 4);
         String artistName = null;
@@ -220,7 +226,7 @@ public class Upload {
             return songs;
         }
         for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+            if (file.isFile()) {
                 Song song = getSong(file);
                 if (song == null && !settings.isLibraryVerified()) {
                     song = new Song(file.getName());
@@ -246,34 +252,33 @@ public class Upload {
         }
         String album = null;
         boolean foundAnyAlbum = false;
-        File[] files = folder.listFiles((dir, name) -> extensions.contains(MusicTools.getExtension(new File(name))));
-        if (files == null || files.length <= 1) {
-            return false;
-        }
-        for (File file : files) {
-            try {
-                AudioFile audioFile = AudioFileIO.read(file);
-                Tag tag = audioFile.getTag();
-                if (tag != null) {
-                    String foundAlbum = tag.getFirst(FieldKey.ALBUM);
-                    if (!foundAlbum.isEmpty()) {
-                        foundAnyAlbum = true;
-                        if (album == null) {
-                            album = foundAlbum;
-                        } else if (!album.equals(foundAlbum)) {
+        for (File file : folder.listFiles()) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+                try {
+                    AudioFile audioFile = AudioFileIO.read(file);
+                    Tag tag = audioFile.getTag();
+                    if (tag != null) {
+                        String foundAlbum = tag.getFirst(FieldKey.ALBUM);
+                        if (!foundAlbum.isEmpty()) {
+                            foundAnyAlbum = true;
+                            if (album == null) {
+                                album = foundAlbum;
+                            } else if (!album.equals(foundAlbum)) {
+                                return false;
+                            }
+                        } else if (foundAnyAlbum) {
                             return false;
                         }
                     } else if (foundAnyAlbum) {
                         return false;
                     }
-                } else if (foundAnyAlbum) {
+                } catch (Exception e) {
+                    logger.error("Error checking folder if album: " + e);
                     return false;
                 }
-            } catch (Exception e) {
-                logger.error("Error checking folder if album: " + e);
-                return false;
             }
         }
+
         return foundAnyAlbum;
     }
 
@@ -287,16 +292,24 @@ public class Upload {
         Album album = null;
         String albumName = null;
         String artistName = null;
-        File albumSong = folder.listFiles()[0];
-        try {
-            AudioFile audioFile = AudioFileIO.read(albumSong);
-            Tag tag = audioFile.getTag();
-            if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-                albumName = tag.getFirst(FieldKey.ALBUM);
-                artistName = tag.getFirst(FieldKey.ALBUM);
+        File albumSongFile = null;
+        for (File file : folder.listFiles()) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+                albumSongFile = file;
+                break;
             }
-        } catch (Exception e) {
-            logger.error("Error parsing album: " + e);
+        }
+        if (albumSongFile != null) {
+            try {
+                AudioFile audioFile = AudioFileIO.read(albumSongFile);
+                Tag tag = audioFile.getTag();
+                if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
+                    albumName = tag.getFirst(FieldKey.ALBUM);
+                    artistName = tag.getFirst(FieldKey.ALBUM);
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing album: " + e);
+            }
         }
         if (settings.isUseLibrary()) {
             if (albumName != null) {
