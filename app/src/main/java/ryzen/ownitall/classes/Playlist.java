@@ -3,6 +3,7 @@ package ryzen.ownitall.classes;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
@@ -233,6 +234,18 @@ public class Playlist {
      */
     public void setSpotifyPageOffset(int spotifyPageOffset) {
         this.spotifyPageOffset = spotifyPageOffset;
+    }
+
+    public String getFolderName() {
+        return MusicTools.sanitizeFileName(this.name);
+    }
+
+    public Duration getTotalDuration() {
+        Duration totalDuration = Duration.ZERO;
+        for (Song song : this.songs) {
+            totalDuration = totalDuration.plus(song.getDuration());
+        }
+        return totalDuration;
     }
 
     @Override

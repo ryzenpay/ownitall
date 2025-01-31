@@ -1,10 +1,8 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -17,23 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.images.Artwork;
-import org.jaudiotagger.tag.images.ArtworkFactory;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -132,7 +118,6 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) {
-        String songFileName = MusicTools.sanitizeFileName(song.getName());
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -169,7 +154,7 @@ public class Download {
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(songFileName + ".%(ext)s");
+        command.add(song.getFileName() + ".%(ext)s");
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags
@@ -188,7 +173,7 @@ public class Download {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
-            File songFile = new File(path, songFileName + "." + settings.getDownloadFormat());
+            File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
                 Process process = processBuilder.start();
@@ -222,7 +207,8 @@ public class Download {
                 retries++;
             }
             if (songFile.exists()) {
-                this.writeMetaData(song, songFile);
+                MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
+                        collection.isLiked(song), songFile);
             } else {
                 this.failedSongs.put(song, completeLog.toString());
             }
@@ -280,14 +266,13 @@ public class Download {
      */
     public void downloadPlaylist(Playlist playlist) {
         File playlistFolder = new File(this.downloadPath);
-        String playlistFolderName = MusicTools.sanitizeFileName(playlist.getName());
         if (settings.isDownloadHierachy()) {
-            playlistFolder = new File(this.downloadPath, playlistFolderName);
+            playlistFolder = new File(this.downloadPath, playlist.getFolderName());
             playlistFolder.mkdirs();
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
-            MusicTools.writeM3U(playlistFolderName, playlist.getM3U(), playlistFolder);
+            MusicTools.writeM3U(playlist.getFolderName(), playlist.getM3U(), playlistFolder);
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u: " + e);
         }
@@ -319,11 +304,10 @@ public class Download {
 
     public void downloadAlbum(Album album) {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
-        String albumFolderName = MusicTools.sanitizeFileName(album.getName());
-        File albumFolder = new File(this.downloadPath, albumFolderName);
+        File albumFolder = new File(this.downloadPath, album.getFolderName());
         albumFolder.mkdirs();
         try {
-            MusicTools.writeM3U(albumFolderName, album.getM3U(), albumFolder);
+            MusicTools.writeM3U(album.getFolderName(), album.getM3U(), albumFolder);
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
         }
@@ -358,34 +342,6 @@ public class Download {
                     }
                 }
             }
-        }
-    }
-
-    public void writeMetaData(Song song, File songFile) {
-        if (!songFile.exists()) {
-            return;
-        }
-        try {
-            AudioFile audioFile = AudioFileIO.read(songFile);
-            Tag tag = audioFile.getTag();
-            tag.setField(FieldKey.TITLE, song.getName());
-            Artist artist = song.getArtist();
-            if (artist != null) {
-                tag.setField(FieldKey.ARTIST, artist.toString());
-            }
-            URI coverImage = song.getCoverImage();
-            if (coverImage != null) {
-                Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(song.getCoverImage().toString());
-                tag.setField(artwork);
-            }
-            if (collection.isLiked(song)) {
-                tag.setField(FieldKey.RATING, "255");
-            }
-            audioFile.commit();
-        } catch (InvalidAudioFrameException | TagException e) {
-            logger.error("File " + songFile.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-        } catch (IOException | CannotReadException | CannotWriteException | ReadOnlyFileException e) {
-            logger.error("Error processing file: " + songFile.getAbsolutePath() + " error: " + e);
         }
     }
 

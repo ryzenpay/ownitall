@@ -112,6 +112,7 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
 
     /**
      * option to hardcode browser to get cookies from
+     * options: chrome, firefox, check yt-dlp docs,...
      */
     protected String downloadCookiesBrowser = "";
 

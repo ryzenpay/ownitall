@@ -291,7 +291,7 @@ public class Collection {
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
                                             + " - "
-                                            + MusicTools.musicTime(MusicTools.totalDuration(playlist.getSongs())));
+                                            + MusicTools.musicTime(playlist.getTotalDuration()));
                     i++;
                 }
                 i = 1;
@@ -299,7 +299,7 @@ public class Collection {
                 for (Album album : this.albums) {
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(MusicTools.totalDuration(album.getSongs())));
+                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
                     if (album.getArtists() != null) {
                         System.out.println("    - Artist: " + album.getArtists().toString());
                     }
@@ -325,8 +325,7 @@ public class Collection {
                             .println(
                                     i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
                                             + playlist.size()
-                                            + " - " + MusicTools.musicTime(
-                                                    MusicTools.totalDuration(playlist.getSongs())));
+                                            + " - " + MusicTools.musicTime(playlist.getTotalDuration()));
                     i++;
                     for (Song song : playlist.getSongs()) {
                         if (this.isLiked(song)) {
@@ -348,7 +347,7 @@ public class Collection {
                     y = 1;
                     System.out
                             .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(MusicTools.totalDuration(album.getSongs())));
+                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
                     i++;
                     for (Song song : album.getSongs()) {
                         if (this.isLiked(song)) {

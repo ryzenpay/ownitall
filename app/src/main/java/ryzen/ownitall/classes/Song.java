@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Levenshtein;
+import ryzen.ownitall.util.MusicTools;
 
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
@@ -154,6 +155,10 @@ public class Song {
             this.coverImage = song.getCoverImage();
         }
         this.addLinks(song.getLinks());
+    }
+
+    public String getFileName() {
+        return MusicTools.sanitizeFileName(this.name);
     }
 
     @Override

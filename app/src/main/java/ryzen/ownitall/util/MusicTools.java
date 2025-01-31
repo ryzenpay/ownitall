@@ -8,9 +8,13 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
-import java.util.LinkedHashSet;
 
-import ryzen.ownitall.classes.Song;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.images.ArtworkFactory;
 
 public class MusicTools {
     /**
@@ -29,14 +33,6 @@ public class MusicTools {
         } else {
             return String.format("%02d:%02d", minutes, seconds);
         }
-    }
-
-    public static Duration totalDuration(LinkedHashSet<Song> songs) {
-        Duration totalDuration = Duration.ZERO;
-        for (Song song : songs) {
-            totalDuration = totalDuration.plus(song.getDuration());
-        }
-        return totalDuration;
     }
 
     /**
@@ -59,6 +55,29 @@ public class MusicTools {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(M3UFile))) {
             writer.write(M3UData);
         }
+    }
+
+    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
+            File songFile)
+            throws Exception {
+        if (!songFile.exists()) {
+            return;
+        }
+        AudioFile audioFile = AudioFileIO.read(songFile);
+        Tag tag = audioFile.getTag();
+        tag.setField(FieldKey.TITLE, songName);
+        if (artistName != null) {
+            tag.setField(FieldKey.ARTIST, artistName);
+        }
+        if (coverImage != null) {
+            Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(coverImage.toString());
+            tag.setField(artwork);
+        }
+        if (liked) {
+            tag.setField(FieldKey.RATING, "255"); // TODO: musicbee "love" rating (ID3.2?)
+        }
+        AudioFileIO.write(audioFile);
+
     }
 
     public static void downloadImage(URI url, File folder) throws Exception {
