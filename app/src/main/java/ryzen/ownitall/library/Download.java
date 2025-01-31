@@ -234,7 +234,7 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
-            // this.threadDownload(song, likedSongsFolder);
+            this.threadDownload(song, likedSongsFolder);
             writeSongMetaData(song, likedSongsFolder);
         }
         this.threadShutdown();
@@ -283,7 +283,7 @@ public class Download {
         }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            // this.threadDownload(song, playlistFolder);
+            this.threadDownload(song, playlistFolder);
             writeSongMetaData(song, playlistFolder);
         }
         this.threadShutdown();
@@ -319,7 +319,7 @@ public class Download {
         }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            // this.threadDownload(song, albumFolder);
+            this.threadDownload(song, albumFolder);
             writeSongMetaData(song, albumFolder);
         }
         this.threadShutdown();

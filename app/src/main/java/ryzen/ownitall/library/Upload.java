@@ -103,7 +103,7 @@ public class Upload {
      * 
      * @return - constructed LikedSongs
      */
-    public void getLikedSongs() {
+    public void getLikedSongs() { // TODO: testing, re-import tagged songs as liked
         for (File file : this.localLibrary.listFiles()) {
             if (file.isFile()) {
                 Song song = getSong(file);
