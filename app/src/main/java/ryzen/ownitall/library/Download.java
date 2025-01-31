@@ -206,10 +206,7 @@ public class Download {
                 }
                 retries++;
             }
-            if (songFile.exists()) {
-                MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                        collection.isLiked(song), songFile);
-            } else {
+            if (!songFile.exists()) {
                 this.failedSongs.put(song, completeLog.toString());
             }
         } catch (Exception e) {
@@ -237,7 +234,8 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, likedSongsFolder);
+            // this.threadDownload(song, likedSongsFolder);
+            writeSongMetaData(song, likedSongsFolder);
         }
         this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
@@ -285,7 +283,8 @@ public class Download {
         }
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, playlistFolder);
+            // this.threadDownload(song, playlistFolder);
+            writeSongMetaData(song, playlistFolder);
         }
         this.threadShutdown();
         this.cleanFolder(playlistFolder);
@@ -320,11 +319,23 @@ public class Download {
         }
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, albumFolder);
+            // this.threadDownload(song, albumFolder);
+            writeSongMetaData(song, albumFolder);
         }
         this.threadShutdown();
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
+    }
+
+    public static void writeSongMetaData(Song song, File folder) {
+        File songFile = new File(folder, song.getFileName());
+        try {
+            MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
+                    collection.isLiked(song), songFile);
+
+        } catch (Exception e) {
+            logger.error("Error song metadata for " + song.toString() + ": " + e);
+        }
     }
 
     public void cleanFolder(File folder) {
@@ -336,7 +347,7 @@ public class Download {
                 String extension = MusicTools.getExtension(file);
                 if (!extension.equals(settings.getDownloadFormat()) && !extension.equals("m3u")) {
                     if (file.delete()) {
-                        logger.info("Cleaned up file: " + file.getAbsolutePath());
+                        logger.debug("Cleaned up file: " + file.getAbsolutePath());
                     } else {
                         logger.error("Failed to clean up file: " + file.getAbsolutePath());
                     }

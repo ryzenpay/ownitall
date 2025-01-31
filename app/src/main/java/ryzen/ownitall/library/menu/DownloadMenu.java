@@ -25,7 +25,6 @@ public class DownloadMenu {
         options.put("Download Playlist", this::optionDownloadPlaylist);
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
-        // TODO: option to just write folders + m3u + metadata
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
             if (choice.equals("Exit")) {

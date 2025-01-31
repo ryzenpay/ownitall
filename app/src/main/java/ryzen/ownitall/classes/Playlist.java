@@ -236,10 +236,12 @@ public class Playlist {
         this.spotifyPageOffset = spotifyPageOffset;
     }
 
+    @JsonIgnore
     public String getFolderName() {
         return MusicTools.sanitizeFileName(this.name);
     }
 
+    @JsonIgnore
     public Duration getTotalDuration() {
         Duration totalDuration = Duration.ZERO;
         for (Song song : this.songs) {

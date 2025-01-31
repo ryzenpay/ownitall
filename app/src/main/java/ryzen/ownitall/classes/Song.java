@@ -157,6 +157,7 @@ public class Song {
         this.addLinks(song.getLinks());
     }
 
+    @JsonIgnore
     public String getFileName() {
         return MusicTools.sanitizeFileName(this.name);
     }
