@@ -328,11 +328,10 @@ public class Download {
     }
 
     public static void writeSongMetaData(Song song, File folder) {
-        File songFile = new File(folder, song.getFileName());
+        File songFile = new File(folder, song.getFileName() + "." + settings.getDownloadFormat());
         try {
             MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
                     collection.isLiked(song), songFile);
-
         } catch (Exception e) {
             logger.error("Error song metadata for " + song.toString() + ": " + e);
         }

@@ -12,19 +12,16 @@ import java.time.Duration;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagOptionSingleton;
 import org.jaudiotagger.tag.id3.ID3v23Frame;
 import org.jaudiotagger.tag.id3.ID3v23Tag;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyPOPM;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX;
 import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 public class MusicTools {
-    static {
-        TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V23); // the mp3 metadata default tag format
-    }
 
     /**
      * convert duration into music time (mm:ss)
@@ -67,13 +64,17 @@ public class MusicTools {
     }
 
     public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
-            File songFile)
-            throws Exception {
+            File songFile) throws Exception {
         if (!songFile.exists()) {
             return;
         }
+
+        // Set ID3v2.3 as default
+        TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V23);
+
         AudioFile audioFile = AudioFileIO.read(songFile);
-        Tag tag = audioFile.getTagAndConvertOrCreateAndSetDefault();
+        ID3v23Tag tag = (ID3v23Tag) audioFile.getTagAndConvertOrCreateAndSetDefault();
+
         tag.setField(FieldKey.TITLE, songName);
         if (artistName != null) {
             tag.setField(FieldKey.ARTIST, artistName);
@@ -82,29 +83,28 @@ public class MusicTools {
             Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(coverImage.toString());
             tag.setField(artwork);
         }
+
         if (liked) {
-            // Set standard rating
-            tag.setField(FieldKey.RATING, "255");
+            // Set rating using POPM frame
+            ID3v23Frame popmFrame = new ID3v23Frame("POPM");
+            FrameBodyPOPM popmBody = new FrameBodyPOPM();
+            popmBody.setRating(255);
+            popmFrame.setBody(popmBody);
+            tag.setFrame(popmFrame);
 
-            ID3v23Frame frame = new ID3v23Frame("TXXX");
             // Set custom "Love Rating" for MusicBee
-            FrameBodyTXXX musicBeeField = new FrameBodyTXXX();
-            musicBeeField.setDescription("Love Rating");
-            musicBeeField.setText("L");
-
-            frame.setBody(musicBeeField);
-
-            ((ID3v23Tag) tag).setFrame(frame);
-
-            // set custom "Liked" to 1
-            FrameBodyTXXX lovedField = new FrameBodyTXXX();
-            lovedField.setDescription("LIKED");
-            lovedField.setText("1");
-
-            frame.setBody(lovedField);
-
-            ((ID3v23Tag) tag).setFrame(frame);
+            ID3v23Frame txxxFrame = new ID3v23Frame("TXXX");
+            FrameBodyTXXX txxxBody = new FrameBodyTXXX();
+            txxxBody.setDescription("Love Rating");
+            txxxBody.setText("L");
+            txxxFrame.setBody(txxxBody);
+            tag.setFrame(txxxFrame);
+        } else {
+            // Remove rating if not liked
+            tag.removeFrame("POPM");
+            tag.removeFrame("TXXX");
         }
+        audioFile.setTag(tag);
         AudioFileIO.write(audioFile);
     }
 
