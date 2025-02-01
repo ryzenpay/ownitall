@@ -109,6 +109,9 @@ public class MusicTools {
     }
 
     public static void downloadImage(URI url, File folder) throws Exception {
+        if (url == null) {
+            return;
+        }
         if (!folder.exists()) {
             return;
         }

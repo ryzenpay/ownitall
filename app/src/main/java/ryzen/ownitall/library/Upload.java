@@ -38,7 +38,6 @@ public class Upload {
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
     private File localLibrary;
-    private ArrayList<File> localLibraryFolders;
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
     }
@@ -50,7 +49,6 @@ public class Upload {
         if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
             this.setLocalLibrary();
         }
-        this.localLibraryFolders = this.getLibraryFolders();
     }
 
     private void setLocalLibrary() {
@@ -103,7 +101,7 @@ public class Upload {
      * 
      * @return - constructed LikedSongs
      */
-    public void getLikedSongs() { // TODO: testing, re-import tagged songs as liked
+    public void getLikedSongs() { // TODO: support metadata
         for (File file : this.localLibrary.listFiles()) {
             if (file.isFile()) {
                 Song song = getSong(file);
@@ -112,14 +110,17 @@ public class Upload {
                 }
             }
             if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
-                collection.addLikedSongs(getSongs(file));
+                LinkedHashSet<Song> songs = getSongs(file);
+                if (songs != null && !songs.isEmpty()) {
+                    collection.addLikedSongs(getSongs(file));
+                }
             }
         }
     }
 
     public void processFolders() {
-        for (File file : this.localLibraryFolders) {
-            if (file.isDirectory()) {
+        for (File file : this.getLibraryFolders()) {
+            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (album != null && !album.isEmpty()) {
@@ -128,7 +129,7 @@ public class Upload {
                 } else {
                     Playlist playlist = getPlaylist(file);
                     if (playlist != null && !playlist.isEmpty()) {
-                        if (playlist.size() <= 1) { // filter out singles
+                        if (playlist.size() == 1) { // filter out singles
                             collection.addLikedSongs(playlist.getSongs());
                         } else {
                             collection.addPlaylist(playlist);
@@ -142,7 +143,7 @@ public class Upload {
     public static Playlist getPlaylist(File folder) {
         Playlist playlist = new Playlist(folder.getName());
         LinkedHashSet<Song> songs = getSongs(folder);
-        if (songs.size() == 0) {
+        if (songs == null || songs.isEmpty()) {
             return null;
         }
         playlist.addSongs(songs);
@@ -161,7 +162,7 @@ public class Upload {
             return null;
         }
         LinkedHashSet<Song> songs = getSongs(folder);
-        if (songs.size() == 0) {
+        if (songs == null || songs.isEmpty()) {
             return null;
         }
         File coverFile = new File(folder, "cover.png");
@@ -183,35 +184,45 @@ public class Upload {
             return null;
         }
         Song song = null;
-        String songName = file.getName().substring(0, file.getName().length() - 4);
+        String songName = file.getName().substring(0, file.getName().lastIndexOf('.'));
         String artistName = null;
+        String coverImage = null;
         long duration = 0L;
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             AudioHeader audioHeader = audioFile.getAudioHeader();
             Tag tag = audioFile.getTag();
-            if (tag != null && !tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                songName = tag.getFirst(FieldKey.TITLE);
-                artistName = tag.getFirst(FieldKey.ARTIST);
+            if (tag != null) {
+                if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
+                    songName = tag.getFirst(FieldKey.TITLE);
+                }
+                if (!tag.getFirst(FieldKey.ARTIST).isEmpty()) {
+                    artistName = tag.getFirst(FieldKey.ARTIST);
+                }
+                if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
+                    coverImage = tag.getFirst(FieldKey.COVER_ART);
+                }
             }
             duration = audioHeader.getTrackLength();
-        } catch (InvalidAudioFrameException | TagException e) {
-            logger.error("File " + file.getAbsolutePath() + " is not an audio file or has incorrect metadata");
-        } catch (IOException | CannotReadException | ReadOnlyFileException e) {
-            logger.error("Error processing file: " + file.getAbsolutePath() + " error: " + e);
+        } catch (Exception e) {
+            logger.error("Error parsing metadata for file: " + file.getAbsolutePath() + " : ");
         }
         if (settings.isUseLibrary()) {
             song = library.searchSong(songName, artistName);
         }
         if (song == null && !settings.isLibraryVerified()) {
             song = new Song(songName);
-            song.setArtist(new Artist(artistName));
+            if (artistName != null) {
+                song.setArtist(new Artist(artistName));
+            }
+            if (coverImage != null) {
+                song.setCoverImage(coverImage);
+            }
         }
         if (song != null) {
             song.setDuration(duration, ChronoUnit.SECONDS);
-            return song;
         }
-        return null;
+        return song;
     }
 
     /**
@@ -221,10 +232,10 @@ public class Upload {
      * @return - linkedhashset of constructed songs
      */
     public static LinkedHashSet<Song> getSongs(File folder) {
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        if (folder.isFile() || !folder.exists()) {
-            return songs;
+        if (!folder.isDirectory() || !folder.exists()) {
+            return null;
         }
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
                 Song song = getSong(file);
@@ -324,9 +335,7 @@ public class Upload {
             } else {
                 album = new Album(folder.getName());
             }
-            if (artistName != null) {
-                album.addArtist(new Artist(artistName));
-            }
+            album.addArtist(artistName);
         }
         return album;
     }

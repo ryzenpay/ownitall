@@ -117,9 +117,7 @@ public class Library {
             return null;
         }
         Album tmpAlbum = new Album(albumName);
-        if (artistName != null) {
-            tmpAlbum.addArtist(new Artist(artistName));
-        }
+        tmpAlbum.addArtist(artistName);
         if (this.albums.contains(tmpAlbum)) {
             return this.getAlbum(tmpAlbum);
         }
@@ -134,19 +132,10 @@ public class Library {
             JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
             if (albumNode != null) {
                 Album album = new Album(albumNode.path("name").asText());
-                String artist = albumNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    album.addArtist(new Artist(artist));
-                }
-                String albumCover = albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
-                        .asText();
-                if (albumCover != null && !albumCover.isEmpty()) {
-                    album.setCoverImage(albumCover);
-                }
-                String link = albumNode.path("url").asText();
-                if (link != null && !link.isEmpty()) {
-                    album.addLink("lastfm", link);
-                }
+                album.addArtist(albumNode.path("artist").asText());
+                album.setCoverImage(albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
+                        .asText());
+                album.addLink("lastfm", albumNode.path("url").asText());
                 this.albums.add(album);
                 return album;
             }
@@ -183,9 +172,7 @@ public class Library {
             return null;
         }
         Song tmpSong = new Song(songName);
-        if (artistName != null) {
-            tmpSong.setArtist(new Artist(artistName));
-        }
+        tmpSong.setArtist(artistName);
         if (this.songs.contains(tmpSong)) {
             return this.getSong(tmpSong);
         }
@@ -200,20 +187,10 @@ public class Library {
             JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
             if (trackNode != null) {
                 Song song = new Song(trackNode.path("name").asText());
-                String artist = trackNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    song.setArtist(new Artist(artist));
-                }
-                String songCover = trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
-                        .asText();
-                if (songCover != null && !songCover.isEmpty()) {
-                    song.setCoverImage(songCover);
-                }
-                String link = trackNode.path("url").asText();
-                if (link != null && !link.isEmpty()) {
-                    song.addLink("lastfm", link);
-                    // song.addLinks(this.getExternalLinks(link));
-                }
+                song.setArtist(trackNode.path("artist").asText());
+                song.setCoverImage(trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
+                        .asText());
+                song.addLink("lastfm", trackNode.path("url").asText());
                 this.songs.add(song);
                 return song;
             }
@@ -327,7 +304,7 @@ public class Library {
         }
     }
 
-    // TODO: this does not work
+    // TODO: this does not work (external links)
     // does the page need to load?
     // also greatly impacts performance
     public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {

@@ -20,7 +20,7 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
      */
     @JsonIgnore
     public boolean contains(Song song) {
-        if (this.size() == 0) {
+        if (song == null || song.isEmpty()) {
             return false;
         }
         return this.getSongs().contains(song);

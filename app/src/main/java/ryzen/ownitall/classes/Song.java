@@ -43,22 +43,11 @@ public class Song {
             @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        if (artist != null && !artist.isEmpty()) {
-            this.artist = artist;
-        } else {
-            this.artist = null;
-        }
-        if (links != null && !links.isEmpty()) {
-            this.links = links;
-        } else {
-            this.links = new LinkedHashMap<>();
-        }
-        if (duration != null) {
-            this.duration = duration;
-        }
-        if (coverImage != null) {
-            this.setCoverImage(coverImage);
-        }
+        this.setArtist(artist);
+        this.links = new LinkedHashMap<>();
+        this.addLinks(links);
+        this.setDuration(duration);
+        this.setCoverImage(coverImage);
     }
 
     /**
@@ -70,19 +59,19 @@ public class Song {
         return this.name;
     }
 
-    /**
-     * set song name
-     * 
-     * @param name - string song name
-     */
-    public void setName(String name) {
-        this.name = name;
+    public void setArtist(Artist artist) {
+        if (artist == null || artist.isEmpty()) {
+            return;
+        }
+        this.artist = artist;
+
     }
 
-    public void setArtist(Artist artist) {
-        if (artist != null && !artist.isEmpty()) {
-            this.artist = artist;
+    public void setArtist(String artistName) {
+        if (artistName == null || artistName.isEmpty()) {
+            return;
         }
+        this.artist = new Artist(artistName);
     }
 
     public Artist getArtist() {
@@ -94,11 +83,17 @@ public class Song {
     }
 
     public void addLinks(LinkedHashMap<String, String> links) {
+        if (links == null || links.isEmpty()) {
+            return;
+        }
         this.links.putAll(links);
     }
 
     @JsonIgnore
     public String getLink(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
         return this.links.get(key);
     }
 
@@ -125,11 +120,21 @@ public class Song {
      * @param unit     - ChronoUnit of measurement for duration
      */
     public void setDuration(long duration, ChronoUnit unit) {
+        if (unit == null) {
+            return;
+        }
         this.duration = Duration.of(duration, unit);
     }
 
+    public void setDuration(Duration duration) {
+        if (duration == null || duration.isZero()) {
+            return;
+        }
+        this.duration = duration;
+    }
+
     public void setCoverImage(String coverImage) {
-        if (coverImage == null) {
+        if (coverImage == null || coverImage.isEmpty()) {
             return;
         }
         try {

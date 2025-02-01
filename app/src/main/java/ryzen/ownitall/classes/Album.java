@@ -46,16 +46,10 @@ public class Album extends Playlist {
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
-        if (artists != null && !artists.isEmpty()) {
-            this.artists = new LinkedHashSet<>(artists);
-        } else {
-            this.artists = new LinkedHashSet<>();
-        }
-        if (links != null && !links.isEmpty()) {
-            this.links = new LinkedHashMap<>(links);
-        } else {
-            this.links = new LinkedHashMap<>();
-        }
+        this.artists = new LinkedHashSet<>();
+        this.addArtists(artists);
+        this.links = new LinkedHashMap<>();
+        this.addLinks(links);
     }
 
     public void merge(Album album) {
@@ -79,6 +73,9 @@ public class Album extends Playlist {
 
     @Override
     public void addSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return;
+        }
         super.addSong(song);
         if (!this.artists.contains(song.getArtist())) {
             this.artists.add(song.getArtist());
@@ -99,6 +96,13 @@ public class Album extends Playlist {
         this.artists.add(artist);
     }
 
+    public void addArtist(String artistName) {
+        if (artistName == null || artistName.isEmpty()) {
+            return;
+        }
+        this.artists.add(new Artist(artistName));
+    }
+
     public LinkedHashSet<Artist> getArtists() {
         return this.artists;
     }
@@ -113,15 +117,27 @@ public class Album extends Playlist {
     }
 
     public void addLink(String key, String url) {
+        if (key == null || url == null) {
+            return;
+        }
+        if (key.isEmpty() || url.isEmpty()) {
+            return;
+        }
         this.links.put(key, url);
     }
 
     public void addLinks(LinkedHashMap<String, String> links) {
+        if (links == null || links.isEmpty()) {
+            return;
+        }
         this.links.putAll(links);
     }
 
     @JsonIgnore
     public String getLink(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
         return this.links.get(key);
     }
 

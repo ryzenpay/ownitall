@@ -48,18 +48,11 @@ public class Playlist {
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
         this.name = name;
-        if (songs != null && !songs.isEmpty()) {
-            this.songs = new LinkedHashSet<>(songs);
-        } else {
-            this.songs = new LinkedHashSet<>();
-        }
-        if (youtubePageToken != null) {
-            this.youtubePageToken = youtubePageToken;
-        }
-        this.spotifyPageOffset = spotifyPageOffset;
-        if (coverArt != null) {
-            this.setCoverImage(coverArt);
-        }
+        this.songs = new LinkedHashSet<>();
+        this.addSongs(songs);
+        this.setYoutubePageToken(youtubePageToken);
+        this.setSpotifyPageOffset(spotifyPageOffset);
+        this.setCoverImage(coverArt);
     }
 
     public void merge(Playlist playlist) {
@@ -112,7 +105,7 @@ public class Playlist {
      * @param coverImage - String of coverart URL
      */
     public void setCoverImage(String coverImage) {
-        if (coverImage == null) {
+        if (coverImage == null || coverImage.isEmpty()) {
             return;
         }
         try {
@@ -144,6 +137,9 @@ public class Playlist {
      * @param songs - arraylist of constructed Song
      */
     public void addSongs(LinkedHashSet<Song> songs) {
+        if (songs == null || songs.isEmpty()) {
+            return;
+        }
         for (Song song : songs) {
             this.addSong(song);
         }
@@ -155,6 +151,9 @@ public class Playlist {
      * @param song - constructed Song
      */
     public void addSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return;
+        }
         if (this.songs.contains(song)) {
             this.getSong(song).merge(song);
         } else {
@@ -163,13 +162,16 @@ public class Playlist {
     }
 
     public void removeSong(Song song) {
-        if (song.isEmpty()) {
+        if (song == null || song.isEmpty()) {
             return;
         }
         this.songs.remove(song);
     }
 
     public Song getSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return null;
+        }
         for (Song thisSong : this.songs) {
             if (thisSong.equals(song)) {
                 return thisSong;
@@ -214,8 +216,11 @@ public class Playlist {
      * 
      * @param youtubePageToken - String youtube page token
      */
-    public void setYoutubePageToken(String youtubePageToken) {
-        this.youtubePageToken = youtubePageToken;
+    public void setYoutubePageToken(String token) {
+        if (token == null || token.isEmpty()) {
+            return;
+        }
+        this.youtubePageToken = token;
     }
 
     /**
@@ -232,8 +237,12 @@ public class Playlist {
      * 
      * @param spotifyPageOffset - int spotify offset
      */
-    public void setSpotifyPageOffset(int spotifyPageOffset) {
-        this.spotifyPageOffset = spotifyPageOffset;
+    public void setSpotifyPageOffset(int offset) {
+        if (offset < 0) {
+            logger.debug("Provided spotify offset is below 0");
+            return;
+        }
+        this.spotifyPageOffset = offset;
     }
 
     @JsonIgnore

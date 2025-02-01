@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -32,7 +31,7 @@ public class Download {
     private static final Collection collection = Collection.load();
     private ExecutorService executor;
     private String downloadPath;
-    private LinkedHashMap<Song, String> failedSongs;
+    private LinkedHashSet<Song> failedSongs;
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
@@ -42,7 +41,7 @@ public class Download {
      * setting all settings / credentials
      */
     public Download() {
-        this.failedSongs = new LinkedHashMap<>();
+        this.failedSongs = new LinkedHashSet<>();
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
         }
@@ -207,7 +206,7 @@ public class Download {
                 retries++;
             }
             if (!songFile.exists()) {
-                this.failedSongs.put(song, completeLog.toString());
+                this.failedSongs.add(song);
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
@@ -311,9 +310,7 @@ public class Download {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
         }
         try {
-            if (album.getCoverImage() != null) {
-                MusicTools.downloadImage(album.getCoverImage(), albumFolder);
-            }
+            MusicTools.downloadImage(album.getCoverImage(), albumFolder);
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
         }
@@ -358,10 +355,7 @@ public class Download {
     public void getFailedSongsReport() {
         if (!failedSongs.isEmpty()) {
             logger.error("Failed songs: ");
-            for (Song song : this.failedSongs.keySet()) {
-                logger.error("- " + song.toString() + ": ");
-                logger.error(this.failedSongs.get(song).toString());
-            }
+            logger.error(this.failedSongs.toString());
             this.failedSongs.clear();
         }
     }
