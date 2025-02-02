@@ -76,3 +76,7 @@ a jar file named `ownitall.jar` will be made and can be ran with the following: 
 
 ## JRE Requirements
 current java version is 9, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
+
+## Useful commands for debugging  
+start in info mode: `java -jar .\ownitall.jar -Dlog4j.configurationFile=app\src\main\resources\log_info.xml`  
+start in debug mode: `java -jar .\ownitall.jar -Dlog4j.configurationFile=app\src\main\resources\debug_info.xml`

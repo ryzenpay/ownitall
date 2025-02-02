@@ -28,6 +28,7 @@ public class Artist {
     }
 
     @Override
+    @JsonIgnore
     public String toString() {
         return this.name;
     }

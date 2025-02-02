@@ -198,6 +198,9 @@ public class Sync {
      * @param albums - linkedhashset of constructed Album
      */
     public void exportAlbums(LinkedHashSet<Album> albums) {
+        if (albums == null || albums.isEmpty()) {
+            return;
+        }
         this.setDataFolder();
         File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
         try {
@@ -216,10 +219,10 @@ public class Sync {
     public LinkedHashSet<Album> importAlbums() {
         this.setDataFolder();
         File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         if (!albumFile.exists()) {
-            return albums;
+            return null;
         }
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         try {
             albums = this.objectMapper.readValue(albumFile,
                     new TypeReference<LinkedHashSet<Album>>() {
@@ -238,6 +241,9 @@ public class Sync {
      * @param playlists - linkedhashset of constructed Playlist
      */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
+        if (playlists == null || playlists.isEmpty()) {
+            return;
+        }
         this.setDataFolder();
         File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
         try {
@@ -256,10 +262,10 @@ public class Sync {
     public LinkedHashSet<Playlist> importPlaylists() {
         this.setDataFolder();
         File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         if (!playlistFile.exists()) {
-            return playlists;
+            return null;
         }
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         try {
             playlists = this.objectMapper.readValue(playlistFile,
                     new TypeReference<LinkedHashSet<Playlist>>() {
@@ -279,6 +285,9 @@ public class Sync {
      * @param likedSongs - constructed LikedSongs
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
+        if (likedSongs == null || likedSongs.isEmpty()) {
+            return;
+        }
         this.setDataFolder();
         File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
         try {
@@ -297,10 +306,10 @@ public class Sync {
     public LikedSongs importLikedSongs() {
         this.setDataFolder();
         File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
-        LikedSongs likedSongs = new LikedSongs();
         if (!likedSongFile.exists()) {
-            return likedSongs;
+            return null;
         }
+        LikedSongs likedSongs = new LikedSongs();
         try {
             likedSongs = this.objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
