@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class Main {

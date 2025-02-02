@@ -187,7 +187,6 @@ public class Song {
 
     @Override
     @JsonIgnore
-    // TODO: beef these up, still conflict when exporting and then re-importing
     public boolean equals(Object object) {
         if (this == object)
             return true;

@@ -1,6 +1,5 @@
 package ryzen.ownitall;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,8 +11,6 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class Collection {

@@ -199,7 +199,6 @@ public class Download {
                     } else if (exitCode == 101) {
                         logger.debug("Download cancelled due to boundary criteria: " + searchQuery);
                         break;
-                        // TODO: search library again?
                     } else {
                         logger.error("Unkown error while downloading song: " + song + "with code: " + exitCode);
                         logger.error(command.toString());

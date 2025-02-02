@@ -96,7 +96,7 @@ public class Upload {
      * 
      * @return - constructed LikedSongs
      */
-    public void getLikedSongs() { // TODO: support metadata
+    public void getLikedSongs() {
         for (File file : this.localLibrary.listFiles()) {
             if (file.isFile()) {
                 Song song = getSong(file);
