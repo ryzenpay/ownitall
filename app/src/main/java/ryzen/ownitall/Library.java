@@ -121,26 +121,50 @@ public class Library {
         if (this.albums.contains(tmpAlbum)) {
             return this.getAlbum(tmpAlbum);
         }
+
         Map<String, String> params;
-        if (artistName != null) {
-            params = Map.of("album", albumName, "artist", artistName, "limit", "1");
-        } else {
+        JsonNode response;
+
+        if (artistName == null) {
+            // First, search for the album to get the artist name
             params = Map.of("album", albumName, "limit", "1");
+            response = query("album.search", params);
+
+            if (response != null && response.path("results").path("albummatches").path("album").size() > 0) {
+                JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
+                albumName = albumNode.path("name").asText();
+                artistName = albumNode.path("artist").asText();
+            } else {
+                logger.debug("Could not find album '" + albumName + "' in Library");
+                return null;
+            }
         }
-        JsonNode response = query("album.search", params);
+
+        // Now, use album.getInfo to get detailed information
+        params = Map.of("album", albumName, "artist", artistName);
+        response = query("album.getInfo", params);
+
         if (response != null) {
-            JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
-            if (albumNode != null) {
+            JsonNode albumNode = response.path("album");
+            if (albumNode != null && !albumNode.isMissingNode()) {
                 Album album = new Album(albumNode.path("name").asText());
                 album.addArtist(albumNode.path("artist").asText());
-                album.setCoverImage(albumNode.path("image").get(albumNode.path("image").size() - 1).path("#text")
-                        .asText());
+
+                // Set cover image
+                JsonNode imageNode = albumNode.path("image");
+                if (imageNode.isArray() && imageNode.size() > 0) {
+                    album.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
+                }
+
+                // Set additional information
                 album.addLink("lastfm", albumNode.path("url").asText());
+
                 this.albums.add(album);
                 return album;
             }
         }
-        logger.debug("Could not find Album: '" + albumName + "' in Library");
+
+        logger.debug("Could not find detailed information for album '" + albumName + "' by '" + artistName + "'");
         return null;
     }
 
@@ -181,7 +205,6 @@ public class Library {
         JsonNode response;
 
         if (artistName == null) {
-            // First, search for the track to get the artist name
             params = Map.of("track", songName, "limit", "1");
             response = query("track.search", params);
 
@@ -195,7 +218,6 @@ public class Library {
             }
         }
 
-        // Now, use track.getInfo to get detailed information
         params = Map.of("track", songName, "artist", artistName);
         response = query("track.getInfo", params);
 
@@ -257,7 +279,7 @@ public class Library {
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
-            logger.debug(response.toString());
+            // logger.debug(response.toString());
 
             // error handling
             JsonNode rootNode = objectMapper.readTree(response.toString());

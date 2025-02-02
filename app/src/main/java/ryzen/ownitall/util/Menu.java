@@ -11,7 +11,9 @@ public class Menu { // TODO: shutdownhook handling
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
     public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
         System.out.flush();
     }
 
@@ -26,11 +28,11 @@ public class Menu { // TODO: shutdownhook handling
      * 
      */
     public static String optionMenu(Set<String> setOptions, String menuName) {
-        clearScreen();
         ArrayList<String> options = new ArrayList<>(setOptions);
         int i = 1;
         int choice;
         while (true) {
+            clearScreen();
             System.out.println("[" + menuName + "] Choose an option from the following: ");
             i = 1;
             for (String option : options) {
@@ -52,12 +54,12 @@ public class Menu { // TODO: shutdownhook handling
     }
 
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) {
-        clearScreen();
         ArrayList<String> options = new ArrayList<>(setOptions.keySet());
         int i = 1;
         int choice;
         while (true) {
             try {
+                clearScreen();
                 System.out.println("[" + menuName + "] Choose an option from the following: ");
                 i = 1;
                 for (String option : options) {

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class Tools {
@@ -63,12 +64,15 @@ public class Tools {
      * clear memory cache and local cache
      */
     private void optionClearCache() {
-        logger.info("Clearing cache...");
-        Sync.load().clearCache();
-        if (Library.checkInstance()) { // to prevent logging in
-            Library.load().clear();
+        System.out.print("Are you sure you wan to clear cache (y/N): ");
+        if (Input.request().getAgreement()) {
+            logger.info("Clearing cache...");
+            Sync.load().clearCache();
+            if (Library.checkInstance()) { // to prevent logging in
+                Library.load().clear();
+            }
+            logger.info("Done clearing cache");
         }
-        logger.info("Done clearing cache");
     }
 
     /**

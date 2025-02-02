@@ -201,7 +201,7 @@ public class Sync {
      * @param albums - linkedhashset of constructed Album
      */
     public void exportAlbums(LinkedHashSet<Album> albums) {
-        if (albums == null || albums.isEmpty()) {
+        if (albums == null) {
             return;
         }
         this.setDataFolder();
@@ -242,7 +242,7 @@ public class Sync {
      * @param playlists - linkedhashset of constructed Playlist
      */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
-        if (playlists == null || playlists.isEmpty()) {
+        if (playlists == null) {
             return;
         }
         this.setDataFolder();
@@ -284,7 +284,7 @@ public class Sync {
      * @param likedSongs - constructed LikedSongs
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
-        if (likedSongs == null || likedSongs.isEmpty()) {
+        if (likedSongs == null) {
             return;
         }
         this.setDataFolder();

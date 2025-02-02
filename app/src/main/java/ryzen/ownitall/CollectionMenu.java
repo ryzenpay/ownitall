@@ -20,6 +20,7 @@ public class CollectionMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Print Inventory", this::printInventory);
         options.put("Edit Inventory", this::editMenu);
+        options.put("Clear Inventory", this::optionClearInventory);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
             if (choice != null) {
@@ -146,6 +147,15 @@ public class CollectionMenu {
         }
     }
 
+    private void optionClearInventory() {
+        System.out.print("Are you sure you want to clear the current inventory (y/N): ");
+        if (Input.request().getAgreement()) {
+            logger.info("Clearing inventory...");
+            collection.clear();
+            logger.info("Successfully cleared inventory");
+        }
+    }
+
     /**
      * print the inventory depending on its "depth"
      * 
@@ -267,5 +277,7 @@ public class CollectionMenu {
                 System.err.println("Invalid recursion option.");
                 break;
         }
+        System.out.print("Press enter to continue: ");
+        Input.request().getEnter();
     }
 }

@@ -36,6 +36,10 @@ public class Collection {
         return instance;
     }
 
+    public void save() {
+        Sync.load().exportCollection(this);
+    }
+
     public void clear() {
         this.likedSongs.clear();
         this.playlists.clear();

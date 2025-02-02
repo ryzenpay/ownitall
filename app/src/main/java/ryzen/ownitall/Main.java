@@ -19,6 +19,7 @@ public class Main {
      * @param args - possible arguments to pass (not defined)
      */
     public static void main(String[] args) {
+        Menu.clearScreen();
         Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         collection.mergeCollection(sync.importCollection());
@@ -66,7 +67,7 @@ public class Main {
      * save current library to local files
      */
     private static void optionSave() {
-        sync.exportCollection(collection);
+        Collection.load().save();
         settings.saveSettings();
         if (settings.saveCredentials) {
             Credentials.load().save();

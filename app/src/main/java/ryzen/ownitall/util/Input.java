@@ -159,4 +159,8 @@ public class Input {
             System.err.print("Invalid input. Enter true/false: ");
         }
     }
+
+    public void getEnter() {
+        scanner.nextLine();
+    }
 }
