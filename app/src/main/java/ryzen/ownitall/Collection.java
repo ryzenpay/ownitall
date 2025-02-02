@@ -74,7 +74,7 @@ public class Collection {
      * 
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
-    public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
+    public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) { // TODO: this does not work
         if (mergePlaylists == null || mergePlaylists.isEmpty()) {
             logger.info("Empty playlists passed in addPlaylists");
             return;
@@ -98,7 +98,7 @@ public class Collection {
      * 
      * @param mergeLikedSongs - constructed LikedSongs
      */
-    public void addLikedSongs(LinkedHashSet<Song> songs) {
+    public void addLikedSongs(LinkedHashSet<Song> songs) { // TODO: this does not work
         this.likedSongs.addSongs(songs); // handled by playlist addSongs
     }
 

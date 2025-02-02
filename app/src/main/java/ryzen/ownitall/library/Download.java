@@ -234,9 +234,9 @@ public class Download {
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, likedSongsFolder);
-            writeSongMetaData(song, likedSongsFolder, null);
         }
         this.threadShutdown();
+        writeSongsMetaData(likedSongs, likedSongsFolder, null);
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -262,11 +262,8 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
-        File playlistFolder = new File(this.downloadPath);
-        if (settings.isDownloadHierachy()) {
-            playlistFolder = new File(this.downloadPath, playlist.getFolderName());
-            playlistFolder.mkdirs();
-        }
+        File playlistFolder = new File(this.downloadPath, playlist.getFolderName());
+        playlistFolder.mkdirs();
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
             MusicTools.writeM3U(playlist.getFolderName(), playlist.getM3U(), playlistFolder);
@@ -283,9 +280,9 @@ public class Download {
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, playlistFolder);
-            writeSongMetaData(song, playlistFolder, null);
         }
         this.threadShutdown();
+        writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -317,20 +314,25 @@ public class Download {
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
-            writeSongMetaData(song, albumFolder, album.getName());
         }
         this.threadShutdown();
+        writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
     }
 
-    public static void writeSongMetaData(Song song, File folder, String albumName) {
-        File songFile = new File(folder, song.getFileName() + "." + settings.getDownloadFormat());
-        try {
-            MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                    collection.isLiked(song), albumName, songFile);
-        } catch (Exception e) {
-            logger.error("Error song metadata for " + song.toString() + ": " + e);
+    public static void writeSongsMetaData(LinkedHashSet<Song> songs, File folder, String albumName) {
+        if (!folder.exists()) {
+            return;
+        }
+        for (Song song : songs) {
+            File songFile = new File(folder, song.getFileName() + "." + settings.getDownloadFormat());
+            try {
+                MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
+                        collection.isLiked(song), albumName, songFile);
+            } catch (Exception e) {
+                logger.error("Error song metadata for " + song.toString() + ": " + e);
+            }
         }
     }
 

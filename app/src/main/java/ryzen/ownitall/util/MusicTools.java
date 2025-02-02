@@ -63,7 +63,8 @@ public class MusicTools {
         }
     }
 
-    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked, String album,
+    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
+            String albumName,
             File songFile) throws Exception {
         if (!songFile.exists()) {
             return;
@@ -103,8 +104,8 @@ public class MusicTools {
             tag.removeFrame("POPM");
             tag.removeFrame("TXXX");
         }
-        if (album != null) {
-            tag.setField(FieldKey.ALBUM, album);
+        if (albumName != null) {
+            tag.setField(FieldKey.ALBUM, albumName);
         }
         audioFile.setTag(tag);
         AudioFileIO.write(audioFile);
