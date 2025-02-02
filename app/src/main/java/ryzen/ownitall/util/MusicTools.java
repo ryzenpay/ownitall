@@ -63,12 +63,11 @@ public class MusicTools {
         }
     }
 
-    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
+    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked, String album,
             File songFile) throws Exception {
         if (!songFile.exists()) {
             return;
         }
-
         // Set ID3v2.3 as default
         TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V23);
 
@@ -103,6 +102,9 @@ public class MusicTools {
             // Remove rating if not liked
             tag.removeFrame("POPM");
             tag.removeFrame("TXXX");
+        }
+        if (album != null) {
+            tag.setField(FieldKey.ALBUM, album);
         }
         audioFile.setTag(tag);
         AudioFileIO.write(audioFile);

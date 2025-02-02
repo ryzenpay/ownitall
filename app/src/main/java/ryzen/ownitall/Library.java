@@ -22,7 +22,6 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;

@@ -234,7 +234,7 @@ public class Download {
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, likedSongsFolder);
-            writeSongMetaData(song, likedSongsFolder);
+            writeSongMetaData(song, likedSongsFolder, null);
         }
         this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
@@ -283,7 +283,7 @@ public class Download {
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, playlistFolder);
-            writeSongMetaData(song, playlistFolder);
+            writeSongMetaData(song, playlistFolder, null);
         }
         this.threadShutdown();
         this.cleanFolder(playlistFolder);
@@ -317,18 +317,18 @@ public class Download {
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
-            writeSongMetaData(song, albumFolder);
+            writeSongMetaData(song, albumFolder, album.getName());
         }
         this.threadShutdown();
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
     }
 
-    public static void writeSongMetaData(Song song, File folder) {
+    public static void writeSongMetaData(Song song, File folder, String albumName) {
         File songFile = new File(folder, song.getFileName() + "." + settings.getDownloadFormat());
         try {
             MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                    collection.isLiked(song), songFile);
+                    collection.isLiked(song), albumName, songFile);
         } catch (Exception e) {
             logger.error("Error song metadata for " + song.toString() + ": " + e);
         }
