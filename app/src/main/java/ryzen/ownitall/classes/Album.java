@@ -200,8 +200,15 @@ public class Album extends Playlist {
         if (this.hashCode() == album.hashCode()) {
             return true;
         }
-        return Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
-                simularityPercentage);
+        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
+                simularityPercentage)) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarityCheck(this.getFolderName(), album.getFolderName(),
+                simularityPercentage)) { // TODO: lots of trouble?
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -282,8 +282,15 @@ public class Playlist {
         if (this.hashCode() == playlist.hashCode()) {
             return true;
         }
-        return Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
-                simularityPercentage);
+        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
+                simularityPercentage)) {
+            return true;
+        }
+        if (Levenshtein.computeSimilarityCheck(this.getFolderName(), playlist.getFolderName(),
+                simularityPercentage)) { // TODO: lots of trouble?
+            return true;
+        }
+        return false;
     }
 
     @Override
