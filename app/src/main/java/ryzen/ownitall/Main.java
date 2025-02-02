@@ -26,8 +26,7 @@ public class Main {
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
-        options.put("Print Inventory", Main::optionPrintInventory);
-        options.put("Edit Inventory", Main::optionEditInventory);
+        options.put("Inventory", Main::optionInventory);
         options.put("Save", Main::optionSave);
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
@@ -58,19 +57,10 @@ public class Main {
     }
 
     /**
-     * print library of current imported music
-     */
-    private static void optionPrintInventory() {
-        System.out.print("Select recursion (1-3): ");
-        int recursion = Input.request().getInt(1, 3);
-        collection.printInventory(recursion);
-    }
-
-    /**
      * edit current library
      */
-    private static void optionEditInventory() {
-        collection.editMenu();
+    private static void optionInventory() {
+        new CollectionMenu();
     }
 
     /**

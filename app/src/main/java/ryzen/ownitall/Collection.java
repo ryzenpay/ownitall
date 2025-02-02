@@ -72,6 +72,13 @@ public class Collection {
         }
     }
 
+    public void removeAlbum(Album album) {
+        if (album == null || album.isEmpty()) {
+            return;
+        }
+        this.albums.remove(album);
+    }
+
     /**
      * merge array of playlists into current collection
      * 
@@ -99,6 +106,13 @@ public class Collection {
         }
     }
 
+    public void removePlaylist(Playlist playlist) {
+        if (playlist == null || playlist.isEmpty()) {
+            return;
+        }
+        this.playlists.remove(playlist);
+    }
+
     /**
      * merge liked songs into current collection
      * 
@@ -112,7 +126,17 @@ public class Collection {
     }
 
     public void addLikedSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return;
+        }
         this.likedSongs.addSong(song);
+    }
+
+    public void removeLikedSong(Song song) {
+        if (song == null || song.isEmpty()) {
+            return;
+        }
+        this.likedSongs.removeSong(song);
     }
 
     /**
@@ -149,21 +173,15 @@ public class Collection {
      * @return - linkedhashset of standalone liked songs
      */
     public LinkedHashSet<Song> getStandaloneLikedSongs() {
-        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>();
+        LinkedHashSet<Song> allTracks = new LinkedHashSet<>();
+        LinkedHashSet<Song> likedSongs = this.likedSongs.getSongs();
         for (Playlist playlist : this.playlists) {
-            for (Song song : playlist.getSongs()) {
-                if (!this.likedSongs.contains(song)) {
-                    likedSongs.add(song);
-                }
-            }
+            allTracks.addAll(playlist.getSongs());
         }
         for (Album album : this.albums) {
-            for (Song song : album.getSongs()) {
-                if (!this.likedSongs.contains(song)) {
-                    likedSongs.add(song);
-                }
-            }
+            allTracks.addAll(album.getSongs());
         }
+        likedSongs.removeAll(allTracks);
         return likedSongs;
     }
 
@@ -270,237 +288,5 @@ public class Collection {
             }
         }
         return null;
-    }
-
-    /**
-     * print the inventory depending on its "depth"
-     * 
-     * @param recursion - 1 = number count, 2 = album and playlist names, 3 =
-     *                  albums, playlist and song names
-     */
-    public void printInventory(int recursion) {
-        int playlistTrackCount = 0;
-        int albumTrackCount = 0;
-        for (Playlist playlist : this.playlists) {
-            playlistTrackCount += playlist.size();
-        }
-        for (Album album : this.albums) {
-            albumTrackCount += album.size();
-        }
-        int trackCount = this.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
-        int i = 1;
-        int y = 1;
-        switch (recursion) {
-            case 1:
-                System.out
-                        .println("Total playlists: " + this.playlists.size() + "  (" + playlistTrackCount + " songs)");
-                System.out.println("Total albums: " + this.albums.size() + "  (" + albumTrackCount + " songs)");
-                System.out.println("Total liked songs: " + this.likedSongs.size());
-                System.out.println("With a total of " + trackCount + " songs");
-                break;
-            case 2:
-                System.out.println("Liked Songs (" + this.likedSongs.size() + ")");
-                System.out.println("Playlists (" + this.playlists.size() + "): (" + playlistTrackCount + " songs)");
-                i = 1;
-                for (Playlist playlist : this.playlists) {
-                    System.out
-                            .println(
-                                    i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
-                                            + playlist.size()
-                                            + " - "
-                                            + MusicTools.musicTime(playlist.getTotalDuration()));
-                    i++;
-                }
-                i = 1;
-                System.out.println("Albums (" + this.albums.size() + "): (" + albumTrackCount + " songs)");
-                for (Album album : this.albums) {
-                    System.out
-                            .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
-                    if (album.getArtists() != null) {
-                        System.out.println("    - Artist: " + album.getArtists().toString());
-                    }
-                    i++;
-                }
-                break;
-            case 3:
-                System.out.println("Liked Songs (" + this.likedSongs.size() + "): ");
-                i = 1;
-                for (Song likedSong : this.likedSongs.getSongs()) {
-                    System.out.println("    " + i + "/" + this.likedSongs.size() + " = " + likedSong.getName() + " | "
-                            + MusicTools.musicTime(likedSong.getDuration()));
-                    if (likedSong.getArtist() != null) {
-                        System.out.println("        - Artist: " + likedSong.getArtist().toString());
-                    }
-                    i++;
-                }
-                System.out.println("Playlists (" + this.playlists.size() + "): (" + playlistTrackCount + " songs)");
-                i = 1;
-                for (Playlist playlist : this.playlists) {
-                    y = 1;
-                    System.out
-                            .println(
-                                    i + "/" + this.playlists.size() + " - " + playlist.getName() + " | "
-                                            + playlist.size()
-                                            + " - " + MusicTools.musicTime(playlist.getTotalDuration()));
-                    i++;
-                    for (Song song : playlist.getSongs()) {
-                        if (this.isLiked(song)) {
-                            System.out.print("*");
-                        } else {
-                            System.out.print(" ");
-                        }
-                        System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
-                                + MusicTools.musicTime(song.getDuration()));
-                        if (song.getArtist() != null) {
-                            System.out.println("        - Artist: " + song.getArtist().toString());
-                        }
-                        y++;
-                    }
-                }
-                i = 1;
-                System.out.println("Albums (" + this.albums.size() + "): (" + albumTrackCount + " songs)");
-                for (Album album : this.albums) {
-                    y = 1;
-                    System.out
-                            .println(i + "/" + this.albums.size() + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
-                    i++;
-                    for (Song song : album.getSongs()) {
-                        if (this.isLiked(song)) {
-                            System.out.print("*");
-                        } else {
-                            System.out.print(" ");
-                        }
-                        System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
-                                + MusicTools.musicTime(song.getDuration()));
-                        if (song.getArtist() != null) {
-                            System.out.println("        - Artist: " + song.getArtist().toString());
-                        }
-                        y++;
-                    }
-                }
-                break;
-            default:
-                System.err.println("Invalid recursion option.");
-                break;
-        }
-    }
-
-    /**
-     * edit menu
-     */
-    public void editMenu() {
-        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Delete Playlist", this::optionDeletePlaylist);
-        options.put("Merge Playlists", this::optionMergePlaylist);
-        options.put("Delete Album", this::optionDeleteAlbum);
-        options.put("Delete Liked Song", this::optionDeleteLikedSong);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    break;
-                } else {
-                    options.get(choice).run();
-                }
-            }
-        }
-    }
-
-    /**
-     * option to delete playlist
-     * lists all playlists with numbers and asks for an int input
-     */
-    private void optionDeletePlaylist() {
-        while (true) {
-            LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-            for (Playlist playlist : this.playlists) {
-                options.put(playlist.toString(), playlist);
-            }
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    this.playlists.remove(options.get(choice));
-                    logger.info("Successfully removed playlist: " + choice);
-                }
-            }
-        }
-    }
-
-    /**
-     * prompts lists of playlists twice to merge them
-     */
-    private void optionMergePlaylist() {
-        LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-        for (Playlist playlist : this.playlists) {
-            options.put(playlist.toString(), playlist);
-        }
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    Playlist playlist = options.get(choice);
-                    options.remove(choice);
-                    String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
-                    if (choice2 != null) {
-                        if (choice2.equals("Exit")) {
-                            return;
-                        } else {
-                            playlist.merge(options.get(choice2));
-                            this.playlists.remove(options.get(choice2));
-                            logger.info("Successfully merged playlist: " + choice2 + " into: " + choice);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * option to delete album
-     */
-    private void optionDeleteAlbum() {
-        while (true) {
-            LinkedHashMap<String, Album> options = new LinkedHashMap<>();
-            for (Album album : this.albums) {
-                options.put(album.toString(), album);
-            }
-            String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    this.albums.remove(options.get(choice));
-                    logger.info("Successfully removed album: " + choice);
-                }
-            }
-        }
-    }
-
-    /**
-     * option to delete liked song
-     */
-    private void optionDeleteLikedSong() {
-        while (true) {
-            LinkedHashMap<String, Song> options = new LinkedHashMap<>();
-            for (Song song : this.likedSongs.getSongs()) {
-                options.put(song.toString(), song);
-            }
-            String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    this.likedSongs.removeSong(options.get(choice));
-                    logger.info("Successfully removed liked song: " + choice);
-                }
-            }
-        }
     }
 }
