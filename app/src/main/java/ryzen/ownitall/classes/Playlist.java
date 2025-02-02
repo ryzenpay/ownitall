@@ -29,7 +29,7 @@ public class Playlist {
     /**
      * to save api requests
      */
-    private String youtubePageToken;
+    private String youtubePageToken = null;
     private int spotifyPageOffset = 0;
 
     /**
@@ -57,6 +57,7 @@ public class Playlist {
 
     public void merge(Playlist playlist) {
         if (playlist == null || playlist.isEmpty()) {
+            logger.debug(this.toString() + ": empty playlist provided in merge");
             return;
         }
         this.addSongs(playlist.getSongs());
@@ -106,6 +107,7 @@ public class Playlist {
      */
     public void setCoverImage(String coverImage) {
         if (coverImage == null || coverImage.isEmpty()) {
+            logger.debug(this.toString() + ": empty String coverimage provided");
             return;
         }
         try {
@@ -117,6 +119,7 @@ public class Playlist {
 
     public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
+            logger.debug(this.toString() + ": empty URI coverimage provided");
             return;
         }
         this.coverImage = coverImage;
@@ -138,6 +141,7 @@ public class Playlist {
      */
     public void addSongs(LinkedHashSet<Song> songs) {
         if (songs == null || songs.isEmpty()) {
+            logger.debug(this.toString() + ": empty songs array provided in addSongs");
             return;
         }
         for (Song song : songs) {
@@ -152,6 +156,7 @@ public class Playlist {
      */
     public void addSong(Song song) {
         if (song == null || song.isEmpty()) {
+            logger.debug(this.toString() + ": empty song provided in addsong");
             return;
         }
         if (this.songs.contains(song)) {
@@ -163,6 +168,7 @@ public class Playlist {
 
     public void removeSong(Song song) {
         if (song == null || song.isEmpty()) {
+            logger.debug(this.toString() + ": empty song provided in removeSong");
             return;
         }
         this.songs.remove(song);
@@ -170,6 +176,7 @@ public class Playlist {
 
     public Song getSong(Song song) {
         if (song == null || song.isEmpty()) {
+            logger.debug(this.toString() + ": empty song provided in getSong");
             return null;
         }
         for (Song thisSong : this.songs) {
@@ -205,9 +212,6 @@ public class Playlist {
      * @return - String youtube page token
      */
     public String getYoutubePageToken() {
-        if (this.youtubePageToken == null) {
-            return null;
-        }
         return this.youtubePageToken;
     }
 
@@ -218,6 +222,7 @@ public class Playlist {
      */
     public void setYoutubePageToken(String token) {
         if (token == null || token.isEmpty()) {
+            logger.debug(this.toString() + ": empty youtube page token provided");
             return;
         }
         this.youtubePageToken = token;
@@ -239,7 +244,7 @@ public class Playlist {
      */
     public void setSpotifyPageOffset(int offset) {
         if (offset < 0) {
-            logger.debug("Provided spotify offset is below 0");
+            logger.debug(this.toString() + ": provided spotify offset is below 0");
             return;
         }
         this.spotifyPageOffset = offset;

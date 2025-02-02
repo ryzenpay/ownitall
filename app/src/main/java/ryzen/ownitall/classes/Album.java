@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +17,7 @@ import ryzen.ownitall.util.Levenshtein;
 import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
+    private static final Logger logger = LogManager.getLogger(Album.class);
     LinkedHashSet<Artist> artists;
     private LinkedHashMap<String, String> links;
 
@@ -66,14 +70,13 @@ public class Album extends Playlist {
         if (album.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.setSpotifyPageOffset(album.getSpotifyPageOffset());
         }
-        if (this.artists == null && album.getArtists() != null) {
-            this.addArtists(album.getArtists());
-        }
+        this.addArtists(album.getArtists());
     }
 
     @Override
     public void addSong(Song song) {
         if (song == null || song.isEmpty()) {
+            logger.debug(this.toString() + ": empty song provided in addSong");
             return;
         }
         super.addSong(song);
@@ -84,6 +87,7 @@ public class Album extends Playlist {
 
     public void addArtists(LinkedHashSet<Artist> artists) {
         if (artists == null || artists.isEmpty()) {
+            logger.debug(this.toString() + ": empty artists array provided in addArtists");
             return;
         }
         this.artists.addAll(artists);
@@ -91,6 +95,7 @@ public class Album extends Playlist {
 
     public void addArtist(Artist artist) {
         if (artist == null || artist.isEmpty()) {
+            logger.debug(this.toString() + ": empty artist provided in addArtist");
             return;
         }
         this.artists.add(artist);
@@ -98,6 +103,7 @@ public class Album extends Playlist {
 
     public void addArtist(String artistName) {
         if (artistName == null || artistName.isEmpty()) {
+            logger.debug(this.toString() + ": empty artistName provided in addArtist");
             return;
         }
         this.artists.add(new Artist(artistName));
@@ -117,10 +123,8 @@ public class Album extends Playlist {
     }
 
     public void addLink(String key, String url) {
-        if (key == null || url == null) {
-            return;
-        }
-        if (key.isEmpty() || url.isEmpty()) {
+        if (key == null || url == null || key.isEmpty() || url.isEmpty()) {
+            logger.debug(this.toString() + ": empty key or url in addLink");
             return;
         }
         this.links.put(key, url);
@@ -128,6 +132,7 @@ public class Album extends Playlist {
 
     public void addLinks(LinkedHashMap<String, String> links) {
         if (links == null || links.isEmpty()) {
+            logger.debug(this.toString() + ": empty links array provided in addLinks");
             return;
         }
         this.links.putAll(links);
@@ -136,6 +141,7 @@ public class Album extends Playlist {
     @JsonIgnore
     public String getLink(String key) {
         if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": empty key provided in getLink");
             return null;
         }
         return this.links.get(key);

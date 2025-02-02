@@ -61,6 +61,7 @@ public class Song {
 
     public void setArtist(Artist artist) {
         if (artist == null || artist.isEmpty()) {
+            logger.debug(this.toString() + ": empty constructed artist provided in setArtist");
             return;
         }
         this.artist = artist;
@@ -69,6 +70,7 @@ public class Song {
 
     public void setArtist(String artistName) {
         if (artistName == null || artistName.isEmpty()) {
+            logger.debug(this.toString() + ": empty string artist provided in setArtist");
             return;
         }
         this.artist = new Artist(artistName);
@@ -84,6 +86,7 @@ public class Song {
 
     public void addLinks(LinkedHashMap<String, String> links) {
         if (links == null || links.isEmpty()) {
+            logger.debug(this.toString() + ": empty links provided in addLink");
             return;
         }
         this.links.putAll(links);
@@ -92,6 +95,7 @@ public class Song {
     @JsonIgnore
     public String getLink(String key) {
         if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": empty key passed in getLink");
             return null;
         }
         return this.links.get(key);
@@ -121,6 +125,7 @@ public class Song {
      */
     public void setDuration(long duration, ChronoUnit unit) {
         if (unit == null) {
+            logger.debug(this.toString() + ": no duration unit provided in setDuration");
             return;
         }
         this.duration = Duration.of(duration, unit);
@@ -128,6 +133,7 @@ public class Song {
 
     public void setDuration(Duration duration) {
         if (duration == null || duration.isZero()) {
+            logger.debug(this.toString() + ": empty or zero duration provided in setDuration");
             return;
         }
         this.duration = duration;
@@ -135,6 +141,7 @@ public class Song {
 
     public void setCoverImage(String coverImage) {
         if (coverImage == null || coverImage.isEmpty()) {
+            logger.debug(this.toString() + ": empty String coverimage provided in setCoverImage");
             return;
         }
         try {
@@ -150,6 +157,7 @@ public class Song {
 
     public void merge(Song song) {
         if (song == null || song.isEmpty()) {
+            logger.debug(this.toString() + ": empty song provided in merge");
             return;
         }
         if (this.artist == null && song.artist != null) { // if it has more info, no better way to check
