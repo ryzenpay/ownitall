@@ -10,8 +10,8 @@ import ryzen.ownitall.util.Menu;
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static final Settings settings = Settings.load();
-    private static Sync sync = Sync.load();
-    private static Collection collection = Collection.load();
+    private static final Sync sync = Sync.load();
+    private static final Collection collection = Collection.load();
 
     /**
      * main function launching the main ownitall menu

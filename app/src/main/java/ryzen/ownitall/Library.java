@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -175,26 +176,54 @@ public class Library {
         if (this.songs.contains(tmpSong)) {
             return this.getSong(tmpSong);
         }
+
         Map<String, String> params;
+        JsonNode response;
+
         if (artistName == null) {
+            // First, search for the track to get the artist name
             params = Map.of("track", songName, "limit", "1");
-        } else {
-            params = Map.of("track", songName, "artist", artistName, "limit", "1");
+            response = query("track.search", params);
+
+            if (response != null && response.path("results").path("trackmatches").path("track").size() > 0) {
+                JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
+                songName = trackNode.path("name").asText();
+                artistName = trackNode.path("artist").asText();
+            } else {
+                logger.debug("Could not find song '" + songName + "' in Library");
+                return null;
+            }
         }
-        JsonNode response = query("track.search", params);
+
+        // Now, use track.getInfo to get detailed information
+        params = Map.of("track", songName, "artist", artistName);
+        response = query("track.getInfo", params);
+
         if (response != null) {
-            JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
-            if (trackNode != null) {
+            JsonNode trackNode = response.path("track");
+            if (trackNode != null && !trackNode.isMissingNode()) {
                 Song song = new Song(trackNode.path("name").asText());
-                song.setArtist(trackNode.path("artist").asText());
-                song.setCoverImage(trackNode.path("image").get(trackNode.path("image").size() - 1).path("#text")
-                        .asText());
+                song.setArtist(trackNode.path("artist").path("name").asText());
+
+                // Set album information
+                JsonNode albumNode = trackNode.path("album");
+                if (!albumNode.isMissingNode()) {
+                    JsonNode imageNode = albumNode.path("image");
+                    if (imageNode.isArray() && imageNode.size() > 0) {
+                        song.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
+                    }
+                }
+
+                // Set additional information
+                song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
                 song.addLink("lastfm", trackNode.path("url").asText());
+
                 this.songs.add(song);
                 return song;
             }
         }
-        logger.debug("Could not find song '" + songName + "' in Library");
+
+        logger.debug("Could not find detailed information for song '" + songName + "' by '" + artistName + "'");
         return null;
     }
 

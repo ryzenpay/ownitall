@@ -165,8 +165,8 @@ public class CollectionMenu {
         for (Album album : collection.getAlbums()) {
             albumTrackCount += album.size();
         }
-        int likedSongsTrackCount = collection.getStandaloneLikedSongs().size();
-        int trackCount = likedSongsTrackCount + playlistTrackCount + albumTrackCount;
+        int likedSongsTrackCount = collection.getLikedSongs().size();
+        int trackCount = collection.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
         int i = 1;
         int y = 1;
         switch (recursion) {
