@@ -58,6 +58,10 @@ public class Download {
         Input.request().getAgreement();
     }
 
+    public String getDownloadPath() {
+        return this.downloadPath;
+    }
+
     /**
      * prompt of where to save downloaded music
      */

@@ -1,5 +1,6 @@
 package ryzen.ownitall.library.menu;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.library.Download;
@@ -15,7 +17,8 @@ import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
-    private static Collection collection = Collection.load();
+    private static final Collection collection = Collection.load();
+    private static final Settings settings = Settings.load();
     private Download download;
 
     public DownloadMenu() {
@@ -25,6 +28,7 @@ public class DownloadMenu {
         options.put("Download Playlist", this::optionDownloadPlaylist);
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
+        options.put("Write Metadata (existing songs)", this::optionMetaData);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
             if (choice.equals("Exit")) {
@@ -97,5 +101,29 @@ public class DownloadMenu {
         download.downloadLikedSongs();
         logger.info("Done downloading liked songs");
         download.getFailedSongsReport();
+    }
+
+    private void optionMetaData() {
+        logger.info("Writing Metadata...");
+        String downloadPath = download.getDownloadPath();
+        // liked songs
+        File likedSongsFolder = new File(downloadPath);
+        if (settings.isDownloadHierachy()) {
+            likedSongsFolder = new File(downloadPath, settings.getLikedSongName());
+            likedSongsFolder.mkdirs();
+        }
+        Download.writeSongsMetaData(collection.getLikedSongs().getSongs(), likedSongsFolder, null);
+        // playlists
+        for (Playlist playlist : collection.getPlaylists()) {
+            File playlistFolder = new File(downloadPath, playlist.getFolderName());
+            Download.writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
+        }
+        // albums
+        for (Album album : collection.getAlbums()) {
+            File albumFolder = new File(downloadPath, album.getFolderName());
+            Download.writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
+        }
+        download.downloadAlbums(collection.getAlbums());
+        logger.info("Done writing metadata");
     }
 }
