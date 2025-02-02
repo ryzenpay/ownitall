@@ -178,9 +178,9 @@ public class Song {
     @Override
     @JsonIgnore
     public String toString() {
-        String output = this.name;
+        String output = this.name.trim();
         if (this.artist != null) {
-            output += " - " + this.artist.getName();
+            output += " - " + this.artist.getName().trim();
         }
         return output;
     }
@@ -211,7 +211,7 @@ public class Song {
     @Override
     @JsonIgnore
     public int hashCode() {
-        return Objects.hash(this.name.toLowerCase(), artist);
+        return Objects.hash(this.name.toLowerCase().trim(), artist);
     }
 
     @JsonIgnore

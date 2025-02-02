@@ -30,7 +30,7 @@ public class Artist {
     @Override
     @JsonIgnore
     public String toString() {
-        return this.name;
+        return this.name.toString().trim();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Artist {
     @Override
     @JsonIgnore
     public int hashCode() {
-        return Objects.hashCode(this.name.toLowerCase());
+        return Objects.hashCode(this.name.toLowerCase().trim());
     }
 
     @JsonIgnore

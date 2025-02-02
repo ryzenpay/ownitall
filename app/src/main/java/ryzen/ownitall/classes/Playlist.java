@@ -267,7 +267,7 @@ public class Playlist {
     @Override
     @JsonIgnore
     public String toString() {
-        return this.name.toString();
+        return this.name.toString().trim();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class Playlist {
     @Override
     @JsonIgnore
     public int hashCode() {
-        return Objects.hash(this.name.toLowerCase());
+        return Objects.hash(this.name.toLowerCase().trim());
     }
 
     @JsonIgnore

@@ -160,9 +160,9 @@ public class Album extends Playlist {
     @Override
     @JsonIgnore
     public String toString() {
-        String output = super.toString();
+        String output = super.toString().trim();
         if (this.getMainArtist() != null) {
-            output += " (" + this.getMainArtist() + ")";
+            output += " (" + this.getMainArtist().toString().trim() + ")";
         }
         return output;
     }
