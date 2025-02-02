@@ -163,7 +163,7 @@ public class Library {
                 return album;
             }
         }
-
+        // TODO: album search?
         logger.debug("Could not find detailed information for album '" + albumName + "' by '" + artistName + "'");
         return null;
     }
@@ -245,6 +245,7 @@ public class Library {
             }
         }
 
+        // TODO: song search?
         logger.debug("Could not find detailed information for song '" + songName + "' by '" + artistName + "'");
         return null;
     }

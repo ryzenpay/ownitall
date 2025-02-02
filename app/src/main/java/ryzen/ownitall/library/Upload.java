@@ -291,7 +291,7 @@ public class Upload {
      */
     public static Album constructAlbum(File folder) {
         Album album = null;
-        String albumName = null;
+        String albumName = folder.getName();
         String artistName = null;
         File albumSongFile = null;
         for (File file : folder.listFiles()) {
@@ -306,18 +306,15 @@ public class Upload {
                 Tag tag = audioFile.getTag();
                 if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
                     albumName = tag.getFirst(FieldKey.ALBUM);
-                    artistName = tag.getFirst(FieldKey.ALBUM);
+                    artistName = tag.getFirst(FieldKey.ARTIST);
                 }
             } catch (Exception e) {
                 logger.error("Error parsing album: " + e);
             }
         }
         if (settings.isUseLibrary()) {
-            if (albumName != null) {
-                album = library.searchAlbum(albumName, artistName);
-            } else {
-                album = library.searchAlbum(folder.getName(), artistName);
-            }
+            album = library.searchAlbum(albumName, artistName);
+
         }
         if (album == null && !settings.isLibraryVerified()) {
             if (albumName != null) {
