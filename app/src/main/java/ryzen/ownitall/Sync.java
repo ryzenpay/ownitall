@@ -222,9 +222,8 @@ public class Sync {
         if (!albumFile.exists()) {
             return null;
         }
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
         try {
-            albums = this.objectMapper.readValue(albumFile,
+            return this.objectMapper.readValue(albumFile,
                     new TypeReference<LinkedHashSet<Album>>() {
                     });
         } catch (IOException e) {
@@ -232,7 +231,6 @@ public class Sync {
             logger.info("If this persists, delete the file:" + albumFile.getAbsolutePath());
             return null;
         }
-        return albums;
     }
 
     /**
@@ -265,9 +263,8 @@ public class Sync {
         if (!playlistFile.exists()) {
             return null;
         }
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         try {
-            playlists = this.objectMapper.readValue(playlistFile,
+            return this.objectMapper.readValue(playlistFile,
                     new TypeReference<LinkedHashSet<Playlist>>() {
                     });
 
@@ -276,7 +273,6 @@ public class Sync {
             logger.info("If this persists, delete the file:" + playlistFile.getAbsolutePath());
             return null;
         }
-        return playlists;
     }
 
     /**
@@ -309,9 +305,8 @@ public class Sync {
         if (!likedSongFile.exists()) {
             return null;
         }
-        LikedSongs likedSongs = new LikedSongs();
         try {
-            likedSongs = this.objectMapper.readValue(likedSongFile,
+            return this.objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
 
         } catch (IOException e) {
@@ -319,7 +314,6 @@ public class Sync {
             logger.info("If this persists, delete the file:" + likedSongFile.getAbsolutePath());
             return null;
         }
-        return likedSongs;
     }
 
     /**

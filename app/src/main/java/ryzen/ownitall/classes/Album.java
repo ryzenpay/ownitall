@@ -45,10 +45,10 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
-            @JsonProperty("artists") LinkedHashSet<Artist> artists) {
+            @JsonProperty("artists") LinkedHashSet<Artist> artists,
+            @JsonProperty("links") LinkedHashMap<String, String> links) {
         super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
         this.artists = new LinkedHashSet<>();
         this.links = new LinkedHashMap<>();
@@ -80,6 +80,12 @@ public class Album extends Playlist {
             return;
         }
         super.addSong(song);
+
+        // this is here because the super in the json constructor calls on addsongs
+        // before artists is initialized (its ugly, i know)
+        if (this.artists == null) {
+            this.artists = new LinkedHashSet<>();
+        }
         if (!this.artists.contains(song.getArtist())) {
             this.artists.add(song.getArtist());
         }
