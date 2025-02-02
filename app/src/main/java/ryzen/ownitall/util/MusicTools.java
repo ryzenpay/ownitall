@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -22,6 +24,7 @@ import org.jaudiotagger.tag.images.ArtworkFactory;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 public class MusicTools {
+    private static final Logger logger = LogManager.getLogger(MusicTools.class);
 
     /**
      * convert duration into music time (mm:ss)
@@ -55,6 +58,7 @@ public class MusicTools {
 
     public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
         if (!folder.exists()) {
+            logger.debug("folder " + folder.getAbsolutePath() + " does not exist in writeM3U");
             return;
         }
         File M3UFile = new File(folder, fileName + ".m3u");
@@ -67,6 +71,7 @@ public class MusicTools {
             String albumName,
             File songFile) throws Exception {
         if (!songFile.exists()) {
+            logger.debug("Song File " + songFile.getAbsolutePath() + " does not exist in writeMetaData");
             return;
         }
         // Set ID3v2.3 as default
@@ -80,8 +85,17 @@ public class MusicTools {
             tag.setField(FieldKey.ARTIST, artistName);
         }
         if (coverImage != null) {
-            Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(coverImage.toString());
-            tag.setField(artwork);
+            try {
+                File tempImageFile = downloadImage(coverImage, new File(System.getProperty("java.io.tmpdir")));
+                if (tempImageFile != null) {
+                    Artwork artwork = ArtworkFactory.createArtworkFromFile(tempImageFile);
+                    tag.setField(artwork);
+                    tempImageFile.delete(); // Clean up temporary file
+                }
+            } catch (Exception e) {
+                // TODO: logger in musictools?
+                logger.error("Error parsing metadata image for: " + songName + " : " + e);
+            }
         }
 
         if (liked) {
@@ -111,24 +125,28 @@ public class MusicTools {
         AudioFileIO.write(audioFile);
     }
 
-    public static void downloadImage(URI url, File folder) throws Exception {
+    public static File downloadImage(URI url, File folder) throws Exception {
         if (url == null) {
-            return;
+            logger.debug("no download url passed in downloadImage");
+            return null;
         }
         if (!folder.exists()) {
-            return;
+            logger.debug("download folder " + folder.getAbsolutePath() + " does not exist in downloadImage");
+            return null;
         }
         File imageFile = new File(folder, "cover.png");
         if (imageFile.exists()) {
-            return;
+            return null;
         }
         try (InputStream in = url.toURL().openStream()) {
             Files.copy(in, imageFile.toPath());
         }
+        return imageFile;
     }
 
     public static String sanitizeFileName(String fileName) {
         if (fileName == null) {
+            logger.debug("no filename passed in SanitizeFileName");
             return null;
         }
         // Sanitize the name by removing invalid characters

@@ -11,6 +11,7 @@ public class Menu { // TODO: shutdownhook handling
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
     public static void clearScreen() {
+        // System.out.print("\033[H\033[2J");
         for (int i = 0; i < 50; i++) {
             System.out.println();
         }

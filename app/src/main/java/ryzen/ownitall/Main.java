@@ -11,7 +11,6 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static final Settings settings = Settings.load();
     private static final Sync sync = Sync.load();
-    private static final Collection collection = Collection.load();
 
     /**
      * main function launching the main ownitall menu
@@ -22,7 +21,7 @@ public class Main {
         Menu.clearScreen();
         Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        collection.mergeCollection(sync.importCollection());
+        Collection.load().mergeCollection(sync.importCollection());
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
