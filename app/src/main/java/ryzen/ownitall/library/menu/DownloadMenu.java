@@ -105,8 +105,10 @@ public class DownloadMenu {
 
     private void optionMetaData() {
         logger.info("Writing Metadata...");
+        ProgressBar pb = Progressbar.progressBar("Writing Metadata", 3);
         String downloadPath = download.getDownloadPath();
         // liked songs
+        pb.setExtraMessage("Liked songs");
         File likedSongsFolder = new File(downloadPath);
         if (settings.isDownloadHierachy()) {
             likedSongsFolder = new File(downloadPath, settings.getLikedSongName());
@@ -114,16 +116,19 @@ public class DownloadMenu {
         }
         Download.writeSongsMetaData(collection.getLikedSongs().getSongs(), likedSongsFolder, null);
         // playlists
+        pb.setExtraMessage("Playlists").step();
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder = new File(downloadPath, playlist.getFolderName());
             Download.writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
         }
         // albums
+        pb.setExtraMessage("Albums").step();
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
             Download.writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
         }
-        download.downloadAlbums(collection.getAlbums());
+        pb.setExtraMessage("Done").step();
+        pb.close();
         logger.info("Done writing metadata");
     }
 }

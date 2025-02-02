@@ -168,7 +168,10 @@ public class Sync {
             pb.setExtraMessage("Playlists").step();
             collection.addPlaylists(importPlaylists());
             pb.setExtraMessage("Liked Songs").step();
-            collection.addLikedSongs(importLikedSongs().getSongs());
+            LikedSongs likedSongs = importLikedSongs();
+            if (likedSongs != null) {
+                collection.addLikedSongs(likedSongs.getSongs());
+            }
             pb.setExtraMessage("Done").step();
         }
         return collection;

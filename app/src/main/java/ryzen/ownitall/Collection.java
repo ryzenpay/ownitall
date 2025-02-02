@@ -61,6 +61,9 @@ public class Collection {
     }
 
     public void addAlbum(Album album) {
+        if (album == null || album.isEmpty()) {
+            return;
+        }
         Album foundAlbum = this.getAlbum(album);
         if (foundAlbum != null) {
             foundAlbum.merge(album);
@@ -85,6 +88,9 @@ public class Collection {
     }
 
     public void addPlaylist(Playlist playlist) {
+        if (playlist == null || playlist.isEmpty()) {
+            return;
+        }
         Playlist foundPlaylist = this.getPlaylist(playlist);
         if (foundPlaylist != null) {
             foundPlaylist.merge(playlist);
@@ -99,6 +105,9 @@ public class Collection {
      * @param mergeLikedSongs - constructed LikedSongs
      */
     public void addLikedSongs(LinkedHashSet<Song> songs) { // TODO: this does not work
+        if (songs == null || songs.isEmpty()) {
+            return;
+        }
         this.likedSongs.addSongs(songs); // handled by playlist addSongs
     }
 
