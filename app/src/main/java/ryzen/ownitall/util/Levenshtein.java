@@ -1,13 +1,17 @@
 package ryzen.ownitall.util;
 
 public class Levenshtein {
-    private static final int[][] dp = new int[1000][1000]; // Preallocate matrix
+    private static final int MAX_PREALLOCATED_LENGTH = 200;
+    private static final int[][] dp = new int[MAX_PREALLOCATED_LENGTH][MAX_PREALLOCATED_LENGTH];
 
     public static int computeDistance(String str1, String str2) {
+        str1 = str1.toLowerCase();
+        str2 = str2.toLowerCase();
+
         int m = str1.length();
         int n = str2.length();
 
-        if (m > dp.length || n > dp[0].length) {
+        if (m > MAX_PREALLOCATED_LENGTH || n > MAX_PREALLOCATED_LENGTH) {
             return computeDistanceLarge(str1, str2);
         }
 
@@ -50,13 +54,23 @@ public class Levenshtein {
         return prev[str2.length()];
     }
 
-    public static double computeSimilarity(String str1, String str2) {
-        int distance = computeDistance(str1, str2);
-        int maxLength = Math.max(str1.length(), str2.length());
-        return maxLength == 0 ? 100.0 : (1.0 - (double) distance / maxLength) * 100;
-    }
-
     public static boolean computeSimilarityCheck(String str1, String str2, double wantedSimilarity) {
-        return computeSimilarity(str1, str2) >= wantedSimilarity;
+        str1 = str1.toLowerCase();
+        str2 = str2.toLowerCase();
+
+        int maxLength = Math.max(str1.length(), str2.length());
+        int maxAllowedDistance = (int) Math.ceil(maxLength * (1 - wantedSimilarity / 100));
+
+        // Quick check for exact match
+        if (str1.equals(str2))
+            return true;
+
+        // Quick length check
+        if (Math.abs(str1.length() - str2.length()) > maxAllowedDistance)
+            return false;
+
+        // Compute actual distance only if necessary
+        int distance = computeDistance(str1, str2);
+        return distance <= maxAllowedDistance;
     }
 }

@@ -197,15 +197,14 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        if (this.hashCode() == album.hashCode()) {
-            return true;
+        // only valid if library used
+        if (this.getLink("lastfm") != null) {
+            if (this.getLink("lastfm").equals(album.getLink("lastfm"))) {
+                return true;
+            }
         }
         if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
                 simularityPercentage)) {
-            return true;
-        }
-        if (Levenshtein.computeSimilarityCheck(this.getFolderName(), album.getFolderName(),
-                simularityPercentage)) { // TODO: lots of trouble?
             return true;
         }
         return false;

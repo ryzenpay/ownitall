@@ -279,15 +279,11 @@ public class Playlist {
             return false;
         }
         Playlist playlist = (Playlist) object;
-        if (this.hashCode() == playlist.hashCode()) {
+        if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
             return true;
         }
         if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
                 simularityPercentage)) {
-            return true;
-        }
-        if (Levenshtein.computeSimilarityCheck(this.getFolderName(), playlist.getFolderName(),
-                simularityPercentage)) { // TODO: lots of trouble?
             return true;
         }
         return false;

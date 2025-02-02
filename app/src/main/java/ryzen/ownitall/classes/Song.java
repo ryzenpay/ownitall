@@ -187,6 +187,7 @@ public class Song {
 
     @Override
     @JsonIgnore
+    // TODO: beef these up, still conflict when exporting and then re-importing
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -194,11 +195,17 @@ public class Song {
             return false;
         }
         Song song = (Song) object;
-        if (this.hashCode() == song.hashCode()) {
-            return true;
+        // only valid if library used
+        if (this.getLink("lastfm") != null) {
+            if (this.getLink("lastfm").equals(song.getLink("lastfm"))) {
+                return true;
+            }
         }
         // also checks artists as they have their own "equals" and compare
-        return Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage);
+        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

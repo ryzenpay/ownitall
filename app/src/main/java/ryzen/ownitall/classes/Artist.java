@@ -42,9 +42,6 @@ public class Artist {
             return false;
         }
         Artist artist = (Artist) object;
-        if (this.hashCode() == artist.hashCode()) {
-            return true;
-        }
         return Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
                 simularityPercentage);
     }
