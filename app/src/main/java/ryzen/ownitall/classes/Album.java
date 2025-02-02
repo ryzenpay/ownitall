@@ -18,7 +18,7 @@ import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
-    LinkedHashSet<Artist> artists;
+    private LinkedHashSet<Artist> artists;
     private LinkedHashMap<String, String> links;
 
     /**
@@ -51,8 +51,8 @@ public class Album extends Playlist {
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
         this.artists = new LinkedHashSet<>();
-        this.addArtists(artists);
         this.links = new LinkedHashMap<>();
+        this.addArtists(artists);
         this.addLinks(links);
     }
 

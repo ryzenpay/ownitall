@@ -1,19 +1,14 @@
 package ryzen.ownitall.library;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Library;
@@ -156,20 +151,18 @@ public class Upload {
 
     public static Album getAlbum(File folder) {
         Album album = constructAlbum(folder);
-        if (album == null && !settings.isLibraryVerified()) {
-            album = new Album(folder.getName());
-        } else if (album == null) {
+        if (album == null) {
             return null;
         }
         LinkedHashSet<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
             return null;
         }
+        album.addSongs(songs);
         File coverFile = new File(folder, "cover.png");
         if (coverFile.exists()) {
             album.setCoverImage(coverFile.toURI());
         }
-        album.addSongs(songs);
         return album;
     }
 
@@ -239,9 +232,6 @@ public class Upload {
         for (File file : folder.listFiles()) {
             if (file.isFile()) {
                 Song song = getSong(file);
-                if (song == null && !settings.isLibraryVerified()) {
-                    song = new Song(file.getName());
-                }
                 if (song != null) {
                     songs.add(song);
                 }

@@ -51,6 +51,10 @@ public class Collection {
      * @param mergeAlbums - linkedhashset of albums to merge
      */
     public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
+        if (mergeAlbums == null || mergeAlbums.isEmpty()) {
+            logger.debug("passed empty album array in addAlbums");
+            return;
+        }
         for (Album album : mergeAlbums) {
             this.addAlbum(album);
         }
@@ -71,6 +75,10 @@ public class Collection {
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
     public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
+        if (mergePlaylists == null || mergePlaylists.isEmpty()) {
+            logger.info("Empty playlists passed in addPlaylists");
+            return;
+        }
         for (Playlist playlist : mergePlaylists) {
             this.addPlaylist(playlist);
         }
