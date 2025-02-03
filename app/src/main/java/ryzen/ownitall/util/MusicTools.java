@@ -85,17 +85,8 @@ public class MusicTools {
             tag.setField(FieldKey.ARTIST, artistName);
         }
         if (coverImage != null) {
-            try {
-                File tempImageFile = downloadImage(coverImage, new File(System.getProperty("java.io.tmpdir")));
-                if (tempImageFile != null) {
-                    Artwork artwork = ArtworkFactory.createArtworkFromFile(tempImageFile);
-                    tag.setField(artwork);
-                    tempImageFile.delete(); // Clean up temporary file
-                }
-            } catch (Exception e) {
-                // TODO: logger in musictools?
-                logger.error("Error parsing metadata image for: " + songName + " : " + e);
-            }
+            Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(coverImage.toURL().toString());
+            tag.setField(artwork);
         }
 
         if (liked) {
@@ -121,11 +112,11 @@ public class MusicTools {
         if (albumName != null) {
             tag.setField(FieldKey.ALBUM, albumName);
         }
-        audioFile.setTag(tag);
+        audioFile.commit();
         AudioFileIO.write(audioFile);
     }
 
-    public static File downloadImage(URI url, File folder) throws Exception {
+    public static File downloadImage(URI url, File folder, String fileName) throws Exception {
         if (url == null) {
             logger.debug("no download url passed in downloadImage");
             return null;
@@ -134,7 +125,7 @@ public class MusicTools {
             logger.debug("download folder " + folder.getAbsolutePath() + " does not exist in downloadImage");
             return null;
         }
-        File imageFile = new File(folder, "cover.png");
+        File imageFile = new File(folder, fileName + ".png");
         if (imageFile.exists()) {
             return null;
         }
