@@ -1,5 +1,7 @@
 package ryzen.ownitall.util;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,8 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 
+import javax.imageio.ImageIO;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.FileUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -22,6 +27,7 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX;
 import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 import org.jaudiotagger.tag.reference.ID3V2Version;
+import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class MusicTools {
     private static final Logger logger = LogManager.getLogger(MusicTools.class);
@@ -85,12 +91,29 @@ public class MusicTools {
             tag.setField(FieldKey.ARTIST, artistName);
         }
         if (coverImage != null) {
-            Artwork artwork = ArtworkFactory.createLinkedArtworkFromURL(coverImage.toURL().toString());
-            tag.setField(artwork);
+            try {
+                // Download the image to a temporary file
+                File tempFile = File.createTempFile(String.valueOf(songName.hashCode()), ".png");
+                tempFile.delete(); // to prevent throwing off the downloadimage function
+                downloadImage(coverImage, tempFile);
+                byte[] imageData = Files.readAllBytes(tempFile.toPath());
+                // Create artwork from the downloaded file
+                Artwork artwork = ArtworkFactory.createArtworkFromFile(tempFile);
+                artwork.setBinaryData(imageData);
+                artwork.setMimeType("image/png");
+                artwork.setPictureType(PictureTypes.DEFAULT_ID);
+                tag.deleteArtworkField();
+                tag.setField(artwork);
+                // tempFile.delete();
+            } catch (Exception e) {
+                logger.error(
+                        "Error writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
+            }
         }
 
         if (liked) {
             // Set rating using POPM frame
+            // tag.setField(FieldKey.RATING, "255");
             ID3v23Frame popmFrame = new ID3v23Frame("POPM");
             FrameBodyPOPM popmBody = new FrameBodyPOPM();
             popmBody.setRating(255);
@@ -116,23 +139,17 @@ public class MusicTools {
         AudioFileIO.write(audioFile);
     }
 
-    public static File downloadImage(URI url, File folder, String fileName) throws Exception {
+    public static void downloadImage(URI url, File file) throws Exception {
         if (url == null) {
             logger.debug("no download url passed in downloadImage");
-            return null;
+            return;
         }
-        if (!folder.exists()) {
-            logger.debug("download folder " + folder.getAbsolutePath() + " does not exist in downloadImage");
-            return null;
-        }
-        File imageFile = new File(folder, fileName + ".png");
-        if (imageFile.exists()) {
-            return null;
+        if (file.exists()) {
+            return;
         }
         try (InputStream in = url.toURL().openStream()) {
-            Files.copy(in, imageFile.toPath());
+            Files.copy(in, file.toPath());
         }
-        return imageFile;
     }
 
     public static String sanitizeFileName(String fileName) {
