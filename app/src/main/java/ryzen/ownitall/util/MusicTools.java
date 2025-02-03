@@ -1,7 +1,5 @@
 package ryzen.ownitall.util;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,17 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 
-import javax.imageio.ImageIO;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.FileUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagOptionSingleton;
 import org.jaudiotagger.tag.id3.ID3v23Frame;
-import org.jaudiotagger.tag.id3.ID3v23Tag;
+import org.jaudiotagger.tag.id3.ID3v24Frame;
+import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyPOPM;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX;
 import org.jaudiotagger.tag.images.Artwork;
@@ -81,10 +77,10 @@ public class MusicTools {
             return;
         }
         // Set ID3v2.3 as default
-        TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V23);
+        TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V24);
 
         AudioFile audioFile = AudioFileIO.read(songFile);
-        ID3v23Tag tag = (ID3v23Tag) audioFile.getTagAndConvertOrCreateAndSetDefault();
+        ID3v24Tag tag = (ID3v24Tag) audioFile.getTagAndConvertOrCreateAndSetDefault();
 
         tag.setField(FieldKey.TITLE, songName);
         if (artistName != null) {
@@ -114,14 +110,14 @@ public class MusicTools {
         if (liked) {
             // Set rating using POPM frame
             // tag.setField(FieldKey.RATING, "255");
-            ID3v23Frame popmFrame = new ID3v23Frame("POPM");
+            ID3v24Frame popmFrame = new ID3v24Frame("POPM");
             FrameBodyPOPM popmBody = new FrameBodyPOPM();
             popmBody.setRating(255);
             popmFrame.setBody(popmBody);
             tag.setFrame(popmFrame);
 
             // Set custom "Love Rating" for MusicBee
-            ID3v23Frame txxxFrame = new ID3v23Frame("TXXX");
+            ID3v24Frame txxxFrame = new ID3v24Frame("TXXX");
             FrameBodyTXXX txxxBody = new FrameBodyTXXX();
             txxxBody.setDescription("Love Rating");
             txxxBody.setText("L");
