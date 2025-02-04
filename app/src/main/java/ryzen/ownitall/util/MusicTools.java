@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -125,7 +126,7 @@ public class MusicTools {
         } else {
             // Remove rating if not liked
             // tag.removeFrame("POPM");
-            tag.setField(FieldKey.RATING, "0");
+            tag.deleteField(FieldKey.RATING);
             tag.removeFrame("TXXX");
         }
         if (albumName != null) {
