@@ -15,7 +15,6 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagOptionSingleton;
-import org.jaudiotagger.tag.id3.ID3v23Frame;
 import org.jaudiotagger.tag.id3.ID3v24Frame;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyPOPM;
@@ -109,23 +108,24 @@ public class MusicTools {
 
         if (liked) {
             // Set rating using POPM frame
-            // tag.setField(FieldKey.RATING, "255");
-            ID3v24Frame popmFrame = new ID3v24Frame("POPM");
-            FrameBodyPOPM popmBody = new FrameBodyPOPM();
-            popmBody.setRating(255);
-            popmFrame.setBody(popmBody);
-            tag.setFrame(popmFrame);
+            tag.setField(FieldKey.RATING, "255");
+            // ID3v24Frame popmFrame = new ID3v24Frame("POPM");
+            // FrameBodyPOPM popmBody = new FrameBodyPOPM();
+            // popmBody.setRating(255);
+            // popmFrame.setBody(popmBody);
+            // tag.setFrame(popmFrame);
 
             // Set custom "Love Rating" for MusicBee
             ID3v24Frame txxxFrame = new ID3v24Frame("TXXX");
             FrameBodyTXXX txxxBody = new FrameBodyTXXX();
-            txxxBody.setDescription("Love Rating");
+            txxxBody.setDescription("Love");
             txxxBody.setText("L");
             txxxFrame.setBody(txxxBody);
             tag.setFrame(txxxFrame);
         } else {
             // Remove rating if not liked
-            tag.removeFrame("POPM");
+            // tag.removeFrame("POPM");
+            tag.setField(FieldKey.RATING, "0");
             tag.removeFrame("TXXX");
         }
         if (albumName != null) {

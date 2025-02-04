@@ -175,7 +175,7 @@ public class Collection {
      */
     public LinkedHashSet<Song> getStandaloneLikedSongs() {
         LinkedHashSet<Song> allTracks = new LinkedHashSet<>();
-        LinkedHashSet<Song> likedSongs = this.likedSongs.getSongs();
+        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>(this.likedSongs.getSongs());
         for (Playlist playlist : this.playlists) {
             allTracks.addAll(playlist.getSongs());
         }
