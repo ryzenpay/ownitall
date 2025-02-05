@@ -201,7 +201,7 @@ public class Upload {
             logger.error("Error parsing metadata for file: " + file.getAbsolutePath() + " : ");
         }
         if (settings.isUseLibrary()) {
-            song = library.searchSong(songName, artistName);
+            song = library.getSong(songName, artistName);
         }
         if (song == null && !settings.isLibraryVerified()) {
             song = new Song(songName);
@@ -313,7 +313,7 @@ public class Upload {
             }
         }
         if (settings.isUseLibrary()) {
-            album = library.searchAlbum(albumName, artistName);
+            album = library.getAlbum(albumName, artistName);
 
         }
         if (album == null && !settings.isLibraryVerified()) {

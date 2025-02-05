@@ -131,7 +131,7 @@ public class Youtube {
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = null;
                             if (settings.isUseLibrary()) {
-                                song = library.searchSong(snippet.getTitle(), snippet.getChannelTitle());
+                                song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
                             }
                             if (song == null && !settings.isLibraryVerified()) {
                                 song = new Song(snippet.getTitle());
@@ -235,7 +235,7 @@ public class Youtube {
                         Song song = null;
                         String artistName = this.getVideoChannel(videoId);
                         if (settings.isUseLibrary()) {
-                            song = library.searchSong(snippet.getTitle(), artistName);
+                            song = library.getSong(snippet.getTitle(), artistName);
                         }
                         if (song == null && !settings.isUseLibrary()) {
                             song = new Song(snippet.getTitle());

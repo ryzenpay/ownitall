@@ -257,7 +257,7 @@ public class Spotify {
                         Track track = savedTrack.getTrack();
                         Song song = null;
                         if (settings.isUseLibrary()) {
-                            song = library.searchSong(track.getName(), track.getArtists()[0].getName());
+                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(track.getName());
@@ -341,7 +341,7 @@ public class Spotify {
         }
         Album album = null;
         if (settings.isUseLibrary()) {
-            album = library.searchAlbum(albumName, artistName);
+            album = library.getAlbum(albumName, artistName);
         }
         if (album == null && !settings.isLibraryVerified()) {
             album = new Album(albumName);
@@ -396,7 +396,7 @@ public class Spotify {
                     for (TrackSimplified track : items) {
                         Song song = null;
                         if (settings.isUseLibrary()) {
-                            song = library.searchSong(track.getName(), track.getArtists()[0].getName());
+                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(track.getName());
@@ -546,7 +546,7 @@ public class Spotify {
                             continue;
                         }
                         if (settings.isUseLibrary()) {
-                            song = library.searchSong(trackName, artistName);
+                            song = library.getSong(trackName, artistName);
                         }
                         if (song == null && !settings.isLibraryVerified()) {
                             song = new Song(trackName);

@@ -23,6 +23,7 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -105,6 +106,33 @@ public class Library {
         return null;
     }
 
+    public Album searchAlbum(String albumName, String artistName) {
+        if (albumName == null) {
+            logger.debug("Empty albumName parsed in searchAlbum");
+            return null;
+        }
+        Map<String, String> params;
+        if (artistName != null) {
+            params = Map.of("album", albumName, "artist", artistName, "limit", "1");
+        } else {
+            params = Map.of("album", albumName, "limit", "1");
+        }
+        JsonNode response = query("album.search", params);
+        if (response != null) {
+            JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
+            if (albumNode != null) {
+                Album album = new Album(albumNode.path("name").asText());
+                String artist = albumNode.path("artist").asText();
+                if (artist != null && !artist.isEmpty()) {
+                    album.addArtist(new Artist(artist));
+                }
+                return album;
+            }
+        }
+        logger.debug("Could not find Album " + albumName + " in Library");
+        return null;
+    }
+
     /**
      * get constructed album backed up with music library
      * 
@@ -112,59 +140,39 @@ public class Library {
      * @param artistName - optional to aid search
      * @return - constructed album backed by library or with provided values
      */
-    public Album searchAlbum(String albumName, String artistName) {
+    public Album getAlbum(String albumName, String artistName) {
         if (albumName == null) {
             return null;
         }
-        Album tmpAlbum = new Album(albumName);
-        tmpAlbum.addArtist(artistName);
-        if (this.albums.contains(tmpAlbum)) {
-            return this.getAlbum(tmpAlbum);
+        Album foundAlbum = this.searchAlbum(albumName, artistName);
+        if (foundAlbum == null) {
+            return null;
+        }
+        if (this.albums.contains(foundAlbum)) {
+            return this.getAlbum(foundAlbum);
         }
 
-        Map<String, String> params;
-        JsonNode response;
-
-        if (artistName == null) {
-            // First, search for the album to get the artist name
-            params = Map.of("album", albumName, "limit", "1");
-            response = query("album.search", params);
-
-            if (response != null && response.path("results").path("albummatches").path("album").size() > 0) {
-                JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
-                albumName = albumNode.path("name").asText();
-                artistName = albumNode.path("artist").asText();
-            } else {
-                logger.debug("Could not find album '" + albumName + "' in Library");
-                return null;
-            }
-        }
-
-        // Now, use album.getInfo to get detailed information
-        params = Map.of("album", albumName, "artist", artistName);
-        response = query("album.getInfo", params);
-
+        Map<String, String> params = Map.of("album", foundAlbum.getName(), "artist",
+                foundAlbum.getMainArtist().getName());
+        JsonNode response = query("album.getInfo", params);
         if (response != null) {
             JsonNode albumNode = response.path("album");
             if (albumNode != null && !albumNode.isMissingNode()) {
                 Album album = new Album(albumNode.path("name").asText());
                 album.addArtist(albumNode.path("artist").asText());
 
-                // Set cover image
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && imageNode.size() > 0) {
                     album.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
                 }
-
-                // Set additional information
                 album.addLink("lastfm", albumNode.path("url").asText());
-
                 this.albums.add(album);
                 return album;
             }
         }
-        // TODO: album search?
-        logger.debug("Could not find detailed information for album '" + albumName + "' by '" + artistName + "'");
+        logger.debug(
+                "Could not find detailed information for album '" + foundAlbum.getName() + "' by '"
+                        + foundAlbum.getMainArtist().getName() + "'");
         return null;
     }
 
@@ -183,6 +191,33 @@ public class Library {
         return null;
     }
 
+    public Song searchSong(String songName, String artistName) {
+        if (songName == null) {
+            logger.debug("Empty songName parsed in searchSong");
+            return null;
+        }
+        Map<String, String> params;
+        if (artistName == null) {
+            params = Map.of("track", songName, "limit", "1");
+        } else {
+            params = Map.of("track", songName, "artist", artistName, "limit", "1");
+        }
+        JsonNode response = query("track.search", params);
+        if (response != null) {
+            JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
+            if (trackNode != null) {
+                Song song = new Song(trackNode.path("name").asText());
+                String artist = trackNode.path("artist").asText();
+                if (artist != null && !artist.isEmpty()) {
+                    song.setArtist(new Artist(artist));
+                }
+                return song;
+            }
+        }
+        logger.debug("Could not find song '" + songName + "' in Library");
+        return null;
+    }
+
     /**
      * construct a song using the LastFM api and their search.
      * constructs everything except the: duration
@@ -191,35 +226,20 @@ public class Library {
      * @param artistName - optional artist to match with the song
      * @return - constructed song
      */
-    public Song searchSong(String songName, String artistName) {
+    public Song getSong(String songName, String artistName) {
         if (songName == null) {
             return null;
         }
-        Song tmpSong = new Song(songName);
-        tmpSong.setArtist(artistName);
-        if (this.songs.contains(tmpSong)) {
-            return this.getSong(tmpSong);
+        Song foundSong = this.searchSong(songName, artistName);
+        if (foundSong == null) {
+            return null;
+        }
+        if (this.songs.contains(foundSong)) {
+            return this.getSong(foundSong);
         }
 
-        Map<String, String> params;
-        JsonNode response;
-
-        if (artistName == null) {
-            params = Map.of("track", songName, "limit", "1");
-            response = query("track.search", params);
-
-            if (response != null && response.path("results").path("trackmatches").path("track").size() > 0) {
-                JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
-                songName = trackNode.path("name").asText();
-                artistName = trackNode.path("artist").asText();
-            } else {
-                logger.debug("Could not find song '" + songName + "' in Library");
-                return null;
-            }
-        }
-
-        params = Map.of("track", songName, "artist", artistName);
-        response = query("track.getInfo", params);
+        Map<String, String> params = Map.of("track", foundSong.getName(), "artist", foundSong.getArtist().getName());
+        JsonNode response = query("track.getInfo", params);
 
         if (response != null) {
             JsonNode trackNode = response.path("track");
@@ -227,7 +247,6 @@ public class Library {
                 Song song = new Song(trackNode.path("name").asText());
                 song.setArtist(trackNode.path("artist").path("name").asText());
 
-                // Set album information
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
                     JsonNode imageNode = albumNode.path("image");
@@ -235,18 +254,16 @@ public class Library {
                         song.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
                     }
                 }
-
-                // Set additional information
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
                 song.addLink("lastfm", trackNode.path("url").asText());
-
                 this.songs.add(song);
                 return song;
             }
         }
 
-        // TODO: song search?
-        logger.debug("Could not find detailed information for song '" + songName + "' by '" + artistName + "'");
+        logger.debug(
+                "Could not find detailed information for song '" + foundSong.getName() + "' by '"
+                        + foundSong.getArtist().getName() + "'");
         return null;
     }
 
