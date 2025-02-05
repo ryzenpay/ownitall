@@ -164,9 +164,9 @@ public class MusicTools {
             sanitized = sanitized.substring(0, 255);
         }
 
-        // Check if the sanitized name contains at least one alphabet character
-        if (!sanitized.matches(".*[a-zA-Z].*")) {
-            return null; // Return null if no alphabetic characters are present
+        // Check if the sanitized name contains at least one alphabet character +/number
+        if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
+            return null;
         }
         // Validate path
         // try {
