@@ -1,12 +1,17 @@
-# Disclaimer:
-big disclaimer, it is still in works and no where near close to finished
-another note i want to add before i forget: use of this program is at your own risk and can be agains the TOS of certain platforms, use at your own caution
+# Disclaimer:  
+This is still in the works and no where near close to finished.  
+Use of this program is at your own risk and can be against the TOS of certain platforms, use at your own caution.  
 
-# ownitall
+# ownitall  
 own your music library no matter the platform (whichever is currently supported)  
-OwnItAll hopes to ease the movement of your music library between playforms including local in supported formats
+OwnItAll hopes to ease the movement of your music library between playforms including local
 
-# documentation
+# Current goals  
+- non-interactive mode (for automation)  
+- syncronization between libraries (put them all into ownitall and then have the same library everywhere)  
+-  JFrame GUI  
+
+# documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## YoutubeDL  
@@ -15,7 +20,7 @@ save the absolute executable path and provide it when needed
 ### requirements  
 - ffmpeg: https://www.ffmpeg.org/   
 
-## LastFM  
+## Library (LastFM)  
 to get the best data possible, everything is checked with lastFM  
 to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  
 

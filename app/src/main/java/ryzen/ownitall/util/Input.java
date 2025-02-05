@@ -16,7 +16,7 @@ public class Input {
         // Add a shutdown hook to catch Ctrl+C
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             shutdownRequested = true;
-            System.out.println("Shutdown requested.");
+            System.out.println("Input Interrupted");
         }));
     }
 

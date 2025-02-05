@@ -12,10 +12,21 @@ public class Menu {
 
     public static void clearScreen() {
         // System.out.print("\033[H\033[2J");
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 20; i++) {
             System.out.println();
         }
         System.out.flush();
+    }
+
+    public static void printLogo() {
+        String asciiLogo = "                        _  _          _  _ \n" +
+                "                       (_)| |        | || |\n" +
+                "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
+                " / _ \\ \\ /\\ / /| '_ \\ | || __|/ _` || || |\n" +
+                "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
+                " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
+                "                ";
+        System.out.println(asciiLogo);
     }
 
     /**
@@ -34,6 +45,7 @@ public class Menu {
         int choice;
         while (true) {
             clearScreen();
+            printLogo();
             System.out.println("[" + menuName + "] Choose an option from the following: ");
             i = 1;
             for (String option : options) {
