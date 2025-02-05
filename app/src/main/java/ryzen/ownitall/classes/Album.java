@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.util.Levenshtein;
-import ryzen.ownitall.util.MusicTools;
 
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
@@ -178,7 +177,7 @@ public class Album extends Playlist {
         output.append("#EXTIMG:").append("cover.png").append("\n");
         // m3u album contents
         for (Song song : this.getSongs()) {
-            File file = new File(MusicTools.sanitizeFileName(song.getName()) + "." + downloadFormat);
+            File file = new File(song.getFileName() + "." + downloadFormat);
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
             output.append(file.getPath()).append("\n");

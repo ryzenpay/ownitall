@@ -163,6 +163,11 @@ public class MusicTools {
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
         }
+
+        // Check if the sanitized name contains at least one alphabet character
+        if (!sanitized.matches(".*[a-zA-Z].*")) {
+            return null; // Return null if no alphabetic characters are present
+        }
         // Validate path
         // try {
         // Paths.get(sanitized);
@@ -170,9 +175,6 @@ public class MusicTools {
         // sanitized = "";
         // }
         // Fallback if the sanitized name is empty
-        if (sanitized.isEmpty()) {
-            sanitized = String.valueOf(fileName.hashCode());
-        }
         return sanitized;
     }
 }

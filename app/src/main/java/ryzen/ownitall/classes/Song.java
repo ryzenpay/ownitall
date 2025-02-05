@@ -172,7 +172,11 @@ public class Song {
 
     @JsonIgnore
     public String getFileName() {
-        return MusicTools.sanitizeFileName(this.getName());
+        String fileName = MusicTools.sanitizeFileName(this.getName());
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = String.valueOf(this.hashCode());
+        }
+        return fileName;
     }
 
     @Override
