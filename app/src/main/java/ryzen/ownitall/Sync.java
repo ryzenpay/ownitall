@@ -162,7 +162,7 @@ public class Sync {
      * @return - constructed collection
      */
     public Collection importCollection() {
-        Collection collection = new Collection();
+        Collection collection = Collection.load();
         try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
             pb.setExtraMessage("Albums");
             collection.addAlbums(importAlbums());
