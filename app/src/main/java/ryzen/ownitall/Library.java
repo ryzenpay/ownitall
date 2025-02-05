@@ -51,6 +51,7 @@ public class Library {
     public static Library load() {
         if (instance == null) {
             instance = new Library();
+            logger.debug("New instance created");
         }
         return instance;
     }

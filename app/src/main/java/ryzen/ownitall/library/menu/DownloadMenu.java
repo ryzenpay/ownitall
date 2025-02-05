@@ -56,8 +56,6 @@ public class DownloadMenu {
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done downloading music");
-        // TODO: error handling for failed songs
-        download.getFailedSongsReport();
     }
 
     private void optionDownloadPlaylist() {
@@ -76,7 +74,6 @@ public class DownloadMenu {
             }
         }
         logger.info("Done downloading playlist");
-        download.getFailedSongsReport();
     }
 
     private void optionDownloadAlbum() {
@@ -95,14 +92,12 @@ public class DownloadMenu {
             }
         }
         logger.info("Done donwloading album");
-        download.getFailedSongsReport();
     }
 
     private void optionDownloadLikedSongs() {
         logger.info("Downloading liked songs...");
         download.downloadLikedSongs();
         logger.info("Done downloading liked songs");
-        download.getFailedSongsReport();
     }
 
     private void optionMetaData() {

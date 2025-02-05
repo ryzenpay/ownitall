@@ -57,16 +57,15 @@ public class Album extends Playlist {
     }
 
     public void merge(Album album) {
-        if (album == null || album.isEmpty()) {
+        if (album == null) {
+            logger.debug("null album passed in merge");
             return;
         }
         this.addSongs(album.getSongs());
-        if (this.getCoverImage() == null && album.getCoverImage() != null) {
+        if (this.getCoverImage() == null) {
             this.setCoverImage(album.getCoverImage());
         }
-        if (album.getYoutubePageToken() != null) {
-            this.setYoutubePageToken(album.getYoutubePageToken());
-        }
+        this.setYoutubePageToken(album.getYoutubePageToken());
         if (album.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.setSpotifyPageOffset(album.getSpotifyPageOffset());
         }
@@ -75,8 +74,8 @@ public class Album extends Playlist {
 
     @Override
     public void addSong(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in addSong");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in addSong");
             return;
         }
         super.addSong(song);
@@ -86,9 +85,7 @@ public class Album extends Playlist {
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
-        if (!this.artists.contains(song.getArtist())) {
-            this.artists.add(song.getArtist());
-        }
+        this.addArtist(song.getArtist());
     }
 
     public void addArtists(LinkedHashSet<Artist> artists) {
@@ -104,6 +101,7 @@ public class Album extends Playlist {
             logger.debug(this.toString() + ": empty artist provided in addArtist");
             return;
         }
+        // when artist becomes more complex, this will need a merge function
         this.artists.add(artist);
     }
 
@@ -160,7 +158,7 @@ public class Album extends Playlist {
     @Override
     @JsonIgnore
     public String toString() {
-        String output = super.toString().trim();
+        String output = super.toString();
         if (this.getMainArtist() != null) {
             output += " (" + this.getMainArtist().toString().trim() + ")";
         }
@@ -175,7 +173,7 @@ public class Album extends Playlist {
         output.append("#EXTM3U").append("\n");
         // m3u album information
         output.append("#EXTALB:").append(this.toString()).append("\n");
-        output.append("#EXTART:").append(this.getMainArtist()).append("\n");
+        output.append("#EXTART:").append(this.getMainArtist().toString().trim()).append("\n");
         // m3u album cover
         output.append("#EXTIMG:").append("cover.png").append("\n");
         // m3u album contents

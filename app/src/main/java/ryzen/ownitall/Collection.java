@@ -32,6 +32,7 @@ public class Collection {
     public static Collection load() {
         if (instance == null) {
             instance = new Collection();
+            logger.debug("New instance created");
         }
         return instance;
     }
@@ -53,7 +54,7 @@ public class Collection {
      */
     public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
         if (mergeAlbums == null || mergeAlbums.isEmpty()) {
-            logger.debug("passed empty album array in addAlbums");
+            logger.debug("empty album array in addAlbums");
             return;
         }
         for (Album album : mergeAlbums) {
@@ -62,7 +63,8 @@ public class Collection {
     }
 
     public void addAlbum(Album album) {
-        if (album == null || album.isEmpty()) {
+        if (album == null) {
+            logger.debug("null album provided in addAlbum");
             return;
         }
         Album foundAlbum = this.getAlbum(album);
@@ -74,7 +76,8 @@ public class Collection {
     }
 
     public void removeAlbum(Album album) {
-        if (album == null || album.isEmpty()) {
+        if (album == null) {
+            logger.debug("null album provided in removeAlbum");
             return;
         }
         this.albums.remove(album);
@@ -87,7 +90,7 @@ public class Collection {
      */
     public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
         if (mergePlaylists == null || mergePlaylists.isEmpty()) {
-            logger.info("Empty playlists passed in addPlaylists");
+            logger.info("empty playlist array passed in addPlaylists");
             return;
         }
         for (Playlist playlist : mergePlaylists) {
@@ -96,7 +99,8 @@ public class Collection {
     }
 
     public void addPlaylist(Playlist playlist) {
-        if (playlist == null || playlist.isEmpty()) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in addPlaylist");
             return;
         }
         Playlist foundPlaylist = this.getPlaylist(playlist);
@@ -108,7 +112,8 @@ public class Collection {
     }
 
     public void removePlaylist(Playlist playlist) {
-        if (playlist == null || playlist.isEmpty()) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in removePlaylist");
             return;
         }
         this.playlists.remove(playlist);
@@ -127,14 +132,16 @@ public class Collection {
     }
 
     public void addLikedSong(Song song) {
-        if (song == null || song.isEmpty()) {
+        if (song == null) {
+            logger.debug("null song provided in addLikedSong");
             return;
         }
         this.likedSongs.addSong(song);
     }
 
     public void removeLikedSong(Song song) {
-        if (song == null || song.isEmpty()) {
+        if (song == null) {
+            logger.debug("null song provided in removeLikedSong");
             return;
         }
         this.likedSongs.removeSong(song);
@@ -174,6 +181,9 @@ public class Collection {
      * @return - linkedhashset of standalone liked songs
      */
     public LinkedHashSet<Song> getStandaloneLikedSongs() {
+        if (this.likedSongs.size() == 0) {
+            return new LinkedHashSet<>();
+        }
         LinkedHashSet<Song> allTracks = new LinkedHashSet<>();
         LinkedHashSet<Song> likedSongs = new LinkedHashSet<>(this.likedSongs.getSongs());
         for (Playlist playlist : this.playlists) {
@@ -188,6 +198,7 @@ public class Collection {
 
     public boolean isLiked(Song song) {
         if (song == null) {
+            logger.debug("null song provided in isLiked");
             return false;
         }
         return this.likedSongs.contains(song);

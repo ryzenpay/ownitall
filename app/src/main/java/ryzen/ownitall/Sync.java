@@ -50,6 +50,7 @@ public class Sync {
     public static Sync load() {
         if (instance == null) {
             instance = new Sync();
+            logger.debug("New instance created");
         }
         return instance;
     }

@@ -156,31 +156,31 @@ public class Song {
     }
 
     public void merge(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in merge");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in merge");
             return;
         }
         if (this.artist == null && song.artist != null) { // if it has more info, no better way to check
-            this.name = song.name;
-            this.artist = song.artist;
+            this.name = song.getName();
+            this.setArtist(song.getArtist());
         }
-        if (this.coverImage == null && song.getCoverImage() != null) {
-            this.coverImage = song.getCoverImage();
+        if (this.coverImage == null) {
+            this.setCoverImage(song.getCoverImage().toString());
         }
         this.addLinks(song.getLinks());
     }
 
     @JsonIgnore
     public String getFileName() {
-        return MusicTools.sanitizeFileName(this.name);
+        return MusicTools.sanitizeFileName(this.getName());
     }
 
     @Override
     @JsonIgnore
     public String toString() {
-        String output = this.name.trim();
+        String output = this.getName().trim();
         if (this.artist != null) {
-            output += " - " + this.artist.getName().trim();
+            output += " - " + this.getArtist().getName().trim();
         }
         return output;
     }
@@ -211,10 +211,5 @@ public class Song {
     @JsonIgnore
     public int hashCode() {
         return Objects.hash(this.name.toLowerCase().trim(), artist);
-    }
-
-    @JsonIgnore
-    public boolean isEmpty() {
-        return this.name.isEmpty();
     }
 }

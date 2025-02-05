@@ -24,8 +24,8 @@ public class LikedSongs extends Playlist { // different from playlist due to lin
      */
     @JsonIgnore
     public boolean contains(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in contains");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in contains");
             return false;
         }
         return this.getSongs().contains(song);

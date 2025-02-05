@@ -56,17 +56,15 @@ public class Playlist {
     }
 
     public void merge(Playlist playlist) {
-        if (playlist == null || playlist.isEmpty()) {
-            logger.debug(this.toString() + ": empty playlist provided in merge");
+        if (playlist == null) {
+            logger.debug(this.toString() + ": null playlist provided in merge");
             return;
         }
         this.addSongs(playlist.getSongs());
-        if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
+        if (this.getCoverImage() == null) {
             this.setCoverImage(playlist.getCoverImage());
         }
-        if (playlist.getYoutubePageToken() != null) {
-            this.youtubePageToken = playlist.getYoutubePageToken();
-        }
+        this.youtubePageToken = playlist.getYoutubePageToken();
         if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.spotifyPageOffset = playlist.spotifyPageOffset;
         }
@@ -144,9 +142,7 @@ public class Playlist {
             logger.debug(this.toString() + ": empty songs array provided in addSongs");
             return;
         }
-        for (Song song : songs) {
-            this.addSong(song);
-        }
+        this.songs.addAll(songs);
     }
 
     /**
@@ -155,8 +151,8 @@ public class Playlist {
      * @param song - constructed Song
      */
     public void addSong(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in addsong");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in addsong");
             return;
         }
         if (this.songs.contains(song)) {
@@ -167,16 +163,16 @@ public class Playlist {
     }
 
     public void removeSong(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in removeSong");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in removeSong");
             return;
         }
         this.songs.remove(song);
     }
 
     public Song getSong(Song song) {
-        if (song == null || song.isEmpty()) {
-            logger.debug(this.toString() + ": empty song provided in getSong");
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in getSong");
             return null;
         }
         for (Song thisSong : this.songs) {
@@ -293,14 +289,6 @@ public class Playlist {
     @JsonIgnore
     public int hashCode() {
         return Objects.hash(this.name.toLowerCase().trim());
-    }
-
-    @JsonIgnore
-    public boolean isEmpty() {
-        if (this.name.isEmpty()) {
-            return true;
-        }
-        return this.songs.isEmpty();
     }
 
     public void clear() {

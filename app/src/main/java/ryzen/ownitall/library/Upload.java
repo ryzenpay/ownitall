@@ -118,12 +118,12 @@ public class Upload {
             if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
-                    if (album != null && !album.isEmpty()) {
+                    if (album != null) {
                         collection.addAlbum(album);
                     }
                 } else {
                     Playlist playlist = getPlaylist(file);
-                    if (playlist != null && !playlist.isEmpty()) {
+                    if (playlist != null) {
                         if (playlist.size() == 1) { // filter out singles
                             collection.addLikedSongs(playlist.getSongs());
                         } else {

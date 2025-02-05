@@ -58,6 +58,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
                 logger.error(e);
                 logger.info("If this persists, delete the file: " + credentialsFilePath);
             }
+            logger.debug("New instance created");
         }
         return instance;
     }

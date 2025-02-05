@@ -31,7 +31,6 @@ public class Download {
     private static final Collection collection = Collection.load();
     private ExecutorService executor;
     private String downloadPath;
-    private LinkedHashSet<Song> failedSongs;
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
@@ -41,7 +40,6 @@ public class Download {
      * setting all settings / credentials
      */
     public Download() {
-        this.failedSongs = new LinkedHashSet<>();
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
         }
@@ -108,7 +106,9 @@ public class Download {
         }
         try {
             executor.shutdown();
+            logger.debug("Awaiting current threads to shutdown (max 10 min)");
             executor.awaitTermination(10, TimeUnit.MINUTES);
+            logger.debug("All threads shut down");
         } catch (InterruptedException e) {
             logger.error("Awaiting for threads to finish was interrupted: " + e);
         }
@@ -209,7 +209,7 @@ public class Download {
                 retries++;
             }
             if (!songFile.exists()) {
-                this.failedSongs.add(song);
+                logger.debug("the song " + song.getName() + " failed to download");
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
@@ -354,14 +354,6 @@ public class Download {
                     }
                 }
             }
-        }
-    }
-
-    public void getFailedSongsReport() {
-        if (!failedSongs.isEmpty()) {
-            logger.error("Failed songs: ");
-            logger.error(this.failedSongs.toString());
-            this.failedSongs.clear();
         }
     }
 }

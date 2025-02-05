@@ -153,6 +153,7 @@ public class Settings extends ryzen.ownitall.util.Settings { // TODO: non-intera
                 logger.error(e);
                 logger.info("If this persists, delete the file: " + settingsFilePath);
             }
+            logger.debug("New instance created");
         }
         return instance;
     }
