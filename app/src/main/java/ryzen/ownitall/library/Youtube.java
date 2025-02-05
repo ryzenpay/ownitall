@@ -83,10 +83,7 @@ public class Youtube {
      * @return an authorized Credential object.
      * @throws IOException - standard IOException
      */
-    private Credential authorize(final NetHttpTransport httpTransport) throws IOException { // TODO: jframe force window
-                                                                                            // on top
-                                                                                            // (frame.toFront();
-                                                                                            // frame.repaint();)
+    private Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()

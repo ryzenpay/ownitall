@@ -6,12 +6,18 @@ import java.util.Scanner;
 public class Input {
     private static Input instance;
     private Scanner scanner;
+    private static volatile boolean shutdownRequested = false;
 
     /**
-     * default input constructor to set up scanner
+     * Default input constructor to set up scanner
      */
     private Input() {
         scanner = new Scanner(System.in);
+        // Add a shutdown hook to catch Ctrl+C
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            shutdownRequested = true;
+            System.out.println("Shutdown requested.");
+        }));
     }
 
     /**
@@ -32,6 +38,9 @@ public class Input {
      * @return - string of user input
      */
     public String getString() {
+        if (shutdownRequested) {
+            return "";
+        }
         return scanner.nextLine().trim();
     }
 
@@ -42,6 +51,9 @@ public class Input {
      */
     public char getChar() {
         while (true) {
+            if (shutdownRequested) {
+                return '\0';
+            }
             try {
                 return getString().charAt(0);
             } catch (Exception e) {
@@ -57,6 +69,9 @@ public class Input {
      */
     public int getInt() {
         while (true) {
+            if (shutdownRequested) {
+                return 0;
+            }
             try {
                 return Integer.parseInt(getString());
             } catch (Exception e) {
@@ -74,6 +89,9 @@ public class Input {
      */
     public int getInt(int lowerBound, int upperBound) {
         while (true) {
+            if (shutdownRequested) {
+                return lowerBound;
+            }
             try {
                 int result = Integer.parseInt(getString());
                 if (result >= lowerBound && result <= upperBound) {
@@ -94,6 +112,9 @@ public class Input {
      */
     public long getLong() {
         while (true) {
+            if (shutdownRequested) {
+                return 0L;
+            }
             try {
                 return Long.parseLong(getString());
             } catch (Exception e) {
@@ -110,6 +131,9 @@ public class Input {
      */
     public File getFile(boolean exists) {
         while (true) {
+            if (shutdownRequested) {
+                return null;
+            }
             String path = getString();
             File file = new File(path);
             if (exists) {
@@ -131,6 +155,9 @@ public class Input {
      */
     public boolean getAgreement() {
         while (true) {
+            if (shutdownRequested) {
+                return false;
+            }
             char choice = getChar();
             if (Character.toLowerCase(choice) == 'y') {
                 return true;
@@ -149,6 +176,9 @@ public class Input {
      */
     public boolean getBool() {
         while (true) {
+            if (shutdownRequested) {
+                return false;
+            }
             String choice = getString();
             if (choice.toLowerCase().equals("true")) {
                 return true;
@@ -161,6 +191,9 @@ public class Input {
     }
 
     public void getEnter() {
-        scanner.nextLine();
+        while (!shutdownRequested) {
+            scanner.nextLine();
+            return;
+        }
     }
 }

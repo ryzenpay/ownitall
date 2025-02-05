@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Menu { // TODO: shutdownhook handling
+public class Menu {
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
     public static void clearScreen() {
