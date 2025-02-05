@@ -56,6 +56,12 @@ public class Library {
         return instance;
     }
 
+    /**
+     * check if library has an instance
+     * to prevent setting it up and logging in when clearing
+     * 
+     * @return - true if instance set
+     */
     public static boolean checkInstance() {
         if (instance != null) {
             return true;
@@ -107,6 +113,13 @@ public class Library {
         return null;
     }
 
+    /**
+     * do a lastfm search for the album
+     * 
+     * @param albumName  - string album name
+     * @param artistName - string album artist name
+     * @return - constructed album with confirmed album name and album artist name
+     */
     public Album searchAlbum(String albumName, String artistName) {
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
@@ -192,6 +205,14 @@ public class Library {
         return null;
     }
 
+    /**
+     * search lastFM for song
+     * 
+     * @param songName   - song name
+     * @param artistName - song main artist name
+     * @return - constructed song with confirfmed song name and song main artist
+     *         name
+     */
     public Song searchSong(String songName, String artistName) {
         if (songName == null) {
             logger.debug("Empty songName parsed in searchSong");
@@ -376,6 +397,12 @@ public class Library {
     // TODO: this does not work (external links)
     // does the page need to load?
     // also greatly impacts performance
+    /**
+     * get other links (youtube, spotify, ...) from a lastfm link
+     * 
+     * @param lastFMUrl - lastfm url to get links from
+     * @return - linkedhashmap of links (source,url)
+     */
     public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
         LinkedHashMap<String, String> links = new LinkedHashMap<>();
         try {

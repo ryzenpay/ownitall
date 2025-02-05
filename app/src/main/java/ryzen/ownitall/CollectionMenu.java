@@ -16,6 +16,9 @@ public class CollectionMenu {
     private static final Logger logger = LogManager.getLogger(CollectionMenu.class);
     private static final Collection collection = Collection.load();
 
+    /**
+     * default collectionmenu constructor initializing the menu
+     */
     public CollectionMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Print Inventory", this::printInventory);
@@ -33,6 +36,9 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * initializes edit menu for more options
+     */
     public void editMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Delete Playlist", this::optionDeletePlaylist);
@@ -147,6 +153,9 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * option to clear current collection
+     */
     private void optionClearInventory() {
         System.out.print("Are you sure you want to clear the current inventory (y/N): ");
         if (Input.request().getAgreement()) {
@@ -159,8 +168,6 @@ public class CollectionMenu {
     /**
      * print the inventory depending on its "depth"
      * 
-     * @param recursion - 1 = number count, 2 = album and playlist names, 3 =
-     *                  albums, playlist and song names
      */
     public void printInventory() {
         System.out.print("Select recursion (1-3): ");

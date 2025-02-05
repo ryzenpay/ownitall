@@ -231,10 +231,8 @@ public class Spotify {
     }
 
     /**
-     * Get all liked songs from current spotify account
+     * Get all liked songs from current spotify account and add them to collection
      * 
-     * @param offset - offset to continue from, default to 0
-     * @return - arraylist of constructed songs
      */
     public void getLikedSongs() {
         int limit = 50;
@@ -289,9 +287,7 @@ public class Spotify {
     }
 
     /**
-     * get all current user saved albums
-     * 
-     * @return - arraylist of constructed albums
+     * get all current user saved albums and add them to collection
      */
     public void getAlbums() {
         int limit = 20;
@@ -427,9 +423,9 @@ public class Spotify {
     }
 
     /**
-     * get all playlists contributed by current spotify user
+     * get all playlists contributed by current spotify user and add them to
+     * collection
      * 
-     * @return - arraylist of constructed Playlists
      */
     public void getPlaylists() {
         int limit = 20;

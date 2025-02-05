@@ -44,6 +44,9 @@ public class ImportMenu {
         menu.SpotifyImportMenu();
     }
 
+    /**
+     * import music from local library
+     */
     private void uploadMenu() {
         new UploadMenu();
     }

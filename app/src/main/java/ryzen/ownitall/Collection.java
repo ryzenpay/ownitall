@@ -29,6 +29,11 @@ public class Collection {
         this.albums = new LinkedHashSet<>();
     }
 
+    /**
+     * initialize collection instance
+     * 
+     * @return - existing or new collection instance
+     */
     public static Collection load() {
         if (instance == null) {
             instance = new Collection();
@@ -37,10 +42,16 @@ public class Collection {
         return instance;
     }
 
+    /**
+     * save all data from collection
+     */
     public void save() {
-        Sync.load().exportCollection(this);
+        Sync.load().exportCollection();
     }
 
+    /**
+     * clear current collection
+     */
     public void clear() {
         this.likedSongs.clear();
         this.playlists.clear();
@@ -62,6 +73,12 @@ public class Collection {
         }
     }
 
+    /**
+     * add album to collection
+     * merges if one is already existing (see contains() and equals())
+     * 
+     * @param album - constructed album to merge
+     */
     public void addAlbum(Album album) {
         if (album == null) {
             logger.debug("null album provided in addAlbum");
@@ -75,6 +92,11 @@ public class Collection {
         }
     }
 
+    /**
+     * remove album from collection
+     * 
+     * @param album - album to remove
+     */
     public void removeAlbum(Album album) {
         if (album == null) {
             logger.debug("null album provided in removeAlbum");
@@ -98,6 +120,12 @@ public class Collection {
         }
     }
 
+    /**
+     * add playlist to collection
+     * merges if one already exists (see contains() and equals())
+     * 
+     * @param playlist - constructed playlist to add
+     */
     public void addPlaylist(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in addPlaylist");
@@ -111,6 +139,11 @@ public class Collection {
         }
     }
 
+    /**
+     * removes playlist from collection
+     * 
+     * @param playlist - constructed playlist to remove
+     */
     public void removePlaylist(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in removePlaylist");
@@ -122,7 +155,7 @@ public class Collection {
     /**
      * merge liked songs into current collection
      * 
-     * @param mergeLikedSongs - constructed LikedSongs
+     * @param songs - array of constructed Song
      */
     public void addLikedSongs(LinkedHashSet<Song> songs) {
         if (songs == null || songs.isEmpty()) {
@@ -131,6 +164,11 @@ public class Collection {
         this.likedSongs.addSongs(songs); // handled by playlist addSongs
     }
 
+    /**
+     * add liked song to collection
+     * 
+     * @param song - constructed song to add
+     */
     public void addLikedSong(Song song) {
         if (song == null) {
             logger.debug("null song provided in addLikedSong");
@@ -139,6 +177,11 @@ public class Collection {
         this.likedSongs.addSong(song);
     }
 
+    /**
+     * remove liked song from collection
+     * 
+     * @param song - constructed song to remove
+     */
     public void removeLikedSong(Song song) {
         if (song == null) {
             logger.debug("null song provided in removeLikedSong");
@@ -196,6 +239,12 @@ public class Collection {
         return likedSongs;
     }
 
+    /**
+     * check if song is liked (in likedSongs)
+     * 
+     * @param song - constructed song to check if liked
+     * @return - true if liked, false if not
+     */
     public boolean isLiked(Song song) {
         if (song == null) {
             logger.debug("null song provided in isLiked");
@@ -231,6 +280,12 @@ public class Collection {
         return null;
     }
 
+    /**
+     * get album from collection
+     * 
+     * @param album - constructed album
+     * @return - found constructed album or null
+     */
     public Album getAlbum(Album album) {
         if (this.albums.contains(album)) {
             for (Album thisAlbum : this.albums) {
@@ -269,6 +324,12 @@ public class Collection {
         return null;
     }
 
+    /**
+     * get playlist from collection
+     * 
+     * @param playlist - constructed playlist to find
+     * @return - found playlist or null
+     */
     public Playlist getPlaylist(Playlist playlist) {
         if (this.playlists.contains(playlist)) {
             for (Playlist thisPlaylist : this.playlists) {
@@ -280,22 +341,18 @@ public class Collection {
         return null;
     }
 
+    /**
+     * get specific song from linkedhashset
+     * 
+     * @param songs - linkedhashset of all songs
+     * @param song  - specific constructed song to find
+     * @return - found constructed song
+     */
     public static Song getSong(LinkedHashSet<Song> songs, Song song) {
         if (songs.contains(song)) {
             for (Song thisSong : songs) {
                 if (thisSong.equals(song)) {
                     return thisSong;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Artist getArtist(LinkedHashSet<Artist> artists, Artist artist) {
-        if (artists.contains(artist)) {
-            for (Artist thisArtist : artists) {
-                if (thisArtist.equals(artist)) {
-                    return thisArtist;
                 }
             }
         }

@@ -67,7 +67,7 @@ public class Main {
      */
     private static void optionSave() {
         Collection.load().save();
-        settings.saveSettings();
+        Settings.load().save();
         if (settings.saveCredentials) {
             Credentials.load().save();
         }

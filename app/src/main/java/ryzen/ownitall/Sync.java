@@ -19,8 +19,10 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class Sync {
     private static final Logger logger = LogManager.getLogger(Sync.class);
@@ -80,7 +82,7 @@ public class Sync {
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
      * 
-     * @param noUserInput - optional boolean to silence userinput
+     * @param userInput - optional boolean to hardcode user input
      */
     public void archive(boolean userInput) {
         this.setDataFolder();
@@ -182,9 +184,9 @@ public class Sync {
      * save collection to local files
      * orchestrates export albums, playlists and liked songs
      * 
-     * @param collection - constructed collection to save
      */
-    public void exportCollection(Collection collection) {
+    public void exportCollection() {
+        Collection collection = Collection.load();
         try (ProgressBar pb = Progressbar.progressBar("Saving Data", 3)) {
             pb.setExtraMessage("Albums");
             exportAlbums(collection.getAlbums());
@@ -328,6 +330,7 @@ public class Sync {
      * @return - updated linkedhashset of songs
      */
     public LinkedHashSet<Song> cacheSongs(LinkedHashSet<Song> songs) {
+        Configurator.setLevel(Song.class, Level.OFF);
         this.setCacheFolder();
         File songFile = new File(this.cacheFolder, settings.songFile + ".json");
         LinkedHashSet<Song> cachedSongs = new LinkedHashSet<>();
@@ -347,6 +350,8 @@ public class Sync {
             logger.debug("saved cached songs to: " + songFile.getAbsolutePath());
         } catch (IOException e) {
             logger.error("Error exporting Library Songs: " + e);
+        } finally {
+            Configurator.setLevel(Song.class, logger.getLevel());
         }
         return cachedSongs;
     }
@@ -359,6 +364,7 @@ public class Sync {
      * @return - updated linkedhashset of albums
      */
     public LinkedHashSet<Album> cacheAlbums(LinkedHashSet<Album> albums) {
+        Configurator.setLevel(Album.class, Level.OFF);
         this.setCacheFolder();
         File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
         LinkedHashSet<Album> cachedAlbums = new LinkedHashSet<>();
@@ -378,6 +384,8 @@ public class Sync {
             logger.debug("saved cached albums to: " + albumFile.getAbsolutePath());
         } catch (IOException e) {
             logger.error("Error exporting Library Albums: " + e);
+        } finally {
+            Configurator.setLevel(Album.class, logger.getLevel());
         }
         return cachedAlbums;
     }

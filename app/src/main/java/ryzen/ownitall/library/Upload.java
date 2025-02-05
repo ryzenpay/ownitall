@@ -89,12 +89,11 @@ public class Upload {
     }
 
     /**
-     * Get local liked songs
+     * Get local liked songs and put them in collection
      * current criteria:
      * - songs in root folder (library path)
      * - folder named "liked songs" (changeable in settings)
      * 
-     * @return - constructed LikedSongs
      */
     public void getLikedSongs() {
         for (File file : this.localLibrary.listFiles()) {

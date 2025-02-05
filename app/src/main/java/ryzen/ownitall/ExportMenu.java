@@ -9,7 +9,6 @@ public class ExportMenu {
     /**
      * default constructor
      * 
-     * @param collection - known library to export
      */
     public ExportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -24,6 +23,9 @@ public class ExportMenu {
         }
     }
 
+    /**
+     * download music locally
+     */
     private void optionDownload() {
         new DownloadMenu();
     }

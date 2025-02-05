@@ -40,6 +40,7 @@ public class Album extends Playlist {
      * @param spotifyPageOffset - spotify page token
      * @param coverImage        - cover art
      * @param artists           - linkedhashset of artists
+     * @param links             - linkedhasmap of links
      */
     @JsonCreator
     public Album(@JsonProperty("name") String name,

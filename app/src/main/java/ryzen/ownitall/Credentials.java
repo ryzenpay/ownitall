@@ -71,7 +71,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public void save() {
         try {
-            super.saveSettings(credentialsFilePath);
+            super.save(credentialsFilePath);
         } catch (Exception e) {
             logger.error("Error saving Credentials: " + e);
         }

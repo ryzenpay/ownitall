@@ -214,7 +214,7 @@ public class Playlist {
     /**
      * set youtube page token of youtube playlist
      * 
-     * @param youtubePageToken - String youtube page token
+     * @param token - String youtube page token
      */
     public void setYoutubePageToken(String token) {
         if (token == null || token.isEmpty()) {
@@ -236,7 +236,7 @@ public class Playlist {
     /**
      * set spotify offset for spotify playlist
      * 
-     * @param spotifyPageOffset - int spotify offset
+     * @param offset - int spotify offset
      */
     public void setSpotifyPageOffset(int offset) {
         if (offset < 0) {

@@ -76,7 +76,7 @@ public class Settings {
         File settingsFile = new File(this.getSettingsFolderPath(), filePath);
 
         if (!settingsFile.exists() || settingsFile.length() == 0) {
-            this.saveSettings(filePath);
+            this.save(filePath);
             return;
         }
 
@@ -102,7 +102,7 @@ public class Settings {
      * @throws Exception - if unable to save to file
      */
     @JsonIgnore
-    protected void saveSettings(String filePath) throws Exception {
+    protected void save(String filePath) throws Exception {
         this.setSettingsFolder();
         File settingsFile = new File(settingsFolderPath, filePath);
         try {

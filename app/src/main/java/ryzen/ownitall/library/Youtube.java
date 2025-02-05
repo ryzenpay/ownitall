@@ -99,10 +99,7 @@ public class Youtube {
     }
 
     /**
-     * get all youtube liked songs
-     * 
-     * @param pageToken - token to continue from, default to null
-     * @return - constructed LikedSongs
+     * save all youtube liked songs to collection
      */
     public void getLikedSongs() {
         if (youtubeApi == null) {
@@ -153,9 +150,8 @@ public class Youtube {
     }
 
     /**
-     * get saved youtube albums
+     * save all youtube albums to collection
      * 
-     * @return - linkedhashset of constructed Album
      */
     public void getAlbums() { // currently not supported (no youtube music API)
         if (youtubeApi == null) {
@@ -166,9 +162,8 @@ public class Youtube {
     /**
      * get saved youtube playlists
      * current criteria:
-     * - gets all vidoes from any playlist with category id 10
+     * - gets all videos from any playlist with category id 10
      * 
-     * @return - linkedhashset of constructed Playlist
      */
     public void getPlaylists() {
         String pageToken = null;
@@ -211,6 +206,7 @@ public class Youtube {
      * get all songs from a playlist
      * 
      * @param playlistId - youtube id of playlist
+     * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
      */
     private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) {

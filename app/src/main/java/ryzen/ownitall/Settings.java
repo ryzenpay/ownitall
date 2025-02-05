@@ -163,9 +163,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
         this.clearSettings(settingsFilePath);
     }
 
-    public void saveSettings() {
+    public void save() {
         try {
-            super.saveSettings(settingsFilePath);
+            super.save(settingsFilePath);
         } catch (Exception e) {
             logger.error("Error saving settings: " + e);
         }

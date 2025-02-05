@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!-- NewPage -->
 <html lang="en">
 <head>
@@ -13,7 +13,7 @@
 <!--[if IE]>
 <script type="text/javascript" src="../../jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../jquery/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="../../jquery/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="../../jquery/jquery-ui.js"></script>
 </head>
 <body>
@@ -26,31 +26,27 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":9,"i2":10,"i3":10,"i4":9,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":9,"i8":10,"i9":10,"i10":10,"i11":9,"i12":10,"i13":10,"i14":9,"i15":10,"i16":10,"i17":9,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
 var activeTableTab = "activeTableTab";
-var pathtoroot = "../../";
-var useModuleDirectories = true;
-loadScripts(document, 'script');</script>
+var pathtoroot = "../../";loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
 </noscript>
-<header role="banner">
-<nav role="navigation">
 <div class="fixedNav">
 <!-- ========= START OF TOP NAVBAR ======= -->
-<div class="topNav"><a id="navbar.top">
+<div class="topNav"><a name="navbar.top">
 <!--   -->
 </a>
 <div class="skipNav"><a href="#skip.navbar.top" title="Skip navigation links">Skip navigation links</a></div>
-<a id="navbar.top.firstrow">
+<a name="navbar.top.firstrow">
 <!--   -->
 </a>
 <ul class="navList" title="Navigation">
-<li><a href="../../index.html">Overview</a></li>
+<li><a href="../../overview-summary.html">Overview</a></li>
 <li><a href="package-summary.html">Package</a></li>
 <li class="navBarCell1Rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
@@ -61,13 +57,21 @@ loadScripts(document, 'script');</script>
 <div class="aboutLanguage"><b>Own It All</b></div>
 </div>
 <div class="subNav">
+<ul class="navList">
+<li>Prev&nbsp;Class</li>
+<li><a href="../../ryzen/ownitall/CollectionMenu.html" title="class in ryzen.ownitall"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?ryzen/ownitall/Collection.html" target="_top">Frames</a></li>
+<li><a href="Collection.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
 <ul class="navList" id="allclasses_navbar_top">
-<li><a href="../../allclasses.html">All&nbsp;Classes</a></li>
+<li><a href="../../allclasses-noframe.html">All&nbsp;Classes</a></li>
 </ul>
 <ul class="navListSearch">
-<li><label for="search">SEARCH:</label>
-<input type="text" id="search" value="search" disabled="disabled">
-<input type="reset" id="reset" value="reset" disabled="disabled">
+<li><span>SEARCH:&nbsp;</span>
+<input type="text" id="search" value=" " disabled="disabled">
+<input type="reset" id="reset" value=" " disabled="disabled">
 </li>
 </ul>
 <div>
@@ -100,7 +104,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
-<a id="skip.navbar.top">
+<a name="skip.navbar.top">
 <!--   -->
 </a></div>
 <!-- ========= END OF TOP NAVBAR ========= -->
@@ -110,12 +114,9 @@ loadScripts(document, 'script');</script>
 $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 //-->
 </script>
-</nav>
-</header>
 <!-- ======== START OF CLASS DATA ======== -->
-<main role="main">
 <div class="header">
-<div class="subTitle"><span class="packageLabelInType">Package</span>&nbsp;<a href="package-summary.html">ryzen.ownitall</a></div>
+<div class="subTitle"><span class="packageLabelInType">Package</span>&nbsp;<a href="../../ryzen/ownitall/package-summary.html">ryzen.ownitall</a></div>
 <h2 title="Class Collection" class="title">Class Collection</h2>
 </div>
 <div class="contentContainer">
@@ -131,6 +132,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul class="blockList">
 <li class="blockList">
 <hr>
+<br>
 <pre>public class <span class="typeNameLabel">Collection</span>
 extends java.lang.Object</pre>
 </li>
@@ -140,20 +142,19 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<section role="region">
 <ul class="blockList">
-<li class="blockList"><a id="constructor.summary">
+<li class="blockList"><a name="constructor.summary">
 <!--   -->
 </a>
 <h3>Constructor Summary</h3>
-<table class="memberSummary">
+<table class="memberSummary" summary="Constructor Summary table, listing constructors, and an explanation">
 <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
 <tr>
 <th class="colFirst" scope="col">Constructor</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Collection</a></span>()</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#Collection--">Collection</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">default constructor initializing arrays</div>
 </td>
@@ -161,15 +162,13 @@ extends java.lang.Object</pre>
 </table>
 </li>
 </ul>
-</section>
 <!-- ========== METHOD SUMMARY =========== -->
-<section role="region">
 <ul class="blockList">
-<li class="blockList"><a id="method.summary">
+<li class="blockList"><a name="method.summary">
 <!--   -->
 </a>
 <h3>Method Summary</h3>
-<table class="memberSummary">
+<table class="memberSummary" summary="Method Summary table, listing methods, and an explanation">
 <caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Static Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
@@ -178,94 +177,174 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#editMenu()">editMenu</a></span>()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addAlbum-ryzen.ownitall.classes.Album-">addAlbum</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
 <td class="colLast">
-<div class="block">edit menu</div>
+<div class="block">add album to collection
+ merges if one is already existing (see contains() and equals())</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>static <a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAlbum(java.util.LinkedHashSet,ryzen.ownitall.classes.Album)">getAlbum</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums,
-        <a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
-<td class="colLast">
-<div class="block">get specific album in passed array</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAlbums()">getAlbums</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get this collections albums</div>
-</td>
-</tr>
-<tr id="i3" class="rowColor">
-<td class="colFirst"><code><a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLikedSongs()">getLikedSongs</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get this collections likedsongs</div>
-</td>
-</tr>
-<tr id="i4" class="altColor">
-<td class="colFirst"><code>static <a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPlaylist(java.util.LinkedHashSet,ryzen.ownitall.classes.Playlist)">getPlaylist</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists,
-           <a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
-<td class="colLast">
-<div class="block">get specific playlist in array of passed playlists</div>
-</td>
-</tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPlaylists()">getPlaylists</a></span>()</code></th>
-<td class="colLast">
-<div class="block">get this collections playlists</div>
-</td>
-</tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStandaloneLikedSongs()">getStandaloneLikedSongs</a></span>()</code></th>
-<td class="colLast">
-<div class="block">function to get standalone liked songs (not in any albums or playlists)</div>
-</td>
-</tr>
-<tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mergeAlbums(java.util.LinkedHashSet)">mergeAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;mergeAlbums)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addAlbums-java.util.LinkedHashSet-">addAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;mergeAlbums)</code></th>
 <td class="colLast">
 <div class="block">merge array of albums into current collection</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mergeCollection(ryzen.ownitall.Collection)">mergeCollection</a></span>&#8203;(<a href="Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addLikedSong-ryzen.ownitall.classes.Song-">addLikedSong</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
+<td class="colLast">
+<div class="block">add liked song to collection</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addLikedSongs-java.util.LinkedHashSet-">addLikedSongs</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs)</code></th>
+<td class="colLast">
+<div class="block">merge liked songs into current collection</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addPlaylist-ryzen.ownitall.classes.Playlist-">addPlaylist</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
+<td class="colLast">
+<div class="block">add playlist to collection
+ merges if one already exists (see contains() and equals())</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#addPlaylists-java.util.LinkedHashSet-">addPlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;mergePlaylists)</code></th>
+<td class="colLast">
+<div class="block">merge array of playlists into current collection</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#clear--">clear</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">clear current collection</div>
+</td>
+</tr>
+<tr id="i7" class="rowColor">
+<td class="colFirst"><code>static <a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getAlbum-java.util.LinkedHashSet-ryzen.ownitall.classes.Album-">getAlbum</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums,
+        <a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
+<td class="colLast">
+<div class="block">get specific album in passed array</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code><a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
+<td class="colLast">
+<div class="block">get album from collection</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getAlbums--">getAlbums</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get this collections albums</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
+<td class="colFirst"><code><a href="../../ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getLikedSongs--">getLikedSongs</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get this collections likedsongs</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>static <a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getPlaylist-java.util.LinkedHashSet-ryzen.ownitall.classes.Playlist-">getPlaylist</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists,
+           <a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
+<td class="colLast">
+<div class="block">get specific playlist in array of passed playlists</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getPlaylist-ryzen.ownitall.classes.Playlist-">getPlaylist</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
+<td class="colLast">
+<div class="block">get playlist from collection</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getPlaylists--">getPlaylists</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get this collections playlists</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>static <a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getSong-java.util.LinkedHashSet-ryzen.ownitall.classes.Song-">getSong</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+       <a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
+<td class="colLast">
+<div class="block">get specific song from linkedhashset</div>
+</td>
+</tr>
+<tr id="i15" class="rowColor">
+<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#getStandaloneLikedSongs--">getStandaloneLikedSongs</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">function to get standalone liked songs (not in any albums or playlists)</div>
+</td>
+</tr>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#isLiked-ryzen.ownitall.classes.Song-">isLiked</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
+<td class="colLast">
+<div class="block">check if song is liked (in likedSongs)</div>
+</td>
+</tr>
+<tr id="i17" class="rowColor">
+<td class="colFirst"><code>static <a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#load--">load</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">initialize collection instance</div>
+</td>
+</tr>
+<tr id="i18" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#mergeCollection-ryzen.ownitall.Collection-">mergeCollection</a></span>&#8203;(<a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</code></th>
 <td class="colLast">
 <div class="block">merge a collection into the current collection
  orchestrates the merge albums, playlists and liked songs</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mergeLikedSongs(ryzen.ownitall.classes.LikedSongs)">mergeLikedSongs</a></span>&#8203;(<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;mergeLikedSongs)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#removeAlbum-ryzen.ownitall.classes.Album-">removeAlbum</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
 <td class="colLast">
-<div class="block">merge liked songs into current collection</div>
+<div class="block">remove album from collection</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mergePlaylists(java.util.LinkedHashSet)">mergePlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;mergePlaylists)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#removeLikedSong-ryzen.ownitall.classes.Song-">removeLikedSong</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
 <td class="colLast">
-<div class="block">merge array of playlists into current collection</div>
+<div class="block">remove liked song from collection</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#printInventory(int)">printInventory</a></span>&#8203;(int&nbsp;recursion)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#removePlaylist-ryzen.ownitall.classes.Playlist-">removePlaylist</a></span>&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
 <td class="colLast">
-<div class="block">print the inventory depending on its "depth"</div>
+<div class="block">removes playlist from collection</div>
+</td>
+</tr>
+<tr id="i22" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Collection.html#save--">save</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">save all data from collection</div>
 </td>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a id="methods.inherited.from.class.java.lang.Object">
+<li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
@@ -273,7 +352,6 @@ extends java.lang.Object</pre>
 </ul>
 </li>
 </ul>
-</section>
 </li>
 </ul>
 </div>
@@ -281,39 +359,70 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
-<section role="region">
 <ul class="blockList">
-<li class="blockList"><a id="constructor.detail">
+<li class="blockList"><a name="constructor.detail">
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a id="&lt;init&gt;()">
+<a name="Collection--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Collection</h4>
-<pre>public&nbsp;Collection()</pre>
+<pre>public&nbsp;Collection&#8203;()</pre>
 <div class="block">default constructor initializing arrays</div>
 </li>
 </ul>
 </li>
 </ul>
-</section>
 <!-- ============ METHOD DETAIL ========== -->
-<section role="region">
 <ul class="blockList">
-<li class="blockList"><a id="method.detail">
+<li class="blockList"><a name="method.detail">
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a id="mergeAlbums(java.util.LinkedHashSet)">
+<a name="load--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>mergeAlbums</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;mergeAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;mergeAlbums)</pre>
+<h4>load</h4>
+<pre>public static&nbsp;<a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;load&#8203;()</pre>
+<div class="block">initialize collection instance</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- existing or new collection instance</dd>
+</dl>
+</li>
+</ul>
+<a name="save--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>save</h4>
+<pre>public&nbsp;void&nbsp;save&#8203;()</pre>
+<div class="block">save all data from collection</div>
+</li>
+</ul>
+<a name="clear--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>clear</h4>
+<pre>public&nbsp;void&nbsp;clear&#8203;()</pre>
+<div class="block">clear current collection</div>
+</li>
+</ul>
+<a name="addAlbums-java.util.LinkedHashSet-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addAlbums</h4>
+<pre>public&nbsp;void&nbsp;addAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;mergeAlbums)</pre>
 <div class="block">merge array of albums into current collection</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -321,13 +430,42 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="mergePlaylists(java.util.LinkedHashSet)">
+<a name="addAlbum-ryzen.ownitall.classes.Album-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>mergePlaylists</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;mergePlaylists&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;mergePlaylists)</pre>
+<h4>addAlbum</h4>
+<pre>public&nbsp;void&nbsp;addAlbum&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
+<div class="block">add album to collection
+ merges if one is already existing (see contains() and equals())</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - constructed album to merge</dd>
+</dl>
+</li>
+</ul>
+<a name="removeAlbum-ryzen.ownitall.classes.Album-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>removeAlbum</h4>
+<pre>public&nbsp;void&nbsp;removeAlbum&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
+<div class="block">remove album from collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - album to remove</dd>
+</dl>
+</li>
+</ul>
+<a name="addPlaylists-java.util.LinkedHashSet-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addPlaylists</h4>
+<pre>public&nbsp;void&nbsp;addPlaylists&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;mergePlaylists)</pre>
 <div class="block">merge array of playlists into current collection</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -335,27 +473,84 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="mergeLikedSongs(ryzen.ownitall.classes.LikedSongs)">
+<a name="addPlaylist-ryzen.ownitall.classes.Playlist-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>mergeLikedSongs</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;mergeLikedSongs&#8203;(<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;mergeLikedSongs)</pre>
-<div class="block">merge liked songs into current collection</div>
+<h4>addPlaylist</h4>
+<pre>public&nbsp;void&nbsp;addPlaylist&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+<div class="block">add playlist to collection
+ merges if one already exists (see contains() and equals())</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mergeLikedSongs</code> - - constructed LikedSongs</dd>
+<dd><code>playlist</code> - - constructed playlist to add</dd>
 </dl>
 </li>
 </ul>
-<a id="mergeCollection(ryzen.ownitall.Collection)">
+<a name="removePlaylist-ryzen.ownitall.classes.Playlist-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>removePlaylist</h4>
+<pre>public&nbsp;void&nbsp;removePlaylist&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+<div class="block">removes playlist from collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>playlist</code> - - constructed playlist to remove</dd>
+</dl>
+</li>
+</ul>
+<a name="addLikedSongs-java.util.LinkedHashSet-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addLikedSongs</h4>
+<pre>public&nbsp;void&nbsp;addLikedSongs&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs)</pre>
+<div class="block">merge liked songs into current collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songs</code> - - array of constructed Song</dd>
+</dl>
+</li>
+</ul>
+<a name="addLikedSong-ryzen.ownitall.classes.Song-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addLikedSong</h4>
+<pre>public&nbsp;void&nbsp;addLikedSong&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">add liked song to collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - constructed song to add</dd>
+</dl>
+</li>
+</ul>
+<a name="removeLikedSong-ryzen.ownitall.classes.Song-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>removeLikedSong</h4>
+<pre>public&nbsp;void&nbsp;removeLikedSong&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">remove liked song from collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - constructed song to remove</dd>
+</dl>
+</li>
+</ul>
+<a name="mergeCollection-ryzen.ownitall.Collection-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>mergeCollection</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;mergeCollection&#8203;(<a href="Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</pre>
+<pre>public&nbsp;void&nbsp;mergeCollection&#8203;(<a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;collection)</pre>
 <div class="block">merge a collection into the current collection
  orchestrates the merge albums, playlists and liked songs</div>
 <dl>
@@ -364,13 +559,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getLikedSongs()">
+<a name="getLikedSongs--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getLikedSongs</h4>
-<pre class="methodSignature">public&nbsp;<a href="classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;getLikedSongs()</pre>
+<pre>public&nbsp;<a href="../../ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;getLikedSongs&#8203;()</pre>
 <div class="block">get this collections likedsongs</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -378,13 +573,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getStandaloneLikedSongs()">
+<a name="getStandaloneLikedSongs--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getStandaloneLikedSongs</h4>
-<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;getStandaloneLikedSongs()</pre>
+<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;getStandaloneLikedSongs&#8203;()</pre>
 <div class="block">function to get standalone liked songs (not in any albums or playlists)</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -392,13 +587,29 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getAlbums()">
+<a name="isLiked-ryzen.ownitall.classes.Song-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isLiked</h4>
+<pre>public&nbsp;boolean&nbsp;isLiked&#8203;(<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">check if song is liked (in likedSongs)</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - constructed song to check if liked</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- true if liked, false if not</dd>
+</dl>
+</li>
+</ul>
+<a name="getAlbums--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAlbums</h4>
-<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;getAlbums()</pre>
+<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;getAlbums&#8203;()</pre>
 <div class="block">get this collections albums</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -406,14 +617,14 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getAlbum(java.util.LinkedHashSet,ryzen.ownitall.classes.Album)">
+<a name="getAlbum-java.util.LinkedHashSet-ryzen.ownitall.classes.Album-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAlbum</h4>
-<pre class="methodSignature">public static&nbsp;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;getAlbum&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums,
-                             <a href="classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
+<pre>public static&nbsp;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;getAlbum&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums,
+                             <a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
 <div class="block">get specific album in passed array</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -424,13 +635,29 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getPlaylists()">
+<a name="getAlbum-ryzen.ownitall.classes.Album-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAlbum</h4>
+<pre>public&nbsp;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;getAlbum&#8203;(<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
+<div class="block">get album from collection</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - constructed album</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- found constructed album or null</dd>
+</dl>
+</li>
+</ul>
+<a name="getPlaylists--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getPlaylists</h4>
-<pre class="methodSignature">public&nbsp;java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;getPlaylists()</pre>
+<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;getPlaylists&#8203;()</pre>
 <div class="block">get this collections playlists</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -438,14 +665,14 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="getPlaylist(java.util.LinkedHashSet,ryzen.ownitall.classes.Playlist)">
+<a name="getPlaylist-java.util.LinkedHashSet-ryzen.ownitall.classes.Playlist-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getPlaylist</h4>
-<pre class="methodSignature">public static&nbsp;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;getPlaylist&#8203;(java.util.LinkedHashSet&lt;<a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists,
-                                   <a href="classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+<pre>public static&nbsp;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;getPlaylist&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists,
+                                   <a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
 <div class="block">get specific playlist in array of passed playlists</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -456,52 +683,57 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a id="printInventory(int)">
+<a name="getPlaylist-ryzen.ownitall.classes.Playlist-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>printInventory</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;printInventory&#8203;(int&nbsp;recursion)</pre>
-<div class="block">print the inventory depending on its "depth"</div>
+<h4>getPlaylist</h4>
+<pre>public&nbsp;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;getPlaylist&#8203;(<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+<div class="block">get playlist from collection</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>recursion</code> - - 1 = number count, 2 = album and playlist names, 3 =
-                  albums, playlist and song names</dd>
+<dd><code>playlist</code> - - constructed playlist to find</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- found playlist or null</dd>
 </dl>
 </li>
 </ul>
-<a id="editMenu()">
+<a name="getSong-java.util.LinkedHashSet-ryzen.ownitall.classes.Song-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>editMenu</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;editMenu()</pre>
-<div class="block">edit menu</div>
+<h4>getSong</h4>
+<pre>public static&nbsp;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;getSong&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+                           <a href="../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">get specific song from linkedhashset</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songs</code> - - linkedhashset of all songs</dd>
+<dd><code>song</code> - - specific constructed song to find</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- found constructed song</dd>
+</dl>
 </li>
 </ul>
 </li>
 </ul>
-</section>
 </li>
 </ul>
 </div>
 </div>
-</main>
 <!-- ========= END OF CLASS DATA ========= -->
-<footer role="contentinfo">
-<nav role="navigation">
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
-<div class="bottomNav"><a id="navbar.bottom">
+<div class="bottomNav"><a name="navbar.bottom">
 <!--   -->
 </a>
 <div class="skipNav"><a href="#skip.navbar.bottom" title="Skip navigation links">Skip navigation links</a></div>
-<a id="navbar.bottom.firstrow">
+<a name="navbar.bottom.firstrow">
 <!--   -->
 </a>
 <ul class="navList" title="Navigation">
-<li><a href="../../index.html">Overview</a></li>
+<li><a href="../../overview-summary.html">Overview</a></li>
 <li><a href="package-summary.html">Package</a></li>
 <li class="navBarCell1Rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
@@ -512,8 +744,16 @@ extends java.lang.Object</pre>
 <div class="aboutLanguage"><b>Own It All</b></div>
 </div>
 <div class="subNav">
+<ul class="navList">
+<li>Prev&nbsp;Class</li>
+<li><a href="../../ryzen/ownitall/CollectionMenu.html" title="class in ryzen.ownitall"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../index.html?ryzen/ownitall/Collection.html" target="_top">Frames</a></li>
+<li><a href="Collection.html" target="_top">No&nbsp;Frames</a></li>
+</ul>
 <ul class="navList" id="allclasses_navbar_bottom">
-<li><a href="../../allclasses.html">All&nbsp;Classes</a></li>
+<li><a href="../../allclasses-noframe.html">All&nbsp;Classes</a></li>
 </ul>
 <div>
 <script type="text/javascript"><!--
@@ -545,11 +785,9 @@ extends java.lang.Object</pre>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
-<a id="skip.navbar.bottom">
+<a name="skip.navbar.bottom">
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-</nav>
-</footer>
 </body>
 </html>
