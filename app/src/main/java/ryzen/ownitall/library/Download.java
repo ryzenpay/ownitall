@@ -84,7 +84,7 @@ public class Download { // TODO: catch sigint to cancel downloads
         }
         // Set up a signal handler for SIGINT (Ctrl+C)
         Signal.handle(new Signal("INT"), signal -> {
-            // System.out.println("\nInput Interruption Caught");
+            logger.info("Download interruption caught, finishing any in queue");
             interrupted = true;
         });
         while (!interrupted) {

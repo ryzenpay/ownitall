@@ -3,13 +3,18 @@ package ryzen.ownitall.util;
 import java.io.File;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import sun.misc.Signal;
 
 public class Input {
-    private volatile boolean interrupted = false;
     private static Input instance;
-    private Scanner scanner;
+    private static Scanner scanner;
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
 
     private Input() {
         scanner = new Scanner(System.in);
@@ -22,44 +27,25 @@ public class Input {
         return instance;
     }
 
-    private void resetScanner() {
-        if (scanner != null) {
-            scanner.close();
-        }
-        scanner = new Scanner(System.in);
-    }
-
     public String getString() throws InterruptedException {
-        try {
-            // Set up a signal handler for SIGINT (Ctrl+C)
-            Signal.handle(new Signal("INT"), signal -> {
-                // System.out.println("\nInput Interruption Caught");
-                interrupted = true;
-                resetScanner(); // Reset scanner on interruption
-            });
+        Signal.handle(new Signal("INT"), signal -> {
+            // System.out.println("\nInput Interruption Caught");
+            interrupted.set(true);
+        });
 
-            while (!interrupted) {
-                try {
-                    if (scanner.hasNextLine()) {
-                        String input = scanner.nextLine().trim();
-                        if (interrupted) {
-                            throw new InterruptedException("SIGINT received");
-                        }
-                        return input;
-                    }
-                } catch (NoSuchElementException e) {
-                    if (interrupted) {
-                        throw new InterruptedException("SIGINT received");
-                    }
-                    // If not interrupted, reset the scanner and continue
-                    resetScanner();
-                }
+        try {
+            if (!scanner.hasNextLine()) {
+                scanner = new Scanner(System.in);
             }
-            throw new InterruptedException("SIGINT received");
-        } catch (IllegalStateException e) {
-            throw e;
+            return scanner.nextLine().trim();
+        } catch (Exception e) {
+            if (interrupted.get()) {
+                throw new InterruptedException("SIGINT received");
+            } else {
+                throw new RuntimeException(e);
+            }
         } finally {
-            interrupted = false; // Reset the flag
+            interrupted.set(false);
         }
     }
 
