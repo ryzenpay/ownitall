@@ -1,12 +1,7 @@
 package ryzen.ownitall.util;
 
 import java.io.File;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import sun.misc.Signal;
@@ -34,7 +29,8 @@ public class Input {
         });
 
         try {
-            if (!scanner.hasNextLine()) {
+            if (!scanner.hasNext()) {
+                // this makes it need 2x cntrl + c, but meh
                 scanner = new Scanner(System.in);
             }
             return scanner.nextLine().trim();
