@@ -33,7 +33,7 @@ public class Input {
         try {
             // Set up a signal handler for SIGINT (Ctrl+C)
             Signal.handle(new Signal("INT"), signal -> {
-                System.out.println("\nInterruption Caught");
+                // System.out.println("\nInput Interruption Caught");
                 interrupted = true;
                 resetScanner(); // Reset scanner on interruption
             });

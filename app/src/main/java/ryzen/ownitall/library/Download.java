@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.misc.Signal;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
@@ -25,7 +26,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
-public class Download {
+public class Download { // TODO: catch sigint to cancel downloads
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static final Settings settings = Settings.load();
     private static final Collection collection = Collection.load();
@@ -34,6 +35,7 @@ public class Download {
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
+    private volatile boolean interrupted = false;
 
     /**
      * default download constructor
@@ -80,7 +82,12 @@ public class Download {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        while (true) {
+        // Set up a signal handler for SIGINT (Ctrl+C)
+        Signal.handle(new Signal("INT"), signal -> {
+            // System.out.println("\nInput Interruption Caught");
+            interrupted = true;
+        });
+        while (!interrupted) {
             try {
                 // Attempt to execute the task
                 executor.execute(() -> {
@@ -96,6 +103,9 @@ public class Download {
                     logger.error("Awaiting for free thread was interrupted" + ie);
                 }
             }
+        }
+        if (interrupted) {
+            threadShutdown();
         }
     }
 
