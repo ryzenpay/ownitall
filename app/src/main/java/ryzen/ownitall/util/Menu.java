@@ -54,7 +54,12 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            choice = Input.request().getInt();
+            try {
+                choice = Input.request().getInt();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting menu response");
+                choice = 0;
+            }
             if (choice < 0 || choice > options.size()) {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");
@@ -71,28 +76,29 @@ public class Menu {
         int i = 1;
         int choice;
         while (true) {
-            try {
-                clearScreen();
-                System.out.println("[" + menuName + "] Choose an option from the following: ");
-                i = 1;
-                for (String option : options) {
-                    System.out.println("[" + i + "] " + option + ": " + setOptions.get(option).toString());
-                    i++;
-                }
-                System.out.println("[0] Exit");
-                System.out.print("Enter your choice: ");
-                choice = Input.request().getInt();
-                if (choice < 0 || choice > options.size()) {
-                    System.err.println("Incorrect option, try again");
-                    System.out.print("Enter your choice: ");
-                } else {
-                    options.add(0, "Exit");
-                    return options.get(choice);
-                }
-            } catch (Exception e) {
-                logger.info("Shutdown hook caught");
-                return "Exit";
+            clearScreen();
+            System.out.println("[" + menuName + "] Choose an option from the following: ");
+            i = 1;
+            for (String option : options) {
+                System.out.println("[" + i + "] " + option + ": " + setOptions.get(option).toString());
+                i++;
             }
+            System.out.println("[0] Exit");
+            System.out.print("Enter your choice: ");
+            try {
+                choice = Input.request().getInt();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting menu response");
+                choice = 0;
+            }
+            if (choice < 0 || choice > options.size()) {
+                System.err.println("Incorrect option, try again");
+                System.out.print("Enter your choice: ");
+            } else {
+                options.add(0, "Exit");
+                return options.get(choice);
+            }
+
         }
     }
 }

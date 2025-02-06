@@ -203,6 +203,9 @@ public class Settings {
                 return true;
             } else if (setting.getType() == Integer.class) {
                 int input = Input.request().getInt();
+                if (input == -1000) {
+                    return false;
+                }
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == long.class) {
@@ -214,6 +217,8 @@ public class Settings {
                         .println("Modifying settings of the type " + setting.getType() + " is currently not supported");
             }
             setting.setAccessible(false);
+        } catch (InterruptedException e) {
+            return false;
         } catch (NoSuchFieldException e) {
             throw new Exception("Error modifying setting: " + e);
         }

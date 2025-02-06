@@ -157,11 +157,15 @@ public class CollectionMenu {
      * option to clear current collection
      */
     private void optionClearInventory() {
-        System.out.print("Are you sure you want to clear the current inventory (y/N): ");
-        if (Input.request().getAgreement()) {
-            logger.info("Clearing inventory...");
-            collection.clear();
-            logger.info("Successfully cleared inventory");
+        try {
+            System.out.print("Are you sure you want to clear the current inventory (y/N): ");
+            if (Input.request().getAgreement()) {
+                logger.info("Clearing inventory...");
+                collection.clear();
+                logger.info("Successfully cleared inventory");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting clear inventory agreement");
         }
     }
 
@@ -170,8 +174,14 @@ public class CollectionMenu {
      * 
      */
     public void printInventory() {
-        System.out.print("Select recursion (1-3): ");
-        int recursion = Input.request().getInt(1, 3);
+        int recursion;
+        try {
+            System.out.print("Select recursion (1-3): ");
+            recursion = Input.request().getInt(1, 3);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting inventory recursion");
+            return;
+        }
         int playlistCount = collection.getPlaylists().size();
         int playlistTrackCount = 0;
         int albumCount = collection.getAlbums().size();

@@ -90,10 +90,15 @@ public class Sync {
         String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         File archiveFolder = new File(this.dataFolder, folderName);
         if (archiveFolder.exists() && !userInput) {
-            System.out.println(
-                    "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
-            System.out.print("Are you sure y/N: ");
-            if (!Input.request().getAgreement()) {
+            try {
+                System.out.println(
+                        "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
+                System.out.print("Are you sure y/N: ");
+                if (!Input.request().getAgreement()) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting archive overwrite agreement");
                 return;
             }
         }

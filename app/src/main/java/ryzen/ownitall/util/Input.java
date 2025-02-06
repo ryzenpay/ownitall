@@ -1,9 +1,13 @@
 package ryzen.ownitall.util;
 
 import java.io.File;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import sun.misc.Signal;
+
 public class Input {
+    private volatile boolean interrupted = false;
     private static Input instance;
     private Scanner scanner;
 
@@ -18,50 +22,71 @@ public class Input {
         return instance;
     }
 
-    public String getString() {
-        // TODO: sigtermhook currently does not work
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("SIGTERM caught");
-        }));
+    private void resetScanner() {
+        if (scanner != null) {
+            scanner.close();
+        }
+        scanner = new Scanner(System.in);
+    }
 
+    public String getString() throws InterruptedException {
         try {
-            return scanner.nextLine().trim();
+            // Set up a signal handler for SIGINT (Ctrl+C)
+            Signal.handle(new Signal("INT"), signal -> {
+                System.out.println("\nInterruption Caught");
+                interrupted = true;
+                resetScanner(); // Reset scanner on interruption
+            });
+
+            while (!interrupted) {
+                try {
+                    if (scanner.hasNextLine()) {
+                        String input = scanner.nextLine().trim();
+                        if (interrupted) {
+                            throw new InterruptedException("SIGINT received");
+                        }
+                        return input;
+                    }
+                } catch (NoSuchElementException e) {
+                    if (interrupted) {
+                        throw new InterruptedException("SIGINT received");
+                    }
+                    // If not interrupted, reset the scanner and continue
+                    resetScanner();
+                }
+            }
+            throw new InterruptedException("SIGINT received");
         } catch (IllegalStateException e) {
             throw e;
-        } catch (Exception e) {
-            return null;
+        } finally {
+            interrupted = false; // Reset the flag
         }
     }
 
-    public char getChar() {
+    public char getChar() throws InterruptedException {
         while (true) {
             try {
                 String input = getString();
-                if (input == null) {
-                    return '\0';
-                }
                 return input.charAt(0);
-            } catch (Exception e) {
-                System.err.print("Invalid Input. Please enter a valid character: ");
+            } catch (StringIndexOutOfBoundsException e) {
+                System.err.print("Invalid char provided, try again: ");
             }
         }
+
     }
 
-    public int getInt() {
+    public int getInt() throws InterruptedException {
         while (true) {
             try {
                 String inputInteger = getString();
-                if (inputInteger == null) {
-                    return 0;
-                }
                 return Integer.parseInt(inputInteger);
-            } catch (Exception e) {
-                System.err.print("Invalid input. Please enter a valid integer: ");
+            } catch (NumberFormatException e) {
+                System.err.print("Invalid int provided, try again: ");
             }
         }
     }
 
-    public int getInt(int lowerBound, int upperBound) {
+    public int getInt(int lowerBound, int upperBound) throws InterruptedException {
         while (true) {
             try {
                 int result = getInt();
@@ -70,13 +95,14 @@ public class Input {
                 } else {
                     System.err.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.err.print("Invalid input. Please enter a valid integer: ");
             }
         }
+
     }
 
-    public long getLong() {
+    public long getLong() throws InterruptedException {
         while (true) {
             try {
                 String inputLong = getString();
@@ -84,24 +110,21 @@ public class Input {
                     return 0L;
                 }
                 return Long.parseLong(inputLong);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.err.print("Invalid input. Please enter a valid long: ");
             }
         }
     }
 
-    public File getFile(boolean exists) {
+    public File getFile(boolean exists) throws InterruptedException {
         while (true) {
             String path = getString();
-            if (path == null) {
-                return null;
-            }
             File file = new File(path);
             if (exists) {
                 if (file.exists()) {
                     return file;
                 } else {
-                    System.err.print("The specified file or folder does not exist. Try again: ");
+                    System.err.print("The specified file or folder does not exist, try again: ");
                 }
             } else {
                 return file;
@@ -109,11 +132,9 @@ public class Input {
         }
     }
 
-    public boolean getAgreement() {
+    public boolean getAgreement() throws InterruptedException {
         while (true) {
             char choice = getChar();
-            if (choice == '\0')
-                return false;
             if (Character.toLowerCase(choice) == 'y') {
                 return true;
             }
@@ -124,12 +145,9 @@ public class Input {
         }
     }
 
-    public boolean getBool() {
+    public boolean getBool() throws InterruptedException {
         while (true) {
             String choice = getString();
-            if (choice == null) {
-                return false;
-            }
             if (choice.equalsIgnoreCase("true")) {
                 return true;
             }
@@ -137,11 +155,13 @@ public class Input {
                 return false;
             }
             System.err.print("Invalid input. Enter true/false: ");
-
         }
     }
 
     public void getEnter() {
-        this.getString();
+        try {
+            this.getString();
+        } catch (InterruptedException e) {
+        }
     }
 }

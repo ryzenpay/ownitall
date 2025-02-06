@@ -48,8 +48,12 @@ public class Upload {
 
     private void setLocalLibrary() {
         while (this.localLibrary == null || !this.localLibrary.exists()) {
-            System.out.print("Provide absolute path to local music library (folder): ");
-            this.localLibrary = Input.request().getFile(true);
+            try {
+                System.out.print("Provide absolute path to local music library (folder): ");
+                this.localLibrary = Input.request().getFile(true);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting music library path");
+            }
         }
     }
 

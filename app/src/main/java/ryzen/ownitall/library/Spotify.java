@@ -92,18 +92,19 @@ public class Spotify {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
                 Desktop.getDesktop().browse(auth_uri);
+                this.startLocalServer();
             } catch (IOException e) {
                 logger.error("Error opening web browser: " + e);
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
-            System.out.print("Please provide the code it presents (in url): ");
-            this.code = Input.request().getString();
-            return;
+            try {
+                System.out.print("Please provide the code it presents (in url): ");
+                this.code = Input.request().getString();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting code");
+            }
         }
-
-        // Start a local server to receive the code
-        this.startLocalServer();
     }
 
     /**
@@ -166,14 +167,22 @@ public class Spotify {
             } else {
                 logger.error("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
-                System.out.println("Please provide the code it provides (in url)");
-                this.code = Input.request().getString();
+                try {
+                    System.out.println("Please provide the code it provides (in url)");
+                    this.code = Input.request().getString();
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted while getting code (failed getting from browser)");
+                }
             }
 
             clientSocket.close();
         } catch (IOException e) {
-            System.out.println("Please provide the code it provides (in url)");
-            this.code = Input.request().getString();
+            try {
+                System.out.println("Please provide the code it provides (in url)");
+                this.code = Input.request().getString();
+            } catch (InterruptedException ie) {
+                logger.debug("Interrupted while getting code (localserver failed)");
+            }
         }
     }
 

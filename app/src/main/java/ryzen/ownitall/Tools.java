@@ -64,14 +64,18 @@ public class Tools {
      * clear memory cache and local cache
      */
     private void optionClearCache() {
-        System.out.print("Are you sure you wan to clear cache (y/N): ");
-        if (Input.request().getAgreement()) {
-            logger.info("Clearing cache...");
-            Sync.load().clearCache();
-            if (Library.checkInstance()) { // to prevent logging in
-                Library.load().clear();
+        try {
+            System.out.print("Are you sure you wan to clear cache (y/N): ");
+            if (Input.request().getAgreement()) {
+                logger.info("Clearing cache...");
+                Sync.load().clearCache();
+                if (Library.checkInstance()) { // to prevent logging in
+                    Library.load().clear();
+                }
+                logger.info("Done clearing cache");
             }
-            logger.info("Done clearing cache");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting clear cache agreement");
         }
     }
 

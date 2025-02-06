@@ -47,16 +47,28 @@ public class UploadMenu {
     }
 
     private void optionUploadPlaylist() {
-        System.out.print("Please provide playlist path: ");
-        File folder = Input.request().getFile(true);
+        File folder;
+        try {
+            System.out.print("Please provide playlist path: ");
+            folder = Input.request().getFile(true);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted getting playlist path");
+            return;
+        }
         logger.info("Uploading local Playlist...");
         this.collection.addPlaylist(Upload.getPlaylist(folder));
         logger.info("done uploading playlist");
     }
 
     private void optionUploadAlbum() {
-        System.out.print("Please provide album path: ");
-        File folder = Input.request().getFile(true);
+        File folder;
+        try {
+            System.out.print("Please provide album path: ");
+            folder = Input.request().getFile(true);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting album path");
+            return;
+        }
         logger.info("Uploading local Album...");
         this.collection.addAlbum(Upload.getAlbum(folder));
         logger.info("Done uploading Album");
@@ -64,8 +76,14 @@ public class UploadMenu {
     }
 
     private void optionUploadLikedSongs() {
-        System.out.print("Please provide folder path: ");
-        File folder = Input.request().getFile(true);
+        File folder;
+        try {
+            System.out.print("Please provide folder path: ");
+            folder = Input.request().getFile(true);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting liked songs path");
+            return;
+        }
         logger.info("Uploading Liked Songs...");
         this.collection.addLikedSongs(Upload.getSongs(folder));
         logger.info("Done Uploading Liked Songs");

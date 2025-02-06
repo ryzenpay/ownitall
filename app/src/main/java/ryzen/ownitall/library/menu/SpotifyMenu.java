@@ -60,10 +60,17 @@ public class SpotifyMenu {
     }
 
     private void optionImportAlbum() {
-        System.out.print("Enter Spotify Album name: ");
-        String albumName = Input.request().getString();
-        System.out.print("Enter Spotify Album ID: ");
-        String albumId = Input.request().getString();
+        String albumId;
+        String albumName;
+        try {
+            System.out.print("Enter Spotify Album name: ");
+            albumName = Input.request().getString();
+            System.out.print("Enter Spotify Album ID: ");
+            albumId = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting album info");
+            return;
+        }
         logger.info("Importing Spotify Album...");
         Album album = spotify.getAlbum(albumId, albumName, null, null);
         collection.addAlbum(album);
@@ -71,10 +78,17 @@ public class SpotifyMenu {
     }
 
     private void optionImportPlaylist() {
-        System.out.print("Enter Spotify Playlist name: ");
-        String playlistName = Input.request().getString();
-        System.out.print("Enter Spotify Playlist ID: ");
-        String playlistId = Input.request().getString();
+        String playlistId;
+        String playlistName;
+        try {
+            System.out.print("Enter Spotify Playlist name: ");
+            playlistName = Input.request().getString();
+            System.out.print("Enter Spotify Playlist ID: ");
+            playlistId = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting playlist info");
+            return;
+        }
         logger.info("Importing Spotify Playlist...");
         Playlist playlist = spotify.getPlaylist(playlistId, playlistName, null);
         collection.addPlaylist(playlist);

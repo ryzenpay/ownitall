@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;

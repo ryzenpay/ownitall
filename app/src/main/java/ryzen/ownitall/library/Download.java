@@ -46,14 +46,17 @@ public class Download {
         if (settings.getFfmpegPath().isEmpty()) {
             settings.setFfmpegPath();
         }
-        if (settings.getDownloadFolder().isEmpty()) {
+        this.downloadPath = settings.getDownloadFolder();
+        if (this.downloadPath == null || this.downloadPath.isEmpty()) {
             this.setDownloadPath();
-        } else {
-            this.downloadPath = settings.getDownloadFolder();
         }
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
-        Input.request().getAgreement();
+        try {
+            Input.request().getAgreement();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting vpn agreement");
+        }
     }
 
     public String getDownloadPath() {
@@ -64,8 +67,13 @@ public class Download {
      * prompt of where to save downloaded music
      */
     private void setDownloadPath() {
-        System.out.print("Please provide path to save music: ");
-        this.downloadPath = Input.request().getFile(false).getAbsolutePath();
+        try {
+            System.out.print("Please provide path to save music: ");
+            this.downloadPath = Input.request().getFile(false).getAbsolutePath();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting download path");
+            return;
+        }
     }
 
     public void threadDownload(Song song, File path) {
