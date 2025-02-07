@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class Download { // TODO: catch sigint to cancel downloads
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
-    private volatile boolean interrupted = false;
+    private volatile AtomicBoolean interrupted = new AtomicBoolean(false);
 
     /**
      * default download constructor
@@ -79,15 +80,16 @@ public class Download { // TODO: catch sigint to cancel downloads
     }
 
     public void threadDownload(Song song, File path) {
-        if (this.executor == null || this.executor.isShutdown()) {
+        if ((this.executor == null || this.executor.isShutdown()) && !interrupted.get()) {
             this.threadInit();
         }
         // Set up a signal handler for SIGINT (Ctrl+C)
         Signal.handle(new Signal("INT"), signal -> {
             logger.info("Download interruption caught, finishing any in queue");
-            interrupted = true;
+            interrupted.set(true);
+            ;
         });
-        while (!interrupted) {
+        while (!interrupted.get()) {
             try {
                 // Attempt to execute the task
                 executor.execute(() -> {
@@ -99,12 +101,12 @@ public class Download { // TODO: catch sigint to cancel downloads
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+                    interrupted.set(true);
                     logger.error("Awaiting for free thread was interrupted" + ie);
                 }
             }
         }
-        if (interrupted) {
+        if (interrupted.get()) {
             threadShutdown();
         }
     }

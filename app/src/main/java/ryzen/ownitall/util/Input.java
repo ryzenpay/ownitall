@@ -27,13 +27,13 @@ public class Input {
             // System.out.println("\nInput Interruption Caught");
             interrupted.set(true);
         });
-
         try {
-            if (!scanner.hasNext()) {
-                // this makes it need 2x cntrl + c, but meh
-                scanner = new Scanner(System.in);
+            if (scanner.hasNextLine()) {
+                return scanner.nextLine().trim();
+            } else {
+                interrupted.set(true);
+                throw new InterruptedException("Input Stream Ended");
             }
-            return scanner.nextLine().trim();
         } catch (Exception e) {
             if (interrupted.get()) {
                 throw new InterruptedException("SIGINT received");
@@ -41,6 +41,9 @@ public class Input {
                 throw new RuntimeException(e);
             }
         } finally {
+            if (interrupted.get()) {
+                scanner = new Scanner(System.in);
+            }
             interrupted.set(false);
         }
     }
