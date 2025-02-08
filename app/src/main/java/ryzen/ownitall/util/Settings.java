@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -44,17 +47,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
-
-    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Settings.class);
     private ObjectMapper objectMapper = new ObjectMapper()
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
-    @JsonIgnore
     private final String settingsFolderPath = ".appdata";
 
     /**
      * check if settings folder exists, if not make it (to prevent errors)
      */
-    @JsonIgnore
     private void setSettingsFolder() {
         File settingsFolder = new File(this.settingsFolderPath);
         if (!settingsFolder.exists()) {
@@ -70,7 +70,6 @@ public class Settings {
      * @param filePath      - filepath to save to
      * @throws Exception - incase of running into error while saving
      */
-    @JsonIgnore
     protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws Exception {
         setSettingsFolder();
         File settingsFile = new File(this.getSettingsFolderPath(), filePath);
@@ -82,11 +81,8 @@ public class Settings {
 
         try {
             T importedSettings = this.objectMapper.readValue(settingsFile, settingsClass);
-            if (importedSettings == null) {
-                throw new Exception("Failed to import settings from file");
-            }
-            if (importedSettings.isEmpty()) {
-                throw new Exception("Loaded settings were null");
+            if (importedSettings == null || importedSettings.isEmpty()) {
+                logger.error("Failed to import settings from file " + settingsFile.getAbsolutePath());
             } else {
                 this.setSettings(importedSettings);
             }
@@ -101,7 +97,6 @@ public class Settings {
      * @param filePath - filepath of settings file
      * @throws Exception - if unable to save to file
      */
-    @JsonIgnore
     protected void save(String filePath) throws Exception {
         this.setSettingsFolder();
         File settingsFile = new File(settingsFolderPath, filePath);
@@ -117,7 +112,6 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    @JsonIgnore
     protected void clearSettings(String filePath) {
         this.setSettingsFolder();
         File settingsFile = new File(settingsFolderPath, filePath);
@@ -154,7 +148,6 @@ public class Settings {
      * 
      * @throws Exception - exception if unable to modify setting
      */
-    @JsonIgnore
     public void changeSettings() throws Exception {
         System.out.println("Choose a setting to change: ");
         Map<String, String> options = new HashMap<>();
@@ -168,8 +161,10 @@ public class Settings {
                     break;
                 } else {
                     try {
-                        if (!this.changeSetting(choice)) {
-                            throw new Exception("Unsuccessfully changed setting, read the log for more information");
+                        if (this.changeSetting(choice)) {
+                            logger.info("Successfully changed setting " + choice);
+                        } else {
+                            logger.error("Unsuccessfully changed setting");
                         }
                     } catch (IllegalAccessException e) {
                         throw new Exception("Error updating setting: " + e);
@@ -191,33 +186,33 @@ public class Settings {
     private boolean changeSetting(String settingName) throws IllegalAccessException, Exception {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
-            System.out.print("Enter new value for " + setting.getName() + ": ");
             setting.setAccessible(true);
             if (setting.getType() == boolean.class) {
+                System.out.print("Enter new value (true/false) for " + setting.getName() + ": ");
                 boolean input = Input.request().getBool();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == String.class) {
+                System.out.print("Enter new value (string) for " + setting.getName() + ": ");
                 String input = Input.request().getString();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == Integer.class) {
+                System.out.print("Enter new value (int) for " + setting.getName() + ": ");
                 int input = Input.request().getInt();
-                if (input == -1000) {
-                    return false;
-                }
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == long.class) {
+                System.out.print("Enter new value (long) for " + setting.getName() + ": ");
                 long input = Input.request().getLong();
                 setting.set(this, input);
                 return true;
             } else {
-                System.out
-                        .println("Modifying settings of the type " + setting.getType() + " is currently not supported");
+                logger.info("Modifying settings of the type " + setting.getType() + " is currently not supported");
             }
             setting.setAccessible(false);
         } catch (InterruptedException e) {
+            logger.info("Changing settings interrupted");
             return false;
         } catch (NoSuchFieldException e) {
             throw new Exception("Error modifying setting: " + e);
