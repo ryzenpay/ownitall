@@ -606,6 +606,7 @@ public class Spotify {
                     logger.debug("Song " + song.toString() + " not found");
                     return null;
                 }
+                song.addId("spotify", items[0].getId());
                 return items[0].getId();
             } catch (TooManyRequestsException e) {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -631,6 +632,7 @@ public class Spotify {
                     logger.debug("Album " + album.toString() + " not found");
                     return null;
                 }
+                album.addId("spotify", items[0].getId());
                 return items[0].getId();
             } catch (TooManyRequestsException e) {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -643,7 +645,6 @@ public class Spotify {
     }
 
     public void uploadLikedSongs() {
-        // TODO: this re-organizes liked songs, some poeple might dislike that
         ArrayList<String> likedSongIds = new ArrayList<>();
         for (Song likedSong : collection.getLikedSongs().getSongs()) {
             likedSongIds.add(this.getTrackId(likedSong));
@@ -683,9 +684,6 @@ public class Spotify {
     }
 
     public void uploadPlaylist(Playlist playlist) {
-        // TODO: this does not check for conflicts (double adds songs)
-        // maybe, get current playlist, get the odd songs and add them?
-        // same for liked if thats the route we are taking
         String playlistId = playlist.getId("spotify");
         if (playlistId == null) {
             try {
@@ -697,6 +695,7 @@ public class Spotify {
                         .public_(false)
                         .build();
                 playlistId = createPlaylistRequest.execute().getId();
+                playlist.addId("spotify", playlistId);
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error creating user playlist: " + e);
             }
@@ -705,8 +704,11 @@ public class Spotify {
             logger.error("Unable to create / fetch playlist id for " + playlist.getName());
             return;
         }
+        LinkedHashSet<Song> songs = playlist.getSongs();
+        // filter out the existing playlist songs
+        songs.removeAll(this.getPlaylistSongs(playlistId, 0));
         ArrayList<String> songUris = new ArrayList<>();
-        for (Song song : playlist.getSongs()) {
+        for (Song song : songs) {
             songUris.add("spotify:track:" + this.getTrackId(song));
         }
         int limit = settings.getSpotifySongLimit();
