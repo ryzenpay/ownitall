@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 
@@ -25,6 +26,7 @@ public class Playlist {
     private String name;
     private URI coverImage;
     private LinkedHashSet<Song> songs;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * to save api requests
@@ -40,16 +42,20 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
     }
 
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
         this.addSongs(songs);
+        this.addIds(ids);
         this.setYoutubePageToken(youtubePageToken);
         this.setSpotifyPageOffset(spotifyPageOffset);
         this.setCoverImage(coverArt);
@@ -262,6 +268,35 @@ public class Playlist {
             totalDuration = totalDuration.plus(song.getDuration());
         }
         return totalDuration;
+    }
+
+    public void addId(String key, String id) {
+        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
+            logger.debug(this.toString() + ": empty key or url in addId");
+            return;
+        }
+        this.ids.put(key, id);
+    }
+
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            logger.debug(this.toString() + ": empty ids array provided in addIds");
+            return;
+        }
+        this.ids.putAll(ids);
+    }
+
+    @JsonIgnore
+    public String getId(String key) {
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": empty key provided in getId");
+            return null;
+        }
+        return this.ids.get(key);
+    }
+
+    public LinkedHashMap<String, String> getIds() {
+        return this.ids;
     }
 
     @Override

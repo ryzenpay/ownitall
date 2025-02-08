@@ -25,7 +25,7 @@ public class Song {
     private Artist artist;
     private Duration duration;
     private URI coverImage;
-    private LinkedHashMap<String, String> links;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * default song constructor
@@ -34,18 +34,18 @@ public class Song {
      */
     public Song(String name) {
         this.name = name;
-        this.links = new LinkedHashMap<>();
+        this.ids = new LinkedHashMap<>();
 
     }
 
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
-            @JsonProperty("links") LinkedHashMap<String, String> links,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         this.setArtist(artist);
-        this.links = new LinkedHashMap<>();
-        this.addLinks(links);
+        this.ids = new LinkedHashMap<>();
+        this.addIds(ids);
         this.setDuration(duration);
         this.setCoverImage(coverImage);
     }
@@ -80,29 +80,29 @@ public class Song {
         return this.artist;
     }
 
-    public void addLink(String key, String url) {
-        this.links.put(key, url);
+    public void addId(String key, String id) {
+        this.ids.put(key, id);
     }
 
-    public void addLinks(LinkedHashMap<String, String> links) {
-        if (links == null || links.isEmpty()) {
-            logger.debug(this.toString() + ": empty links provided in addLink");
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            logger.debug(this.toString() + ": empty links provided in addId");
             return;
         }
-        this.links.putAll(links);
+        this.ids.putAll(ids);
     }
 
     @JsonIgnore
-    public String getLink(String key) {
+    public String getId(String key) {
         if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key passed in getLink");
+            logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
-        return this.links.get(key);
+        return this.ids.get(key);
     }
 
-    public LinkedHashMap<String, String> getLinks() {
-        return this.links;
+    public LinkedHashMap<String, String> getIds() {
+        return this.ids;
     }
 
     /**
@@ -167,7 +167,7 @@ public class Song {
         if (this.coverImage == null) {
             this.setCoverImage(song.getCoverImage().toString());
         }
-        this.addLinks(song.getLinks());
+        this.addIds(song.getIds());
     }
 
     @JsonIgnore
@@ -199,8 +199,8 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        if (this.getLink("lastfm") != null) {
-            if (this.getLink("lastfm").equals(song.getLink("lastfm"))) {
+        if (this.getId("lastfm") != null) {
+            if (this.getId("lastfm").equals(song.getId("lastfm"))) {
                 return true;
             }
         }

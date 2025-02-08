@@ -182,8 +182,10 @@ public class Download {
          * ^ keep this at the end, incase of fucked up syntax making the other flags
          * drop
          */
-        String searchQuery = song.getLink("youtube");
-        if (searchQuery == null) {
+        String searchQuery;
+        if (song.getId("youtube") != null) {
+            searchQuery = "https://youtube.com/watch?v=" + song.getId("youtube");
+        } else {
             // search query filters
             searchQuery = song.toString() + " (official audio)"; // youtube search criteria
             // prevent any search impacting triggers + pipeline starters

@@ -18,7 +18,6 @@ import ryzen.ownitall.util.Levenshtein;
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
     private LinkedHashSet<Artist> artists;
-    private LinkedHashMap<String, String> links;
 
     /**
      * Default constructor of album without album cover
@@ -28,7 +27,6 @@ public class Album extends Playlist {
     public Album(String name) {
         super(name);
         this.artists = new LinkedHashSet<>();
-        this.links = new LinkedHashMap<>();
     }
 
     /**
@@ -45,15 +43,13 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
             @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
-            @JsonProperty("artists") LinkedHashSet<Artist> artists,
-            @JsonProperty("links") LinkedHashMap<String, String> links) {
-        super(name, songs, youtubePageToken, spotifyPageOffset, coverImage);
+            @JsonProperty("artists") LinkedHashSet<Artist> artists) {
+        super(name, songs, links, youtubePageToken, spotifyPageOffset, coverImage);
         this.artists = new LinkedHashSet<>();
-        this.links = new LinkedHashMap<>();
         this.addArtists(artists);
-        this.addLinks(links);
     }
 
     public void merge(Album album) {
@@ -126,35 +122,6 @@ public class Album extends Playlist {
         return null;
     }
 
-    public void addLink(String key, String url) {
-        if (key == null || url == null || key.isEmpty() || url.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or url in addLink");
-            return;
-        }
-        this.links.put(key, url);
-    }
-
-    public void addLinks(LinkedHashMap<String, String> links) {
-        if (links == null || links.isEmpty()) {
-            logger.debug(this.toString() + ": empty links array provided in addLinks");
-            return;
-        }
-        this.links.putAll(links);
-    }
-
-    @JsonIgnore
-    public String getLink(String key) {
-        if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key provided in getLink");
-            return null;
-        }
-        return this.links.get(key);
-    }
-
-    public LinkedHashMap<String, String> getLinks() {
-        return this.links;
-    }
-
     @Override
     @JsonIgnore
     public String toString() {
@@ -196,8 +163,8 @@ public class Album extends Playlist {
         }
         Album album = (Album) object;
         // only valid if library used
-        if (this.getLink("lastfm") != null) {
-            if (this.getLink("lastfm").equals(album.getLink("lastfm"))) {
+        if (this.getId("lastfm") != null) {
+            if (this.getId("lastfm").equals(album.getId("lastfm"))) {
                 return true;
             }
         }

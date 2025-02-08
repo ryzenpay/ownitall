@@ -134,8 +134,7 @@ public class Youtube {
                             if (song != null) {
                                 song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
                                         ChronoUnit.SECONDS);
-                                String videoLink = "https://www.youtube.com/watch?v=" + video.getId();
-                                song.addLink("youtube", videoLink);
+                                song.addId("youtube", video.getId());
                                 collection.addLikedSong(song);
                             }
                         }
@@ -236,9 +235,7 @@ public class Youtube {
                         }
                         if (song != null) {
                             song.setDuration(this.getDuration(videoId).getSeconds(), ChronoUnit.SECONDS);
-                            String videoLink = "https://www.youtube.com/watch?v="
-                                    + item.getContentDetails().getVideoId();
-                            song.addLink("youtube", videoLink);
+                            song.addId("youtube", item.getContentDetails().getVideoId());
                             songs.add(song);
                         }
                     }

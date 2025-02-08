@@ -18,11 +18,14 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
+import se.michaelthelin.spotify.requests.data.library.SaveAlbumsForCurrentUserRequest;
 import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
+import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.AlbumSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Episode;
@@ -33,6 +36,7 @@ import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.SavedAlbum;
 import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
+import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import org.apache.logging.log4j.LogManager;
@@ -279,9 +283,7 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            String link = "https://open.spotify.com/track/"
-                                    + track.getId();
-                            song.addLink("spotify", link);
+                            song.addId("spotify", track.getId());
                             collection.addLikedSong(song);
                         }
                     }
@@ -374,6 +376,7 @@ public class Spotify {
                 if (albumImageUrl != null) {
                     album.setCoverImage(albumImageUrl);
                 }
+                album.addId("spotify", albumId);
                 return album;
             }
         }
@@ -416,8 +419,7 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            String link = "https://open.spotify.com/track/" + track.getId();
-                            song.addLink("spotify", link);
+                            song.addId("spotify", track.getId());
                             songs.add(song);
                         }
                     }
@@ -507,6 +509,7 @@ public class Spotify {
             if (playlistImageUrl != null) {
                 playlist.setCoverImage(playlistImageUrl);
             }
+            playlist.addId("spotify", playlistId);
             return playlist;
         }
         return null;
@@ -540,19 +543,19 @@ public class Spotify {
                         String trackName;
                         String artistName;
                         int duration;
-                        String link;
+                        String id;
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
                             trackName = track.getName();
                             artistName = track.getArtists()[0].getName();
                             duration = track.getDurationMs();
-                            link = "https://open.spotify.com/track/" + track.getId();
+                            id = track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
                             trackName = episode.getName();
                             artistName = null;
                             duration = episode.getDurationMs();
-                            link = "https://open.spotify.com/episode/" + episode.getId();
+                            id = episode.getId();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
                             continue;
@@ -566,7 +569,7 @@ public class Spotify {
                         }
                         if (song != null) {
                             song.setDuration(duration, ChronoUnit.MILLIS);
-                            song.addLink("spotify", link);
+                            song.addId("spotify", id);
                             songs.add(song);
                         }
                     }
@@ -588,14 +591,8 @@ public class Spotify {
     }
 
     public String getTrackId(Song song) {
-        if (song.getLink("spotify") != null) {
-            String spotifyLink = song.getLink("spotify");
-            int lastSlashIndex = spotifyLink.lastIndexOf('/');
-            if (lastSlashIndex == -1 || lastSlashIndex == spotifyLink.length() - 1) {
-                logger.debug("Invalid spotify Song url with id: " + spotifyLink);
-            } else {
-                return spotifyLink.substring(lastSlashIndex + 1);
-            }
+        if (song.getId("spotify") != null) {
+            return song.getId("spotify");
         }
         SearchTracksRequest searchTracksRequest = this.spotifyApi.searchTracks(song.toString())
                 .limit(1)
@@ -619,14 +616,8 @@ public class Spotify {
     }
 
     public String getAlbumId(Album album) {
-        if (album.getLink("spotify") != null) {
-            String spotifyLink = album.getLink("spotify");
-            int lastSlashIndex = spotifyLink.lastIndexOf('/');
-            if (lastSlashIndex == -1 || lastSlashIndex == spotifyLink.length() - 1) {
-                logger.debug("Invalid spotify Album url with id: " + spotifyLink);
-            } else {
-                return spotifyLink.substring(lastSlashIndex + 1);
-            }
+        if (album.getId("spotify") != null) {
+            return album.getId("spotify");
         }
         SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums(album.toString())
                 .limit(1)
@@ -688,19 +679,63 @@ public class Spotify {
     }
 
     public void uploadPlaylist(Playlist playlist) {
-        // TODO: upload playlist
+        String playlistId = playlist.getId("spotify");
+        if (playlistId == null) {
+            try {
+                GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
+                        .build();
+                User user = getCurrentUsersProfileRequest.execute();
+                CreatePlaylistRequest createPlaylistRequest = spotifyApi
+                        .createPlaylist(user.getId(), playlist.getName())
+                        .public_(false)
+                        .build();
+                playlistId = createPlaylistRequest.execute().getId();
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error creating user playlist: " + e);
+            }
+        }
+        if (playlistId == null) {
+            logger.error("Unable to create / fetch playlist id for " + playlist.getName());
+            return;
+        }
+        LinkedHashSet<Song> songs = playlist.getSongs();
+        int limit = settings.getSpotifySongLimit();
+        int offset = 0;
+        boolean hasMore = true;
+        while (hasMore) {
+            // TODO: upload playlist
+            offset += limit;
+            if (offset >= songs.size()) {
+                hasMore = false;
+            }
+        }
     }
 
     public void uploadAlbums() {
-        LinkedHashSet<Album> albums = collection.getAlbums();
-        ProgressBar pb = Progressbar.progressBar("Uploading Albums", albums.size());
-        for (Album album : albums) {
-            this.uploadAlbum(album);
+        ArrayList<String> albumIds = new ArrayList<>();
+        for (Album album : collection.getAlbums()) {
+            albumIds.add(this.getAlbumId(album));
         }
-        pb.setExtraMessage("Done").close();
-    }
-
-    public void uploadAlbum(Album album) {
-        // TODO: upload album
+        int limit = settings.getSpotifyAlbumLimit();
+        int offset = 0;
+        boolean hasMore = true;
+        while (hasMore) {
+            String[] currentAlbumIds = albumIds.subList(offset, offset + limit).toArray(new String[0]);
+            SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = spotifyApi
+                    .saveAlbumsForCurrentUser(currentAlbumIds)
+                    .build();
+            try {
+                saveAlbumsForCurrentUserRequest.execute();
+                offset += limit;
+                if (offset >= albumIds.size()) {
+                    hasMore = false;
+                }
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error adding users Albums: " + e);
+            }
+        }
     }
 }

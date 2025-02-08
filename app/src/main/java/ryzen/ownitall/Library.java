@@ -1,13 +1,11 @@
 package ryzen.ownitall;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -15,12 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -179,7 +171,7 @@ public class Library {
                 if (imageNode.isArray() && imageNode.size() > 0) {
                     album.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
                 }
-                album.addLink("lastfm", albumNode.path("url").asText());
+                album.addId("lastfm", albumNode.path("id").asText());
                 this.albums.add(album);
                 return album;
             }
@@ -277,7 +269,7 @@ public class Library {
                     }
                 }
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                song.addLink("lastfm", trackNode.path("url").asText());
+                song.addId("lastfm", trackNode.path("id").asText());
                 this.songs.add(song);
                 return song;
             }
@@ -392,33 +384,5 @@ public class Library {
                 logger.error("Unknown error: " + message);
                 break;
         }
-    }
-
-    // TODO: this does not work (external links)
-    // does the page need to load?
-    // also greatly impacts performance
-    /**
-     * get other links (youtube, spotify, ...) from a lastfm link
-     * 
-     * @param lastFMUrl - lastfm url to get links from
-     * @return - linkedhashmap of links (source,url)
-     */
-    public LinkedHashMap<String, String> getExternalLinks(String lastFMUrl) {
-        LinkedHashMap<String, String> links = new LinkedHashMap<>();
-        try {
-            // Only parse the body of the document
-            Document doc = Jsoup.connect(lastFMUrl)
-                    .parser(Parser.htmlParser())
-                    .get();
-            // Use a more specific CSS selector to directly target the links
-            Elements linkElements = doc.select("section.play-this-track-section a[href]");
-
-            for (Element linkElement : linkElements) {
-                links.put(linkElement.text().trim(), linkElement.attr("href"));
-            }
-        } catch (IOException e) {
-            logger.error("Error parsing external links: " + e);
-        }
-        return links;
     }
 }
