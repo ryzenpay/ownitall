@@ -15,9 +15,9 @@ public class ImportMenu {
      */
     public ImportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Youtube", this::importYoutube);
-        options.put("Spotify", this::importSpotify);
-        options.put("Upload", this::uploadMenu);
+        options.put("Youtube", this::optionYoutube);
+        options.put("Spotify", this::optionSpotify);
+        options.put("Local", this::optionLocal);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "IMPORT");
             if (choice.equals("Exit")) {
@@ -31,7 +31,7 @@ public class ImportMenu {
     /**
      * import music from youtube, getting or setting credentials as needed
      */
-    private void importYoutube() {
+    private void optionYoutube() {
         YoutubeMenu menu = new YoutubeMenu();
         menu.youtubeImportMenu();
     }
@@ -39,15 +39,14 @@ public class ImportMenu {
     /**
      * import music from spotify, getting or setting credentials as needed
      */
-    private void importSpotify() {
-        SpotifyMenu menu = new SpotifyMenu();
-        menu.SpotifyImportMenu();
+    private void optionSpotify() {
+        new SpotifyMenu().spotifyImportMenu();
     }
 
     /**
      * import music from local library
      */
-    private void uploadMenu() {
+    private void optionLocal() {
         new UploadMenu();
     }
 

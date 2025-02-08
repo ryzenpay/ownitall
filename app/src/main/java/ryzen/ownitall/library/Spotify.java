@@ -1,7 +1,8 @@
 package ryzen.ownitall.library;
 
+import java.util.ArrayList;
 //https://developer.spotify.com/documentation/web-api
-
+//https://github.com/spotify-web-api-java/spotify-web-api-java
 import java.util.LinkedHashSet;
 import java.time.temporal.ChronoUnit;
 
@@ -17,9 +18,13 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
+import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchAlbumsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import se.michaelthelin.spotify.model_objects.specification.AlbumSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Episode;
 import se.michaelthelin.spotify.model_objects.specification.Image;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
@@ -33,6 +38,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Library;
@@ -42,6 +48,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Progressbar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -286,7 +293,7 @@ public class Spotify {
                     collection.getLikedSongs().setSpotifyPageOffset(offset);
                 }
             } catch (TooManyRequestsException e) {
-                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error fetching liked songs: " + e);
@@ -331,7 +338,7 @@ public class Spotify {
                     offset += limit;
                 }
             } catch (TooManyRequestsException e) {
-                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error: " + e);
@@ -420,7 +427,7 @@ public class Spotify {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error fetching songs for album: " + albumId + ": " + e);
@@ -474,7 +481,7 @@ public class Spotify {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error fetching playlists: " + e);
@@ -570,7 +577,7 @@ public class Spotify {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
-                logger.info("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Error fetching playlist tracks: " + e);
@@ -578,5 +585,122 @@ public class Spotify {
             }
         }
         return songs;
+    }
+
+    public String getTrackId(Song song) {
+        if (song.getLink("spotify") != null) {
+            String spotifyLink = song.getLink("spotify");
+            int lastSlashIndex = spotifyLink.lastIndexOf('/');
+            if (lastSlashIndex == -1 || lastSlashIndex == spotifyLink.length() - 1) {
+                logger.debug("Invalid spotify Song url with id: " + spotifyLink);
+            } else {
+                return spotifyLink.substring(lastSlashIndex + 1);
+            }
+        }
+        SearchTracksRequest searchTracksRequest = this.spotifyApi.searchTracks(song.toString())
+                .limit(1)
+                .build();
+        while (true) {
+            try {
+                Track[] items = searchTracksRequest.execute().getItems();
+                if (items.length == 0) {
+                    logger.debug("Song " + song.toString() + " not found");
+                    return null;
+                }
+                return items[0].getId();
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error searching for song: " + e);
+                return null;
+            }
+        }
+    }
+
+    public String getAlbumId(Album album) {
+        if (album.getLink("spotify") != null) {
+            String spotifyLink = album.getLink("spotify");
+            int lastSlashIndex = spotifyLink.lastIndexOf('/');
+            if (lastSlashIndex == -1 || lastSlashIndex == spotifyLink.length() - 1) {
+                logger.debug("Invalid spotify Album url with id: " + spotifyLink);
+            } else {
+                return spotifyLink.substring(lastSlashIndex + 1);
+            }
+        }
+        SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums(album.toString())
+                .limit(1)
+                .build();
+        while (true) {
+            try {
+                AlbumSimplified[] items = searchAlbumsRequest.execute().getItems();
+                if (items.length == 0) {
+                    logger.debug("Album " + album.toString() + " not found");
+                    return null;
+                }
+                return items[0].getId();
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error searching for Album: " + e);
+                return null;
+            }
+        }
+    }
+
+    public void uploadLikedSongs() {
+        ArrayList<String> likedSongIds = new ArrayList<>();
+        for (Song likedSong : collection.getLikedSongs().getSongs()) {
+            likedSongIds.add(this.getTrackId(likedSong));
+        }
+        int limit = settings.getSpotifySongLimit();
+        int offset = 0;
+        boolean hasMore = true;
+        while (hasMore) {
+            String[] currentLikedSongsIds = likedSongIds.subList(offset, offset + limit).toArray(new String[0]);
+            SaveTracksForUserRequest saveTracksForUserRequest = spotifyApi
+                    .saveTracksForUser(currentLikedSongsIds)
+                    .build();
+            try {
+                saveTracksForUserRequest.execute();
+                offset += limit;
+                if (offset >= likedSongIds.size()) {
+                    hasMore = false;
+                }
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error adding users saved tracks: " + e);
+            }
+        }
+    }
+
+    public void uploadPlaylists() {
+        LinkedHashSet<Playlist> playlists = collection.getPlaylists();
+        ProgressBar pb = Progressbar.progressBar("Uploading Playlists", playlists.size());
+        for (Playlist playlist : playlists) {
+            pb.setExtraMessage(playlist.getName()).step();
+            this.uploadPlaylist(playlist);
+        }
+        pb.setExtraMessage("Done").close();
+    }
+
+    public void uploadPlaylist(Playlist playlist) {
+        // TODO: upload playlist
+    }
+
+    public void uploadAlbums() {
+        LinkedHashSet<Album> albums = collection.getAlbums();
+        ProgressBar pb = Progressbar.progressBar("Uploading Albums", albums.size());
+        for (Album album : albums) {
+            this.uploadAlbum(album);
+        }
+        pb.setExtraMessage("Done").close();
+    }
+
+    public void uploadAlbum(Album album) {
+        // TODO: upload album
     }
 }

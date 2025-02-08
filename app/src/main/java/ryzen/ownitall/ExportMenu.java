@@ -12,7 +12,8 @@ public class ExportMenu {
      */
     public ExportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Download (YoutubeDL)", this::optionDownload);
+        options.put("Download", this::optionDownload);
+        options.put("Spotify", this::optionSpotify);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "EXPORT");
             if (choice.equals("Exit")) {
@@ -28,5 +29,9 @@ public class ExportMenu {
      */
     private void optionDownload() {
         new DownloadMenu();
+    }
+
+    private void optionSpotify() {
+        new SpotifyMenu().spotifyExportMenu();
     }
 }

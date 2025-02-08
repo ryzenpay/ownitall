@@ -19,8 +19,8 @@ import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
-    private static final Collection collection = Collection.load();
     private static final Settings settings = Settings.load();
+    private static final Collection collection = Collection.load();
     private Download download;
 
     public DownloadMenu() {
@@ -50,9 +50,9 @@ public class DownloadMenu {
         pb.setExtraMessage("Liked songs");
         download.downloadLikedSongs();
         pb.setExtraMessage("Playlists").step();
-        download.downloadPlaylists(collection.getPlaylists());
+        download.downloadPlaylists();
         pb.setExtraMessage("Albums").step();
-        download.downloadAlbums(collection.getAlbums());
+        download.downloadAlbums();
         pb.setExtraMessage("Done").step();
         pb.close();
         logger.info("Done downloading music");

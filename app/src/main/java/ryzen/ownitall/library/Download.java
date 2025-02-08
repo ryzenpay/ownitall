@@ -27,10 +27,10 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
-public class Download { // TODO: catch sigint to cancel downloads
+public class Download {
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static final Settings settings = Settings.load();
-    private static final Collection collection = Collection.load();
+    private static Collection collection = Collection.load();
     private ExecutorService executor;
     private String downloadPath;
     static {
@@ -87,7 +87,6 @@ public class Download { // TODO: catch sigint to cancel downloads
         Signal.handle(new Signal("INT"), signal -> {
             logger.info("Download interruption caught, finishing any in queue");
             interrupted.set(true);
-            ;
         });
         while (!interrupted.get()) {
             try {
@@ -268,7 +267,8 @@ public class Download { // TODO: catch sigint to cancel downloads
      * 
      * @param playlists - linkedhashset of playlists to download
      */
-    public void downloadPlaylists(LinkedHashSet<Playlist> playlists) {
+    public void downloadPlaylists() {
+        LinkedHashSet<Playlist> playlists = collection.getPlaylists();
         ProgressBar pbPlaylist = Progressbar.progressBar("Playlist Downloads", playlists.size());
         for (Playlist playlist : playlists) {
             pbPlaylist.setExtraMessage(playlist.getName());
@@ -309,7 +309,8 @@ public class Download { // TODO: catch sigint to cancel downloads
         pb.setExtraMessage("Done").close();
     }
 
-    public void downloadAlbums(LinkedHashSet<Album> albums) {
+    public void downloadAlbums() {
+        LinkedHashSet<Album> albums = collection.getAlbums();
         ProgressBar pbAlbum = Progressbar.progressBar("Album Downloads", albums.size());
         for (Album album : albums) {
             pbAlbum.setExtraMessage(album.getName());

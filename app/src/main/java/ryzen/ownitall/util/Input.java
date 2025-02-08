@@ -4,9 +4,13 @@ import java.io.File;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import sun.misc.Signal;
 
 public class Input {
+    private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
     private static Scanner scanner;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
@@ -25,6 +29,7 @@ public class Input {
     public String getString() throws InterruptedException {
         Signal.handle(new Signal("INT"), signal -> {
             // System.out.println("\nInput Interruption Caught");
+            logger.debug("SIGINT in input caught");
             interrupted.set(true);
         });
         try {
