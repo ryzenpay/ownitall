@@ -20,6 +20,7 @@ import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbums
 import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
 import se.michaelthelin.spotify.requests.data.library.SaveAlbumsForCurrentUserRequest;
 import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
+import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
@@ -698,15 +699,29 @@ public class Spotify {
             logger.error("Unable to create / fetch playlist id for " + playlist.getName());
             return;
         }
-        LinkedHashSet<Song> songs = playlist.getSongs();
+        ArrayList<String> songIds = new ArrayList<>();
+        for (Song song : playlist.getSongs()) {
+            songIds.add(this.getTrackId(song));
+        }
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
-            // TODO: upload playlist
-            offset += limit;
-            if (offset >= songs.size()) {
-                hasMore = false;
+            String[] currentSongIds = songIds.subList(offset, offset + limit).toArray(new String[0]);
+            AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
+                    .addItemsToPlaylist(playlistId, currentSongIds)
+                    .build();
+            try {
+                addItemsToPlaylistRequest.execute();
+                offset += limit;
+                if (offset >= songIds.size()) {
+                    hasMore = false;
+                }
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Error adding users saved tracks: " + e);
             }
         }
     }
