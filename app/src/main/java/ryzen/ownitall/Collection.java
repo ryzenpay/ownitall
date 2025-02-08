@@ -111,7 +111,7 @@ public class Collection {
      */
     public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
         if (mergePlaylists == null || mergePlaylists.isEmpty()) {
-            logger.info("empty playlist array passed in addPlaylists");
+            logger.debug("empty playlist array passed in addPlaylists");
             return;
         }
         for (Playlist playlist : mergePlaylists) {

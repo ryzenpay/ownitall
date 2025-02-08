@@ -69,6 +69,7 @@ public class Spotify {
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
+    private static final String scope = "user-library-modify,playlist-modify-private,playlist-modify-public";
     private SpotifyApi spotifyApi;
     private String code;
 
@@ -95,7 +96,7 @@ public class Spotify {
      */
     private void requestCode() {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
-                .scope("user-library-read,playlist-read-private")
+                .scope(scope)
                 .show_dialog(settings.isSpotifyShowDialog())
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
@@ -642,6 +643,7 @@ public class Spotify {
     }
 
     public void uploadLikedSongs() {
+        // TODO: this re-organizes liked songs, some poeple might dislike that
         ArrayList<String> likedSongIds = new ArrayList<>();
         for (Song likedSong : collection.getLikedSongs().getSongs()) {
             likedSongIds.add(this.getTrackId(likedSong));
@@ -650,7 +652,8 @@ public class Spotify {
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
-            String[] currentLikedSongsIds = likedSongIds.subList(offset, offset + limit).toArray(new String[0]);
+            String[] currentLikedSongsIds = likedSongIds.subList(offset,
+                    Math.min(offset + limit, likedSongIds.size())).toArray(new String[0]);
             SaveTracksForUserRequest saveTracksForUserRequest = spotifyApi
                     .saveTracksForUser(currentLikedSongsIds)
                     .build();
@@ -680,6 +683,9 @@ public class Spotify {
     }
 
     public void uploadPlaylist(Playlist playlist) {
+        // TODO: this does not check for conflicts (double adds songs)
+        // maybe, get current playlist, get the odd songs and add them?
+        // same for liked if thats the route we are taking
         String playlistId = playlist.getId("spotify");
         if (playlistId == null) {
             try {
@@ -699,22 +705,23 @@ public class Spotify {
             logger.error("Unable to create / fetch playlist id for " + playlist.getName());
             return;
         }
-        ArrayList<String> songIds = new ArrayList<>();
+        ArrayList<String> songUris = new ArrayList<>();
         for (Song song : playlist.getSongs()) {
-            songIds.add(this.getTrackId(song));
+            songUris.add("spotify:track:" + this.getTrackId(song));
         }
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
-            String[] currentSongIds = songIds.subList(offset, offset + limit).toArray(new String[0]);
+            String[] currentSongUris = songUris.subList(offset,
+                    Math.min(offset + limit, songUris.size())).toArray(new String[0]);
             AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
-                    .addItemsToPlaylist(playlistId, currentSongIds)
+                    .addItemsToPlaylist(playlistId, currentSongUris)
                     .build();
             try {
                 addItemsToPlaylistRequest.execute();
                 offset += limit;
-                if (offset >= songIds.size()) {
+                if (offset >= songUris.size()) {
                     hasMore = false;
                 }
             } catch (TooManyRequestsException e) {
@@ -735,7 +742,8 @@ public class Spotify {
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
-            String[] currentAlbumIds = albumIds.subList(offset, offset + limit).toArray(new String[0]);
+            String[] currentAlbumIds = albumIds.subList(offset,
+                    Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
             SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = spotifyApi
                     .saveAlbumsForCurrentUser(currentAlbumIds)
                     .build();
