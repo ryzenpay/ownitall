@@ -151,6 +151,14 @@ public class Song {
         }
     }
 
+    public void setCoverImage(URI coverImage) {
+        if (coverImage == null) {
+            logger.debug(this.toString() + ": empty URI coverImage provided in setCoverImage");
+            return;
+        }
+        this.coverImage = coverImage;
+    }
+
     public URI getCoverImage() {
         return this.coverImage;
     }
@@ -165,7 +173,7 @@ public class Song {
             this.setArtist(song.getArtist());
         }
         if (this.coverImage == null) {
-            this.setCoverImage(song.getCoverImage().toString());
+            this.setCoverImage(song.getCoverImage());
         }
         this.addIds(song.getIds());
     }

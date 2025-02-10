@@ -23,6 +23,7 @@ import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
@@ -257,7 +258,7 @@ public class Spotify {
      * 
      */
     public void getLikedSongs() {
-        int limit = 50;
+        int limit = settings.getSpotifySongLimit();
         int offset = collection.getLikedSongs().getSpotifyPageOffset();
         boolean hasMore = true;
 
@@ -310,7 +311,7 @@ public class Spotify {
      * get all current user saved albums and add them to collection
      */
     public void getAlbums() {
-        int limit = 20;
+        int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
 
@@ -394,7 +395,7 @@ public class Spotify {
      */
     public LinkedHashSet<Song> getAlbumSongs(String albumId, int offset) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        int limit = 20;
+        int limit = settings.getSpotifyAlbumLimit();
         boolean hasMore = true;
 
         while (hasMore) {
@@ -448,7 +449,7 @@ public class Spotify {
      * 
      */
     public void getPlaylists() {
-        int limit = 20;
+        int limit = settings.getSpotifyPlaylistLimit();
         int offset = 0;
         boolean hasMore = true;
 
@@ -526,7 +527,11 @@ public class Spotify {
      */
     public LinkedHashSet<Song> getPlaylistSongs(String playlistId, int offset) {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        int limit = 50;
+        if (playlistId == null) {
+            logger.debug("No Playlist ID provided in getPlaylistSongs");
+            return songs;
+        }
+        int limit = settings.getSpotifySongLimit();
         boolean hasMore = true;
         while (hasMore) {
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
@@ -649,9 +654,14 @@ public class Spotify {
         for (Song likedSong : collection.getLikedSongs().getSongs()) {
             likedSongIds.add(this.getTrackId(likedSong));
         }
+        if (likedSongIds.isEmpty()) {
+            logger.debug("No liked songs in collection");
+            return;
+        }
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
+        // TODO: doesnt remove any songs that were removed from liked songs
         while (hasMore) {
             String[] currentLikedSongsIds = likedSongIds.subList(offset,
                     Math.min(offset + limit, likedSongIds.size())).toArray(new String[0]);
@@ -685,7 +695,9 @@ public class Spotify {
 
     public void uploadPlaylist(Playlist playlist) {
         String playlistId = playlist.getId("spotify");
-        if (playlistId == null) {
+        LinkedHashSet<Song> currentSongs = this.getPlaylistSongs(playlistId, 0);
+        LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
+        if (currentSongs.isEmpty()) {
             try {
                 GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
                         .build();
@@ -697,19 +709,20 @@ public class Spotify {
                 playlistId = createPlaylistRequest.execute().getId();
                 playlist.addId("spotify", playlistId);
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error creating user playlist: " + e);
+                logger.debug("Error creating user playlist: " + e);
             }
+        } else {
+            // filter out the existing playlist songs
+            // TODO: doesnt remove any songs that were removed from playlist
+            songs.removeAll(currentSongs);
         }
-        if (playlistId == null) {
-            logger.error("Unable to create / fetch playlist id for " + playlist.getName());
-            return;
-        }
-        LinkedHashSet<Song> songs = playlist.getSongs();
-        // filter out the existing playlist songs
-        songs.removeAll(this.getPlaylistSongs(playlistId, 0));
         ArrayList<String> songUris = new ArrayList<>();
         for (Song song : songs) {
             songUris.add("spotify:track:" + this.getTrackId(song));
+        }
+        if (songUris.isEmpty()) {
+            logger.debug("Playlist " + playlist.toString() + " is empty / no update");
+            return;
         }
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
@@ -740,9 +753,14 @@ public class Spotify {
         for (Album album : collection.getAlbums()) {
             albumIds.add(this.getAlbumId(album));
         }
+        if (albumIds.isEmpty()) {
+            logger.debug("No Saved albums in collection");
+            return;
+        }
         int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
+        // TODO: doesnt remove any albums that were removed
         while (hasMore) {
             String[] currentAlbumIds = albumIds.subList(offset,
                     Math.min(offset + limit, albumIds.size())).toArray(new String[0]);

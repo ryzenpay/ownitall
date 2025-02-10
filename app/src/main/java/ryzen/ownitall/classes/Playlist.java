@@ -148,7 +148,10 @@ public class Playlist {
             logger.debug(this.toString() + ": empty songs array provided in addSongs");
             return;
         }
-        this.songs.addAll(songs);
+        // dont use .addAll because of Album override
+        for (Song song : songs) {
+            this.addSong(song);
+        }
     }
 
     /**

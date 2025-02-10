@@ -12,6 +12,7 @@ public class Progressbar {
      * @param maxStep - max steps till completion
      * @return - constructed ProgressBar
      */
+    // TODO: make this work with logger
     public static ProgressBar progressBar(String title, int maxStep) {
         return new ProgressBarBuilder()
                 .setInitialMax(maxStep)
