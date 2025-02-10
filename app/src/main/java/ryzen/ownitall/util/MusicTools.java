@@ -64,6 +64,7 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
+    // TODO: gotta do .nfo for jellyfin
     public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
         if (folder == null || fileName == null) {
             logger.debug("null folder or filename provided in writem3u");

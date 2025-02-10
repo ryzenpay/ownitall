@@ -717,10 +717,12 @@ public class Spotify {
         String playlistId = playlist.getId("spotify");
         LinkedHashSet<Song> currentSongs = new LinkedHashSet<>();
         if (playlistId != null) {
+            // TODO: this still references to a deleted / archived playlist and therefore
+            // doesnt trigger to make new one
             currentSongs = this.getPlaylistSongs(playlistId, 0);
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
-        if (currentSongs != null && currentSongs.isEmpty()) {
+        if (currentSongs.isEmpty()) {
             try {
                 GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
                         .build();

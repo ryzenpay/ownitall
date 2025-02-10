@@ -48,11 +48,11 @@ public class Song {
      * @param coverImage - string coverimage
      */
     @JsonCreator
-    public Song(@JsonProperty("name") String name, @JsonProperty("artist") String artistName,
+    public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        this.setArtist(new Artist(artistName));
+        this.setArtist(artist);
         this.ids = new LinkedHashMap<>();
         this.addIds(ids);
         this.setDuration(duration);
