@@ -63,6 +63,7 @@ public class Artist {
         return Objects.hashCode(this.name.toLowerCase().trim());
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return this.name.isEmpty();
     }

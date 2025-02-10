@@ -172,10 +172,10 @@ public class MusicTools {
         // Sanitize the name by removing invalid characters
         byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
         String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        sanitized = sanitized.trim(); // remove any trailing spaces
         // Remove any invalid characters including pipe "|"
         sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
         sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
+        sanitized = sanitized.trim(); // remove any trailing spaces
         // Limit length to 255 characters
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
