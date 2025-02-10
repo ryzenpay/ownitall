@@ -189,6 +189,12 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
+        // only valid if library used
+        if (this.getId("lastfm") != null && album.getId("lastfm") != null) {
+            if (this.getId("lastfm").equals(album.getId("lastfm"))) {
+                return true;
+            }
+        }
         if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
                 simularityPercentage)) {
             return true;
@@ -199,10 +205,6 @@ public class Album extends Playlist {
     @Override
     @JsonIgnore
     public int hashCode() {
-        // only valid if library used
-        if (this.getId("lastfm") != null) {
-            return this.getId("lastfm").hashCode();
-        }
         return Objects.hash(super.hashCode(), artists);
     }
 }

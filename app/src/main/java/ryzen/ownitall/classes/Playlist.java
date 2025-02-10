@@ -398,10 +398,6 @@ public class Playlist {
     @Override
     @JsonIgnore
     public int hashCode() {
-        // only valid if library used
-        if (this.getId("lastfm") != null) {
-            return this.getId("lastfm").hashCode();
-        }
         return Objects.hash(this.name.toLowerCase().trim());
     }
 }
