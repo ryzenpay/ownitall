@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,8 +50,7 @@ public class Download {
         if (settings.getFfmpegPath().isEmpty()) {
             settings.setFfmpegPath();
         }
-        this.downloadPath = settings.getDownloadFolder();
-        if (this.downloadPath == null || this.downloadPath.isEmpty()) {
+        if (settings.getDownloadFolder().isEmpty()) {
             this.setDownloadPath();
         }
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
@@ -296,8 +296,12 @@ public class Download {
             logger.debug("Empty playlist provided in downloadPlaylist");
             return;
         }
-        File playlistFolder = new File(this.downloadPath, playlist.getFolderName());
-        playlistFolder.mkdirs();
+
+        File playlistFolder = new File(downloadPath);
+        if (settings.isDownloadHierachy()) {
+            playlistFolder = new File(this.downloadPath, playlist.getFolderName());
+            playlistFolder.mkdirs();
+        }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
             MusicTools.writeM3U(playlist.getFolderName(), playlist.getM3U(), playlistFolder);
@@ -306,7 +310,8 @@ public class Download {
         }
         try {
             if (playlist.getCoverImage() != null) {
-                MusicTools.downloadImage(playlist.getCoverImage(), new File(playlistFolder, "cover.png"));
+                MusicTools.downloadImage(playlist.getCoverImage(),
+                        new File(playlistFolder, playlist.getFolderName() + ".png"));
             }
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") coverimage: " + e);
@@ -338,15 +343,18 @@ public class Download {
             return;
         }
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
-        File albumFolder = new File(this.downloadPath, album.getFolderName());
-        albumFolder.mkdirs();
+        File albumFolder = new File(downloadPath);
+        if (settings.isDownloadHierachy()) {
+            albumFolder = new File(this.downloadPath, album.getFolderName());
+            albumFolder.mkdirs();
+        }
         try {
             MusicTools.writeM3U(album.getFolderName(), album.getM3U(), albumFolder);
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
         }
         try {
-            MusicTools.downloadImage(album.getCoverImage(), new File(albumFolder, "cover.png"));
+            MusicTools.downloadImage(album.getCoverImage(), new File(albumFolder, album.getFolderName() + ".png"));
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
         }
@@ -360,17 +368,45 @@ public class Download {
         pb.setExtraMessage("Done").close();
     }
 
+    public void writeCollectionMetaData() {
+        File likedSongsFolder = new File(downloadPath);
+        if (settings.isDownloadHierachy()) {
+            likedSongsFolder = new File(downloadPath, settings.getLikedSongName());
+            likedSongsFolder.mkdirs();
+        }
+        // liked songs
+        LinkedHashSet<Song> likedSongs;
+        if (settings.isDownloadAllLikedSongs()) {
+            likedSongs = collection.getLikedSongs().getSongs();
+        } else {
+            likedSongs = collection.getStandaloneLikedSongs();
+        }
+        Download.writeSongsMetaData(likedSongs, likedSongsFolder, null);
+        // playlists
+        for (Playlist playlist : collection.getPlaylists()) {
+            File playlistFolder = new File(downloadPath);
+            if (settings.isDownloadHierachy()) {
+                playlistFolder = new File(downloadPath, playlist.getFolderName());
+            }
+            Download.writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
+        }
+        // albums
+        for (Album album : collection.getAlbums()) {
+            File albumFolder = new File(downloadPath);
+            if (settings.isDownloadHierachy()) {
+                albumFolder = new File(downloadPath, album.getFolderName());
+            }
+            Download.writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
+        }
+    }
+
     public static void writeSongsMetaData(LinkedHashSet<Song> songs, File folder, String albumName) {
         if (songs == null || songs.isEmpty()) {
             logger.debug("Empty or null songs provided in writeSongsMetaData");
             return;
         }
-        if (folder == null || albumName == null) {
-            logger.debug("No Folder or AlbumName provided in writeSongsMetaData");
-            return;
-        }
-        if (!folder.exists()) {
-            logger.debug("Folder " + folder.getAbsolutePath() + " does not exist");
+        if (folder == null || !folder.exists()) {
+            logger.debug("null or non existant folder passed in writeSongsMetaData");
             return;
         }
         for (Song song : songs) {
@@ -385,14 +421,15 @@ public class Download {
     }
 
     public void cleanFolder(File folder) {
+        ArrayList<String> whiteList = new ArrayList<>(Arrays.asList("m3u", "png", "nfo", settings.getDownloadFormat()));
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("Folder is null, does not exist or is not a directorty in cleanFolder");
             return;
         }
         for (File file : folder.listFiles()) {
-            if (file.isFile() && !file.getName().equals("cover.png")) {
+            if (file.isFile()) {
                 String extension = MusicTools.getExtension(file);
-                if (!extension.equals(settings.getDownloadFormat()) && !extension.equals("m3u")) {
+                if (!whiteList.contains(extension)) {
                     if (file.delete()) {
                         logger.debug("Cleaned up file: " + file.getAbsolutePath());
                     } else {

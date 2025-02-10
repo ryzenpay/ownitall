@@ -169,7 +169,7 @@ public class Album extends Playlist {
         output.append("#EXTALB:").append(this.toString()).append("\n");
         output.append("#EXTART:").append(this.getMainArtist().toString().trim()).append("\n");
         // m3u album cover
-        output.append("#EXTIMG:").append("cover.png").append("\n");
+        output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
         // m3u album contents
         for (Song song : this.getSongs()) {
             File file = new File(song.getFileName() + "." + downloadFormat);

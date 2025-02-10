@@ -148,7 +148,7 @@ public class Upload {
             return null;
         }
         playlist.addSongs(songs);
-        File coverFile = new File(folder, "cover.png");
+        File coverFile = new File(folder, playlist.getFolderName() + ".png");
         if (coverFile.exists()) {
             playlist.setCoverImage(coverFile.toURI());
         }
@@ -171,7 +171,7 @@ public class Upload {
             return null;
         }
         album.addSongs(songs);
-        File coverFile = new File(folder, "cover.png");
+        File coverFile = new File(folder, album.getFolderName() + ".png");
         if (coverFile.exists()) {
             album.setCoverImage(coverFile.toURI());
         }

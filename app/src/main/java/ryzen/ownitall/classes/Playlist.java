@@ -114,7 +114,7 @@ public class Playlist {
         // m3u playlist information
         output.append("#PLAYLIST:").append(this.toString()).append("\n");
         // m3u playlist cover
-        output.append("#EXTIMG:").append("cover.png").append("\n");
+        output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
         // m3u playlist contents
         for (Song song : this.songs) {
             File file = new File(song.getFileName() + "." + downloadFormat);

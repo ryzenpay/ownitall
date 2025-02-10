@@ -66,7 +66,7 @@ the current format to importing your local music library is currently strict
     - if you have a "liked songs" folder, name it "liked songs"  
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
         - default is playlist  
-    - cover image of an album needs to be a file called "cover.png" in the folder  
+    - cover image of an album needs to be a file called "<ALBUM NAME>.png" in the folder  
     - "loose" songs in the music library folder (root of folder) are added to "liked songs"  
 
 
