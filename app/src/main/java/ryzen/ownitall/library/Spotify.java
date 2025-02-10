@@ -695,7 +695,10 @@ public class Spotify {
 
     public void uploadPlaylist(Playlist playlist) {
         String playlistId = playlist.getId("spotify");
-        LinkedHashSet<Song> currentSongs = this.getPlaylistSongs(playlistId, 0);
+        LinkedHashSet<Song> currentSongs = new LinkedHashSet<>();
+        if (playlistId != null) {
+            currentSongs = this.getPlaylistSongs(playlistId, 0);
+        }
         LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
         if (currentSongs.isEmpty()) {
             try {
