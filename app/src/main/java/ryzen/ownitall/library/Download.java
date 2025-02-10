@@ -52,6 +52,8 @@ public class Download {
         }
         if (settings.getDownloadFolder().isEmpty()) {
             this.setDownloadPath();
+        } else {
+            this.downloadPath = settings.getDownloadFolder();
         }
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
