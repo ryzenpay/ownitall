@@ -69,7 +69,8 @@ public class Spotify {
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
-    private static final String scope = "user-library-modify,playlist-modify-private,playlist-modify-public";
+    // read and write scope
+    private static final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
     private SpotifyApi spotifyApi;
     private String code;
 
