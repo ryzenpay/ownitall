@@ -272,12 +272,6 @@ public class Song {
             return false;
         }
         Song song = (Song) object;
-        // only valid if library used
-        if (this.getId("lastfm") != null) {
-            if (this.getId("lastfm").equals(song.getId("lastfm"))) {
-                return true;
-            }
-        }
         // also checks artists as they have their own "equals" and compare
         if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
             return true;
@@ -288,6 +282,10 @@ public class Song {
     @Override
     @JsonIgnore
     public int hashCode() {
+        // only valid if library used
+        if (this.getId("lastfm") != null) {
+            return this.getId("lastfm").hashCode();
+        }
         return Objects.hash(this.name.toLowerCase().trim(), artist);
     }
 }
