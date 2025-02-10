@@ -118,7 +118,7 @@ public class Song {
      */
     public void addId(String key, String id) {
         if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or url in addId");
+            logger.debug(this.toString() + ": empty key or id in addId");
             return;
         }
         this.ids.put(key, id);

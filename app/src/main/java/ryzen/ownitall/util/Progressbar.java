@@ -10,7 +10,7 @@ import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 
 public class Progressbar {
-    private static final Logger logger = LogManager.getLogger(ProgressBar.class);
+    private static final Logger logger = LogManager.getLogger(Progressbar.class);
 
     /**
      * standardized progressbar

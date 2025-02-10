@@ -171,7 +171,7 @@ public class Library {
                 if (imageNode.isArray() && imageNode.size() > 0) {
                     album.setCoverImage(imageNode.get(imageNode.size() - 1).path("#text").asText());
                 }
-                album.addId("lastfm", albumNode.path("id").asText());
+                album.addId("lastfm", String.valueOf(albumNode.path("id").asInt()));
                 this.albums.add(album);
                 return album;
             }
@@ -268,7 +268,7 @@ public class Library {
                     }
                 }
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                song.addId("lastfm", trackNode.path("id").asText());
+                song.addId("lastfm", String.valueOf(trackNode.path("id").asInt()));
                 this.songs.add(song);
                 return song;
             }

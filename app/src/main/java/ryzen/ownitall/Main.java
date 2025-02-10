@@ -21,7 +21,7 @@ public class Main {
         Menu.clearScreen();
         Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        Collection.load().mergeCollection(sync.importCollection());
+        sync.importCollection();
         // main menu
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
