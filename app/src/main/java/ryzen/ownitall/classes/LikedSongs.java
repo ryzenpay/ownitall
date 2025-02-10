@@ -29,7 +29,7 @@ public class LikedSongs extends Playlist {
             logger.debug(this.toString() + ": null song provided in contains");
             return false;
         }
-        return this.getSongs().contains(song);
+        return super.contains(song);
     }
 
     /**

@@ -157,27 +157,12 @@ public class Album extends Playlist {
     }
 
     /**
-     * get m3u data to write to m3u file for album
+     * get .nfo data for album
      */
-    @Override
+    // TODO: gotta do .nfo for jellyfin
     @JsonIgnore
-    public String getM3U() {
-        // m3u header
-        StringBuilder output = new StringBuilder();
-        output.append("#EXTM3U").append("\n");
-        // m3u album information
-        output.append("#EXTALB:").append(this.toString()).append("\n");
-        output.append("#EXTART:").append(this.getMainArtist().toString().trim()).append("\n");
-        // m3u album cover
-        output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
-        // m3u album contents
-        for (Song song : this.getSongs()) {
-            File file = new File(song.getFileName() + "." + downloadFormat);
-            output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
-                    .append(song.toString()).append("\n");
-            output.append(file.getPath()).append("\n");
-        }
-        return output.toString();
+    public String getNFO() {
+        return null;
     }
 
     @Override
@@ -200,6 +185,15 @@ public class Album extends Playlist {
             return true;
         }
         return false;
+    }
+
+    @JsonIgnore
+    public boolean contains(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in contains");
+            return false;
+        }
+        return super.contains(song);
     }
 
     @Override

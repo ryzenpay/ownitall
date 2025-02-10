@@ -51,6 +51,7 @@ public class Tools {
      */
     private void optionArchive() {
         Sync.load().archive(true);
+        Input.request().getEnter();
     }
 
     /**
@@ -58,6 +59,7 @@ public class Tools {
      */
     private void optionUnArchive() {
         Sync.load().unArchive();
+        Input.request().getEnter();
     }
 
     /**

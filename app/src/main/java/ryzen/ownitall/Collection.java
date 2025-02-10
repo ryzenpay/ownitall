@@ -1,5 +1,6 @@
 package ryzen.ownitall;
 
+import java.io.File;
 import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +15,7 @@ import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
+    private static final Settings settings = Settings.load();
     private static Collection instance;
     private LikedSongs likedSongs;
     private LinkedHashSet<Playlist> playlists;
@@ -239,6 +241,25 @@ public class Collection {
     }
 
     /**
+     * check if song is already in an album, and if so return the album folder
+     * 
+     * @param song - song to check
+     * @return - album folder
+     */
+    public String getAlbumSongPath(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in checkAlbumSongs");
+            return null;
+        }
+        for (Album album : this.getAlbums()) {
+            if (album.contains(song)) {
+                return album.getFolderName();
+            }
+        }
+        return null;
+    }
+
+    /**
      * check if song is liked (in likedSongs)
      * 
      * @param song - constructed song to check if liked
@@ -356,5 +377,26 @@ public class Collection {
             }
         }
         return null;
+    }
+
+    public String getPlaylistM3U(Playlist playlist) {
+        StringBuilder output = new StringBuilder();
+        output.append(playlist.getM3UHeader());
+        for (Song song : playlist.getSongs()) {
+            File songFile;
+            String albumSongPath = null;
+            if (settings.isDownloadHierachy()) {
+                albumSongPath = this.getAlbumSongPath(song);
+            }
+            if (albumSongPath == null) {
+                songFile = new File(song.getFileName() + "." + settings.downloadFormat);
+            } else {
+                songFile = new File(albumSongPath, song.getFileName() + "." + settings.downloadFormat);
+            }
+            output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
+                    .append(song.toString()).append("\n");
+            output.append(songFile.getPath()).append("\n");
+        }
+        return output.toString();
     }
 }

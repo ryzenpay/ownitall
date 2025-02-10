@@ -253,15 +253,14 @@ public class Download {
      */
     public void downloadLikedSongs() {
         LinkedHashSet<Song> likedSongs;
-        if (settings.isDownloadAllLikedSongs()) {
-            likedSongs = collection.getLikedSongs().getSongs();
-        } else {
-            likedSongs = collection.getStandaloneLikedSongs();
-        }
-        File likedSongsFolder = new File(this.downloadPath);
+        File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
+            likedSongs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
             likedSongsFolder.mkdirs();
+        } else {
+            likedSongs = collection.getLikedSongs().getSongs();
+            likedSongsFolder = new File(this.downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
         for (Song song : likedSongs) {
@@ -269,7 +268,9 @@ public class Download {
             this.threadDownload(song, likedSongsFolder);
         }
         this.threadShutdown();
+        logger.info("Writing liked songs metadata...");
         writeSongsMetaData(likedSongs, likedSongsFolder, null);
+        logger.info("Clearing absess files");
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -298,15 +299,17 @@ public class Download {
             logger.debug("Empty playlist provided in downloadPlaylist");
             return;
         }
-
-        File playlistFolder = new File(downloadPath);
+        File playlistFolder;
         if (settings.isDownloadHierachy()) {
             playlistFolder = new File(this.downloadPath, playlist.getFolderName());
             playlistFolder.mkdirs();
+        } else {
+            playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
         try {
-            MusicTools.writeM3U(playlist.getFolderName(), playlist.getM3U(), playlistFolder);
+            // TODO: update song filepath if found in album && isdownloadhierachy
+            MusicTools.writeM3U(playlist.getFolderName(), collection.getPlaylistM3U(playlist), playlistFolder);
         } catch (Exception e) {
             logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u: " + e);
         }
@@ -323,7 +326,9 @@ public class Download {
             this.threadDownload(song, playlistFolder);
         }
         this.threadShutdown();
+        logger.info("Writing playlist metadata...");
         writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
+        logger.info("Clearing absess files");
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -345,18 +350,15 @@ public class Download {
             return;
         }
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
-        File albumFolder = new File(downloadPath);
-        if (settings.isDownloadHierachy()) {
-            albumFolder = new File(this.downloadPath, album.getFolderName());
-            albumFolder.mkdirs();
-        }
+        // albums are always in a folder
+        File albumFolder = new File(this.downloadPath, album.getFolderName());
         try {
-            MusicTools.writeM3U(album.getFolderName(), album.getM3U(), albumFolder);
+            MusicTools.writeM3U(album.getFolderName(), album.getNFO(), albumFolder);
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
         }
         try {
-            MusicTools.downloadImage(album.getCoverImage(), new File(albumFolder, album.getFolderName() + ".png"));
+            MusicTools.downloadImage(album.getCoverImage(), new File("cover.png"));
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
         }
@@ -365,7 +367,9 @@ public class Download {
             this.threadDownload(song, albumFolder);
         }
         this.threadShutdown();
+        logger.info("Writing album metadata...");
         writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
+        logger.info("Clearing absess files");
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
     }

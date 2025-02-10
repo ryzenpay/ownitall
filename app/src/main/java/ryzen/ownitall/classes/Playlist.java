@@ -107,20 +107,15 @@ public class Playlist {
      * @return - string data
      */
     @JsonIgnore
-    public String getM3U() {
+    public String getM3UHeader() {
         // m3u header
         StringBuilder output = new StringBuilder();
         output.append("#EXTM3U").append("\n");
         // m3u playlist information
         output.append("#PLAYLIST:").append(this.toString()).append("\n");
         // m3u playlist cover
-        output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
-        // m3u playlist contents
-        for (Song song : this.songs) {
-            File file = new File(song.getFileName() + "." + downloadFormat);
-            output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
-                    .append(song.toString()).append("\n");
-            output.append(file.getPath()).append("\n");
+        if (this.coverImage != null) {
+            output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
         }
         return output.toString();
     }
@@ -235,6 +230,15 @@ public class Playlist {
     @JsonIgnore
     public int size() {
         return this.songs.size();
+    }
+
+    @JsonIgnore
+    public boolean contains(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in contains");
+            return false;
+        }
+        return this.songs.contains(song);
     }
 
     /**
