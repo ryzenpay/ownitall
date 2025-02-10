@@ -108,10 +108,8 @@ public class Upload {
                 }
             }
             if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
-                LinkedHashSet<Song> songs = getSongs(file);
-                if (songs != null && !songs.isEmpty()) {
-                    collection.addLikedSongs(getSongs(file));
-                }
+                // automatically adds them to liked
+                getSongs(file);
             }
         }
     }
@@ -237,6 +235,9 @@ public class Upload {
                 Song song = getSong(file);
                 if (song != null) {
                     songs.add(song);
+                    if (isLiked(file)) {
+                        collection.addLikedSong(song);
+                    }
                 }
             }
         }
@@ -251,7 +252,8 @@ public class Upload {
      * @return - true if album, false if playlist
      */
     public static boolean isAlbum(File folder) {
-        if (!folder.isDirectory() || folder.list().length <= 1) {
+        if (folder == null || !folder.isDirectory() || folder.list().length <= 1) {
+            logger.debug("empty folder, non directory or directory with less than 1 files provided: " + folder);
             return false;
         }
         String album = null;
@@ -284,6 +286,31 @@ public class Upload {
         }
 
         return foundAnyAlbum;
+    }
+
+    public static boolean isLiked(File file) {
+        if (file == null || !file.isFile()) {
+            logger.debug("Empty file or non file provided: " + file);
+            return false;
+        }
+        if (extensions.contains(MusicTools.getExtension(file))) {
+            try {
+                AudioFile audioFile = AudioFileIO.read(file);
+                Tag tag = audioFile.getTag();
+                if (tag != null) {
+                    String rating = tag.getFirst(FieldKey.RATING);
+                    if (rating.equals("255")) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Error checking folder if album: " + e);
+                return false;
+            }
+        } else {
+            logger.debug("Unsuported format for: " + file.getAbsolutePath());
+        }
+        return false;
     }
 
     /**

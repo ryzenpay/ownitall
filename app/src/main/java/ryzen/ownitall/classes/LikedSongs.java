@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class LikedSongs extends Playlist { // different from playlist due to linkedhashset songs
+//a playlist for just liked songs (as they might not be in playlists)
+public class LikedSongs extends Playlist {
     private static final Logger logger = LogManager.getLogger(LikedSongs.class);
 
     /**

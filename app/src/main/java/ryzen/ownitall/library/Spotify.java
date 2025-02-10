@@ -23,7 +23,6 @@ import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
-import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchAlbumsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
@@ -661,7 +660,6 @@ public class Spotify {
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
-        // TODO: doesnt remove any songs that were removed from liked songs
         while (hasMore) {
             String[] currentLikedSongsIds = likedSongIds.subList(offset,
                     Math.min(offset + limit, likedSongIds.size())).toArray(new String[0]);
@@ -716,7 +714,6 @@ public class Spotify {
             }
         } else {
             // filter out the existing playlist songs
-            // TODO: doesnt remove any songs that were removed from playlist
             songs.removeAll(currentSongs);
         }
         ArrayList<String> songUris = new ArrayList<>();
@@ -763,7 +760,6 @@ public class Spotify {
         int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
-        // TODO: doesnt remove any albums that were removed
         while (hasMore) {
             String[] currentAlbumIds = albumIds.subList(offset,
                     Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
