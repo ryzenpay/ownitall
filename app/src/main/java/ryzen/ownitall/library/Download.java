@@ -80,6 +80,10 @@ public class Download {
     }
 
     public void threadDownload(Song song, File path) {
+        if (song == null || path == null) {
+            logger.debug("Empty song or path provided in threadDownload");
+            return;
+        }
         if ((this.executor == null || this.executor.isShutdown()) && !interrupted.get()) {
             this.threadInit();
         }
@@ -140,6 +144,10 @@ public class Download {
      * @param path - folder of where to place
      */
     public void downloadSong(Song song, File path) {
+        if (song == null || path == null) {
+            logger.debug("Empty song or Path provided in downloadSong");
+            return;
+        }
         List<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
@@ -266,8 +274,6 @@ public class Download {
 
     /**
      * orchestrator of downloadPlaylist
-     * 
-     * @param playlists - linkedhashset of playlists to download
      */
     public void downloadPlaylists() {
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
@@ -286,6 +292,10 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("Empty playlist provided in downloadPlaylist");
+            return;
+        }
         File playlistFolder = new File(this.downloadPath, playlist.getFolderName());
         playlistFolder.mkdirs();
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
@@ -323,6 +333,10 @@ public class Download {
     }
 
     public void downloadAlbum(Album album) {
+        if (album == null) {
+            logger.debug("Empty album provided in downloadAlbum");
+            return;
+        }
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
         File albumFolder = new File(this.downloadPath, album.getFolderName());
         albumFolder.mkdirs();
@@ -347,7 +361,16 @@ public class Download {
     }
 
     public static void writeSongsMetaData(LinkedHashSet<Song> songs, File folder, String albumName) {
+        if (songs == null || songs.isEmpty()) {
+            logger.debug("Empty or null songs provided in writeSongsMetaData");
+            return;
+        }
+        if (folder == null || albumName == null) {
+            logger.debug("No Folder or AlbumName provided in writeSongsMetaData");
+            return;
+        }
         if (!folder.exists()) {
+            logger.debug("Folder " + folder.getAbsolutePath() + " does not exist");
             return;
         }
         for (Song song : songs) {
@@ -363,6 +386,7 @@ public class Download {
 
     public void cleanFolder(File folder) {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("Folder is null, does not exist or is not a directorty in cleanFolder");
             return;
         }
         for (File file : folder.listFiles()) {

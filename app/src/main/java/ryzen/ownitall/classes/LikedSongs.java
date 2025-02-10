@@ -31,4 +31,11 @@ public class LikedSongs extends Playlist {
         }
         return this.getSongs().contains(song);
     }
+
+    /**
+     * clear likedsongs
+     */
+    public void clear() {
+        this.getSongs().clear();
+    }
 }

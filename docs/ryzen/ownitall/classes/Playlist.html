@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -190,12 +190,15 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#Playlist-java.lang.String-java.util.LinkedHashSet-java.lang.String-int-java.lang.String-">Playlist</a></span>&#8203;(java.lang.String&nbsp;name,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#Playlist-java.lang.String-java.util.LinkedHashSet-java.util.LinkedHashMap-java.lang.String-int-java.lang.String-">Playlist</a></span>&#8203;(java.lang.String&nbsp;name,
         java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+        java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids,
         java.lang.String&nbsp;youtubePageToken,
         int&nbsp;spotifyPageOffset,
         java.lang.String&nbsp;coverArt)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">full playlist contructor</div>
+</td>
 </tr>
 </table>
 </li>
@@ -215,132 +218,170 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#addId-java.lang.String-java.lang.String-">addId</a></span>&#8203;(java.lang.String&nbsp;key,
+     java.lang.String&nbsp;id)</code></th>
+<td class="colLast">
+<div class="block">add id to playlist id's</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#addIds-java.util.LinkedHashMap-">addIds</a></span>&#8203;(java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids)</code></th>
+<td class="colLast">
+<div class="block">add multiple id's to playlist</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#addSong-ryzen.ownitall.classes.Song-">addSong</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
 <td class="colLast">
 <div class="block">add song to playlist</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#addSongs-java.util.LinkedHashSet-">addSongs</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs)</code></th>
 <td class="colLast">
 <div class="block">add songs to playlist</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#clear--">clear</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#equals-java.lang.Object-">equals</a></span>&#8203;(java.lang.Object&nbsp;object)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.net.URI</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getCoverImage--">getCoverImage</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get coverart of current playlist class</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getFolderName--">getFolderName</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getM3U--">getM3U</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getFolderName--">getFolderName</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get playlist folder name
+ respects UTF-8</div>
+</td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getId-java.lang.String-">getId</a></span>&#8203;(java.lang.String&nbsp;key)</code></th>
+<td class="colLast">
+<div class="block">get id from playlist id's</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getIds--">getIds</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get all playlist id's</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getM3U--">getM3U</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get m3u data to write to m3u file for playlist</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getName--">getName</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get the name of the current playlist class</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getSong-ryzen.ownitall.classes.Song-">getSong</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get song in playlist</div>
+</td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getSongs--">getSongs</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get all playlist songs</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getSpotifyPageOffset--">getSpotifyPageOffset</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get spotify offset for spotify playlist</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>java.time.Duration</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getTotalDuration--">getTotalDuration</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get total playlist duration</div>
+</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#getYoutubePageToken--">getYoutubePageToken</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get youtube page token of youtube playlist</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#hashCode--">hashCode</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#merge-ryzen.ownitall.classes.Playlist-">merge</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">merge playlist into current playlist
+ used when existing playlist found and want to add new</div>
+</td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#removeSong-ryzen.ownitall.classes.Song-">removeSong</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">remove song from playlist</div>
+</td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.lang.String-">setCoverImage</a></span>&#8203;(java.lang.String&nbsp;coverImage)</code></th>
 <td class="colLast">
 <div class="block">set playlist cover art</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.net.URI-">setCoverImage</a></span>&#8203;(java.net.URI&nbsp;coverImage)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#setSpotifyPageOffset-int-">setSpotifyPageOffset</a></span>&#8203;(int&nbsp;offset)</code></th>
 <td class="colLast">
 <div class="block">set spotify offset for spotify playlist</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#setYoutubePageToken-java.lang.String-">setYoutubePageToken</a></span>&#8203;(java.lang.String&nbsp;token)</code></th>
 <td class="colLast">
 <div class="block">set youtube page token of youtube playlist</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#size--">size</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">return size/numbers of songs in playlist</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Playlist.html#toString--">toString</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -407,7 +448,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="Playlist-java.lang.String-java.util.LinkedHashSet-java.lang.String-int-java.lang.String-">
+<a name="Playlist-java.lang.String-java.util.LinkedHashSet-java.util.LinkedHashMap-java.lang.String-int-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -415,9 +456,20 @@ extends java.lang.Object</pre>
 <h4>Playlist</h4>
 <pre>public&nbsp;Playlist&#8203;(java.lang.String&nbsp;name,
                 java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+                java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids,
                 java.lang.String&nbsp;youtubePageToken,
                 int&nbsp;spotifyPageOffset,
                 java.lang.String&nbsp;coverArt)</pre>
+<div class="block">full playlist contructor</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>name</code> - - playlist name</dd>
+<dd><code>songs</code> - - linkedhashset of song</dd>
+<dd><code>ids</code> - - linkedhashmap of id's</dd>
+<dd><code>youtubePageToken</code> - - string youtube page token</dd>
+<dd><code>spotifyPageOffset</code> - - int spotify page token</dd>
+<dd><code>coverArt</code> - - string playlist coverart</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -435,6 +487,12 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>merge</h4>
 <pre>public&nbsp;void&nbsp;merge&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+<div class="block">merge playlist into current playlist
+ used when existing playlist found and want to add new</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>playlist</code> - - constructed playlist to merge into this</dd>
+</dl>
 </li>
 </ul>
 <a name="getName--">
@@ -458,6 +516,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getM3U</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getM3U&#8203;()</pre>
+<div class="block">get m3u data to write to m3u file for playlist</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- string data</dd>
+</dl>
 </li>
 </ul>
 <a name="setCoverImage-java.lang.String-">
@@ -532,6 +595,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>removeSong</h4>
 <pre>public&nbsp;void&nbsp;removeSong&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">remove song from playlist</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - song to remove</dd>
+</dl>
 </li>
 </ul>
 <a name="getSong-ryzen.ownitall.classes.Song-">
@@ -541,6 +609,13 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getSong</h4>
 <pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;getSong&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+<div class="block">get song in playlist</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - song to find</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed found song or null</dd>
+</dl>
 </li>
 </ul>
 <a name="size--">
@@ -634,6 +709,12 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getFolderName</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getFolderName&#8203;()</pre>
+<div class="block">get playlist folder name
+ respects UTF-8</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- string UTF-8 foldername</dd>
+</dl>
 </li>
 </ul>
 <a name="getTotalDuration--">
@@ -643,6 +724,71 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>getTotalDuration</h4>
 <pre>public&nbsp;java.time.Duration&nbsp;getTotalDuration&#8203;()</pre>
+<div class="block">get total playlist duration</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- total Duration</dd>
+</dl>
+</li>
+</ul>
+<a name="addId-java.lang.String-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addId</h4>
+<pre>public&nbsp;void&nbsp;addId&#8203;(java.lang.String&nbsp;key,
+                  java.lang.String&nbsp;id)</pre>
+<div class="block">add id to playlist id's</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>key</code> - - key to add (spotify, youtube, ...)</dd>
+<dd><code>id</code> - - id to add</dd>
+</dl>
+</li>
+</ul>
+<a name="addIds-java.util.LinkedHashMap-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addIds</h4>
+<pre>public&nbsp;void&nbsp;addIds&#8203;(java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids)</pre>
+<div class="block">add multiple id's to playlist</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ids</code> - - linkedhashmap of id's to add</dd>
+</dl>
+</li>
+</ul>
+<a name="getId-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getId</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getId&#8203;(java.lang.String&nbsp;key)</pre>
+<div class="block">get id from playlist id's</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>key</code> - - key of id to return</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- string id</dd>
+</dl>
+</li>
+</ul>
+<a name="getIds--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIds</h4>
+<pre>public&nbsp;java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;getIds&#8203;()</pre>
+<div class="block">get all playlist id's</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- linkedhashmap of id's</dd>
+</dl>
 </li>
 </ul>
 <a name="toString--">
@@ -674,7 +820,7 @@ extends java.lang.Object</pre>
 <a name="hashCode--">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>hashCode</h4>
 <pre>public&nbsp;int&nbsp;hashCode&#8203;()</pre>
@@ -682,15 +828,6 @@ extends java.lang.Object</pre>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code>hashCode</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
 </dl>
-</li>
-</ul>
-<a name="clear--">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>clear</h4>
-<pre>public&nbsp;void&nbsp;clear&#8203;()</pre>
 </li>
 </ul>
 </li>

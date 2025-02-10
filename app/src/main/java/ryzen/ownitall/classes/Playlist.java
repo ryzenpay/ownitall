@@ -45,6 +45,16 @@ public class Playlist {
         this.ids = new LinkedHashMap<>();
     }
 
+    /**
+     * full playlist contructor
+     * 
+     * @param name              - playlist name
+     * @param songs             - linkedhashset of song
+     * @param ids               - linkedhashmap of id's
+     * @param youtubePageToken  - string youtube page token
+     * @param spotifyPageOffset - int spotify page token
+     * @param coverArt          - string playlist coverart
+     */
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
@@ -61,6 +71,12 @@ public class Playlist {
         this.setCoverImage(coverArt);
     }
 
+    /**
+     * merge playlist into current playlist
+     * used when existing playlist found and want to add new
+     * 
+     * @param playlist - constructed playlist to merge into this
+     */
     public void merge(Playlist playlist) {
         if (playlist == null) {
             logger.debug(this.toString() + ": null playlist provided in merge");
@@ -85,6 +101,11 @@ public class Playlist {
         return this.name;
     }
 
+    /**
+     * get m3u data to write to m3u file for playlist
+     * 
+     * @return - string data
+     */
     @JsonIgnore
     public String getM3U() {
         // m3u header
@@ -171,6 +192,11 @@ public class Playlist {
         }
     }
 
+    /**
+     * remove song from playlist
+     * 
+     * @param song - song to remove
+     */
     public void removeSong(Song song) {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in removeSong");
@@ -179,9 +205,18 @@ public class Playlist {
         this.songs.remove(song);
     }
 
+    /**
+     * get song in playlist
+     * 
+     * @param song - song to find
+     * @return - constructed found song or null
+     */
     public Song getSong(Song song) {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in getSong");
+            return null;
+        }
+        if (!this.songs.contains(song)) {
             return null;
         }
         for (Song thisSong : this.songs) {
@@ -249,12 +284,18 @@ public class Playlist {
      */
     public void setSpotifyPageOffset(int offset) {
         if (offset < 0) {
-            logger.debug(this.toString() + ": provided spotify offset is below 0");
-            return;
+            logger.debug(this.toString() + ": provided spotify offset is below 0, defaulting to 0");
+            offset = 0;
         }
         this.spotifyPageOffset = offset;
     }
 
+    /**
+     * get playlist folder name
+     * respects UTF-8
+     * 
+     * @return - string UTF-8 foldername
+     */
     @JsonIgnore
     public String getFolderName() {
         String fileName = MusicTools.sanitizeFileName(this.getName());
@@ -264,6 +305,11 @@ public class Playlist {
         return fileName;
     }
 
+    /**
+     * get total playlist duration
+     * 
+     * @return - total Duration
+     */
     @JsonIgnore
     public Duration getTotalDuration() {
         Duration totalDuration = Duration.ZERO;
@@ -273,6 +319,12 @@ public class Playlist {
         return totalDuration;
     }
 
+    /**
+     * add id to playlist id's
+     * 
+     * @param key - key to add (spotify, youtube, ...)
+     * @param id  - id to add
+     */
     public void addId(String key, String id) {
         if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
             logger.debug(this.toString() + ": empty key or url in addId");
@@ -281,6 +333,11 @@ public class Playlist {
         this.ids.put(key, id);
     }
 
+    /**
+     * add multiple id's to playlist
+     * 
+     * @param ids - linkedhashmap of id's to add
+     */
     public void addIds(LinkedHashMap<String, String> ids) {
         if (ids == null || ids.isEmpty()) {
             logger.debug(this.toString() + ": empty ids array provided in addIds");
@@ -289,6 +346,12 @@ public class Playlist {
         this.ids.putAll(ids);
     }
 
+    /**
+     * get id from playlist id's
+     * 
+     * @param key - key of id to return
+     * @return - string id
+     */
     @JsonIgnore
     public String getId(String key) {
         if (key == null || key.isEmpty()) {
@@ -298,6 +361,11 @@ public class Playlist {
         return this.ids.get(key);
     }
 
+    /**
+     * get all playlist id's
+     * 
+     * @return - linkedhashmap of id's
+     */
     public LinkedHashMap<String, String> getIds() {
         return this.ids;
     }
@@ -331,9 +399,5 @@ public class Playlist {
     @JsonIgnore
     public int hashCode() {
         return Objects.hash(this.name.toLowerCase().trim());
-    }
-
-    public void clear() {
-        this.songs.clear();
     }
 }

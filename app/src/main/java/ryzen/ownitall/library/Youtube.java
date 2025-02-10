@@ -209,6 +209,10 @@ public class Youtube {
      * @return - arraylist of constructed Song
      */
     private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) {
+        if (playlistId == null) {
+            logger.debug("null playlistID provided in getPlaylistSongs");
+            return null;
+        }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         try {
             do {
@@ -256,6 +260,10 @@ public class Youtube {
      * @return - true if song, false if not
      */
     private boolean isMusicVideo(String videoId) {
+        if (videoId == null) {
+            logger.debug("null videoID passed in isMusicVideo");
+            return false;
+        }
         try {
             YouTube.Videos.List videoRequest = youtubeApi.videos()
                     .list("snippet")
@@ -279,6 +287,10 @@ public class Youtube {
      * @return - constructed Duration
      */
     private Duration getDuration(String videoId) {
+        if (videoId == null) {
+            logger.debug("null videoID provided in getDuration");
+            return Duration.ZERO;
+        }
         try {
             YouTube.Videos.List videoRequest = youtubeApi.videos()
                     .list("contentDetails")
@@ -302,6 +314,10 @@ public class Youtube {
      * @return - name of the channel
      */
     private String getVideoChannel(String videoId) {
+        if (videoId == null) {
+            logger.debug("null videoID provided in getVideoChannel");
+            return null;
+        }
         try {
             YouTube.Videos.List videoRequest = youtubeApi.videos()
                     .list("snippet")

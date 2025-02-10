@@ -33,6 +33,10 @@ public class MusicTools {
      * @return - string in format ((hh:)mm:ss)
      */
     public static String musicTime(Duration duration) {
+        if (duration == null) {
+            logger.debug("null duration provided in musicTime");
+            return null;
+        }
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
         long seconds = duration.getSeconds() % 60;
@@ -51,12 +55,20 @@ public class MusicTools {
      * @return - String of file extension
      */
     public static String getExtension(File file) {
+        if (file == null) {
+            logger.debug("null file provided in getExtension");
+            return null;
+        }
         String fileName = file.getName();
         int extensionIndex = fileName.lastIndexOf('.');
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
     public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
+        if (folder == null || fileName == null) {
+            logger.debug("null folder or filename provided in writem3u");
+            return;
+        }
         if (!folder.exists()) {
             logger.debug("folder " + folder.getAbsolutePath() + " does not exist in writeM3U");
             return;
@@ -70,6 +82,10 @@ public class MusicTools {
     public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
             String albumName,
             File songFile) throws Exception {
+        if (songFile == null) {
+            logger.debug("null songFile provided in writeMetaData");
+            return;
+        }
         if (!songFile.exists()) {
             logger.debug("Song File " + songFile.getAbsolutePath() + " does not exist in writeMetaData");
             return;
@@ -135,11 +151,12 @@ public class MusicTools {
     }
 
     public static void downloadImage(URI url, File file) throws Exception {
-        if (url == null) {
-            logger.debug("no download url passed in downloadImage");
+        if (url == null || file == null) {
+            logger.debug("null url or file passed in downloadImage");
             return;
         }
         if (file.exists()) {
+            logger.debug("coverimage already found: " + file.getAbsolutePath());
             return;
         }
         try (InputStream in = url.toURL().openStream()) {
@@ -149,7 +166,7 @@ public class MusicTools {
 
     public static String sanitizeFileName(String fileName) {
         if (fileName == null) {
-            logger.debug("no filename passed in SanitizeFileName");
+            logger.debug("null filename passed in SanitizeFileName");
             return null;
         }
         // Sanitize the name by removing invalid characters

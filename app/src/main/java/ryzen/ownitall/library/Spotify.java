@@ -206,6 +206,10 @@ public class Spotify {
      * @return - String code
      */
     private String extractCodeFromRequest(String request) {
+        if (request == null) {
+            logger.debug("Empty request passed in extractCodeFromRequest");
+            return null;
+        }
         int codeIndex = request.indexOf("code=");
         if (codeIndex != -1) {
             int endIndex = request.indexOf("&", codeIndex);
@@ -353,6 +357,7 @@ public class Spotify {
 
     public Album getAlbum(String albumId, String albumName, String artistName, String albumImageUrl) {
         if (albumId == null || albumName == null) {
+            logger.debug("Null albumID or AlbumName provided in getAlbum");
             return null;
         }
         Album album = null;
@@ -372,7 +377,7 @@ public class Spotify {
                 offset = foundAlbum.getSpotifyPageOffset();
             }
             LinkedHashSet<Song> songs = this.getAlbumSongs(albumId, offset);
-            if (!songs.isEmpty()) {
+            if (songs != null && !songs.isEmpty()) {
                 album.addSongs(songs);
                 album.setSpotifyPageOffset(songs.size());
                 if (albumImageUrl != null) {
@@ -393,6 +398,10 @@ public class Spotify {
      * @return - linkedhashset of songs
      */
     public LinkedHashSet<Song> getAlbumSongs(String albumId, int offset) {
+        if (albumId == null) {
+            logger.debug("null albumID provided in getAlbumSongs");
+            return null;
+        }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = settings.getSpotifyAlbumLimit();
         boolean hasMore = true;
@@ -438,7 +447,6 @@ public class Spotify {
                 hasMore = false;
             }
         }
-
         return songs;
     }
 
@@ -496,6 +504,7 @@ public class Spotify {
 
     public Playlist getPlaylist(String playlistId, String playlistName, String playlistImageUrl) {
         if (playlistId == null || playlistName == null) {
+            logger.debug("null playlistID or playlistName provided in getPlaylist");
             return null;
         }
         Playlist playlist = new Playlist(playlistName);
@@ -505,7 +514,7 @@ public class Spotify {
             offset = foundPlaylist.getSpotifyPageOffset();
         }
         LinkedHashSet<Song> songs = this.getPlaylistSongs(playlistId, offset);
-        if (!songs.isEmpty()) {
+        if (songs != null && !songs.isEmpty()) {
             playlist.addSongs(songs);
             playlist.setSpotifyPageOffset(songs.size());
             if (playlistImageUrl != null) {
@@ -525,11 +534,11 @@ public class Spotify {
      * @return - constructed array of Songs
      */
     public LinkedHashSet<Song> getPlaylistSongs(String playlistId, int offset) {
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         if (playlistId == null) {
-            logger.debug("No Playlist ID provided in getPlaylistSongs");
-            return songs;
+            logger.debug("null playlistID provided in getPlaylistSongs");
+            return null;
         }
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = settings.getSpotifySongLimit();
         boolean hasMore = true;
         while (hasMore) {
@@ -597,6 +606,10 @@ public class Spotify {
     }
 
     public String getTrackId(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getTrackId");
+            return null;
+        }
         if (song.getId("spotify") != null) {
             return song.getId("spotify");
         }
@@ -623,6 +636,10 @@ public class Spotify {
     }
 
     public String getAlbumId(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in getAlbumId");
+            return null;
+        }
         if (album.getId("spotify") != null) {
             return album.getId("spotify");
         }
@@ -692,13 +709,17 @@ public class Spotify {
     }
 
     public void uploadPlaylist(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in uploadPlaylist");
+            return;
+        }
         String playlistId = playlist.getId("spotify");
         LinkedHashSet<Song> currentSongs = new LinkedHashSet<>();
         if (playlistId != null) {
             currentSongs = this.getPlaylistSongs(playlistId, 0);
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
-        if (currentSongs.isEmpty()) {
+        if (currentSongs != null && currentSongs.isEmpty()) {
             try {
                 GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
                         .build();

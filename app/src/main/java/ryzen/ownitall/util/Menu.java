@@ -40,6 +40,10 @@ public class Menu {
      * 
      */
     public static String optionMenu(Set<String> setOptions, String menuName) {
+        if (setOptions == null || setOptions.isEmpty()) {
+            logger.debug("null or empty optionset provided in optionMenu");
+            return null;
+        }
         ArrayList<String> options = new ArrayList<>(setOptions);
         int i = 1;
         int choice;
@@ -72,6 +76,10 @@ public class Menu {
     }
 
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) {
+        if (setOptions == null || setOptions.isEmpty()) {
+            logger.debug("null or empty optionset provided in optionMenuWithValue");
+            return null;
+        }
         ArrayList<String> options = new ArrayList<>(setOptions.keySet());
         int i = 1;
         int choice;

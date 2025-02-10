@@ -137,9 +137,14 @@ public class Upload {
     }
 
     public static Playlist getPlaylist(File folder) {
+        if (folder == null || !folder.exists()) {
+            logger.debug("null folder or non existing folder provided");
+            return null;
+        }
         Playlist playlist = new Playlist(folder.getName());
         LinkedHashSet<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
+            logger.debug("no songs found in " + folder.getAbsolutePath());
             return null;
         }
         playlist.addSongs(songs);
@@ -151,12 +156,18 @@ public class Upload {
     }
 
     public static Album getAlbum(File folder) {
+        if (folder == null || !folder.exists()) {
+            logger.debug("null folder or non existing folder passed in getAlbum");
+            return null;
+        }
         Album album = constructAlbum(folder);
         if (album == null) {
+            logger.debug("Error creating constructed album for " + folder.getAbsolutePath());
             return null;
         }
         LinkedHashSet<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
+            logger.debug("no songs found in album " + folder.getAbsolutePath());
             return null;
         }
         album.addSongs(songs);
@@ -174,7 +185,12 @@ public class Upload {
      * @return - constructed Song
      */
     public static Song getSong(File file) {
+        if (file == null || !file.exists()) {
+            logger.debug("null or non existant file provided in getSong");
+            return null;
+        }
         if (!extensions.contains(MusicTools.getExtension(file))) {
+            logger.debug("provided file is not in extensions:" + file.getAbsolutePath());
             return null;
         }
         Song song = null;
@@ -226,7 +242,8 @@ public class Upload {
      * @return - linkedhashset of constructed songs
      */
     public static LinkedHashSet<Song> getSongs(File folder) {
-        if (!folder.isDirectory() || !folder.exists()) {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("null or non directory or non existant folder passed in getSongs");
             return null;
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
@@ -252,8 +269,9 @@ public class Upload {
      * @return - true if album, false if playlist
      */
     public static boolean isAlbum(File folder) {
-        if (folder == null || !folder.isDirectory() || folder.list().length <= 1) {
-            logger.debug("empty folder, non directory or directory with less than 1 files provided: " + folder);
+        if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
+            logger.debug("empty folder, non directory, non existant or directory with less than 1 files provided: "
+                    + folder);
             return false;
         }
         String album = null;
@@ -320,6 +338,10 @@ public class Upload {
      * @return - constructed Album without songs
      */
     public static Album constructAlbum(File folder) {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("null folder or non existant or non directory folder provided in construct Album");
+            return null;
+        }
         Album album = null;
         String albumName = folder.getName();
         String artistName = null;
@@ -352,7 +374,7 @@ public class Upload {
             } else {
                 album = new Album(folder.getName());
             }
-            album.addArtist(artistName);
+            album.addArtist(new Artist(artistName));
         }
         return album;
     }

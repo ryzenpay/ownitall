@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -184,13 +184,18 @@ extends java.lang.Object</pre>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getAlbumId-ryzen.ownitall.classes.Album-">getAlbumId</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getAlbums--">getAlbums</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get all current user saved albums and add them to collection</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getAlbumSongs-java.lang.String-int-">getAlbumSongs</a></span>&#8203;(java.lang.String&nbsp;albumId,
              int&nbsp;offset)</code></th>
@@ -198,21 +203,21 @@ extends java.lang.Object</pre>
 <div class="block">get all songs in an album</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getLikedSongs--">getLikedSongs</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">Get all liked songs from current spotify account and add them to collection</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getPlaylist-java.lang.String-java.lang.String-java.lang.String-">getPlaylist</a></span>&#8203;(java.lang.String&nbsp;playlistId,
            java.lang.String&nbsp;playlistName,
            java.lang.String&nbsp;playlistImageUrl)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getPlaylists--">getPlaylists</a></span>&#8203;()</code></th>
 <td class="colLast">
@@ -220,7 +225,7 @@ extends java.lang.Object</pre>
  collection</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getPlaylistSongs-java.lang.String-int-">getPlaylistSongs</a></span>&#8203;(java.lang.String&nbsp;playlistId,
                 int&nbsp;offset)</code></th>
@@ -228,19 +233,44 @@ extends java.lang.Object</pre>
 <div class="block">get all songs from a playlist</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#getTrackId-ryzen.ownitall.classes.Song-">getTrackId</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#refreshToken--">refreshToken</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">refresh the spotify api token incase of expiring</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#startLocalServer--">startLocalServer</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">start temporary local server to "intercept" spotify api code</div>
 </td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#uploadAlbums--">uploadAlbums</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#uploadLikedSongs--">uploadLikedSongs</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#uploadPlaylist-ryzen.ownitall.classes.Playlist-">uploadPlaylist</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/Spotify.html#uploadPlaylists--">uploadPlaylists</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -381,7 +411,7 @@ extends java.lang.Object</pre>
 <a name="getPlaylistSongs-java.lang.String-int-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getPlaylistSongs</h4>
 <pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;getPlaylistSongs&#8203;(java.lang.String&nbsp;playlistId,
@@ -394,6 +424,60 @@ extends java.lang.Object</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- constructed array of Songs</dd>
 </dl>
+</li>
+</ul>
+<a name="getTrackId-ryzen.ownitall.classes.Song-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getTrackId</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getTrackId&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
+</li>
+</ul>
+<a name="getAlbumId-ryzen.ownitall.classes.Album-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAlbumId</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getAlbumId&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</pre>
+</li>
+</ul>
+<a name="uploadLikedSongs--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>uploadLikedSongs</h4>
+<pre>public&nbsp;void&nbsp;uploadLikedSongs&#8203;()</pre>
+</li>
+</ul>
+<a name="uploadPlaylists--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>uploadPlaylists</h4>
+<pre>public&nbsp;void&nbsp;uploadPlaylists&#8203;()</pre>
+</li>
+</ul>
+<a name="uploadPlaylist-ryzen.ownitall.classes.Playlist-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>uploadPlaylist</h4>
+<pre>public&nbsp;void&nbsp;uploadPlaylist&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</pre>
+</li>
+</ul>
+<a name="uploadAlbums--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>uploadAlbums</h4>
+<pre>public&nbsp;void&nbsp;uploadAlbums&#8203;()</pre>
 </li>
 </ul>
 </li>

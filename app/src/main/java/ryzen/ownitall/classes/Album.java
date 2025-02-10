@@ -52,6 +52,12 @@ public class Album extends Playlist {
         this.addArtists(artists);
     }
 
+    /**
+     * merge two albums together
+     * used when adding to linkedhashset and one already exists
+     * 
+     * @param album - album to merge into current
+     */
     public void merge(Album album) {
         if (album == null) {
             logger.debug("null album passed in merge");
@@ -68,6 +74,12 @@ public class Album extends Playlist {
         this.addArtists(album.getArtists());
     }
 
+    /**
+     * add song to album
+     * also adds artists from song into current album artists
+     * 
+     * @param song - song to add
+     */
     @Override
     public void addSong(Song song) {
         if (song == null) {
@@ -84,6 +96,11 @@ public class Album extends Playlist {
         this.addArtist(song.getArtist());
     }
 
+    /**
+     * add artists to album artists
+     * 
+     * @param artists - linkedhashset of artist to add
+     */
     public void addArtists(LinkedHashSet<Artist> artists) {
         if (artists == null || artists.isEmpty()) {
             logger.debug(this.toString() + ": empty artists array provided in addArtists");
@@ -92,6 +109,11 @@ public class Album extends Playlist {
         this.artists.addAll(artists);
     }
 
+    /**
+     * add artist to album
+     * 
+     * @param artist - constructed artist to add
+     */
     public void addArtist(Artist artist) {
         if (artist == null || artist.isEmpty()) {
             logger.debug(this.toString() + ": empty artist provided in addArtist");
@@ -101,18 +123,20 @@ public class Album extends Playlist {
         this.artists.add(artist);
     }
 
-    public void addArtist(String artistName) {
-        if (artistName == null || artistName.isEmpty()) {
-            logger.debug(this.toString() + ": empty artistName provided in addArtist");
-            return;
-        }
-        this.artists.add(new Artist(artistName));
-    }
-
+    /**
+     * get all album artists
+     * 
+     * @return - linkedhashset of artist
+     */
     public LinkedHashSet<Artist> getArtists() {
         return this.artists;
     }
 
+    /**
+     * get album main artist
+     * 
+     * @return - first artist in album
+     */
     @JsonIgnore
     public Artist getMainArtist() {
         Iterator<Artist> iterator = this.artists.iterator();
@@ -132,6 +156,9 @@ public class Album extends Playlist {
         return output;
     }
 
+    /**
+     * get m3u data to write to m3u file for album
+     */
     @Override
     @JsonIgnore
     public String getM3U() {

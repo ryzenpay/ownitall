@@ -13,6 +13,11 @@ public class Artist {
     private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
 
+    /**
+     * default artist constructor
+     * 
+     * @param name - artist name
+     */
     @JsonCreator
     public Artist(@JsonProperty("name") String name) {
         this.name = name;
@@ -42,6 +47,9 @@ public class Artist {
             return false;
         }
         Artist artist = (Artist) object;
+        if (this.hashCode() == artist.hashCode()) {
+            return true;
+        }
         if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
                 simularityPercentage)) {
             return true;
@@ -55,8 +63,7 @@ public class Artist {
         return Objects.hashCode(this.name.toLowerCase().trim());
     }
 
-    @JsonIgnore
     public boolean isEmpty() {
-        return name.isEmpty();
+        return this.name.isEmpty();
     }
 }

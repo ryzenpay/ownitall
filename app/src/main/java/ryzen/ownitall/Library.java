@@ -165,7 +165,7 @@ public class Library {
             JsonNode albumNode = response.path("album");
             if (albumNode != null && !albumNode.isMissingNode()) {
                 Album album = new Album(albumNode.path("name").asText());
-                album.addArtist(albumNode.path("artist").asText());
+                album.addArtist(new Artist(albumNode.path("artist").asText()));
 
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && imageNode.size() > 0) {
@@ -259,8 +259,7 @@ public class Library {
             JsonNode trackNode = response.path("track");
             if (trackNode != null && !trackNode.isMissingNode()) {
                 Song song = new Song(trackNode.path("name").asText());
-                song.setArtist(trackNode.path("artist").path("name").asText());
-
+                song.setArtist(new Artist(trackNode.path("artist").path("name").asText()));
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
                     JsonNode imageNode = albumNode.path("image");
