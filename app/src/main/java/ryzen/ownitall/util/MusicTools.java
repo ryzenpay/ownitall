@@ -25,6 +25,9 @@ import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class MusicTools {
     private static final Logger logger = LogManager.getLogger(MusicTools.class);
+    static {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
+    }
 
     /**
      * convert duration into music time (mm:ss)
@@ -67,6 +70,10 @@ public class MusicTools {
     public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
         if (folder == null || fileName == null) {
             logger.debug("null folder or filename provided in writem3u");
+            return;
+        }
+        if (M3UData == null || M3UData.isEmpty()) {
+            logger.debug("null or empty m3u data provided in writem3u");
             return;
         }
         if (!folder.exists()) {

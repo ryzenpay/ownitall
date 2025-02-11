@@ -358,7 +358,7 @@ public class Download {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
         }
         try {
-            MusicTools.downloadImage(album.getCoverImage(), new File("cover.png"));
+            MusicTools.downloadImage(album.getCoverImage(), new File(albumFolder, "cover.png"));
         } catch (Exception e) {
             logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
         }
