@@ -326,7 +326,9 @@ public class Download {
                 playlist.getCoverImage());
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, playlistFolder);
+            if (collection.getSongAlbum(song) != null) {
+                this.threadDownload(song, playlistFolder);
+            }
         }
         this.threadShutdown();
         logger.info("Clearing absess files");
