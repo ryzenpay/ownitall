@@ -1,7 +1,6 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
@@ -87,7 +86,10 @@ public class Download {
             logger.debug("Empty song or path provided in threadDownload");
             return;
         }
-        if ((this.executor == null || this.executor.isShutdown()) && !interrupted.get()) {
+        if (interrupted.get()) {
+            return;
+        }
+        if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
         // Set up a signal handler for SIGINT (Ctrl+C)
@@ -136,7 +138,8 @@ public class Download {
             executor.awaitTermination(10, TimeUnit.MINUTES);
             logger.debug("All threads shut down");
         } catch (InterruptedException e) {
-            logger.error("Awaiting for threads to finish was interrupted: " + e);
+            logger.error("Awaiting for threads to finish was interrupted, shutting down now: " + e);
+            executor.shutdownNow();
         }
     }
 
@@ -201,7 +204,6 @@ public class Download {
             searchQuery = song.toString() + " (official audio)"; // youtube search criteria
             // prevent any search impacting triggers + pipeline starters
             searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
-            command.add(searchQuery);
         }
         command.add(searchQuery);
         try {
@@ -240,10 +242,10 @@ public class Download {
                 }
                 retries++;
             }
-            if (!songFile.exists()) {
-                logger.debug("the song " + song.getName() + " failed to download");
-            } else {
+            if (songFile.exists()) {
                 writeMetaData(song, songFile);
+            } else {
+                logger.debug("the song " + song.toString() + " failed to download, check log for why");
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
@@ -279,11 +281,14 @@ public class Download {
             likedSongs = collection.getLikedSongs().getSongs();
             likedSongsFolder = new File(this.downloadPath);
         }
-        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size());
+        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size() + 1);
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, likedSongsFolder);
+            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) != null) {
+                this.threadDownload(song, likedSongsFolder);
+            }
         }
+        pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
         logger.info("Clearing absess files");
         this.cleanFolder(likedSongsFolder);
@@ -321,15 +326,16 @@ public class Download {
         } else {
             playlistFolder = new File(downloadPath);
         }
-        ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
+        ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
         MusicTools.writeCollectionData(playlist.getFolderName(), collection.getPlaylistM3U(playlist), playlistFolder,
                 playlist.getCoverImage());
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            if (collection.getSongAlbum(song) != null) {
+            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) != null) {
                 this.threadDownload(song, playlistFolder);
             }
         }
+        pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
         logger.info("Clearing absess files");
         this.cleanFolder(playlistFolder);
@@ -352,7 +358,7 @@ public class Download {
             logger.debug("Empty album provided in downloadAlbum");
             return;
         }
-        ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
+        ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
         MusicTools.writeCollectionData(album.getFolderName(), album.getNFO(), albumFolder,
@@ -361,6 +367,7 @@ public class Download {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
         }
+        pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
         logger.info("Clearing absess files");
         this.cleanFolder(albumFolder);

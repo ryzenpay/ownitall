@@ -119,13 +119,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * download all files in a hierachy method
      * playlists get their own folders
+     * most applications such as jellyfin use false
      */
-    protected boolean downloadHierachy = true;
-
-    /**
-     * dump all liked songs into liked songs (true) or only the standalone ones
-     */
-    protected boolean downloadAllLikedSongs = false;
+    protected boolean downloadHierachy = false;
 
     /**
      * download quality of music
@@ -454,14 +450,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public void setDownloadThreads(Integer downloadThreads) {
         this.downloadThreads = downloadThreads;
-    }
-
-    public boolean isDownloadAllLikedSongs() {
-        return downloadAllLikedSongs;
-    }
-
-    public void setDownloadAllLikedSongs(boolean downloadAllLikedSongs) {
-        this.downloadAllLikedSongs = downloadAllLikedSongs;
     }
 
     public String getDownloadCookiesFile() {

@@ -39,7 +39,7 @@ public class UploadMenu {
         ProgressBar pb = Progressbar.progressBar("Upload", 2);
         pb.setExtraMessage("Liked Songs");
         upload.getLikedSongs();
-        pb.setExtraMessage("Saved Albums & Playlists").step();
+        pb.setExtraMessage("Saved Albums +/ Playlists").step();
         upload.processFolders();
         pb.setExtraMessage("Done").step();
         pb.close();

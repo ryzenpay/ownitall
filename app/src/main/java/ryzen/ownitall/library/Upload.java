@@ -101,39 +101,76 @@ public class Upload {
      */
     public void getLikedSongs() {
         for (File file : this.localLibrary.listFiles()) {
-            if (file.isFile()) {
-                Song song = getSong(file);
-                if (song != null) {
-                    collection.addLikedSong(song);
+            if (settings.isDownloadHierachy()) {
+                if (file.isFile()) {
+                    Song song = getSong(file);
+                    if (song != null) {
+                        collection.addLikedSong(song);
+                    }
                 }
-            }
-            if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
-                // automatically adds them to liked
-                getSongs(file);
+                if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+                    // automatically adds them to liked
+                    getSongs(file);
+                }
+            } else {
+                if (file.isFile()) {
+                    if (isLiked(file)) {
+                        Song song = getSong(file);
+                        if (song != null) {
+                            collection.addLikedSong(song);
+                        }
+                    }
+                }
             }
         }
     }
 
     public void processFolders() {
         for (File file : this.getLibraryFolders()) {
-            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+            if (!file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (album != null) {
                         collection.addAlbum(album);
                     }
                 } else {
-                    Playlist playlist = getPlaylist(file);
-                    if (playlist != null) {
-                        if (playlist.size() == 1) { // filter out singles
-                            collection.addLikedSongs(playlist.getSongs());
-                        } else {
-                            collection.addPlaylist(playlist);
+                    if (settings.isDownloadHierachy()) {
+                        Playlist playlist = getPlaylist(file);
+                        if (playlist != null) {
+                            if (playlist.size() == 1) { // filter out singles
+                                collection.addLikedSongs(playlist.getSongs());
+                            } else {
+                                collection.addPlaylist(playlist);
+                            }
                         }
+                    } else {
+                        logger.debug("Skipped folder " + file.getAbsolutePath()
+                                + " as it is not an album and downloadHierachy is set to: "
+                                + settings.isDownloadHierachy());
+                    }
+                }
+            }
+            for (File inFile : file.listFiles()) {
+                if (MusicTools.getExtension(inFile).equals("m3u")) {
+                    Playlist playlist = processM3U(file);
+                    if (playlist != null) {
+                        collection.addPlaylist(playlist);
                     }
                 }
             }
         }
+    }
+
+    public Playlist processM3U(File file) {
+        if (file == null || file.isDirectory()) {
+            logger.debug("folder is null or non file in processM3u");
+            return null;
+        }
+        if (!MusicTools.getExtension(file).equals("m3u")) {
+            logger.debug("provided file " + file.getAbsolutePath() + "does not end with .m3u in processM3u");
+        }
+        // TODO: read m3u file
+        return null;
     }
 
     public static Playlist getPlaylist(File folder) {

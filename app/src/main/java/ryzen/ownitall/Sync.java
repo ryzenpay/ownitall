@@ -170,6 +170,9 @@ public class Sync {
      */
     public Collection importCollection() {
         Collection collection = Collection.load();
+        Configurator.setLevel(Song.class, Level.OFF);
+        Configurator.setLevel(Playlist.class, Level.OFF);
+        Configurator.setLevel(Album.class, Level.OFF);
         try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
             pb.setExtraMessage("Albums");
             collection.addAlbums(importAlbums());
@@ -181,6 +184,10 @@ public class Sync {
                 collection.addLikedSongs(likedSongs.getSongs());
             }
             pb.setExtraMessage("Done").step();
+        } finally {
+            Configurator.setLevel(Song.class, logger.getLevel());
+            Configurator.setLevel(Playlist.class, logger.getLevel());
+            Configurator.setLevel(Album.class, logger.getLevel());
         }
         return collection;
     }
