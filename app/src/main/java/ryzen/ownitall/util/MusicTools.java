@@ -67,6 +67,30 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
+    public static void writeCollectionData(String folderName, String data, File folder, URI coverImage) {
+        if (folderName == null || folder == null) {
+            logger.debug("null folderName or folder provided in writeCollectionData");
+            return;
+        }
+        if (data == null || data.isEmpty()) {
+            logger.debug(folderName + ": null or empty data provided in writeCollectionData");
+            return;
+        }
+        try {
+            MusicTools.writeM3U(folderName, data, folder);
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") m3u: " + e);
+        }
+        try {
+            if (coverImage != null) {
+                MusicTools.downloadImage(coverImage,
+                        new File(folder, folderName + ".png"));
+            }
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") coverimage: " + e);
+        }
+    }
+
     public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
         if (folder == null || fileName == null) {
             logger.debug("null folder or filename provided in writem3u");

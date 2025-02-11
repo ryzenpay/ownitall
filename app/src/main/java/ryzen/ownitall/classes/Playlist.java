@@ -1,6 +1,5 @@
 package ryzen.ownitall.classes;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -22,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
     protected static final double simularityPercentage = Settings.load().getSimilarityPercentage();
-    protected static final String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private URI coverImage;
     private LinkedHashSet<Song> songs;

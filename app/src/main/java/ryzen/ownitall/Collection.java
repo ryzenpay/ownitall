@@ -246,14 +246,14 @@ public class Collection {
      * @param song - song to check
      * @return - album folder
      */
-    public String getAlbumSongPath(Song song) {
+    public Album getSongAlbum(Song song) {
         if (song == null) {
             logger.debug("null song provided in checkAlbumSongs");
             return null;
         }
         for (Album album : this.getAlbums()) {
             if (album.contains(song)) {
-                return album.getFolderName();
+                return album;
             }
         }
         return null;
@@ -380,18 +380,16 @@ public class Collection {
     }
 
     public String getPlaylistM3U(Playlist playlist) {
+        // all relational, doesnt use downloadpath
         StringBuilder output = new StringBuilder();
         output.append(playlist.getM3UHeader());
         for (Song song : playlist.getSongs()) {
             File songFile;
-            String albumSongPath = null;
-            if (settings.isDownloadHierachy()) {
-                albumSongPath = this.getAlbumSongPath(song);
-            }
-            if (albumSongPath == null) {
+            Album foundAlbum = this.getSongAlbum(song);
+            if (foundAlbum == null) {
                 songFile = new File(song.getFileName() + "." + settings.downloadFormat);
             } else {
-                songFile = new File(albumSongPath, song.getFileName() + "." + settings.downloadFormat);
+                songFile = new File(foundAlbum.getFolderName(), song.getFileName() + "." + settings.downloadFormat);
             }
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");

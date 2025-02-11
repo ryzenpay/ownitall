@@ -1,5 +1,6 @@
 package ryzen.ownitall.library.menu;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -7,15 +8,18 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.library.Download;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
     private static final Collection collection = Collection.load();
+    private static final Settings settings = Settings.load();
     private Download download;
 
     public DownloadMenu() {
@@ -25,7 +29,7 @@ public class DownloadMenu {
         options.put("Download Playlist", this::optionDownloadPlaylist);
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
-        options.put("Write Metadata (existing songs)", this::optionMetaData);
+        options.put("Write Collection Data", this::optionCollectionData);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
             if (choice.equals("Exit")) {
@@ -95,9 +99,26 @@ public class DownloadMenu {
         logger.info("Done downloading liked songs");
     }
 
-    private void optionMetaData() {
-        logger.info("Writing Metadata...");
-        download.writeCollectionMetaData();
-        logger.info("Done writing metadata");
+    private void optionCollectionData() {
+        logger.info("Writing collection data (M3U, NFO, coverimages)...");
+        String downloadPath = download.getDownloadPath();
+        for (Album album : collection.getAlbums()) {
+            File albumFolder = new File(downloadPath, album.getFolderName());
+            MusicTools.writeCollectionData(album.getFolderName(), album.getNFO(), albumFolder,
+                    album.getCoverImage());
+        }
+        for (Playlist playlist : collection.getPlaylists()) {
+            File playlistFolder;
+            if (settings.isDownloadHierachy()) {
+                playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
+                playlistFolder.mkdirs();
+            } else {
+                playlistFolder = new File(downloadPath);
+            }
+            MusicTools.writeCollectionData(playlist.getFolderName(), collection.getPlaylistM3U(playlist),
+                    playlistFolder,
+                    playlist.getCoverImage());
+        }
+        logger.info("Done writing collection data");
     }
 }

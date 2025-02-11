@@ -1,6 +1,5 @@
 package ryzen.ownitall.classes;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;

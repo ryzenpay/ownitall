@@ -1,6 +1,7 @@
 package ryzen.ownitall.library;
 
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
@@ -241,9 +242,25 @@ public class Download {
             }
             if (!songFile.exists()) {
                 logger.debug("the song " + song.getName() + " failed to download");
+            } else {
+                writeMetaData(song, songFile);
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);
+        }
+    }
+
+    public static void writeMetaData(Song song, File songFile) {
+        Album foundAlbum = collection.getSongAlbum(song);
+        String albumName = null;
+        if (foundAlbum != null) {
+            albumName = foundAlbum.getName();
+        }
+        try {
+            MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
+                    collection.isLiked(song), albumName, songFile);
+        } catch (Exception e) {
+            logger.error("Error song metadata for " + song.toString() + ": " + e);
         }
     }
 
@@ -268,8 +285,6 @@ public class Download {
             this.threadDownload(song, likedSongsFolder);
         }
         this.threadShutdown();
-        logger.info("Writing liked songs metadata...");
-        writeSongsMetaData(likedSongs, likedSongsFolder, null);
         logger.info("Clearing absess files");
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done").close();
@@ -307,27 +322,13 @@ public class Download {
             playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size());
-        try {
-            // TODO: update song filepath if found in album && isdownloadhierachy
-            MusicTools.writeM3U(playlist.getFolderName(), collection.getPlaylistM3U(playlist), playlistFolder);
-        } catch (Exception e) {
-            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") m3u: " + e);
-        }
-        try {
-            if (playlist.getCoverImage() != null) {
-                MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(playlistFolder, playlist.getFolderName() + ".png"));
-            }
-        } catch (Exception e) {
-            logger.error("Error writing playlist (" + playlistFolder.getAbsolutePath() + ") coverimage: " + e);
-        }
+        MusicTools.writeCollectionData(playlist.getFolderName(), collection.getPlaylistM3U(playlist), playlistFolder,
+                playlist.getCoverImage());
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, playlistFolder);
         }
         this.threadShutdown();
-        logger.info("Writing playlist metadata...");
-        writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
         logger.info("Clearing absess files");
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done").close();
@@ -352,78 +353,16 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size());
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
-        try {
-            MusicTools.writeM3U(album.getFolderName(), album.getNFO(), albumFolder);
-        } catch (Exception e) {
-            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") m3u: " + e);
-        }
-        try {
-            MusicTools.downloadImage(album.getCoverImage(), new File(albumFolder, "cover.png"));
-        } catch (Exception e) {
-            logger.error("Error writing album (" + albumFolder.getAbsolutePath() + ") coverimage: " + e);
-        }
+        MusicTools.writeCollectionData(album.getFolderName(), album.getNFO(), albumFolder,
+                album.getCoverImage());
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
         }
         this.threadShutdown();
-        logger.info("Writing album metadata...");
-        writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
         logger.info("Clearing absess files");
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
-    }
-
-    public void writeCollectionMetaData() {
-        File likedSongsFolder = new File(downloadPath);
-        if (settings.isDownloadHierachy()) {
-            likedSongsFolder = new File(downloadPath, settings.getLikedSongName());
-            likedSongsFolder.mkdirs();
-        }
-        // liked songs
-        LinkedHashSet<Song> likedSongs;
-        if (settings.isDownloadAllLikedSongs()) {
-            likedSongs = collection.getLikedSongs().getSongs();
-        } else {
-            likedSongs = collection.getStandaloneLikedSongs();
-        }
-        Download.writeSongsMetaData(likedSongs, likedSongsFolder, null);
-        // playlists
-        for (Playlist playlist : collection.getPlaylists()) {
-            File playlistFolder = new File(downloadPath);
-            if (settings.isDownloadHierachy()) {
-                playlistFolder = new File(downloadPath, playlist.getFolderName());
-            }
-            Download.writeSongsMetaData(playlist.getSongs(), playlistFolder, null);
-        }
-        // albums
-        for (Album album : collection.getAlbums()) {
-            File albumFolder = new File(downloadPath);
-            if (settings.isDownloadHierachy()) {
-                albumFolder = new File(downloadPath, album.getFolderName());
-            }
-            Download.writeSongsMetaData(album.getSongs(), albumFolder, album.getName());
-        }
-    }
-
-    public static void writeSongsMetaData(LinkedHashSet<Song> songs, File folder, String albumName) {
-        if (songs == null || songs.isEmpty()) {
-            logger.debug("Empty or null songs provided in writeSongsMetaData");
-            return;
-        }
-        if (folder == null || !folder.exists()) {
-            logger.debug("null or non existant folder passed in writeSongsMetaData");
-            return;
-        }
-        for (Song song : songs) {
-            File songFile = new File(folder, song.getFileName() + "." + settings.getDownloadFormat());
-            try {
-                MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                        collection.isLiked(song), albumName, songFile);
-            } catch (Exception e) {
-                logger.error("Error song metadata for " + song.toString() + ": " + e);
-            }
-        }
     }
 
     public void cleanFolder(File folder) {
