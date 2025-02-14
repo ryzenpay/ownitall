@@ -16,7 +16,7 @@ import ryzen.ownitall.util.MusicTools;
 public class CollectionMenu {
     private static final Logger logger = LogManager.getLogger(CollectionMenu.class);
     private static final Settings settings = Settings.load();
-    private static final Collection collection = Collection.load();
+    private static Collection collection = Collection.load();
     private static Library library = Library.load();
 
     /**
