@@ -52,11 +52,19 @@ public class Song {
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") Duration duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        this.setArtist(artist);
+        if (artist != null) {
+            this.setArtist(artist);
+        }
         this.ids = new LinkedHashMap<>();
-        this.addIds(ids);
-        this.setDuration(duration);
-        this.setCoverImage(coverImage);
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        if (duration != null) {
+            this.setDuration(duration);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**

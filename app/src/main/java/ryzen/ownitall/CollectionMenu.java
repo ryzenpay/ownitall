@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
@@ -14,7 +15,9 @@ import ryzen.ownitall.util.MusicTools;
 
 public class CollectionMenu {
     private static final Logger logger = LogManager.getLogger(CollectionMenu.class);
+    private static final Settings settings = Settings.load();
     private static final Collection collection = Collection.load();
+    private static Library library = Library.load();
 
     /**
      * default collectionmenu constructor initializing the menu
@@ -22,6 +25,7 @@ public class CollectionMenu {
     public CollectionMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Print Inventory", this::printInventory);
+        options.put("Add to Inventory", this::addMenu);
         options.put("Edit Inventory", this::editMenu);
         options.put("Clear Inventory", this::optionClearInventory);
         while (true) {
@@ -33,6 +37,63 @@ public class CollectionMenu {
                     options.get(choice).run();
                 }
             }
+        }
+    }
+
+    private void addMenu() {
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
+        options.put("Add Album", this::optionAddAlbum);
+        options.put("Add Playlist", this::optionAddPlaylist);
+        options.put("Add Song", this::optionAddSong);
+        while (true) {
+            String choice = Menu.optionMenu(options.keySet(), "ADD INVENTORY MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
+            }
+        }
+    }
+
+    private void optionAddAlbum() {
+
+    }
+
+    private void optionAddPlaylist() {
+
+    }
+
+    private void optionAddSong() {
+        // TODO: choose playlist / album / liked songs to add to
+        String songName = null;
+        String artistName = null;
+        Song song = null;
+        try {
+            while (songName == null || songName.isEmpty()) {
+                System.out.println("*Enter Song Name (without artists): ");
+                songName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting songname");
+            return;
+        }
+        try {
+            System.out.println("Enter main artist name: ");
+            artistName = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting song's artist");
+        }
+        if (settings.isUseLibrary()) {
+            song = library.getSong(songName, artistName);
+        }
+        if (song == null && !settings.isLibraryVerified()) {
+            song = new Song(songName);
+            song.setArtist(new Artist(artistName));
+        } else {
+            logger.info("Song was not found in library and `LibraryVerified` is set to true, not adding song");
+            return;
         }
     }
 

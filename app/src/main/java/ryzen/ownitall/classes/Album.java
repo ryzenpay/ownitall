@@ -48,7 +48,9 @@ public class Album extends Playlist {
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, links, youtubePageToken, spotifyPageOffset, coverImage);
         this.artists = new LinkedHashSet<>();
-        this.addArtists(artists);
+        if (artists != null && !artists.isEmpty()) {
+            this.addArtists(artists);
+        }
     }
 
     /**

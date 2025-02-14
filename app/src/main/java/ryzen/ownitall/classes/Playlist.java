@@ -51,22 +51,30 @@ public class Playlist {
      * @param ids               - linkedhashmap of id's
      * @param youtubePageToken  - string youtube page token
      * @param spotifyPageOffset - int spotify page token
-     * @param coverArt          - string playlist coverart
+     * @param coverImage        - string playlist coverImage
      */
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverArt") String coverArt) {
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
         this.ids = new LinkedHashMap<>();
-        this.addSongs(songs);
-        this.addIds(ids);
-        this.setYoutubePageToken(youtubePageToken);
+        if (songs != null) {
+            this.addSongs(songs);
+        }
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        if (youtubePageToken != null) {
+            this.setYoutubePageToken(youtubePageToken);
+        }
         this.setSpotifyPageOffset(spotifyPageOffset);
-        this.setCoverImage(coverArt);
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
@@ -121,7 +129,7 @@ public class Playlist {
     /**
      * set playlist cover art
      * 
-     * @param coverImage - String of coverart URL
+     * @param coverImage - String of coverImage URL
      */
     public void setCoverImage(String coverImage) {
         if (coverImage == null || coverImage.isEmpty()) {
@@ -144,7 +152,7 @@ public class Playlist {
     }
 
     /**
-     * get coverart of current playlist class
+     * get coverimage of current playlist class
      * 
      * @return - constructed URI
      */
