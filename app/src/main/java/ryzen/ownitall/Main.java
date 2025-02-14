@@ -71,7 +71,7 @@ public class Main {
         if (settings.saveCredentials) {
             Credentials.load().save();
         }
-        if (settings.useLibrary) {
+        if (settings.useLibrary && Library.checkInstance()) {
             Library.load().save();
         }
     }

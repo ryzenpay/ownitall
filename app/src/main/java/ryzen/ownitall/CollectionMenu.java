@@ -58,29 +58,93 @@ public class CollectionMenu {
     }
 
     private void optionAddAlbum() {
-
+        Album album = null;
+        String albumName = null;
+        String albumArtistName = null;
+        try {
+            while (albumName == null || albumName.isEmpty()) {
+                System.out.print("*Enter Album Name: ");
+                albumName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Album Name");
+            return;
+        }
+        try {
+            System.out.print("Enter Album Main Artist: ");
+            albumArtistName = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Album Artist Name");
+        }
+        if (settings.useLibrary) {
+            album = library.getAlbum(albumName, albumArtistName);
+        }
+        if (album == null && !settings.isLibraryVerified()) {
+            album = new Album(albumName);
+            if (albumArtistName != null && !albumArtistName.isEmpty()) {
+                album.addArtist(new Artist(albumArtistName));
+            }
+        } else if (album == null) {
+            logger.info("Album was not found in library and `LibraryVerified` is set to true, not adding Album");
+            return;
+        }
+        collection.addAlbum(album);
+        logger.info("Successfully added album " + album.toString() + " to collection");
     }
 
     private void optionAddPlaylist() {
-
+        String playlistName = null;
+        try {
+            while (playlistName == null || playlistName.isEmpty()) {
+                System.out.print("*Enter Playlist Name: ");
+                playlistName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Playlist Name");
+            return;
+        }
+        Playlist playlist = new Playlist(playlistName);
+        collection.addPlaylist(playlist);
+        logger.info("Successfully added playlist " + playlist.toString() + " to collection");
     }
 
     private void optionAddSong() {
-        // TODO: choose playlist / album / liked songs to add to
+        while (true) {
+            LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+            options.put("Liked Songs", collection.getLikedSongs());
+            for (Playlist playlist : collection.getPlaylists()) {
+                options.put(playlist.toString(), playlist);
+            }
+            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
+            if (choice != null) {
+                if (choice.equals("Exit")) {
+                    return;
+                } else {
+                    Song song = interactiveCreateSong();
+                    if (song != null) {
+                        options.get(choice).addSong(song);
+                        logger.info("Succesfully added " + song.getName() + " to: " + choice);
+                    }
+                }
+            }
+        }
+    }
+
+    private Song interactiveCreateSong() {
         String songName = null;
         String artistName = null;
         Song song = null;
         try {
             while (songName == null || songName.isEmpty()) {
-                System.out.println("*Enter Song Name (without artists): ");
+                System.out.print("*Enter Song Name (without artists): ");
                 songName = Input.request().getString();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting songname");
-            return;
+            return null;
         }
         try {
-            System.out.println("Enter main artist name: ");
+            System.out.print("Enter main artist name: ");
             artistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting song's artist");
@@ -90,11 +154,14 @@ public class CollectionMenu {
         }
         if (song == null && !settings.isLibraryVerified()) {
             song = new Song(songName);
-            song.setArtist(new Artist(artistName));
-        } else {
+            if (artistName != null && !artistName.isEmpty()) {
+                song.setArtist(new Artist(artistName));
+            }
+        } else if (song == null) {
             logger.info("Song was not found in library and `LibraryVerified` is set to true, not adding song");
-            return;
+            return null;
         }
+        return song;
     }
 
     /**
