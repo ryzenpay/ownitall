@@ -51,6 +51,7 @@ public class Tools {
      */
     private void optionArchive() {
         Sync.load().archive(true);
+        System.out.print("Press Enter to continue...");
         Input.request().getEnter();
     }
 
@@ -59,6 +60,7 @@ public class Tools {
      */
     private void optionUnArchive() {
         Sync.load().unArchive();
+        System.out.print("Press Enter to continue...");
         Input.request().getEnter();
     }
 
