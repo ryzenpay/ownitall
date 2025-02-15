@@ -149,7 +149,9 @@ public class Upload {
                     }
                 }
             }
-            // check for m3u files in root directory
+        }
+        // check for m3u files in root directory
+        if (!settings.isDownloadHierachy()) {
             for (File inFile : this.localLibrary.listFiles()) {
                 if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
                     Playlist playlist = processM3U(inFile);
@@ -162,6 +164,7 @@ public class Upload {
     }
 
     public static Playlist processM3U(File file) {
+        // TODO: keeps infinitely looping for some reason
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
             return null;
@@ -200,7 +203,8 @@ public class Upload {
                             songs.add(song);
                         }
                     } else {
-                        logger.debug("Song referenced in m3u not found: " + songFile.getAbsolutePath());
+                        logger.debug("Song referenced in m3u " + file.getAbsoluteFile() + " not found: "
+                                + songFile.getAbsolutePath());
                     }
                     currSongLine = null;
                 }
@@ -211,11 +215,12 @@ public class Upload {
         }
         if (playlistName == null) {
             playlistName = file.getName().replace(".m3u", "");
-            logger.warn("Was unable to retrieve playlist name from " + file.getAbsolutePath() + ", defaulting to "
-                    + playlistName);
+            logger.warn(
+                    "Was unable to retrieve playlist name from m3u file " + file.getAbsolutePath() + ", defaulting to "
+                            + playlistName);
         }
         if (songs.isEmpty()) {
-            logger.warn("No songs found in " + file.getAbsolutePath() + " skipping...");
+            logger.warn("No songs found in m3u file " + file.getAbsolutePath() + " skipping...");
             return null;
         }
         Playlist playlist = new Playlist(playlistName);
