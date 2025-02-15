@@ -218,7 +218,7 @@ public class Album extends Playlist {
             // Cover image
             if (this.getCoverImage() != null) {
                 Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(this.getCoverImage().toString()));
+                thumb.appendChild(doc.createTextNode("cover.png"));
                 rootElement.appendChild(thumb);
             }
 

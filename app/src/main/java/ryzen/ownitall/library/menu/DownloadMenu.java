@@ -13,7 +13,6 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.library.Download;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
@@ -104,8 +103,7 @@ public class DownloadMenu {
         String downloadPath = download.getDownloadPath();
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
-            MusicTools.writeCollectionData(album.getFolderName(), album.getNFO(), albumFolder,
-                    album.getCoverImage());
+            collection.writeAlbumData(album, albumFolder);
         }
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder;
@@ -115,9 +113,7 @@ public class DownloadMenu {
             } else {
                 playlistFolder = new File(downloadPath);
             }
-            MusicTools.writeCollectionData(playlist.getFolderName(), collection.getPlaylistM3U(playlist),
-                    playlistFolder,
-                    playlist.getCoverImage());
+            collection.writePlaylistData(playlist, playlistFolder);
         }
         logger.info("Done writing collection data");
     }

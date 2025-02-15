@@ -11,6 +11,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
@@ -396,5 +397,53 @@ public class Collection {
             output.append(songFile.getPath()).append("\n");
         }
         return output.toString();
+    }
+
+    public void writePlaylistData(Playlist playlist, File folder) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in writePlaylistData");
+            return;
+        }
+        if (folder == null || !folder.exists()) {
+            logger.debug("null or non existant folder provided in writePlaylistData");
+            return;
+        }
+        try {
+            MusicTools.writeData(playlist.getFolderName(), "m3u", this.getPlaylistM3U(playlist), folder);
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") m3u: " + e);
+        }
+        try {
+            if (playlist.getCoverImage() != null) {
+                MusicTools.downloadImage(playlist.getCoverImage(),
+                        new File(folder, playlist.getFolderName() + ".png"));
+            }
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") coverimage: " + e);
+        }
+    }
+
+    public void writeAlbumData(Album album, File folder) {
+        if (album == null) {
+            logger.debug("null Album provided in writeAlbumData");
+            return;
+        }
+        if (folder == null || !folder.exists()) {
+            logger.debug("null or non existant folder provided in writeAlbumData");
+            return;
+        }
+        try {
+            MusicTools.writeData("album", "nfo", album.getNFO(), folder);
+        } catch (Exception e) {
+            logger.error("Error writing album (" + folder.getAbsolutePath() + ") nfo: " + e);
+        }
+        try {
+            if (album.getCoverImage() != null) {
+                MusicTools.downloadImage(album.getCoverImage(),
+                        new File(folder, "cover.png"));
+            }
+        } catch (Exception e) {
+            logger.error("Error writing album (" + folder.getAbsolutePath() + ") coverimage: " + e);
+        }
     }
 }

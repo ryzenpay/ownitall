@@ -327,8 +327,7 @@ public class Download {
             playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
-        MusicTools.writeCollectionData(playlist.getFolderName(), collection.getPlaylistM3U(playlist), playlistFolder,
-                playlist.getCoverImage());
+        collection.writePlaylistData(playlist, playlistFolder);
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
@@ -361,8 +360,7 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
-        MusicTools.writeCollectionData(album.getFolderName(), album.getNFO(), albumFolder,
-                album.getCoverImage());
+        collection.writeAlbumData(album, albumFolder);
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);

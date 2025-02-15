@@ -67,36 +67,12 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    public static void writeCollectionData(String folderName, String data, File folder, URI coverImage) {
-        if (folderName == null || folder == null) {
-            logger.debug("null folderName or folder provided in writeCollectionData");
-            return;
-        }
-        if (data == null || data.isEmpty()) {
-            logger.debug(folderName + ": null or empty data provided in writeCollectionData");
-            return;
-        }
-        try {
-            MusicTools.writeM3U(folderName, data, folder);
-        } catch (Exception e) {
-            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") m3u: " + e);
-        }
-        try {
-            if (coverImage != null) {
-                MusicTools.downloadImage(coverImage,
-                        new File(folder, folderName + ".png"));
-            }
-        } catch (Exception e) {
-            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") coverimage: " + e);
-        }
-    }
-
-    public static void writeM3U(String fileName, String M3UData, File folder) throws Exception {
+    public static void writeData(String fileName, String extension, String data, File folder) throws Exception {
         if (folder == null || fileName == null) {
             logger.debug("null folder or filename provided in writem3u");
             return;
         }
-        if (M3UData == null || M3UData.isEmpty()) {
+        if (data == null || data.isEmpty()) {
             logger.debug("null or empty m3u data provided in writem3u");
             return;
         }
@@ -104,9 +80,9 @@ public class MusicTools {
             logger.debug("folder " + folder.getAbsolutePath() + " does not exist in writeM3U");
             return;
         }
-        File M3UFile = new File(folder, fileName + ".m3u");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(M3UFile))) {
-            writer.write(M3UData);
+        File dataFile = new File(folder, fileName + "." + extension);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile))) {
+            writer.write(data);
         }
     }
 
