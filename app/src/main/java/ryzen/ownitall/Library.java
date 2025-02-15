@@ -174,10 +174,7 @@ public class Library {
                         album.setCoverImage(coverImage);
                     }
                 }
-                int id = albumNode.path("id").asInt();
-                if (id != 0) {
-                    album.addId("lastfm", String.valueOf(id));
-                }
+                album.addId("lastfm", String.valueOf(albumNode.path("url").asText().hashCode()));
                 this.albums.add(album);
                 return album;
             }
@@ -277,10 +274,8 @@ public class Library {
                     }
                 }
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                int id = trackNode.path("id").asInt();
-                if (id != 0) {
-                    song.addId("lastfm", String.valueOf(id));
-                }
+                // because for some reason they dont give the id nor the mbid
+                song.addId("lastfm", String.valueOf(trackNode.path("url").asText().hashCode()));
                 this.songs.add(song);
                 return song;
             }
