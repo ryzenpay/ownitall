@@ -185,11 +185,7 @@ public class Upload {
                 } else if (line.startsWith("#EXTIMG:")) {
                     File coverFile = new File(file.getParent(), line.substring(8).trim());
                     if (coverFile.exists()) {
-                        try {
-                            coverImage = new URI(coverFile.getAbsolutePath());
-                        } catch (URISyntaxException e) {
-                            logger.error("Error converting playlist coverimage " + line + " to URI: " + e);
-                        }
+                        coverImage = coverFile.toURI();
                     } else {
                         logger.debug("coverimage referenced in m3u " + file.getAbsolutePath() + "not found: "
                                 + coverFile.getAbsolutePath());
@@ -204,7 +200,7 @@ public class Upload {
                             songs.add(song);
                         }
                     } else {
-                        logger.debug("Song referenced in m3u not found: " + songFile.getAbsolutePath() + " | " + line);
+                        logger.debug("Song referenced in m3u not found: " + songFile.getAbsolutePath());
                     }
                     currSongLine = null;
                 }
