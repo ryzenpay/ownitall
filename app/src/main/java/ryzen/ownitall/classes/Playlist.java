@@ -89,7 +89,7 @@ public class Playlist {
             return;
         }
         this.addSongs(playlist.getSongs());
-        if (this.getCoverImage() == null) {
+        if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
             this.setCoverImage(playlist.getCoverImage());
         }
         this.youtubePageToken = playlist.getYoutubePageToken();

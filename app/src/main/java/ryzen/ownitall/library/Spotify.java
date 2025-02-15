@@ -333,13 +333,8 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
-                        String albumImage = null;
-                        Image[] images = savedAlbum.getAlbum().getImages();
-                        if (images != null && images.length > 0) {
-                            albumImage = images[images.length - 1].getUrl();
-                        }
                         Album album = this.getAlbum(savedAlbum.getAlbum().getId(), savedAlbum.getAlbum().getName(),
-                                savedAlbum.getAlbum().getArtists()[0].getName(), albumImage);
+                                savedAlbum.getAlbum().getArtists()[0].getName());
                         if (album != null) {
                             collection.addAlbum(album);
                         }
@@ -356,7 +351,7 @@ public class Spotify {
         }
     }
 
-    public Album getAlbum(String albumId, String albumName, String artistName, String albumImageUrl) {
+    public Album getAlbum(String albumId, String albumName, String artistName) {
         if (albumId == null || albumName == null) {
             logger.debug("Null albumID or AlbumName provided in getAlbum");
             return null;
@@ -381,9 +376,6 @@ public class Spotify {
             if (songs != null && !songs.isEmpty()) {
                 album.addSongs(songs);
                 album.setSpotifyPageOffset(songs.size());
-                if (albumImageUrl != null) {
-                    album.setCoverImage(albumImageUrl);
-                }
                 album.addId("spotify", albumId);
                 return album;
             }

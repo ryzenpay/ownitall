@@ -174,7 +174,10 @@ public class Library {
                         album.setCoverImage(coverImage);
                     }
                 }
-                album.addId("lastfm", String.valueOf(albumNode.path("id").asInt()));
+                int id = albumNode.path("id").asInt();
+                if (id != 0) {
+                    album.addId("lastfm", String.valueOf(id));
+                }
                 this.albums.add(album);
                 return album;
             }
@@ -274,7 +277,10 @@ public class Library {
                     }
                 }
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                song.addId("lastfm", String.valueOf(trackNode.path("id").asInt()));
+                int id = trackNode.path("id").asInt();
+                if (id != 0) {
+                    song.addId("lastfm", String.valueOf(id));
+                }
                 this.songs.add(song);
                 return song;
             }

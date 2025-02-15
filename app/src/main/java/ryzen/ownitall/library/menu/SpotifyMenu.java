@@ -88,7 +88,7 @@ public class SpotifyMenu {
             return;
         }
         logger.info("Importing Spotify Album...");
-        Album album = spotify.getAlbum(albumId, albumName, null, null);
+        Album album = spotify.getAlbum(albumId, albumName, null);
         collection.addAlbum(album);
         logger.info("Done importing Spotify album");
     }

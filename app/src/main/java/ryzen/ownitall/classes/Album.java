@@ -65,7 +65,7 @@ public class Album extends Playlist {
             return;
         }
         this.addSongs(album.getSongs());
-        if (this.getCoverImage() == null) {
+        if (this.getCoverImage() == null && album.getCoverImage() != null) {
             this.setCoverImage(album.getCoverImage());
         }
         this.setYoutubePageToken(album.getYoutubePageToken());

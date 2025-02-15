@@ -81,7 +81,7 @@ public class Song {
             this.name = song.getName();
             this.setArtist(song.getArtist());
         }
-        if (this.coverImage == null) {
+        if (this.coverImage == null && song.getCoverImage() != null) {
             this.setCoverImage(song.getCoverImage());
         }
         this.addIds(song.getIds());
