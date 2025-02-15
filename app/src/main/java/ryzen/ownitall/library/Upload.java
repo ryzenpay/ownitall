@@ -105,9 +105,9 @@ public class Upload {
      * 
      */
     public void getLikedSongs() {
-        for (File file : this.localLibrary.listFiles()) {
-            if (settings.isDownloadHierachy()) {
-                if (file.isFile()) {
+        if (settings.isDownloadHierachy()) {
+            for (File file : this.localLibrary.listFiles()) {
+                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                     Song song = getSong(file);
                     if (song != null) {
                         collection.addLikedSong(song);
@@ -117,22 +117,16 @@ public class Upload {
                     // automatically adds them to liked
                     getSongs(file);
                 }
-            } else {
-                if (file.isFile()) {
-                    if (isLiked(file)) {
-                        Song song = getSong(file);
-                        if (song != null) {
-                            collection.addLikedSong(song);
-                        }
-                    }
-                }
             }
+        } else {
+            // automatically adds them to liked
+            getSongs(this.localLibrary);
         }
     }
 
     public void processFolders() {
         for (File file : this.getLibraryFolders()) {
-            if (!file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (album != null) {
@@ -155,9 +149,10 @@ public class Upload {
                     }
                 }
             }
-            for (File inFile : file.listFiles()) {
+            // check for m3u files in root directory
+            for (File inFile : this.localLibrary.listFiles()) {
                 if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
-                    Playlist playlist = processM3U(file);
+                    Playlist playlist = processM3U(inFile);
                     if (playlist != null) {
                         collection.addPlaylist(playlist);
                     }
@@ -166,7 +161,7 @@ public class Upload {
         }
     }
 
-    public Playlist processM3U(File file) {
+    public static Playlist processM3U(File file) {
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
             return null;
@@ -188,17 +183,28 @@ public class Upload {
                 } else if (line.startsWith("#PLAYLIST:")) {
                     playlistName = line.substring(10).trim();
                 } else if (line.startsWith("#EXTIMG:")) {
-                    try {
-                        coverImage = new URI(line.substring(8).trim());
-                    } catch (URISyntaxException e) {
-                        logger.error("Error converting playlist coverimage " + line + " to URI: " + e);
+                    File coverFile = new File(file.getParent(), line.substring(8).trim());
+                    if (coverFile.exists()) {
+                        try {
+                            coverImage = new URI(coverFile.getAbsolutePath());
+                        } catch (URISyntaxException e) {
+                            logger.error("Error converting playlist coverimage " + line + " to URI: " + e);
+                        }
+                    } else {
+                        logger.debug("coverimage referenced in m3u " + file.getAbsolutePath() + "not found: "
+                                + coverFile.getAbsolutePath());
                     }
                 } else if (line.startsWith("#EXTINF:")) {
                     currSongLine = line.substring(8).trim();
                 } else if (!line.isEmpty() && !line.startsWith("#") && currSongLine != null) {
-                    Song song = getSong(new File(file.getParent(), line));
-                    if (song != null) {
-                        songs.add(song);
+                    File songFile = new File(file.getParent(), line);
+                    if (songFile.exists()) {
+                        Song song = getSong(songFile);
+                        if (song != null) {
+                            songs.add(song);
+                        }
+                    } else {
+                        logger.debug("Song referenced in m3u not found: " + songFile.getAbsolutePath() + " | " + line);
                     }
                     currSongLine = null;
                 }
@@ -336,7 +342,7 @@ public class Upload {
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         for (File file : folder.listFiles()) {
-            if (file.isFile()) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                 Song song = getSong(file);
                 if (song != null) {
                     songs.add(song);
@@ -399,7 +405,7 @@ public class Upload {
             logger.debug("Empty file or non file provided: " + file);
             return false;
         }
-        if (extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+        if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
@@ -414,7 +420,7 @@ public class Upload {
                 return false;
             }
         } else {
-            logger.debug("Unsuported format for: " + file.getAbsolutePath());
+            logger.debug("Unsupported format for: " + file.getAbsolutePath());
         }
         return false;
     }

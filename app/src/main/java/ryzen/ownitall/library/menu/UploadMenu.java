@@ -11,6 +11,7 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.library.Upload;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class UploadMenu {
@@ -49,14 +50,18 @@ public class UploadMenu {
     private void optionUploadPlaylist() {
         File folder;
         try {
-            System.out.print("Please provide playlist path: ");
+            System.out.print("Please provide playlist path / m3u file: ");
             folder = Input.request().getFile(true);
         } catch (InterruptedException e) {
             logger.debug("Interrupted getting playlist path");
             return;
         }
         logger.info("Uploading local Playlist...");
-        this.collection.addPlaylist(Upload.getPlaylist(folder));
+        if (MusicTools.getExtension(folder).equalsIgnoreCase("m3u")) {
+            this.collection.addPlaylist(Upload.processM3U(folder));
+        } else {
+            this.collection.addPlaylist(Upload.getPlaylist(folder));
+        }
         logger.info("done uploading playlist");
     }
 
