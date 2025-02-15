@@ -284,7 +284,7 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size() + 1);
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
-            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) != null) {
+            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
                 this.threadDownload(song, likedSongsFolder);
             }
         }
@@ -331,7 +331,7 @@ public class Download {
                 playlist.getCoverImage());
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
-            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) != null) {
+            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
                 this.threadDownload(song, playlistFolder);
             }
         }

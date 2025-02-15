@@ -1,6 +1,11 @@
 package ryzen.ownitall.library;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
@@ -166,11 +171,57 @@ public class Upload {
             logger.debug("folder is null or non file in processM3u");
             return null;
         }
-        if (!MusicTools.getExtension(file).equals("m3u")) {
+        if (!MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
             logger.debug("provided file " + file.getAbsolutePath() + "does not end with .m3u in processM3u");
+            return null;
         }
-        // TODO: read m3u file
-        return null;
+        String playlistName = null;
+        URI coverImage = null;
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            String currSongLine = null;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("#EXTM3U")) {
+                    continue;
+                } else if (line.startsWith("#PLAYLIST:")) {
+                    playlistName = line.substring(10).trim();
+                } else if (line.startsWith("#EXTIMG:")) {
+                    try {
+                        coverImage = new URI(line.substring(8).trim());
+                    } catch (URISyntaxException e) {
+                        logger.error("Error converting playlist coverimage " + line + " to URI: " + e);
+                    }
+                } else if (line.startsWith("#EXTINF:")) {
+                    currSongLine = line.substring(8).trim();
+                } else if (!line.isEmpty() && !line.startsWith("#") && currSongLine != null) {
+                    Song song = getSong(new File(file.getParent(), line));
+                    if (song != null) {
+                        songs.add(song);
+                    }
+                    currSongLine = null;
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Error reading m3u file " + file.getAbsolutePath() + ": " + e);
+            return null;
+        }
+        if (playlistName == null) {
+            playlistName = file.getName().replace(".m3u", "");
+            logger.warn("Was unable to retrieve playlist name from " + file.getAbsolutePath() + ", defaulting to "
+                    + playlistName);
+        }
+        if (songs.isEmpty()) {
+            logger.warn("No songs found in " + file.getAbsolutePath() + " skipping...");
+            return null;
+        }
+        Playlist playlist = new Playlist(playlistName);
+        if (coverImage != null) {
+            playlist.setCoverImage(coverImage);
+        }
+        playlist.addSongs(songs);
+        return playlist;
     }
 
     public static Playlist getPlaylist(File folder) {
