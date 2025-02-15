@@ -1,9 +1,19 @@
 package ryzen.ownitall.classes;
 
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,7 +78,9 @@ public class Album extends Playlist {
         if (this.getCoverImage() == null && album.getCoverImage() != null) {
             this.setCoverImage(album.getCoverImage());
         }
-        this.setYoutubePageToken(album.getYoutubePageToken());
+        if (album.getYoutubePageToken() != null) {
+            this.setYoutubePageToken(album.getYoutubePageToken());
+        }
         if (album.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.setSpotifyPageOffset(album.getSpotifyPageOffset());
         }
@@ -163,7 +175,68 @@ public class Album extends Playlist {
     // TODO: gotta do .nfo for jellyfin
     @JsonIgnore
     public String getNFO() {
-        return null;
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root element
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("album");
+            doc.appendChild(rootElement);
+
+            // Title
+            Element title = doc.createElement("title");
+            title.appendChild(doc.createTextNode(this.getName()));
+            rootElement.appendChild(title);
+
+            // Artists
+            Element artistsElement = doc.createElement("artists");
+            rootElement.appendChild(artistsElement);
+            for (Artist artist : this.artists) {
+                Element artistElement = doc.createElement("artist");
+                artistElement.appendChild(doc.createTextNode(artist.getName()));
+                artistsElement.appendChild(artistElement);
+            }
+
+            // Songs
+            Element tracksElement = doc.createElement("tracks");
+            rootElement.appendChild(tracksElement);
+            for (Song song : this.getSongs()) {
+                Element trackElement = doc.createElement("track");
+
+                Element trackTitle = doc.createElement("title");
+                trackTitle.appendChild(doc.createTextNode(song.getName()));
+                trackElement.appendChild(trackTitle);
+
+                Element trackDuration = doc.createElement("duration");
+                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
+                trackElement.appendChild(trackDuration);
+
+                tracksElement.appendChild(trackElement);
+            }
+
+            // Cover image
+            if (this.getCoverImage() != null) {
+                Element thumb = doc.createElement("thumb");
+                thumb.appendChild(doc.createTextNode(this.getCoverImage().toString()));
+                rootElement.appendChild(thumb);
+            }
+
+            // Transform the DOM to XML string
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(source, result);
+
+            return writer.toString();
+
+        } catch (Exception e) {
+            logger.error("Error generating NFO content for " + this.toString() + ": " + e);
+            return null;
+        }
     }
 
     @Override

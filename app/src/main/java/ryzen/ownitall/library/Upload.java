@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
@@ -164,7 +163,6 @@ public class Upload {
     }
 
     public static Playlist processM3U(File file) {
-        // TODO: keeps infinitely looping for some reason
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
             return null;

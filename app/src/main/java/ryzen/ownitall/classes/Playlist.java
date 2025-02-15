@@ -92,7 +92,9 @@ public class Playlist {
         if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
             this.setCoverImage(playlist.getCoverImage());
         }
-        this.youtubePageToken = playlist.getYoutubePageToken();
+        if (playlist.getYoutubePageToken() != null) {
+            this.setYoutubePageToken(playlist.getYoutubePageToken());
+        }
         if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
             this.spotifyPageOffset = playlist.spotifyPageOffset;
         }
