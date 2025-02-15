@@ -156,7 +156,7 @@ public class Upload {
                 }
             }
             for (File inFile : file.listFiles()) {
-                if (MusicTools.getExtension(inFile).equals("m3u")) {
+                if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
                     Playlist playlist = processM3U(file);
                     if (playlist != null) {
                         collection.addPlaylist(playlist);
@@ -277,7 +277,7 @@ public class Upload {
             logger.debug("null or non existant file provided in getSong");
             return null;
         }
-        if (!extensions.contains(MusicTools.getExtension(file))) {
+        if (!extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
             logger.debug("provided file is not in extensions:" + file.getAbsolutePath());
             return null;
         }
@@ -365,7 +365,7 @@ public class Upload {
         String album = null;
         boolean foundAnyAlbum = false;
         for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                 try {
                     AudioFile audioFile = AudioFileIO.read(file);
                     Tag tag = audioFile.getTag();
@@ -399,7 +399,7 @@ public class Upload {
             logger.debug("Empty file or non file provided: " + file);
             return false;
         }
-        if (extensions.contains(MusicTools.getExtension(file))) {
+        if (extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
             try {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
@@ -435,7 +435,7 @@ public class Upload {
         String artistName = null;
         File albumSongFile = null;
         for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file))) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                 albumSongFile = file;
                 break;
             }
