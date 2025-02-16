@@ -172,7 +172,6 @@ public class Album extends Playlist {
     /**
      * get .nfo data for album
      */
-    // TODO: gotta do .nfo for jellyfin
     @JsonIgnore
     public String getNFO() {
         try {

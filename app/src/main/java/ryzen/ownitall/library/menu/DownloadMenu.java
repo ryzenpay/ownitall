@@ -103,7 +103,7 @@ public class DownloadMenu {
         String downloadPath = download.getDownloadPath();
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
-            collection.writeAlbumData(album, albumFolder);
+            download.writeAlbumData(album, albumFolder);
         }
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder;
@@ -113,7 +113,7 @@ public class DownloadMenu {
             } else {
                 playlistFolder = new File(downloadPath);
             }
-            collection.writePlaylistData(playlist, playlistFolder);
+            download.writePlaylistData(playlist, playlistFolder);
         }
         logger.info("Done writing collection data");
     }

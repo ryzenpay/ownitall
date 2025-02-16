@@ -327,7 +327,7 @@ public class Download {
             playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
-        collection.writePlaylistData(playlist, playlistFolder);
+        this.writePlaylistData(playlist, playlistFolder);
         for (Song song : playlist.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
@@ -360,7 +360,7 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
-        collection.writeAlbumData(album, albumFolder);
+        this.writeAlbumData(album, albumFolder);
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();
             this.threadDownload(song, albumFolder);
@@ -370,6 +370,54 @@ public class Download {
         logger.info("Clearing absess files");
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
+    }
+
+    public void writePlaylistData(Playlist playlist, File folder) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in writePlaylistData");
+            return;
+        }
+        if (folder == null || !folder.exists()) {
+            logger.debug("null or non existant folder provided in writePlaylistData");
+            return;
+        }
+        try {
+            MusicTools.writeData(playlist.getFolderName(), "m3u", collection.getPlaylistM3U(playlist), folder);
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") m3u: " + e);
+        }
+        try {
+            if (playlist.getCoverImage() != null) {
+                MusicTools.downloadImage(playlist.getCoverImage(),
+                        new File(folder, playlist.getFolderName() + ".png"));
+            }
+        } catch (Exception e) {
+            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") coverimage: " + e);
+        }
+    }
+
+    public void writeAlbumData(Album album, File folder) {
+        if (album == null) {
+            logger.debug("null Album provided in writeAlbumData");
+            return;
+        }
+        if (folder == null || !folder.exists()) {
+            logger.debug("null or non existant folder provided in writeAlbumData");
+            return;
+        }
+        try {
+            MusicTools.writeData("album", "nfo", album.getNFO(), folder);
+        } catch (Exception e) {
+            logger.error("Error writing album (" + folder.getAbsolutePath() + ") nfo: " + e);
+        }
+        try {
+            if (album.getCoverImage() != null) {
+                MusicTools.downloadImage(album.getCoverImage(),
+                        new File(folder, "cover.png"));
+            }
+        } catch (Exception e) {
+            logger.error("Error writing album (" + folder.getAbsolutePath() + ") coverimage: " + e);
+        }
     }
 
     public void cleanFolder(File folder) {
