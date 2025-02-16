@@ -11,7 +11,6 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class Collection {

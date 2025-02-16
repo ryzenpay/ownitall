@@ -150,23 +150,20 @@ public class Library {
         if (albumName == null) {
             return null;
         }
-        Album foundAlbum = this.searchAlbum(albumName, artistName);
-        if (foundAlbum == null) {
+        Album album = this.searchAlbum(albumName, artistName);
+        if (album == null) {
             return null;
         }
-        if (this.albums.contains(foundAlbum)) {
-            return this.getAlbum(foundAlbum);
+        if (this.albums.contains(album)) {
+            return this.getAlbum(album);
         }
 
-        Map<String, String> params = Map.of("album", foundAlbum.getName(), "artist",
-                foundAlbum.getMainArtist().getName());
+        Map<String, String> params = Map.of("album", album.getName(), "artist",
+                album.getMainArtist().getName());
         JsonNode response = query("album.getInfo", params);
         if (response != null) {
             JsonNode albumNode = response.path("album");
             if (albumNode != null && !albumNode.isMissingNode()) {
-                Album album = new Album(albumNode.path("name").asText());
-                album.addArtist(new Artist(albumNode.path("artist").asText()));
-
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && imageNode.size() > 0) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
@@ -180,8 +177,8 @@ public class Library {
             }
         }
         logger.debug(
-                "Could not find detailed information for album '" + foundAlbum.getName() + "' by '"
-                        + foundAlbum.getMainArtist().getName() + "'");
+                "Could not find detailed information for album '" + album.getName() + "' by '"
+                        + album.getMainArtist().getName() + "'");
         return null;
     }
 
@@ -243,26 +240,26 @@ public class Library {
      * @param artistName - optional artist to match with the song
      * @return - constructed song
      */
+    // TODO: save album name in song?
+    // albumNode.path("title").asText()
     public Song getSong(String songName, String artistName) {
         if (songName == null) {
             return null;
         }
-        Song foundSong = this.searchSong(songName, artistName);
-        if (foundSong == null) {
+        Song song = this.searchSong(songName, artistName);
+        if (song == null) {
             return null;
         }
-        if (this.songs.contains(foundSong)) {
-            return this.getSong(foundSong);
+        if (this.songs.contains(song)) {
+            return this.getSong(song);
         }
 
-        Map<String, String> params = Map.of("track", foundSong.getName(), "artist", foundSong.getArtist().getName());
+        Map<String, String> params = Map.of("track", song.getName(), "artist", song.getArtist().getName());
         JsonNode response = query("track.getInfo", params);
 
         if (response != null) {
             JsonNode trackNode = response.path("track");
             if (trackNode != null && !trackNode.isMissingNode()) {
-                Song song = new Song(trackNode.path("name").asText());
-                song.setArtist(new Artist(trackNode.path("artist").path("name").asText()));
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
                     JsonNode imageNode = albumNode.path("image");
@@ -282,8 +279,8 @@ public class Library {
         }
 
         logger.debug(
-                "Could not find detailed information for song '" + foundSong.getName() + "' by '"
-                        + foundSong.getArtist().getName() + "'");
+                "Could not find detailed information for song '" + song.getName() + "' by '"
+                        + song.getArtist().getName() + "'");
         return null;
     }
 

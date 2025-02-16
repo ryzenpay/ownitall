@@ -1,6 +1,8 @@
 package ryzen.ownitall.util;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -145,6 +147,17 @@ public class Input {
                 return false;
             }
             System.err.print("Invalid input. Enter true/false: ");
+        }
+    }
+
+    public URI getURL() throws InterruptedException {
+        while (true) {
+            String link = getString();
+            try {
+                return new URI(link);
+            } catch (URISyntaxException e) {
+                System.err.print("Invalid URL provided, enter URL: ");
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package ryzen.ownitall;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ryzen.ownitall.util.Input;
-
 import java.net.URI;
 
 import org.apache.logging.log4j.LogManager;
@@ -48,6 +47,13 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      */
     protected String lastFMApiKey = "";
 
+    /**
+     * JellyFin credentials
+     * 
+     */
+    protected String jellyFinUrl = "";
+    protected String jellyFinApiKey = "";
+
     @JsonIgnore
     public static Credentials load() {
         if (instance == null) {
@@ -81,16 +87,8 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return spotifyClientId;
     }
 
-    public void setSpotifyClientId(String spotifyClientId) {
-        this.spotifyClientId = spotifyClientId;
-    }
-
     public String getSpotifyClientSecret() {
         return spotifyClientSecret;
-    }
-
-    public void setSpotifyClientSecret(String spotifyClientSecret) {
-        this.spotifyClientSecret = spotifyClientSecret;
     }
 
     public URI getSpotifyRedirectUrl() {
@@ -102,56 +100,36 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         }
     }
 
-    public void setSpotifyRedirectUrl(String spotifyRedirectUrl) {
-        this.spotifyRedirectUrl = spotifyRedirectUrl;
-    }
-
     public String getYoutubeApplicationName() {
         return youtubeApplicationName;
-    }
-
-    public void setYoutubeApplicationName(String youtubeApplicationName) {
-        this.youtubeApplicationName = youtubeApplicationName;
     }
 
     public String getYoutubeClientId() {
         return youtubeClientId;
     }
 
-    public void setYoutubeClientId(String youtubeClientId) {
-        this.youtubeClientId = youtubeClientId;
-    }
-
     public String getYoutubeClientSecret() {
         return youtubeClientSecret;
-    }
-
-    public void setYoutubeClientSecret(String youtubeClientSecret) {
-        this.youtubeClientSecret = youtubeClientSecret;
     }
 
     public String getSoundCloudClientId() {
         return this.soundCloudClientId;
     }
 
-    public void setSoundCloudClientId(String clientId) {
-        this.soundCloudClientId = clientId;
-    }
-
     public String getSoundCloudClientSecret() {
         return this.soundCloudClientSecret;
-    }
-
-    public void setSoundCloudClientSecret(String clientSecret) {
-        this.soundCloudClientSecret = clientSecret;
     }
 
     public String getLastFMApiKey() {
         return lastFMApiKey;
     }
 
-    public void setLastFMApiKey(String lastFMApiKey) {
-        this.lastFMApiKey = lastFMApiKey;
+    public String getJellyFinApiKey() {
+        return jellyFinApiKey;
+    }
+
+    public String getJellyFinUrl() {
+        return jellyFinUrl;
     }
 
     public void setYoutubeCredentials() {
@@ -189,6 +167,18 @@ public class Credentials extends ryzen.ownitall.util.Settings {
             lastFMApiKey = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting lastFM credentials");
+        }
+    }
+
+    public void setJellyFinCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Enter JellyFin instance URL: ");
+            jellyFinUrl = Input.request().getURL().toString();
+            System.out.print("Enter JellyFin API Key: ");
+            jellyFinApiKey = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting JellyFin credentials");
         }
     }
 
@@ -236,6 +226,14 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     public boolean lastFMIsEmpty() {
         if (this.lastFMApiKey.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public boolean jellyFinisEmpty() {
+        if (this.jellyFinApiKey.isEmpty() || this.jellyFinUrl.isEmpty()) {
             return true;
         }
         return false;

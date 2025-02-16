@@ -8,16 +8,19 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.library.Download;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
     private static final Settings settings = Settings.load();
+    private static final Credentials credentials = Credentials.load();
     private static Collection collection = Collection.load();
     private Download download;
 
@@ -29,6 +32,7 @@ public class DownloadMenu {
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
         options.put("Write Collection Data", this::optionCollectionData);
+        options.put("Mark Favorites (JellyFin)", this::optionJellyFinFavorites);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
             if (choice.equals("Exit")) {
@@ -116,5 +120,21 @@ public class DownloadMenu {
             download.writePlaylistData(playlist, playlistFolder);
         }
         logger.info("Done writing collection data");
+    }
+
+    // TODO: jellyfin api
+    // mark favorites, remove favorites, scrape favorites, ...
+    // https://api.jellyfin.org
+    private void optionJellyFinFavorites() {
+        if (credentials.jellyFinisEmpty()) {
+            credentials.setJellyFinCredentials();
+        }
+        try {
+            System.out.print("Enter JellyFin username: ");
+            String username = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting JellyFin username");
+            return;
+        }
     }
 }
