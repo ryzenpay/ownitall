@@ -60,8 +60,8 @@ public class DownloadMenu {
     }
 
     private void optionDownloadPlaylist() {
-        logger.info("Download Playlist...");
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+        options.put("All", null);
         for (Playlist playlist : collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }
@@ -69,7 +69,11 @@ public class DownloadMenu {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD PLAYLIST");
             if (choice.equals("Exit")) {
                 break;
+            } else if (choice.equals("All")) {
+                logger.info("Downloading all playlists...");
+                download.downloadPlaylists();
             } else {
+                logger.info("Downloading playlist " + choice + "...");
                 download.downloadPlaylist(options.get(choice));
                 break;
             }
@@ -78,8 +82,8 @@ public class DownloadMenu {
     }
 
     private void optionDownloadAlbum() {
-        logger.info("Downloading album...");
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
+        options.put("All", null);
         for (Album album : collection.getAlbums()) {
             options.put(album.toString(), album);
         }
@@ -87,7 +91,11 @@ public class DownloadMenu {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD ALBUM");
             if (choice.equals("Exit")) {
                 break;
+            } else if (choice.equals("All")) {
+                logger.info("Downloading all albums");
+                download.downloadAlbums();
             } else {
+                logger.info("Downloading album " + choice + "...");
                 download.downloadAlbum(options.get(choice));
                 break;
             }
