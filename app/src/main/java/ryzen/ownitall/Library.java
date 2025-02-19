@@ -34,6 +34,7 @@ public class Library {
      */
     private LinkedHashSet<Song> songs;
     private LinkedHashSet<Album> albums;
+    private LinkedHashSet<Artist> artists;
 
     /**
      * instance call method
@@ -72,6 +73,7 @@ public class Library {
         this.objectMapper = new ObjectMapper();
         this.songs = sync.cacheSongs(new LinkedHashSet<>());
         this.albums = sync.cacheAlbums(new LinkedHashSet<>());
+        this.artists = sync.cacheArtists(new LinkedHashSet<>());
     }
 
     /**
@@ -80,6 +82,7 @@ public class Library {
     public void save() {
         sync.cacheAlbums(this.albums);
         sync.cacheSongs(this.songs);
+        sync.cacheArtists(this.artists);
     }
 
     /**
@@ -88,6 +91,7 @@ public class Library {
     public void clear() {
         this.albums.clear();
         this.songs.clear();
+        this.artists.clear();
     }
 
     /**
@@ -112,7 +116,7 @@ public class Library {
      * @param artistName - string album artist name
      * @return - constructed album with confirmed album name and album artist name
      */
-    public Album searchAlbum(String albumName, String artistName) {
+    private Album searchAlbum(String albumName, String artistName) {
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
             return null;
@@ -148,6 +152,7 @@ public class Library {
      */
     public Album getAlbum(String albumName, String artistName) {
         if (albumName == null) {
+            logger.debug("Empty albumName passed in getAlbum");
             return null;
         }
         Album album = this.searchAlbum(albumName, artistName);
@@ -169,6 +174,17 @@ public class Library {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
                     if (coverImage != null && !coverImage.isEmpty()) {
                         album.setCoverImage(coverImage);
+                    }
+                }
+                JsonNode trackNodes = albumNode.path("tracks").path("track");
+                if (trackNodes.isArray() && trackNodes.size() > 0) {
+                    for (JsonNode trackNode : trackNodes) {
+                        String songName = trackNode.path("name").asText();
+                        String songArtistName = trackNode.path("artist").path("name").asText();
+                        Song song = this.getSong(songName, songArtistName);
+                        if (song != null) {
+                            album.addSong(song);
+                        }
                     }
                 }
                 album.addId("lastfm", String.valueOf(albumNode.path("url").asText().hashCode()));
@@ -205,7 +221,7 @@ public class Library {
      * @return - constructed song with confirfmed song name and song main artist
      *         name
      */
-    public Song searchSong(String songName, String artistName) {
+    private Song searchSong(String songName, String artistName) {
         if (songName == null) {
             logger.debug("Empty songName parsed in searchSong");
             return null;
@@ -244,6 +260,7 @@ public class Library {
     // albumNode.path("title").asText()
     public Song getSong(String songName, String artistName) {
         if (songName == null) {
+            logger.debug("Empty songName passed in getSong");
             return null;
         }
         Song song = this.searchSong(songName, artistName);
@@ -277,11 +294,106 @@ public class Library {
                 return song;
             }
         }
-
         logger.debug(
                 "Could not find detailed information for song '" + song.getName() + "' by '"
                         + song.getArtist().getName() + "'");
         return null;
+    }
+
+    private Artist getArtist(Artist artist) {
+        for (Artist thisArtist : this.artists) {
+            if (thisArtist.equals(artist)) {
+                return thisArtist;
+            }
+        }
+        return null;
+    }
+
+    private Artist searchArtist(String artistname) {
+        if (artistname == null) {
+            logger.debug("Empty artistName parsed in searchArtist");
+            return null;
+        }
+        Map<String, String> params = Map.of("artist", artistname, "limit", "1");
+        JsonNode response = query("artist.search", params);
+        if (response != null) {
+            JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
+            if (artistNode != null) {
+                Artist artist = new Artist(artistNode.path("name").asText());
+                return artist;
+            }
+        }
+        logger.debug("Could not find artist '" + artistname + "' in Library");
+        return null;
+    }
+
+    public Artist getArtist(String artistName) {
+        if (artistName == null) {
+            logger.debug("Empty artistName passed in getArtist");
+            return null;
+        }
+        Artist artist = this.searchArtist(artistName);
+        if (artist == null) {
+            return null;
+        }
+        if (this.artists.contains(artist)) {
+            return this.getArtist(artist);
+        }
+        Map<String, String> params = Map.of("artist", artist.getName());
+        JsonNode response = query("artist.getInfo", params);
+        if (response != null) {
+            JsonNode artistNode = response.path("artist");
+            if (artistNode != null && !artistNode.isMissingNode()) {
+                this.artists.add(artist);
+                // TODO: artist image
+                return artist;
+            }
+        }
+        logger.debug(
+                "Could not find detailed information for artist '" + artist.getName());
+        return null;
+    }
+
+    public LinkedHashSet<Album> getArtistAlbums(Artist artist) {
+        if (artist == null) {
+            logger.debug("Empty artist passed to getArtistAlbums");
+            return null;
+        }
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+        Map<String, String> params = Map.of("artist", artist.getName());
+        JsonNode response = query("artist.getTopAlbums", params);
+        if (response != null) {
+            JsonNode topAlbumsNode = response.path("topalbums");
+            if (topAlbumsNode != null && !topAlbumsNode.isMissingNode()) {
+                JsonNode albumNodes = topAlbumsNode.path("album");
+                if (albumNodes.isArray() && albumNodes.size() != 0) {
+                    for (JsonNode albumNode : albumNodes) {
+                        String albumName = albumNode.path("name").asText();
+                        Album album = this.getAlbum(albumName, artist.getName());
+                        if (album != null) {
+                            // ensure the search worked
+                            if (album.getArtists().contains(artist)) {
+                                // filter out singles / empty albums
+                                if (album.size() > 2) {
+                                    albums.add(album);
+                                } else {
+                                    logger.debug("skipping album '" + album.getName() + "' as it is a single / empty ("
+                                            + album.size() + ")");
+                                }
+                            } else {
+                                logger.debug("non corresponding artist '" + album.getMainArtist() + "' found in album '"
+                                        + album.getName() + "' while searching '" + artist.getName() + "' albums");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (albums.isEmpty()) {
+            logger.debug("No albums found for artist '" + artist.getName() + "'");
+            return null;
+        }
+        return albums;
     }
 
     /**

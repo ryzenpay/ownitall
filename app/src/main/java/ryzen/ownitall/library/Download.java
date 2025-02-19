@@ -284,6 +284,8 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size() + 1);
         for (Song song : likedSongs) {
             pb.setExtraMessage(song.getName()).step();
+            // TODO: if song previously not in album, but then in album, delete from main
+            // folder
             if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
                 this.threadDownload(song, likedSongsFolder);
             }

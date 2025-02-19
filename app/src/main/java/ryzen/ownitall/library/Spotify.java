@@ -365,8 +365,6 @@ public class Spotify {
             if (artistName != null) {
                 album.addArtist(new Artist(artistName));
             }
-        }
-        if (album != null) {
             Album foundAlbum = collection.getAlbum(album);
             int offset = 0;
             if (foundAlbum != null) {
@@ -380,7 +378,7 @@ public class Spotify {
                 return album;
             }
         }
-        return null;
+        return album;
     }
 
     /**

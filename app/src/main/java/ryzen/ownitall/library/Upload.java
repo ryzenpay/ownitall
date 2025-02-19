@@ -258,12 +258,15 @@ public class Upload {
             logger.debug("Error creating constructed album for " + folder.getAbsolutePath());
             return null;
         }
-        LinkedHashSet<Song> songs = getSongs(folder);
-        if (songs == null || songs.isEmpty()) {
-            logger.debug("no songs found in album " + folder.getAbsolutePath());
-            return null;
+        // incase constructAlbum didnt get songs from library
+        if (album.size() == 0) {
+            LinkedHashSet<Song> songs = getSongs(folder);
+            if (songs == null || songs.isEmpty()) {
+                logger.debug("no songs found in album " + folder.getAbsolutePath());
+                return null;
+            }
+            album.addSongs(songs);
         }
-        album.addSongs(songs);
         File coverFile = new File(folder, album.getFolderName() + ".png");
         if (coverFile.exists()) {
             album.setCoverImage(coverFile.toURI());
@@ -459,7 +462,6 @@ public class Upload {
         }
         if (settings.isUseLibrary()) {
             album = library.getAlbum(albumName, artistName);
-
         }
         if (album == null && !settings.isLibraryVerified()) {
             if (albumName != null) {

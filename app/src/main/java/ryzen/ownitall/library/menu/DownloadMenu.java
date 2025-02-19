@@ -32,7 +32,6 @@ public class DownloadMenu {
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
         options.put("Write Collection Data", this::optionCollectionData);
-        options.put("Mark Favorites (JellyFin)", this::optionJellyFinFavorites);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
             if (choice.equals("Exit")) {

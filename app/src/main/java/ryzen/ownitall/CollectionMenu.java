@@ -1,6 +1,7 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +46,7 @@ public class CollectionMenu {
         options.put("Add Album", this::optionAddAlbum);
         options.put("Add Playlist", this::optionAddPlaylist);
         options.put("Add Song", this::optionAddSong);
+        options.put("Add Artist", this::optionAddArtist);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "ADD INVENTORY MENU");
             if (choice != null) {
@@ -162,6 +164,35 @@ public class CollectionMenu {
             return null;
         }
         return song;
+    }
+
+    private void optionAddArtist() {
+        if (!settings.isUseLibrary()) {
+            logger.info("You need to enable library in settings for this to work");
+            return;
+        }
+        String artistName = null;
+        Artist artist = null;
+        try {
+            while (artistName == null || artistName.isEmpty()) {
+                System.out.print("*Enter Artist Name: ");
+                artistName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting artist name");
+            return;
+        }
+        artist = library.getArtist(artistName);
+        if (artist == null) {
+            logger.info("unable to find artist in library");
+            return;
+        }
+        logger.info("Getting all " + artist.getName() + " albums...");
+        LinkedHashSet<Album> albums = library.getArtistAlbums(artist);
+        if (albums != null) {
+            collection.addAlbums(albums);
+            logger.info("Added " + albums.size() + " albums from " + artist.getName() + " to collection");
+        }
     }
 
     /**

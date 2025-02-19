@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -344,7 +345,6 @@ public class Sync {
      * @return - updated linkedhashset of songs
      */
     public LinkedHashSet<Song> cacheSongs(LinkedHashSet<Song> songs) {
-
         this.setCacheFolder();
         File songFile = new File(this.cacheFolder, settings.songFile + ".json");
         LinkedHashSet<Song> cachedSongs = new LinkedHashSet<>();
@@ -376,7 +376,6 @@ public class Sync {
      * @return - updated linkedhashset of albums
      */
     public LinkedHashSet<Album> cacheAlbums(LinkedHashSet<Album> albums) {
-
         this.setCacheFolder();
         File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
         LinkedHashSet<Album> cachedAlbums = new LinkedHashSet<>();
@@ -398,5 +397,29 @@ public class Sync {
             logger.error("Error exporting Library Albums: " + e);
         }
         return cachedAlbums;
+    }
+
+    public LinkedHashSet<Artist> cacheArtists(LinkedHashSet<Artist> artists) {
+        this.setCacheFolder();
+        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
+        LinkedHashSet<Artist> cachedArtists = new LinkedHashSet<>();
+        if (artistFile.exists()) {
+            try {
+                cachedArtists = this.objectMapper.readValue(artistFile, new TypeReference<LinkedHashSet<Artist>>() {
+                });
+                logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("Error importing Library artists: " + e);
+                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
+            }
+        }
+        cachedArtists.addAll(artists);
+        try {
+            this.objectMapper.writeValue(artistFile, cachedArtists);
+            logger.debug("saved cached artists to: " + artistFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("Error exporting Library artists: " + e);
+        }
+        return cachedArtists;
     }
 }
