@@ -2,6 +2,9 @@ package ryzen.ownitall.classes;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +14,7 @@ import ryzen.ownitall.util.Levenshtein;
 
 public class Artist {
     private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
+    private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
 
     /**
@@ -32,6 +36,13 @@ public class Artist {
         return this.name;
     }
 
+    public void setName(String name) {
+        if (name == null || name.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty artist name passed to setName");
+        }
+        this.name = name;
+    }
+
     @Override
     @JsonIgnore
     public String toString() {
@@ -47,9 +58,6 @@ public class Artist {
             return false;
         }
         Artist artist = (Artist) object;
-        if (this.hashCode() == artist.hashCode()) {
-            return true;
-        }
         if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
                 simularityPercentage)) {
             return true;

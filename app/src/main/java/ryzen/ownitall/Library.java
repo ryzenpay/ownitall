@@ -117,6 +117,7 @@ public class Library {
      * @return - constructed album with confirmed album name and album artist name
      */
     private Album searchAlbum(String albumName, String artistName) {
+        // TODO: filter out throwing off characters (*)
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
             return null;
@@ -319,8 +320,7 @@ public class Library {
         if (response != null) {
             JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
             if (artistNode != null) {
-                Artist artist = new Artist(artistNode.path("name").asText());
-                return artist;
+                return new Artist(artistNode.path("name").asText());
             }
         }
         logger.debug("Could not find artist '" + artistname + "' in Library");
@@ -344,6 +344,7 @@ public class Library {
         if (response != null) {
             JsonNode artistNode = response.path("artist");
             if (artistNode != null && !artistNode.isMissingNode()) {
+                artist.setName(artistNode.path("name").asText());
                 this.artists.add(artist);
                 // TODO: artist image
                 return artist;

@@ -317,6 +317,8 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
+        // TODO: create dedicated downloadPlaylist function with no filtering
+        // apply filtering in the downloadPlaylists
         if (playlist == null) {
             logger.debug("Empty playlist provided in downloadPlaylist");
             return;
