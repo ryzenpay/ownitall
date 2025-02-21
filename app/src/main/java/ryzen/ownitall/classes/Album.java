@@ -99,13 +99,12 @@ public class Album extends Playlist {
             logger.debug(this.toString() + ": null song provided in addSong");
             return;
         }
-        super.addSong(song);
-
         // this is here because the super in the json constructor calls on addsongs
         // before artists is initialized (its ugly, i know)
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
+        super.addSong(song);
         this.addArtist(song.getArtist());
     }
 
@@ -163,7 +162,7 @@ public class Album extends Playlist {
     @JsonIgnore
     public String toString() {
         String output = super.toString();
-        if (this.getMainArtist() != null) {
+        if (!this.artists.isEmpty()) {
             output += " (" + this.getMainArtist().toString().trim() + ")";
         }
         return output;

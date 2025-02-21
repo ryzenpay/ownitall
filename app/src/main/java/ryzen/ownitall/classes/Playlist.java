@@ -179,6 +179,7 @@ public class Playlist {
             logger.debug(this.toString() + ": empty songs array provided in addSongs");
             return;
         }
+        this.songs.addAll(songs);
         // dont use .addAll because of Album override
         for (Song song : songs) {
             this.addSong(song);
@@ -195,11 +196,7 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in addsong");
             return;
         }
-        if (this.songs.contains(song)) {
-            this.getSong(song).merge(song);
-        } else {
-            this.songs.add(song);
-        }
+        this.songs.add(song);
     }
 
     /**
@@ -358,8 +355,8 @@ public class Playlist {
      * @param ids - linkedhashmap of id's to add
      */
     public void addIds(LinkedHashMap<String, String> ids) {
-        if (ids == null || ids.isEmpty()) {
-            logger.debug(this.toString() + ": empty ids array provided in addIds");
+        if (ids == null) {
+            logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
         this.ids.putAll(ids);

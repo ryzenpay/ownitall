@@ -81,8 +81,8 @@ public class Artist {
      * @param ids - linkedhashmap of id's
      */
     public void addIds(LinkedHashMap<String, String> ids) {
-        if (ids == null || ids.isEmpty()) {
-            logger.debug(this.toString() + ": empty links provided in addId");
+        if (ids == null) {
+            logger.debug(this.toString() + ": null links provided in addId");
             return;
         }
         this.ids.putAll(ids);
