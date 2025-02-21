@@ -346,14 +346,11 @@ public class Library {
                 }
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
-                    JsonNode imageNode = albumNode.path("image");
-                    if (imageNode.isArray() && imageNode.size() > 0) {
-                        JsonNode coverImageNode = imageNode.get(imageNode.size() - 1).path("#text");
-                        if (!coverImageNode.isMissingNode()) {
-                            song.setCoverImage(coverImageNode.asText());
-                        } else {
-                            logger.debug("problem getting specific song cover image: " + imageNode.asText());
-                        }
+                JsonNode imageNode = artistNode.path("image");
+                if (imageNode.isArray() && imageNode.size() > 0) {
+                    String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
+                    if (coverImage != null && !coverImage.isEmpty()) {
+                        song.setCoverImage(coverImage);
                     }
                 } else {
                     // such a common message as not all songs are in albums
