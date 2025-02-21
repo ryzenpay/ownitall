@@ -117,7 +117,7 @@ public class Library {
      * @return - constructed album with confirmed album name and album artist name
      */
     private Album searchAlbum(String albumName, String artistName) {
-        // TODO: filter out throwing off characters (*)
+        // TODO: filter out throwing off characters (*,:)
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
             return null;

@@ -374,9 +374,10 @@ public class Spotify {
             if (songs != null && !songs.isEmpty()) {
                 album.addSongs(songs);
                 album.setSpotifyPageOffset(songs.size());
-                album.addId("spotify", albumId);
-                return album;
             }
+        }
+        if (album != null) {
+            album.addId("spotify", albumId);
         }
         return album;
     }

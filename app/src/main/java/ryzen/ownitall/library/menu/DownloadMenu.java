@@ -112,6 +112,8 @@ public class DownloadMenu {
 
     private void optionCollectionData() {
         logger.info("Writing collection data (M3U, NFO, coverimages)...");
+        ProgressBar pb = Progressbar.progressBar("Music Metadata", 3);
+        pb.setExtraMessage("Albums");
         String downloadPath = download.getDownloadPath();
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
@@ -121,6 +123,7 @@ public class DownloadMenu {
                 Download.writeMetaData(song, songFile);
             }
         }
+        pb.setExtraMessage("Playlists").step();
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder;
             if (settings.isDownloadHierachy()) {
@@ -137,10 +140,12 @@ public class DownloadMenu {
                 Download.writeMetaData(song, songFile);
             }
         }
+        pb.setExtraMessage("Liked Songs").step();
         for (Song song : collection.getLikedSongs().getSongs()) {
             File songFile = new File(download.getDownloadPath(), song.getFileName());
             Download.writeMetaData(song, songFile);
         }
+        pb.setExtraMessage("Done").step().close();
         logger.info("Done writing collection data");
     }
 
