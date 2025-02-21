@@ -94,6 +94,13 @@ public class Song {
         return this.name;
     }
 
+    public void setName(String name) {
+        if (name == null || name.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty song name passed to setName");
+        }
+        this.name = name;
+    }
+
     /**
      * set song artist
      * 

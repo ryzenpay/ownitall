@@ -130,14 +130,25 @@ public class Library {
         }
         JsonNode response = query("album.search", params);
         if (response != null) {
+            Album album;
             JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
-            if (albumNode != null) {
-                Album album = new Album(albumNode.path("name").asText());
-                String artist = albumNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    album.addArtist(new Artist(artist));
+            if (!albumNode.isMissingNode()) {
+                JsonNode albumNameNode = albumNode.path("name");
+                if (!albumNameNode.isMissingNode()) {
+                    album = new Album(albumNameNode.asText());
+                } else {
+                    logger.error("unable to get album name in library: " + albumNode.toString());
+                    return null;
+                }
+                JsonNode artistNode = albumNode.path("artist");
+                if (!artistNode.isMissingNode()) {
+                    album.addArtist(new Artist(artistNode.asText()));
+                } else {
+                    logger.debug("Unable to get artist name: " + albumNode.toString());
                 }
                 return album;
+            } else {
+                logger.debug("Problem in albumNode: " + response.toString());
             }
         }
         logger.debug("Could not find Album " + albumName + " in Library");
@@ -169,13 +180,27 @@ public class Library {
         JsonNode response = query("album.getInfo", params);
         if (response != null) {
             JsonNode albumNode = response.path("album");
-            if (albumNode != null && !albumNode.isMissingNode()) {
+            if (!albumNode.isMissingNode()) {
+                JsonNode albumNameNode = albumNode.path("name");
+                if (albumNameNode != null && !albumNameNode.isMissingNode()) {
+                    album.setName(albumNameNode.asText());
+                } else {
+                    logger.debug("Album missing name: " + albumNode.toString());
+                }
+                JsonNode albumArtistNode = albumNode.path("artist");
+                if (albumArtistNode != null && !albumArtistNode.isMissingNode()) {
+                    album.addArtist(new Artist(albumArtistNode.asText()));
+                } else {
+                    logger.debug("Album missing artist value: " + albumNode.toString());
+                }
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && imageNode.size() > 0) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
                     if (coverImage != null && !coverImage.isEmpty()) {
                         album.setCoverImage(coverImage);
                     }
+                } else {
+                    logger.debug("Album missing cover image: " + albumNode.toString());
                 }
                 JsonNode trackNodes = albumNode.path("tracks").path("track");
                 if (trackNodes.isArray() && trackNodes.size() > 0) {
@@ -187,10 +212,19 @@ public class Library {
                             album.addSong(song);
                         }
                     }
+                } else {
+                    logger.debug("Album missing tracks: " + albumNode.toString());
                 }
-                album.addId("lastfm", String.valueOf(albumNode.path("url").asText().hashCode()));
+                JsonNode urlNode = albumNode.path("url");
+                if (!urlNode.isMissingNode()) {
+                    album.addId("lastfm", String.valueOf(urlNode.asText().hashCode()));
+                } else {
+                    logger.debug("Album missing url: " + albumName.toString());
+                }
                 this.albums.add(album);
                 return album;
+            } else {
+                logger.debug("Problem in albumNode: " + response.toString());
             }
         }
         logger.debug(
@@ -236,13 +270,24 @@ public class Library {
         JsonNode response = query("track.search", params);
         if (response != null) {
             JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
-            if (trackNode != null) {
-                Song song = new Song(trackNode.path("name").asText());
-                String artist = trackNode.path("artist").asText();
-                if (artist != null && !artist.isEmpty()) {
-                    song.setArtist(new Artist(artist));
+            if (!trackNode.isMissingNode()) {
+                Song song;
+                JsonNode songNameNode = trackNode.path("name");
+                if (!songNameNode.isMissingNode()) {
+                    song = new Song(songNameNode.asText());
+                } else {
+                    logger.error("problem getting song name: " + trackNode.toString());
+                    return null;
+                }
+                JsonNode artistNameNode = trackNode.path("artist");
+                if (!artistNameNode.isMissingNode()) {
+                    song.setArtist(new Artist(artistNameNode.asText()));
+                } else {
+                    logger.debug("Problem getting song artist: " + trackNode.toString());
                 }
                 return song;
+            } else {
+                logger.error("Problem searching song: " + response.toString());
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
@@ -271,28 +316,52 @@ public class Library {
         if (this.songs.contains(song)) {
             return this.getSong(song);
         }
-
         Map<String, String> params = Map.of("track", song.getName(), "artist", song.getArtist().getName());
         JsonNode response = query("track.getInfo", params);
-
         if (response != null) {
             JsonNode trackNode = response.path("track");
-            if (trackNode != null && !trackNode.isMissingNode()) {
+            if (!trackNode.isMissingNode()) {
+                JsonNode songNameNode = trackNode.path("name");
+                if (!songNameNode.isMissingNode()) {
+                    song.setName(songNameNode.asText());
+                } else {
+                    logger.debug("Problem getting song name: " + trackNode.toString());
+                }
+                JsonNode artistNameNode = trackNode.path("artist");
+                if (!artistNameNode.isMissingNode()) {
+                    song.setArtist(new Artist(artistNameNode.asText()));
+                } else {
+                    logger.debug("problem getting song artist: " + trackNode.toString());
+                }
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
                     JsonNode imageNode = albumNode.path("image");
                     if (imageNode.isArray() && imageNode.size() > 0) {
-                        String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                        if (coverImage != null && !coverImage.isEmpty()) {
-                            song.setCoverImage(coverImage);
+                        JsonNode coverImageNode = imageNode.get(imageNode.size() - 1).path("#text");
+                        if (!coverImageNode.isMissingNode()) {
+                            song.setCoverImage(coverImageNode.asText());
+                        } else {
+                            logger.debug("problem getting song cover image: " + imageNode.asText());
                         }
                     }
+                } else {
+                    logger.debug("problem getting song cover image: " + trackNode.toString());
                 }
-                song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                // because for some reason they dont give the id nor the mbid
-                song.addId("lastfm", String.valueOf(trackNode.path("url").asText().hashCode()));
+                JsonNode durationNode = trackNode.path("duration");
+                if (!durationNode.isMissingNode()) {
+                    song.setDuration(durationNode.asLong(), ChronoUnit.MILLIS);
+                } else {
+                    logger.debug("problem getting song duration: " + trackNode.toString());
+                }
+                JsonNode urlNode = trackNode.path("url");
+                if (!urlNode.isMissingNode()) {
+                    // because for some reason they dont give the id nor the mbid
+                    song.addId("lastfm", String.valueOf(urlNode.asText().hashCode()));
+                }
                 this.songs.add(song);
                 return song;
+            } else {
+                logger.error("Problem getting song: " + response.toString());
             }
         }
         logger.debug(
@@ -319,8 +388,16 @@ public class Library {
         JsonNode response = query("artist.search", params);
         if (response != null) {
             JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
-            if (artistNode != null) {
-                return new Artist(artistNode.path("name").asText());
+            if (!artistNode.isMissingNode()) {
+                JsonNode artistNameNode = artistNode.path("name");
+                if (!artistNameNode.isMissingNode()) {
+                    return new Artist(artistNameNode.asText());
+                } else {
+                    logger.debug("problem getting artist name: " + artistNode.toString());
+                    return null;
+                }
+            } else {
+                logger.debug("problem searching artist: " + response.toString());
             }
         }
         logger.debug("Could not find artist '" + artistname + "' in Library");
@@ -343,8 +420,13 @@ public class Library {
         JsonNode response = query("artist.getInfo", params);
         if (response != null) {
             JsonNode artistNode = response.path("artist");
-            if (artistNode != null && !artistNode.isMissingNode()) {
-                artist.setName(artistNode.path("name").asText());
+            if (!artistNode.isMissingNode()) {
+                JsonNode artistNameNode = artistNode.path("name");
+                if (!artistNameNode.isMissingNode()) {
+                    artist.setName(artistNameNode.asText());
+                } else {
+                    logger.debug("problem getting artist name:" + artistNode.toString());
+                }
                 this.artists.add(artist);
                 // TODO: artist image
                 return artist;
@@ -365,12 +447,18 @@ public class Library {
         JsonNode response = query("artist.getTopAlbums", params);
         if (response != null) {
             JsonNode topAlbumsNode = response.path("topalbums");
-            if (topAlbumsNode != null && !topAlbumsNode.isMissingNode()) {
+            if (!topAlbumsNode.isMissingNode()) {
                 JsonNode albumNodes = topAlbumsNode.path("album");
                 if (albumNodes.isArray() && albumNodes.size() != 0) {
                     for (JsonNode albumNode : albumNodes) {
-                        String albumName = albumNode.path("name").asText();
-                        Album album = this.getAlbum(albumName, artist.getName());
+                        JsonNode albumNameNode = albumNode.path("name");
+                        Album album;
+                        if (!albumNameNode.isMissingNode()) {
+                            album = this.getAlbum(albumNameNode.asText(), artist.getName());
+                        } else {
+                            logger.debug("problem getting album name: " + albumNode.toString());
+                            continue;
+                        }
                         if (album != null) {
                             // ensure the search worked
                             if (album.getArtists().contains(artist)) {
@@ -387,7 +475,11 @@ public class Library {
                             }
                         }
                     }
+                } else {
+                    logger.debug("problem parsing top albums: " + topAlbumsNode.toString());
                 }
+            } else {
+                logger.debug("problem getting top albums: " + response.toString());
             }
         }
         if (albums.isEmpty()) {

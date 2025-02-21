@@ -109,6 +109,13 @@ public class Playlist {
         return this.name;
     }
 
+    public void setName(String name) {
+        if (name == null || name.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty collection name passed to setName");
+        }
+        this.name = name;
+    }
+
     /**
      * get m3u data to write to m3u file for playlist
      * 
