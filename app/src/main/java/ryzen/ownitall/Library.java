@@ -209,6 +209,7 @@ public class Library {
                 if (trackNodes.isArray() && trackNodes.size() > 0) {
                     for (JsonNode trackNode : trackNodes) {
                         String songName = trackNode.path("name").asText();
+                        // TODO: artist is adding album artist
                         String songArtistName = trackNode.path("artist").path("name").asText();
                         Song song = this.getSong(songName, songArtistName);
                         if (song != null) {

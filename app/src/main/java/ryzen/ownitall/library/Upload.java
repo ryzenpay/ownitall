@@ -126,15 +126,22 @@ public class Upload {
     }
 
     public void processFolders() {
-        for (File file : this.getLibraryFolders()) {
+        ArrayList<File> libraryFolders = this.getLibraryFolders();
+        // get all albums
+        for (File file : libraryFolders) {
             if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (album != null) {
                         collection.addAlbum(album);
                     }
-                } else {
-                    if (settings.isDownloadHierachy()) {
+                }
+            }
+        }
+        if (settings.isDownloadHierachy()) {
+            for (File file : libraryFolders) {
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+                    if (!isAlbum(file)) {
                         Playlist playlist = getPlaylist(file);
                         if (playlist != null) {
                             if (playlist.size() == 1) { // filter out singles
@@ -143,16 +150,10 @@ public class Upload {
                                 collection.addPlaylist(playlist);
                             }
                         }
-                    } else {
-                        logger.debug("Skipped folder " + file.getAbsolutePath()
-                                + " as it is not an album and downloadHierachy is set to: "
-                                + settings.isDownloadHierachy());
                     }
                 }
             }
-        }
-        // check for m3u files in root directory
-        if (!settings.isDownloadHierachy()) {
+        } else {
             for (File inFile : this.localLibrary.listFiles()) {
                 if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
                     Playlist playlist = processM3U(inFile);

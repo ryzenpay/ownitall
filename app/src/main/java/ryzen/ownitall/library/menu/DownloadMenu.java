@@ -129,11 +129,11 @@ public class DownloadMenu {
             File playlistFolder;
             LinkedHashSet<Song> songs;
             if (settings.isDownloadHierachy()) {
-                songs = collection.getStandalonePlaylistSongs(playlist);
+                songs = playlist.getSongs();
                 playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
                 playlistFolder.mkdirs();
             } else {
-                songs = playlist.getSongs();
+                songs = collection.getStandalonePlaylistSongs(playlist);
                 playlistFolder = new File(downloadPath);
             }
             download.writePlaylistData(playlist, playlistFolder);
@@ -146,10 +146,10 @@ public class DownloadMenu {
         LinkedHashSet<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
-            songs = collection.getStandaloneLikedSongs();
+            songs = collection.getLikedSongs().getSongs();
             likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongName());
         } else {
-            songs = collection.getLikedSongs().getSongs();
+            songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(download.getDownloadPath());
         }
         for (Song song : songs) {

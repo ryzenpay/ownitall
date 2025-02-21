@@ -274,18 +274,16 @@ public class Download {
         LinkedHashSet<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
-            songs = collection.getStandaloneLikedSongs();
+            songs = collection.getLikedSongs().getSongs();
             likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
             likedSongsFolder.mkdirs();
         } else {
-            songs = collection.getLikedSongs().getSongs();
+            songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
         for (Song song : songs) {
             pb.setExtraMessage(song.getName()).step();
-            // TODO: if song previously not in album, but then in album, delete from main
-            // folder
             this.threadDownload(song, likedSongsFolder);
         }
         pb.setExtraMessage("cleaning up").step();
@@ -322,11 +320,11 @@ public class Download {
         LinkedHashSet<Song> songs;
         File playlistFolder;
         if (settings.isDownloadHierachy()) {
-            songs = collection.getStandalonePlaylistSongs(playlist);
+            songs = playlist.getSongs();
             playlistFolder = new File(this.downloadPath, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
-            songs = playlist.getSongs();
+            songs = collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
