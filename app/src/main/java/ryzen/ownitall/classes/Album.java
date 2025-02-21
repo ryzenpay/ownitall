@@ -162,7 +162,7 @@ public class Album extends Playlist {
     @JsonIgnore
     public String toString() {
         String output = super.toString();
-        if (!this.artists.isEmpty()) {
+        if (this.artists != null && !this.artists.isEmpty()) {
             output += " (" + this.getMainArtist().toString().trim() + ")";
         }
         return output;
