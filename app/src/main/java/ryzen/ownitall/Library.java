@@ -132,7 +132,7 @@ public class Library {
         if (response != null) {
             Album album;
             JsonNode albumNode = response.path("results").path("albummatches").path("album").get(0);
-            if (!albumNode.isMissingNode()) {
+            if (albumNode != null && !albumNode.isMissingNode()) {
                 JsonNode albumNameNode = albumNode.path("name");
                 if (!albumNameNode.isMissingNode()) {
                     album = new Album(albumNameNode.asText());
@@ -273,7 +273,7 @@ public class Library {
         JsonNode response = query("track.search", params);
         if (response != null) {
             JsonNode trackNode = response.path("results").path("trackmatches").path("track").get(0);
-            if (!trackNode.isMissingNode()) {
+            if (trackNode != null && !trackNode.isMissingNode()) {
                 Song song;
                 JsonNode songNameNode = trackNode.path("name");
                 if (!songNameNode.isMissingNode()) {
@@ -402,7 +402,7 @@ public class Library {
         JsonNode response = query("artist.search", params);
         if (response != null) {
             JsonNode artistNode = response.path("results").path("artistmatches").path("artist").get(0);
-            if (!artistNode.isMissingNode()) {
+            if (artistNode != null && !artistNode.isMissingNode()) {
                 JsonNode artistNameNode = artistNode.path("name");
                 if (!artistNameNode.isMissingNode()) {
                     return new Artist(artistNameNode.asText());
