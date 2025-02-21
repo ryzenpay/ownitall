@@ -12,6 +12,7 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Download;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
@@ -115,6 +116,10 @@ public class DownloadMenu {
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
             download.writeAlbumData(album, albumFolder);
+            for (Song song : album.getSongs()) {
+                File songFile = new File(albumFolder, song.getFileName());
+                Download.writeMetaData(song, songFile);
+            }
         }
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder;
@@ -125,6 +130,16 @@ public class DownloadMenu {
                 playlistFolder = new File(downloadPath);
             }
             download.writePlaylistData(playlist, playlistFolder);
+            // TODO: this will throw a lot of errors with songs in albums, re-organize that
+            // same with liked songs
+            for (Song song : playlist.getSongs()) {
+                File songFile = new File(playlistFolder, song.getFileName());
+                Download.writeMetaData(song, songFile);
+            }
+        }
+        for (Song song : collection.getLikedSongs().getSongs()) {
+            File songFile = new File(download.getDownloadPath(), song.getFileName());
+            Download.writeMetaData(song, songFile);
         }
         logger.info("Done writing collection data");
     }

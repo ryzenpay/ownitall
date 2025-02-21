@@ -99,6 +99,8 @@ public class Upload {
     /**
      * Get local liked songs and put them in collection
      * current criteria:
+     * - exclude all below and only look at metadata rating if download hierachy set
+     * to false
      * - songs in root folder (library path)
      * - folder named "liked songs" (changeable in settings)
      * 
@@ -188,7 +190,7 @@ public class Upload {
                     if (coverFile.exists()) {
                         coverImage = coverFile.toURI();
                     } else {
-                        logger.debug("coverimage referenced in m3u " + file.getAbsolutePath() + "not found: "
+                        logger.debug("coverimage referenced in m3u " + file.getAbsolutePath() + " not found: "
                                 + coverFile.getAbsolutePath());
                     }
                 } else if (line.startsWith("#EXTINF:")) {
