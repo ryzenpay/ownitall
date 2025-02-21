@@ -219,7 +219,7 @@ public class Sync {
      * @param albums - linkedhashset of constructed Album
      */
     public void exportAlbums(LinkedHashSet<Album> albums) {
-        if (albums == null) {
+        if (albums == null || albums.isEmpty()) {
             return;
         }
         this.setDataFolder();
@@ -260,7 +260,7 @@ public class Sync {
      * @param playlists - linkedhashset of constructed Playlist
      */
     public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
-        if (playlists == null) {
+        if (playlists == null || playlists.isEmpty()) {
             return;
         }
         this.setDataFolder();
@@ -302,7 +302,7 @@ public class Sync {
      * @param likedSongs - constructed LikedSongs
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
-        if (likedSongs == null) {
+        if (likedSongs == null || likedSongs.size() == 0) {
             return;
         }
         this.setDataFolder();
@@ -329,7 +329,6 @@ public class Sync {
         try {
             return this.objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
-
         } catch (IOException e) {
             logger.error("Error importing liked songs: " + e);
             logger.info("If this persists, delete the file:" + likedSongFile.getAbsolutePath());

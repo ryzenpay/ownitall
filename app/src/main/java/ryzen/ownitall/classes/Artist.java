@@ -1,5 +1,8 @@
 package ryzen.ownitall.classes;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,15 +19,30 @@ public class Artist {
     private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
+    private URI coverImage;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * default artist constructor
      * 
      * @param name - artist name
      */
-    @JsonCreator
-    public Artist(@JsonProperty("name") String name) {
+    public Artist(String name) {
         this.name = name;
+        this.ids = new LinkedHashMap<>();
+    }
+
+    @JsonCreator
+    public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashMap<String, String> ids,
+            @JsonProperty("coverImage") String coverImage) {
+        this.name = name;
+        this.ids = new LinkedHashMap<>();
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
@@ -43,6 +61,96 @@ public class Artist {
         this.name = name;
     }
 
+    /**
+     * add id to song
+     * 
+     * @param key - id key
+     * @param id  - id
+     */
+    public void addId(String key, String id) {
+        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
+            logger.debug(this.toString() + ": empty key or id in addId");
+            return;
+        }
+        this.ids.put(key, id);
+    }
+
+    /**
+     * add multiple ids to artist
+     * 
+     * @param ids - linkedhashmap of id's
+     */
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            logger.debug(this.toString() + ": empty links provided in addId");
+            return;
+        }
+        this.ids.putAll(ids);
+    }
+
+    /**
+     * get artist id
+     * 
+     * @param key - key of id
+     * @return - string id
+     */
+    @JsonIgnore
+    public String getId(String key) {
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": empty key passed in getId");
+            return null;
+        }
+        return this.ids.get(key);
+    }
+
+    /**
+     * get all artist id's
+     * 
+     * @return - linkedhashmap of ids
+     */
+    public LinkedHashMap<String, String> getIds() {
+        return this.ids;
+    }
+
+    /**
+     * set artist coverimage (string)
+     * 
+     * @param coverImage - string coverimage
+     */
+    public void setCoverImage(String coverImage) {
+        if (coverImage == null || coverImage.isEmpty()) {
+            logger.debug(this.toString() + ": empty String coverimage provided in setCoverImage");
+            return;
+        }
+        try {
+            this.coverImage = new URI(coverImage);
+        } catch (URISyntaxException e) {
+            logger.error("Error parsing Song cover image: " + coverImage);
+        }
+    }
+
+    /**
+     * set song coverimage (URI)
+     * 
+     * @param coverImage - URI coverimage
+     */
+    public void setCoverImage(URI coverImage) {
+        if (coverImage == null) {
+            logger.debug(this.toString() + ": empty URI coverImage provided in setCoverImage");
+            return;
+        }
+        this.coverImage = coverImage;
+    }
+
+    /**
+     * get coverimage
+     * 
+     * @return - URI coverimage
+     */
+    public URI getCoverImage() {
+        return this.coverImage;
+    }
+
     @Override
     @JsonIgnore
     public String toString() {
@@ -58,6 +166,12 @@ public class Artist {
             return false;
         }
         Artist artist = (Artist) object;
+        // only valid if library used
+        if (this.getId("lastfm") != null && artist.getId("lastfm") != null) {
+            if (this.getId("lastfm").equals(artist.getId("lastfm"))) {
+                return true;
+            }
+        }
         if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
                 simularityPercentage)) {
             return true;
