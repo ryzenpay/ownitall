@@ -2,6 +2,7 @@ package ryzen.ownitall.library.menu;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -126,23 +127,33 @@ public class DownloadMenu {
         pb.setExtraMessage("Playlists").step();
         for (Playlist playlist : collection.getPlaylists()) {
             File playlistFolder;
+            LinkedHashSet<Song> songs;
             if (settings.isDownloadHierachy()) {
+                songs = collection.getStandalonePlaylistSongs(playlist);
                 playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
                 playlistFolder.mkdirs();
             } else {
+                songs = playlist.getSongs();
                 playlistFolder = new File(downloadPath);
             }
             download.writePlaylistData(playlist, playlistFolder);
-            // TODO: this will throw a lot of errors with songs in albums, re-organize that
-            // same with liked songs
-            for (Song song : playlist.getSongs()) {
+            for (Song song : songs) {
                 File songFile = new File(playlistFolder, song.getFileName());
                 Download.writeMetaData(song, songFile);
             }
         }
         pb.setExtraMessage("Liked Songs").step();
-        for (Song song : collection.getLikedSongs().getSongs()) {
-            File songFile = new File(download.getDownloadPath(), song.getFileName());
+        LinkedHashSet<Song> songs;
+        File likedSongsFolder;
+        if (settings.isDownloadHierachy()) {
+            songs = collection.getStandaloneLikedSongs();
+            likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongName());
+        } else {
+            songs = collection.getLikedSongs().getSongs();
+            likedSongsFolder = new File(download.getDownloadPath());
+        }
+        for (Song song : songs) {
+            File songFile = new File(likedSongsFolder, song.getFileName());
             Download.writeMetaData(song, songFile);
         }
         pb.setExtraMessage("Done").step().close();

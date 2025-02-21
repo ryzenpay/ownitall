@@ -271,24 +271,22 @@ public class Download {
      * 
      */
     public void downloadLikedSongs() {
-        LinkedHashSet<Song> likedSongs;
+        LinkedHashSet<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
-            likedSongs = collection.getStandaloneLikedSongs();
+            songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
             likedSongsFolder.mkdirs();
         } else {
-            likedSongs = collection.getLikedSongs().getSongs();
+            songs = collection.getLikedSongs().getSongs();
             likedSongsFolder = new File(this.downloadPath);
         }
-        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", likedSongs.size() + 1);
-        for (Song song : likedSongs) {
+        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
+        for (Song song : songs) {
             pb.setExtraMessage(song.getName()).step();
             // TODO: if song previously not in album, but then in album, delete from main
             // folder
-            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
-                this.threadDownload(song, likedSongsFolder);
-            }
+            this.threadDownload(song, likedSongsFolder);
         }
         pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
@@ -317,26 +315,25 @@ public class Download {
      * @param playlist - constructed playlist to download
      */
     public void downloadPlaylist(Playlist playlist) {
-        // TODO: create dedicated downloadPlaylist function with no filtering
-        // apply filtering in the downloadPlaylists
         if (playlist == null) {
             logger.debug("Empty playlist provided in downloadPlaylist");
             return;
         }
+        LinkedHashSet<Song> songs;
         File playlistFolder;
         if (settings.isDownloadHierachy()) {
+            songs = collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = new File(this.downloadPath, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
+            songs = playlist.getSongs();
             playlistFolder = new File(downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
         this.writePlaylistData(playlist, playlistFolder);
-        for (Song song : playlist.getSongs()) {
+        for (Song song : songs) {
             pb.setExtraMessage(song.getName()).step();
-            if (settings.isDownloadHierachy() || collection.getSongAlbum(song) == null) {
-                this.threadDownload(song, playlistFolder);
-            }
+            this.threadDownload(song, playlistFolder);
         }
         pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();

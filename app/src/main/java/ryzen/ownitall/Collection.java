@@ -228,16 +228,26 @@ public class Collection {
         if (this.likedSongs.size() == 0) {
             return new LinkedHashSet<>();
         }
-        LinkedHashSet<Song> allTracks = new LinkedHashSet<>();
         LinkedHashSet<Song> likedSongs = new LinkedHashSet<>(this.likedSongs.getSongs());
         for (Playlist playlist : this.playlists) {
-            allTracks.addAll(playlist.getSongs());
+            likedSongs.removeAll(playlist.getSongs());
         }
         for (Album album : this.albums) {
-            allTracks.addAll(album.getSongs());
+            likedSongs.removeAll(album.getSongs());
         }
-        likedSongs.removeAll(allTracks);
         return likedSongs;
+    }
+
+    public LinkedHashSet<Song> getStandalonePlaylistSongs(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist passed in getStandalonePlaylistSongs");
+            return new LinkedHashSet<>();
+        }
+        LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
+        for (Album album : this.albums) {
+            songs.removeAll(album.getSongs());
+        }
+        return songs;
     }
 
     /**
