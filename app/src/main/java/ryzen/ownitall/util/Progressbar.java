@@ -3,8 +3,8 @@ package ryzen.ownitall.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 //http://tongfei.me/progressbar/
+import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;

@@ -325,7 +325,7 @@ public class Download {
             playlistFolder.mkdirs();
         } else {
             songs = collection.getStandalonePlaylistSongs(playlist);
-            playlistFolder = new File(downloadPath);
+            playlistFolder = new File(this.downloadPath);
         }
         ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
         this.writePlaylistData(playlist, playlistFolder);
