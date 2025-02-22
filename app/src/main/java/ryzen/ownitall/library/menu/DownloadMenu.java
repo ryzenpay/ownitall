@@ -118,6 +118,9 @@ public class DownloadMenu {
         String downloadPath = download.getDownloadPath();
         for (Album album : collection.getAlbums()) {
             File albumFolder = new File(downloadPath, album.getFolderName());
+            if (!albumFolder.exists()) {
+                continue;
+            }
             download.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
                 File songFile = new File(albumFolder, song.getFileName());
@@ -137,6 +140,9 @@ public class DownloadMenu {
             } else {
                 songs = collection.getStandalonePlaylistSongs(playlist);
                 playlistFolder = new File(downloadPath);
+            }
+            if (!playlistFolder.exists()) {
+                continue;
             }
             download.writePlaylistData(playlist, playlistFolder);
             for (Song song : songs) {

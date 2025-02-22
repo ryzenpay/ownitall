@@ -397,9 +397,9 @@ public class Collection {
             File songFile;
             Album foundAlbum = this.getSongAlbum(song);
             if (foundAlbum == null) {
-                songFile = new File(song.getFileName() + "." + settings.downloadFormat);
+                songFile = new File(song.getFileName());
             } else {
-                songFile = new File(foundAlbum.getFolderName(), song.getFileName() + "." + settings.downloadFormat);
+                songFile = new File(foundAlbum.getFolderName(), song.getFileName());
             }
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");

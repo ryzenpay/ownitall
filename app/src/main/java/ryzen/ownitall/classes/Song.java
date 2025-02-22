@@ -21,6 +21,7 @@ import ryzen.ownitall.util.MusicTools;
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
     private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
+    private static final String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private Artist artist;
     private Duration duration;
@@ -243,7 +244,7 @@ public class Song {
         if (fileName == null || fileName.isEmpty()) {
             fileName = String.valueOf(this.hashCode());
         }
-        return fileName;
+        return fileName + "." + downloadFormat;
     }
 
     @Override

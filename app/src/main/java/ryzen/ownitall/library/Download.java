@@ -190,7 +190,7 @@ public class Download {
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(song.getFileName() + ".%(ext)s");
+        command.add(song.getFileName());
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags
@@ -210,7 +210,7 @@ public class Download {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
-            File songFile = new File(path, song.getFileName() + "." + settings.getDownloadFormat());
+            File songFile = new File(path, song.getFileName());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
                 Process process = processBuilder.start();
@@ -253,6 +253,14 @@ public class Download {
     }
 
     public static void writeMetaData(Song song, File songFile) {
+        if (song == null) {
+            logger.debug("null song provided in writeMetaData");
+            return;
+        }
+        if (songFile == null || !songFile.exists()) {
+            logger.debug("null or non existant songFile provided in writeMetaData");
+            return;
+        }
         Album foundAlbum = collection.getSongAlbum(song);
         String albumName = null;
         if (foundAlbum != null) {
@@ -262,7 +270,7 @@ public class Download {
             MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
                     collection.isLiked(song), albumName, songFile);
         } catch (Exception e) {
-            logger.error("Error song metadata for " + song.toString() + ": " + e);
+            logger.error("writing song metadata for " + song.toString() + ": " + e);
         }
     }
 
@@ -288,7 +296,6 @@ public class Download {
         }
         pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
-        logger.info("Clearing absess files");
         this.cleanFolder(likedSongsFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -335,7 +342,6 @@ public class Download {
         }
         pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
-        logger.info("Clearing absess files");
         this.cleanFolder(playlistFolder);
         pb.setExtraMessage("Done").close();
     }
@@ -367,7 +373,6 @@ public class Download {
         }
         pb.setExtraMessage("cleaning up").step();
         this.threadShutdown();
-        logger.info("Clearing absess files");
         this.cleanFolder(albumFolder);
         pb.setExtraMessage("Done").close();
     }

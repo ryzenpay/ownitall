@@ -113,15 +113,17 @@ public class MusicTools {
                 File tempFile = File.createTempFile(String.valueOf(songName.hashCode()), ".png");
                 tempFile.delete(); // to prevent throwing off the downloadimage function
                 downloadImage(coverImage, tempFile);
-                byte[] imageData = Files.readAllBytes(tempFile.toPath());
-                // Create artwork from the downloaded file
-                Artwork artwork = ArtworkFactory.createArtworkFromFile(tempFile);
-                artwork.setBinaryData(imageData);
-                artwork.setMimeType("image/png");
-                artwork.setPictureType(PictureTypes.DEFAULT_ID);
-                tag.deleteArtworkField();
-                tag.setField(artwork);
-                // tempFile.delete();
+                if (tempFile.exists()) {
+                    byte[] imageData = Files.readAllBytes(tempFile.toPath());
+                    // Create artwork from the downloaded file
+                    Artwork artwork = ArtworkFactory.createArtworkFromFile(tempFile);
+                    artwork.setBinaryData(imageData);
+                    artwork.setMimeType("image/png");
+                    artwork.setPictureType(PictureTypes.DEFAULT_ID);
+                    tag.deleteArtworkField();
+                    tag.setField(artwork);
+                    tempFile.delete();
+                }
             } catch (Exception e) {
                 logger.error(
                         "Error writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
