@@ -346,11 +346,12 @@ public class Library {
                     logger.debug("song missing artist: " + trackNode.toString());
                 }
                 JsonNode albumNode = trackNode.path("album");
+                // TODO: currently unable to get image of any song
                 if (!albumNode.isMissingNode()) {
                     JsonNode imageNode = artistNode.path("image");
-                    if (imageNode.isArray() && imageNode.size() > 0) {
+                    if (imageNode.isArray() && !imageNode.isEmpty()) {
                         String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                        if (coverImage != null && !coverImage.isEmpty()) {
+                        if (!coverImage.isEmpty()) {
                             song.setCoverImage(coverImage);
                         }
                     }

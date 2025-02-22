@@ -51,7 +51,7 @@ public class Song {
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("duration") long duration, @JsonProperty("coverImage") URI coverImage) {
+            @JsonProperty("duration") double duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         if (artist != null) {
             this.setArtist(artist);
@@ -60,7 +60,7 @@ public class Song {
         if (ids != null) {
             this.addIds(ids);
         }
-        this.setDuration(duration, ChronoUnit.SECONDS);
+        this.setDuration((long) duration, ChronoUnit.SECONDS);
         if (coverImage != null) {
             this.setCoverImage(coverImage);
         }

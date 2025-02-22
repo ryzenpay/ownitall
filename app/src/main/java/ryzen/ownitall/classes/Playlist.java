@@ -58,7 +58,7 @@ public class Playlist {
             @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") URI coverImage) {
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
         this.ids = new LinkedHashMap<>();
