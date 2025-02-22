@@ -1,6 +1,7 @@
 package ryzen.ownitall.classes;
 
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -54,7 +55,7 @@ public class Album extends Playlist {
             @JsonProperty("songs") LinkedHashSet<Song> songs,
             @JsonProperty("links") LinkedHashMap<String, String> links,
             @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") URI coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, links, youtubePageToken, spotifyPageOffset, coverImage);
         this.artists = new LinkedHashSet<>();

@@ -51,7 +51,7 @@ public class Song {
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("duration") long duration, @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("duration") long duration, @JsonProperty("coverImage") URI coverImage) {
         this.name = name;
         if (artist != null) {
             this.setArtist(artist);

@@ -27,6 +27,7 @@ public class CollectionMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Print Inventory", this::printInventory);
         options.put("Add to Inventory", this::addMenu);
+        options.put("Update Inventory", this::optionUpdateInventory);
         options.put("Edit Inventory", this::editMenu);
         options.put("Clear Inventory", this::optionClearInventory);
         while (true) {
@@ -326,6 +327,53 @@ public class CollectionMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting clear inventory agreement");
         }
+    }
+
+    /**
+     * library verify all of inventory
+     */
+    private void optionUpdateInventory() {
+        if (!settings.isUseLibrary()) {
+            logger.info("This requires library to be enabled");
+            return;
+        }
+        logger.info("updating current collection with library...");
+        for (Song song : collection.getLikedSongs().getSongs()) {
+            Song foundSong = library.getSong(song.getName(), song.getArtist().getName());
+            if (foundSong != null) {
+                song.setName(foundSong.getName());
+                song.setArtist(foundSong.getArtist());
+                if (foundSong.getCoverImage() != null) {
+                    song.setCoverImage(foundSong.getCoverImage());
+                }
+                song.addIds(foundSong.getIds());
+            }
+        }
+        for (Playlist playlist : collection.getPlaylists()) {
+            for (Song song : playlist.getSongs()) {
+                Song foundSong = library.getSong(song.getName(), song.getArtist().getName());
+                if (foundSong != null) {
+                    song.setName(foundSong.getName());
+                    song.setArtist(foundSong.getArtist());
+                    if (foundSong.getCoverImage() != null) {
+                        song.setCoverImage(foundSong.getCoverImage());
+                    }
+                    song.addIds(foundSong.getIds());
+                }
+            }
+        }
+        for (Album album : collection.getAlbums()) {
+            Album foundAlbum = library.getAlbum(album.getName(), album.getMainArtist().getName());
+            if (foundAlbum != null) {
+                album.setName(foundAlbum.getName());
+                album.addArtists(foundAlbum.getArtists());
+                if (foundAlbum.getCoverImage() != null) {
+                    album.setCoverImage(foundAlbum.getCoverImage());
+                }
+                album.addIds(foundAlbum.getIds());
+            }
+        }
+        logger.info("done updating collection content");
     }
 
     /**
