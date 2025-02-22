@@ -245,7 +245,7 @@ public class Download {
             if (songFile.exists()) {
                 writeMetaData(song, songFile);
             } else {
-                logger.info("the song " + song.toString() + " failed to download, check log for why");
+                logger.info("song " + song.toString() + " failed to download, check logs");
             }
         } catch (Exception e) {
             logger.error("Error preparing yt-dlp: ", e);

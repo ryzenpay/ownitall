@@ -23,7 +23,7 @@ public class Progressbar {
         return new ProgressBarBuilder()
                 .setInitialMax(maxStep)
                 .setTaskName(title)
-                .setConsumer(new DelegatingProgressBarConsumer(logger::info))
+                // .setConsumer(new DelegatingProgressBarConsumer(logger::info))
                 .setStyle(ProgressBarStyle.ASCII)
                 .hideEta()
                 .build();

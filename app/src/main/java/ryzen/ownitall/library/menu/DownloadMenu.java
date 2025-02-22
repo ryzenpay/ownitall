@@ -121,7 +121,9 @@ public class DownloadMenu {
             download.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
                 File songFile = new File(albumFolder, song.getFileName());
-                Download.writeMetaData(song, songFile);
+                if (songFile.exists()) {
+                    Download.writeMetaData(song, songFile);
+                }
             }
         }
         pb.setExtraMessage("Playlists").step();
@@ -139,7 +141,9 @@ public class DownloadMenu {
             download.writePlaylistData(playlist, playlistFolder);
             for (Song song : songs) {
                 File songFile = new File(playlistFolder, song.getFileName());
-                Download.writeMetaData(song, songFile);
+                if (songFile.exists()) {
+                    Download.writeMetaData(song, songFile);
+                }
             }
         }
         pb.setExtraMessage("Liked Songs").step();
@@ -154,7 +158,9 @@ public class DownloadMenu {
         }
         for (Song song : songs) {
             File songFile = new File(likedSongsFolder, song.getFileName());
-            Download.writeMetaData(song, songFile);
+            if (songFile.exists()) {
+                Download.writeMetaData(song, songFile);
+            }
         }
         pb.setExtraMessage("Done").step().close();
         logger.info("Done writing collection data");
