@@ -359,6 +359,7 @@ public class Download {
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
+        albumFolder.mkdirs();
         this.writeAlbumData(album, albumFolder);
         for (Song song : album.getSongs()) {
             pb.setExtraMessage(song.getName()).step();

@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.time.Duration;
 
@@ -176,30 +176,20 @@ public class MusicTools {
             logger.debug("null filename passed in SanitizeFileName");
             return null;
         }
-        // Sanitize the name by removing invalid characters
-        byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
-        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        // Remove any invalid characters including pipe "|"
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
-        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
-        sanitized = sanitized.replace("?", ""); // for youtube command to prevent replacing with #
-        sanitized = sanitized.trim(); // remove any trailing spaces
-        // Limit length to 255 characters
-        if (sanitized.length() > 255) {
-            sanitized = sanitized.substring(0, 255);
+        String sanitized = null;
+        try {
+            sanitized = URLEncoder.encode(fileName, "UTF-8");
+            // Limit length to 255 characters
+            if (sanitized.length() > 255) {
+                sanitized = sanitized.substring(0, 255);
+            }
+            // Check if the sanitized name contains at least one alphabet character +/number
+            if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("problem encoding filename: " + e);
         }
-
-        // Check if the sanitized name contains at least one alphabet character +/number
-        if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
-            return null;
-        }
-        // Validate path
-        // try {
-        // Paths.get(sanitized);
-        // } catch (InvalidPathException | NullPointerException e) {
-        // sanitized = "";
-        // }
-        // Fallback if the sanitized name is empty
         return sanitized;
     }
 }
