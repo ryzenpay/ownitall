@@ -173,18 +173,4 @@ public class DownloadMenu {
     }
 
     // TODO: jellyfin api
-    // mark favorites, remove favorites, scrape favorites, ...
-    // https://api.jellyfin.org
-    private void optionJellyFinFavorites() {
-        if (credentials.jellyFinisEmpty()) {
-            credentials.setJellyFinCredentials();
-        }
-        try {
-            System.out.print("Enter JellyFin username: ");
-            String username = Input.request().getString();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting JellyFin username");
-            return;
-        }
-    }
 }

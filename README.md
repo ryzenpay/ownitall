@@ -20,10 +20,6 @@ save the absolute executable path and provide it when needed
 ### requirements  
 - ffmpeg: https://www.ffmpeg.org/   
 
-## Library (LastFM)  
-to get the best data possible, everything is checked with lastFM  
-to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  
-
 ## Spotify
 when attempting to import or export to spotify, you will need to provide the 3 following things:  
     - client id  

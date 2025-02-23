@@ -174,6 +174,7 @@ public class MusicTools {
     }
 
     public static String sanitizeFileName(String fileName) {
+        // TODO: revise sanitizeFileName to not use urlencode
         if (fileName == null) {
             logger.debug("null filename passed in SanitizeFileName");
             return null;
