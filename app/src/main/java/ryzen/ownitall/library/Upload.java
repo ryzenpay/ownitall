@@ -211,7 +211,7 @@ public class Upload {
                 }
             }
         } catch (IOException e) {
-            logger.error("Error reading m3u file " + file.getAbsolutePath() + ": " + e);
+            logger.error("Exception reading m3u file " + file.getAbsolutePath() + ": " + e);
             return null;
         }
         if (playlistName == null) {
@@ -258,7 +258,6 @@ public class Upload {
         }
         Album album = constructAlbum(folder);
         if (album == null) {
-            logger.debug("Error creating constructed album for " + folder.getAbsolutePath());
             return null;
         }
         // incase constructAlbum didnt get songs from library
@@ -314,7 +313,7 @@ public class Upload {
             }
             duration = audioHeader.getTrackLength();
         } catch (Exception e) {
-            logger.error("Error parsing metadata for file: " + file.getAbsolutePath() + " : ");
+            logger.error("Exception parsing metadata for file: " + file.getAbsolutePath() + " : ");
         }
         if (settings.isUseLibrary()) {
             song = library.getSong(songName, artistName);
@@ -396,7 +395,7 @@ public class Upload {
                         return false;
                     }
                 } catch (Exception e) {
-                    logger.error("Error checking folder if album: " + e);
+                    logger.error("Exception checking folder if album: " + e);
                     return false;
                 }
             }
@@ -421,7 +420,7 @@ public class Upload {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error checking folder if album: " + e);
+                logger.error("Exception checking folder if album: " + e);
                 return false;
             }
         } else {
@@ -460,7 +459,7 @@ public class Upload {
                     artistName = tag.getFirst(FieldKey.ARTIST);
                 }
             } catch (Exception e) {
-                logger.error("Error parsing album: " + e);
+                logger.error("Exception parsing album: " + e);
             }
         }
         if (settings.isUseLibrary()) {

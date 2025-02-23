@@ -108,7 +108,7 @@ public class Spotify {
                 Desktop.getDesktop().browse(auth_uri);
                 this.startLocalServer();
             } catch (IOException e) {
-                logger.error("Error opening web browser: " + e);
+                logger.error("Exception opening web browser: " + e);
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
@@ -133,7 +133,7 @@ public class Spotify {
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            logger.error("Error logging in: " + e);
+            logger.error("Exception logging in: " + e);
         }
     }
 
@@ -150,7 +150,7 @@ public class Spotify {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             return true;
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            logger.error("Error: " + e.getMessage());
+            logger.error("Exception refreshing token: " + e.getMessage());
             return false;
         }
     }
@@ -253,7 +253,7 @@ public class Spotify {
         try {
             Thread.sleep(msec);
         } catch (Exception e) {
-            logger.error("Error in spotify sleep: " + e);
+            logger.error("Exception in spotify sleep: " + e);
         }
     }
 
@@ -305,7 +305,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error fetching liked songs: " + e);
+                logger.error("Exception fetching liked songs: " + e);
                 hasMore = false;
             }
         }
@@ -345,7 +345,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error: " + e);
+                logger.error("Exception getting albums: " + e);
                 hasMore = false;
             }
         }
@@ -435,7 +435,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error fetching songs for album: " + albumId + ": " + e);
+                logger.error("Exception fetching songs for album: " + albumId + ": " + e);
                 hasMore = false;
             }
         }
@@ -488,7 +488,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error fetching playlists: " + e);
+                logger.error("Exception fetching playlists: " + e);
                 hasMore = false;
             }
         }
@@ -590,7 +590,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error fetching playlist tracks: " + e);
+                logger.error("Exception fetching playlist tracks: " + e);
                 hasMore = false;
             }
         }
@@ -621,7 +621,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error searching for song: " + e);
+                logger.error("Exception searching for song: " + e);
                 return null;
             }
         }
@@ -651,7 +651,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error searching for Album: " + e);
+                logger.error("Exception searching for Album: " + e);
                 return null;
             }
         }
@@ -685,7 +685,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error adding users saved tracks: " + e);
+                logger.error("Exception adding users saved tracks: " + e);
             }
         }
     }
@@ -725,7 +725,7 @@ public class Spotify {
                 playlistId = createPlaylistRequest.execute().getId();
                 playlist.addId("spotify", playlistId);
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.debug("Error creating user playlist: " + e);
+                logger.debug("Exception creating user playlist: " + e);
             }
         } else {
             // filter out the existing playlist songs
@@ -758,7 +758,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error adding users saved tracks: " + e);
+                logger.error("Exception adding users saved tracks: " + e);
             }
         }
     }
@@ -791,7 +791,7 @@ public class Spotify {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Error adding users Albums: " + e);
+                logger.error("Exception adding users Albums: " + e);
             }
         }
     }

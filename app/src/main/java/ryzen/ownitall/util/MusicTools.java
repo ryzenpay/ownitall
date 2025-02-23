@@ -126,7 +126,7 @@ public class MusicTools {
                 }
             } catch (Exception e) {
                 logger.error(
-                        "Error writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
+                        "Exception writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
             }
         }
 
@@ -192,7 +192,7 @@ public class MusicTools {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("problem encoding filename: " + e);
+            logger.error("Exception encoding filename: " + e);
         }
         return sanitized;
     }

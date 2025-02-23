@@ -148,7 +148,7 @@ public class Playlist {
         try {
             this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {
-            logger.error("Error parsing playlist cover image: " + coverImage);
+            logger.error(this.toString() + ": exception parsing playlist cover image: " + coverImage);
         }
     }
 
@@ -247,7 +247,7 @@ public class Playlist {
     @JsonIgnore
     public boolean contains(Song song) {
         if (song == null) {
-            logger.debug("null song provided in contains");
+            logger.debug(this.toString() + ": null song provided in contains");
             return false;
         }
         return this.songs.contains(song);

@@ -248,7 +248,7 @@ public class Download {
                 logger.info("song " + song.toString() + " failed to download, check logs");
             }
         } catch (Exception e) {
-            logger.error("Error preparing yt-dlp: ", e);
+            logger.error("Exception preparing yt-dlp: ", e);
         }
     }
 
@@ -389,7 +389,7 @@ public class Download {
         try {
             MusicTools.writeData(playlist.getFolderName(), "m3u", collection.getPlaylistM3U(playlist), folder);
         } catch (Exception e) {
-            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") m3u: " + e);
+            logger.error("Exception writing playlist (" + playlist.toString() + ") m3u: " + e);
         }
         try {
             if (playlist.getCoverImage() != null) {
@@ -397,7 +397,7 @@ public class Download {
                         new File(folder, playlist.getFolderName() + ".png"));
             }
         } catch (Exception e) {
-            logger.error("Error writing playlist (" + folder.getAbsolutePath() + ") coverimage: " + e);
+            logger.error("Exception writing playlist (" + playlist.toString() + ") coverimage: " + e);
         }
     }
 
@@ -413,7 +413,7 @@ public class Download {
         try {
             MusicTools.writeData("album", "nfo", album.getNFO(), folder);
         } catch (Exception e) {
-            logger.error("Error writing album (" + folder.getAbsolutePath() + ") nfo: " + e);
+            logger.error("Exception writing album (" + album.toString() + ") nfo: " + e);
         }
         try {
             if (album.getCoverImage() != null) {
@@ -421,7 +421,7 @@ public class Download {
                         new File(folder, "cover.png"));
             }
         } catch (Exception e) {
-            logger.error("Error writing album (" + folder.getAbsolutePath() + ") coverimage: " + e);
+            logger.error("Exception writing album (" + album.toString() + ") coverimage: " + e);
         }
     }
 

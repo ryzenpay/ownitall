@@ -148,7 +148,7 @@ public class Library {
                 }
                 return album;
             } else {
-                logger.debug("problem searching for album: " + response.toString());
+                logger.debug("missing data in album search result " + response.toString());
             }
         }
         logger.debug("Could not find Album " + albumName + " in Library");
@@ -228,7 +228,7 @@ public class Library {
                 this.albums.add(album);
                 return album;
             } else {
-                logger.debug("Problem in albumNode: " + response.toString());
+                logger.debug("missing data in getAlbum: " + response.toString());
             }
         }
         logger.debug(
@@ -291,7 +291,7 @@ public class Library {
                 }
                 return song;
             } else {
-                logger.error("Problem searching song: " + response.toString());
+                logger.error("missing data in search song: " + response.toString());
             }
         }
         logger.debug("Could not find song '" + songName + "' in Library");
@@ -346,15 +346,11 @@ public class Library {
                     logger.debug("song missing artist: " + trackNode.toString());
                 }
                 JsonNode albumNode = trackNode.path("album");
-                // TODO: currently unable to get image of any song
                 if (!albumNode.isMissingNode()) {
-                    JsonNode imageNode = artistNode.path("image");
-                    if (imageNode.isArray() && !imageNode.isEmpty()) {
-                        String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                        if (!coverImage.isEmpty()) {
-                            song.setCoverImage(coverImage);
-                        }
-                    }
+                    // TODO: fix song coverimages, remove placeholder
+                    // maybe use coverart archive
+                    // getting image from here is useless, it doesnt work half the time
+                    // keep this here for when saving song album name
                 } else {
                     // such a common message as not all songs are in albums
                     // logger.debug("song album missing cover image: " + trackNode.toString());
@@ -375,7 +371,7 @@ public class Library {
                 this.songs.add(song);
                 return song;
             } else {
-                logger.error("Problem getting song: " + response.toString());
+                logger.error("Missing data while getting Song: " + response.toString());
             }
         }
         logger.debug(
@@ -411,7 +407,7 @@ public class Library {
                     return null;
                 }
             } else {
-                logger.debug("problem searching artist: " + response.toString());
+                logger.debug("missing data in search artist: " + response.toString());
             }
         }
         logger.debug("Could not find artist '" + artistname + "' in Library");
@@ -504,10 +500,10 @@ public class Library {
                         }
                     }
                 } else {
-                    logger.debug("problem parsing top albums: " + topAlbumsNode.toString());
+                    logger.debug("missing data in artist albums: " + topAlbumsNode.toString());
                 }
             } else {
-                logger.debug("problem getting top albums: " + response.toString());
+                logger.debug("missing data getting top albums: " + response.toString());
             }
         }
         if (albums.isEmpty()) {

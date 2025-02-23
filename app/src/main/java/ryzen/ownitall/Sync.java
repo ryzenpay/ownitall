@@ -228,7 +228,7 @@ public class Sync {
             this.objectMapper.writeValue(albumFile, albums);
             logger.debug("Saved albums to: " + albumFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error saving albums: " + e);
+            logger.error("exception saving albums: " + e);
         }
     }
 
@@ -248,7 +248,7 @@ public class Sync {
                     new TypeReference<LinkedHashSet<Album>>() {
                     });
         } catch (IOException e) {
-            logger.error("Error importing albums: " + e);
+            logger.error("exception importing albums: " + e);
             logger.info("If this persists, delete the file:" + albumFile.getAbsolutePath());
             return null;
         }
@@ -269,7 +269,7 @@ public class Sync {
             this.objectMapper.writeValue(playlistFile, playlists);
             logger.debug("Saved playlists to: " + playlistFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error saving playlists: " + e);
+            logger.error("exception saving playlists: " + e);
         }
     }
 
@@ -290,7 +290,7 @@ public class Sync {
                     });
 
         } catch (IOException e) {
-            logger.error("Error importing playlists: " + e);
+            logger.error("exception importing playlists: " + e);
             logger.info("If this persists, delete the file:" + playlistFile.getAbsolutePath());
             return null;
         }
@@ -311,7 +311,7 @@ public class Sync {
             this.objectMapper.writeValue(likedSongFile, likedSongs);
             logger.debug("Saved liked songs to: " + likedSongFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error saving liked songs: " + e);
+            logger.error("exception saving liked songs: " + e);
         }
     }
 
@@ -330,7 +330,7 @@ public class Sync {
             return this.objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
         } catch (IOException e) {
-            logger.error("Error importing liked songs: " + e);
+            logger.error("exception importing liked songs: " + e);
             logger.info("If this persists, delete the file:" + likedSongFile.getAbsolutePath());
             return null;
         }
@@ -353,7 +353,7 @@ public class Sync {
                 });
                 logger.debug("loaded cached songs from: " + songFile.getAbsolutePath());
             } catch (IOException e) {
-                logger.error("Error importing Library Songs: " + e);
+                logger.error("exception importing Library Songs: " + e);
                 logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
             }
         }
@@ -362,7 +362,7 @@ public class Sync {
             this.objectMapper.writeValue(songFile, cachedSongs);
             logger.debug("saved cached songs to: " + songFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error exporting Library Songs: " + e);
+            logger.error("exception exporting Library Songs: " + e);
         }
         return cachedSongs;
     }
@@ -384,7 +384,7 @@ public class Sync {
                 });
                 logger.debug("loaded cached albums from: " + albumFile.getAbsolutePath());
             } catch (IOException e) {
-                logger.error("Error importing Library Albums: " + e);
+                logger.error("exception importing Library Albums: " + e);
                 logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());
             }
         }
@@ -393,7 +393,7 @@ public class Sync {
             this.objectMapper.writeValue(albumFile, cachedAlbums);
             logger.debug("saved cached albums to: " + albumFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error exporting Library Albums: " + e);
+            logger.error("exception exporting Library Albums: " + e);
         }
         return cachedAlbums;
     }
@@ -408,7 +408,7 @@ public class Sync {
                 });
                 logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
             } catch (IOException e) {
-                logger.error("Error importing Library artists: " + e);
+                logger.error("exception importing Library artists: " + e);
                 logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
             }
         }
@@ -417,7 +417,7 @@ public class Sync {
             this.objectMapper.writeValue(artistFile, cachedArtists);
             logger.debug("saved cached artists to: " + artistFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error exporting Library artists: " + e);
+            logger.error("exception exporting Library artists: " + e);
         }
         return cachedArtists;
     }

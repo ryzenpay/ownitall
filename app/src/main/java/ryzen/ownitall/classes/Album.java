@@ -1,7 +1,6 @@
 package ryzen.ownitall.classes;
 
 import java.io.StringWriter;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -233,7 +232,7 @@ public class Album extends Playlist {
             return writer.toString();
 
         } catch (Exception e) {
-            logger.error("Error generating NFO content for " + this.toString() + ": " + e);
+            logger.error(this.toString() + ": exception generating NFO content: " + e);
             return null;
         }
     }
@@ -263,7 +262,7 @@ public class Album extends Playlist {
     @JsonIgnore
     public boolean contains(Song song) {
         if (song == null) {
-            logger.debug("null song provided in contains");
+            logger.debug(this.toString() + ": null song provided in contains");
             return false;
         }
         return super.contains(song);

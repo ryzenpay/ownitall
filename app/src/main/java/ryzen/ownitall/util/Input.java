@@ -30,7 +30,6 @@ public class Input {
 
     public String getString() throws InterruptedException {
         Signal.handle(new Signal("INT"), signal -> {
-            // System.out.println("\nInput Interruption Caught");
             logger.debug("SIGINT in input caught");
             interrupted.set(true);
         });

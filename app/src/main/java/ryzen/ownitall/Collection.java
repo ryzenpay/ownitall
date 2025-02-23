@@ -15,7 +15,6 @@ import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
-    private static final Settings settings = Settings.load();
     private static Collection instance;
     private LikedSongs likedSongs;
     private LinkedHashSet<Playlist> playlists;

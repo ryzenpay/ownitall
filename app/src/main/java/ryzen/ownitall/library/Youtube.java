@@ -71,7 +71,7 @@ public class Youtube {
                     .setApplicationName(credentials.getYoutubeApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
-            logger.error("Error logging in with youtube api: " + e);
+            logger.error("Exception logging in with youtube api: " + e);
             return null;
         }
     }
@@ -144,7 +144,7 @@ public class Youtube {
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Error obtaining liked songs: " + e);
+            logger.error("Exception obtaining liked songs: " + e);
         }
     }
 
@@ -197,7 +197,7 @@ public class Youtube {
                 pageToken = playlistResponse.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Error retrieving playlists: " + e);
+            logger.error("Exception retrieving playlists: " + e);
         }
     }
 
@@ -247,7 +247,7 @@ public class Youtube {
                 pageToken = itemResponse.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Error retrieving playlist songs: " + e);
+            logger.error("Exception retrieving playlist songs: " + e);
         }
         return songs;
     }
@@ -275,7 +275,7 @@ public class Youtube {
                 return "10".equals(video.getSnippet().getCategoryId());
             }
         } catch (IOException e) {
-            logger.error("Error checking if video is music: " + e);
+            logger.error("Exception checking if video is music: " + e);
         }
         return false;
     }
@@ -302,7 +302,7 @@ public class Youtube {
                 return Duration.parse(video.getContentDetails().getDuration());
             }
         } catch (IOException e) {
-            logger.error("Error getting video duration: " + e);
+            logger.error("Exception getting video duration: " + e);
         }
         return Duration.ZERO;
     }
@@ -327,7 +327,7 @@ public class Youtube {
                 return videoResponse.getItems().get(0).getSnippet().getChannelTitle();
             }
         } catch (IOException e) {
-            logger.error("Error retrieving video details for " + videoId + ": " + e);
+            logger.error("Exception retrieving video details for " + videoId + ": " + e);
         }
         return null;
     }
