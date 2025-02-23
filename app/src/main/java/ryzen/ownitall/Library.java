@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -119,7 +120,8 @@ public class Library {
         if (this.albums.contains(tmpAlbum)) {
             return this.getAlbum(tmpAlbum);
         }
-        Map<String, String> params = Map.of("release", albumName);
+        Map<String, String> params = new HashMap<>();
+        params.put("release", albumName);
         if (artistName != null) {
             params.put("artistname", artistName);
         }
@@ -194,7 +196,8 @@ public class Library {
         if (this.songs.contains(tmpSong)) {
             return this.getSong(tmpSong);
         }
-        Map<String, String> params = Map.of("recording", songName);
+        Map<String, String> params = new HashMap<>();
+        params.put("recording", songName);
         if (artistName != null) {
             params.put("artistname", artistName);
         }
@@ -243,7 +246,8 @@ public class Library {
         if (this.artists.contains(tmpArtist)) {
             return this.getArtist(tmpArtist);
         }
-        Map<String, String> params = Map.of("artist", artistName);
+        Map<String, String> params = new HashMap<>();
+        params.put("artist", artistName);
         params.put("limit", "1");
         JsonNode response = query("artist", params);
         if (response != null) {
