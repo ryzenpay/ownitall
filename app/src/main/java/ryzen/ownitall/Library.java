@@ -121,7 +121,7 @@ public class Library {
         StringBuilder builder = new StringBuilder();
         builder.append("release:").append('"').append(albumName).append('"');
         if (artistName != null) {
-            builder.append(" AND ").append("artistname:").append('"').append(artistName).append('"');
+            builder.append("AND").append("artistname:").append('"').append(artistName).append('"');
         }
         JsonNode response = query("release", builder.toString());
         if (response != null) {
@@ -198,7 +198,7 @@ public class Library {
         StringBuilder builder = new StringBuilder();
         builder.append('"').append(songName).append('"');
         if (artistName != null) {
-            builder.append(" AND ").append("artistname:").append('"').append(artistName).append('"');
+            builder.append("AND").append("artistname:").append('"').append(artistName).append('"');
         }
         JsonNode response = query("recording", builder.toString());
         if (response != null) {
@@ -223,6 +223,7 @@ public class Library {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
+        // TODO: if cant find, try again with work?
         logger.debug("Could not find song '" + songName + "' in library");
         return null;
     }
