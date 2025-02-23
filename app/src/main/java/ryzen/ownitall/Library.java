@@ -6,9 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +21,6 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
-    // TODO: rewrite to use musicbrainz + coverart archive
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();
     private static Library instance;
@@ -34,6 +31,7 @@ public class Library {
     /**
      * arrays to save api queries if they already exist
      */
+    // TODO: cache not really workin, needs optimization
     private LinkedHashSet<Song> songs;
     private LinkedHashSet<Album> albums;
     private LinkedHashSet<Artist> artists;
@@ -120,13 +118,12 @@ public class Library {
         if (this.albums.contains(tmpAlbum)) {
             return this.getAlbum(tmpAlbum);
         }
-        Map<String, String> params = new HashMap<>();
-        params.put("release", albumName);
+        StringBuilder builder = new StringBuilder();
+        builder.append("release:").append('"').append(albumName).append('"');
         if (artistName != null) {
-            params.put("artistname", artistName);
+            builder.append(" AND ").append("artistname:").append('"').append(artistName).append('"');
         }
-        params.put("limit", "1");
-        JsonNode response = query("release", params);
+        JsonNode response = query("release", builder.toString());
         if (response != null) {
             JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null && !albumNode.isMissingNode()) {
@@ -141,6 +138,7 @@ public class Library {
                                 Artist artist = new Artist(artistNode.path("name").asText());
                                 artist.addId("mbid", artistNode.path("id").asText());
                                 album.addArtist(artist);
+                                this.artists.add(artist);
                             } else {
                                 logger.debug("artist missing info: " + artistNode.toString());
                             }
@@ -196,13 +194,13 @@ public class Library {
         if (this.songs.contains(tmpSong)) {
             return this.getSong(tmpSong);
         }
-        Map<String, String> params = new HashMap<>();
-        params.put("recording", songName);
+        // TODO: filter out extra stuff in brackets, after dash
+        StringBuilder builder = new StringBuilder();
+        builder.append('"').append(songName).append('"');
         if (artistName != null) {
-            params.put("artistname", artistName);
+            builder.append(" AND ").append("artistname:").append('"').append(artistName).append('"');
         }
-        params.put("limit", "1");
-        JsonNode response = query("recording", params);
+        JsonNode response = query("recording", builder.toString());
         if (response != null) {
             JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null && !trackNode.isMissingNode()) {
@@ -212,6 +210,7 @@ public class Library {
                     Artist artist = new Artist(artistNode.path("name").asText());
                     artist.addId("mbid", artistNode.path("id").asText());
                     song.setArtist(artist);
+                    this.artists.add(artist);
                 } else {
                     logger.debug("song missing artist: " + trackNode.toString());
                 }
@@ -246,10 +245,9 @@ public class Library {
         if (this.artists.contains(tmpArtist)) {
             return this.getArtist(tmpArtist);
         }
-        Map<String, String> params = new HashMap<>();
-        params.put("artist", artistName);
-        params.put("limit", "1");
-        JsonNode response = query("artist", params);
+        StringBuilder builder = new StringBuilder();
+        builder.append("artist:").append('"').append(artistName).append('"');
+        JsonNode response = query("artist", builder.toString());
         if (response != null) {
             JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null && !artistNode.isMissingNode()) {
@@ -264,15 +262,8 @@ public class Library {
         return null;
     }
 
-    public LinkedHashSet<Album> getArtistAlbums(Artist artist) {
-        if (artist == null) {
-            logger.debug("Empty artist passed to getArtistAlbums");
-            return null;
-        }
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
-        logger.info("CURRENTLY NOT SUPPORTED");
-        return albums;
-    }
+    // TODO: get external links:
+    // ?inc=
 
     private void timeoutManager() {
         long currentTime = System.currentTimeMillis();
@@ -296,18 +287,24 @@ public class Library {
      * @param query - search, browse parameters
      * @return - JsonNode response
      */
-    private JsonNode query(String type, Map<String, String> params) {
+    private JsonNode query(String type, String query) {
+        if (type == null || type.isEmpty()) {
+            logger.error("null or empty type provided in query");
+            return null;
+        }
+        if (query == null || query.isEmpty()) {
+            logger.error("null or empty query provided in query");
+            return null;
+        }
         timeoutManager();
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append(type);
-            urlBuilder.append("?fmt=").append("json");
             // check docs for all possible parameters:
             // https://musicbrainz.org/doc/MusicBrainz_API
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                urlBuilder.append("&").append(entry.getKey()).append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
+            urlBuilder.append("?query=").append(URLEncoder.encode(query, "UTF-8"));
+            urlBuilder.append("&fmt=").append("json");
+            urlBuilder.append("&limit").append("1");
             URI url = new URI(urlBuilder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
