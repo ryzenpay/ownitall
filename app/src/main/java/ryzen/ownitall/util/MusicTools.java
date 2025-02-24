@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 
@@ -179,21 +180,21 @@ public class MusicTools {
             logger.debug("null filename passed in SanitizeFileName");
             return null;
         }
-        String sanitized = null;
-        try {
-            sanitized = URLEncoder.encode(fileName, "UTF-8");
-            // Limit length to 255 characters
-            if (sanitized.length() > 255) {
-                sanitized = sanitized.substring(0, 255);
-            }
-            // Remove starting and trailing non alphabetical characters
-            sanitized = sanitized.replaceAll("^\\.*|[^a-zA-Z]$", "");
-            // Check if the sanitized name contains at least one alphabet character +/number
-            if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
-                return null;
-            }
-        } catch (Exception e) {
-            logger.error("problem encoding filename: " + e);
+        // Sanitize the name by removing invalid characters
+        byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
+        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
+        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
+        sanitized = sanitized.replaceAll("^\\.*|[^a-zA-Z]$", ""); // Remove starting and trailing non alphabetical
+                                                                  // characters
+        sanitized = sanitized.trim(); // remove any trailing spaces
+        // Limit length to 255 characters
+        if (sanitized.length() > 255) {
+            sanitized = sanitized.substring(0, 255);
+        }
+        // Check if the sanitized name contains at least one alphabet character +/number
+        if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
+            return null;
         }
         return sanitized;
     }
