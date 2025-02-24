@@ -148,7 +148,7 @@ public class Library {
                         JsonNode songNodes = discNode.path("tracks");
                         if (songNodes.isArray()) {
                             for (JsonNode songNode : songNodes) {
-                                Song song = this.getSong(songNode.path("id").asText());
+                                Song song = this.getSong(songNode.path("recording").path("id").asText());
                                 if (song != null) {
                                     album.addSong(song);
                                 }
@@ -200,7 +200,7 @@ public class Library {
         StringBuilder builder = new StringBuilder();
         builder.append(mbid);
         // get all songs, artists and external urls
-        builder.append("?inc=").append('+').append("artists").append('+').append("url-rels");
+        builder.append("?inc=").append("artists").append('+').append("url-rels");
         JsonNode response = this.directQuery("recording", builder.toString());
         if (response != null) {
             Song song = new Song(response.path("title").asText());
