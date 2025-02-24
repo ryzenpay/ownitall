@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -319,8 +318,8 @@ public class Library {
             return null;
         }
         try {
-            if (responses.containsKey(url.toString())) {
-                return objectMapper.readTree(responses.get(url.toString()));
+            if (responses.containsKey(url.toASCIIString())) {
+                return objectMapper.readTree(responses.get(url.toASCIIString()));
             }
         } catch (Exception e) {
             logger.error("Error with saved query data in library cache: " + e);
@@ -345,7 +344,7 @@ public class Library {
                         .path("message").asText());
                 return null;
             }
-            responses.put(url.toString(), response.toString());
+            responses.put(url.toASCIIString(), response.toString());
             return rootNode;
         } catch (Exception e) {
             logger.error("Error querying API: " + e);
