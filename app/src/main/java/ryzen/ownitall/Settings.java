@@ -32,8 +32,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected String playlistFile = "playlists";
 
     protected String cacheFolderPath = ".cache";
-    protected String artistFile = "artists";
-    protected String songFile = "songs";
+    protected String cacheLibraryFile = "library";
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
      * to prevent having to provide them each time
@@ -215,20 +214,12 @@ public class Settings extends ryzen.ownitall.util.Settings {
         this.cacheFolderPath = cacheFolderPath;
     }
 
-    public String getArtistFile() {
-        return artistFile;
+    public String getCacheLibraryFile() {
+        return cacheLibraryFile;
     }
 
-    public void setArtistFile(String artistFile) {
-        this.artistFile = artistFile;
-    }
-
-    public String getSongFile() {
-        return songFile;
-    }
-
-    public void setSongFile(String songFile) {
-        this.songFile = songFile;
+    public void setCacheLibraryFile(String cacheLibraryFile) {
+        this.cacheLibraryFile = cacheLibraryFile;
     }
 
     public boolean isSaveCredentials() {

@@ -12,10 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
@@ -336,89 +334,28 @@ public class Sync {
         }
     }
 
-    /**
-     * cache songs
-     * ^ syncs with local files
-     * 
-     * @param songs - linkedhashset to offload
-     * @return - updated linkedhashset of songs
-     */
-    public LinkedHashSet<Song> cacheSongs(LinkedHashSet<Song> songs) {
+    public LinkedHashMap<String, String> cacheLibrary(LinkedHashMap<String, String> responses) {
         this.setCacheFolder();
-        File songFile = new File(this.cacheFolder, settings.songFile + ".json");
-        LinkedHashSet<Song> cachedSongs = new LinkedHashSet<>();
-        if (songFile.exists()) {
+        File libraryFile = new File(this.cacheFolder, settings.cacheLibraryFile + ".json");
+        LinkedHashMap<String, String> cachedLibrary = new LinkedHashMap<>();
+        if (libraryFile.exists()) {
             try {
-                cachedSongs = this.objectMapper.readValue(songFile, new TypeReference<LinkedHashSet<Song>>() {
-                });
-                logger.debug("loaded cached songs from: " + songFile.getAbsolutePath());
+                cachedLibrary = this.objectMapper.readValue(libraryFile,
+                        new TypeReference<LinkedHashMap<String, String>>() {
+                        });
+                logger.debug("loaded cached library from: " + libraryFile.getAbsolutePath());
             } catch (IOException e) {
-                logger.error("exception importing Library Songs: " + e);
-                logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
+                logger.error("exception importing cached Library: " + e);
+                logger.info("If this persists, delete the file: " + libraryFile.getAbsolutePath());
             }
         }
-        cachedSongs.addAll(songs);
+        cachedLibrary.putAll(responses);
         try {
-            this.objectMapper.writeValue(songFile, cachedSongs);
-            logger.debug("saved cached songs to: " + songFile.getAbsolutePath());
+            this.objectMapper.writeValue(libraryFile, cachedLibrary);
+            logger.debug("saved cached library to: " + libraryFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("exception exporting Library Songs: " + e);
+            logger.error("exception exporting cached Library: " + e);
         }
-        return cachedSongs;
-    }
-
-    /**
-     * cache albums
-     * ^ syncs with local files
-     * 
-     * @param albums - linkedhashset to offload
-     * @return - updated linkedhashset of albums
-     */
-    public LinkedHashSet<Album> cacheAlbums(LinkedHashSet<Album> albums) {
-        this.setCacheFolder();
-        File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
-        LinkedHashSet<Album> cachedAlbums = new LinkedHashSet<>();
-        if (albumFile.exists()) {
-            try {
-                cachedAlbums = this.objectMapper.readValue(albumFile, new TypeReference<LinkedHashSet<Album>>() {
-                });
-                logger.debug("loaded cached albums from: " + albumFile.getAbsolutePath());
-            } catch (IOException e) {
-                logger.error("exception importing Library Albums: " + e);
-                logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());
-            }
-        }
-        cachedAlbums.addAll(albums);
-        try {
-            this.objectMapper.writeValue(albumFile, cachedAlbums);
-            logger.debug("saved cached albums to: " + albumFile.getAbsolutePath());
-        } catch (IOException e) {
-            logger.error("exception exporting Library Albums: " + e);
-        }
-        return cachedAlbums;
-    }
-
-    public LinkedHashSet<Artist> cacheArtists(LinkedHashSet<Artist> artists) {
-        this.setCacheFolder();
-        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
-        LinkedHashSet<Artist> cachedArtists = new LinkedHashSet<>();
-        if (artistFile.exists()) {
-            try {
-                cachedArtists = this.objectMapper.readValue(artistFile, new TypeReference<LinkedHashSet<Artist>>() {
-                });
-                logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
-            } catch (IOException e) {
-                logger.error("exception importing Library artists: " + e);
-                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
-            }
-        }
-        cachedArtists.addAll(artists);
-        try {
-            this.objectMapper.writeValue(artistFile, cachedArtists);
-            logger.debug("saved cached artists to: " + artistFile.getAbsolutePath());
-        } catch (IOException e) {
-            logger.error("exception exporting Library artists: " + e);
-        }
-        return cachedArtists;
+        return cachedLibrary;
     }
 }
