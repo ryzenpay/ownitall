@@ -83,14 +83,14 @@ public class Library {
     }
 
     public Album getAlbum(String albumName, String artistName) {
-        String mbid = this.searcAlbum(albumName, artistName);
+        String mbid = this.searchAlbum(albumName, artistName);
         if (mbid == null) {
             return null;
         }
         return this.getAlbum(mbid);
     }
 
-    public String searcAlbum(String albumName, String artistName) {
+    private String searchAlbum(String albumName, String artistName) {
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
             return null;
@@ -101,7 +101,7 @@ public class Library {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
         builder.append("primarytype:").append('"').append("Album").append('"');
-        JsonNode response = this.query("release", builder.toString());
+        JsonNode response = this.searchQuery("release", builder.toString());
         if (response != null) {
             JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null && !albumNode.isMissingNode()) {
@@ -173,7 +173,7 @@ public class Library {
         return this.getSong(mbid);
     }
 
-    public String searchSong(String songName, String artistName) {
+    private String searchSong(String songName, String artistName) {
         if (songName == null) {
             logger.debug("Empty songName passed in getSong");
             return null;
@@ -183,7 +183,7 @@ public class Library {
         if (artistName != null) {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
-        JsonNode response = query("recording", builder.toString());
+        JsonNode response = this.searchQuery("recording", builder.toString());
         if (response != null) {
             JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null && !trackNode.isMissingNode()) {
@@ -227,7 +227,7 @@ public class Library {
         }
         StringBuilder builder = new StringBuilder();
         builder.append("artist:").append('"').append(artistName).append('"');
-        JsonNode response = query("artist", builder.toString());
+        JsonNode response = this.searchQuery("artist", builder.toString());
         if (response != null) {
             JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null && !artistNode.isMissingNode()) {
@@ -263,54 +263,27 @@ public class Library {
      * @param query - search, browse parameters
      * @return - JsonNode response
      */
-    private JsonNode query(String type, String query) {
+    private JsonNode searchQuery(String type, String query) {
         if (type == null || type.isEmpty()) {
-            logger.error("null or empty type provided in query");
+            logger.error("null or empty type provided in searchquery");
             return null;
         }
         if (query == null || query.isEmpty()) {
-            logger.error("null or empty query provided in query");
+            logger.error("null or empty query provided in searchquery");
             return null;
         }
-        try {
-            if (responses.containsKey(query)) {
-                return objectMapper.readTree(responses.get(query));
-            }
-        } catch (Exception e) {
-            logger.error("Error with saved query data in library cache: " + e);
-            logger.info("If this persists, reset the cache folder");
-        }
-        timeoutManager();
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append(type);
             // check docs for all possible parameters:
-            // https://musicbrainz.org/doc/MusicBrainz_API
+            // https://musicbrainz.org/doc/MusicBrainz_API/Search
             urlBuilder.append("?query=").append(URLEncoder.encode(query, "UTF-8"));
             urlBuilder.append("&fmt=").append("json");
             urlBuilder.append("&limit").append("1");
             URI url = new URI(urlBuilder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-
-            if (rootNode.path("status").asText().equals("error")) {
-                logger.error("unexpected query response (" + rootNode.path("code").asInt() + "): " + rootNode
-                        .path("message").asText());
-                return null;
-            }
-            responses.put(query, response.toString());
-            return rootNode;
+            return this.query(url);
         } catch (Exception e) {
-            logger.error("Error querying API: " + e);
+            logger.error("Error constructing API searchQuery: " + e);
             return null;
         }
     }
@@ -324,14 +297,6 @@ public class Library {
             logger.error("null or empty query provided in directquery");
             return null;
         }
-        try {
-            if (responses.containsKey(query)) {
-                return objectMapper.readTree(responses.get(query));
-            }
-        } catch (Exception e) {
-            logger.error("Error with saved query data in library cache: " + e);
-            logger.info("If this persists, reset the cache folder");
-        }
         timeoutManager();
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
@@ -341,6 +306,28 @@ public class Library {
             urlBuilder.append("/").append(query);
             urlBuilder.append("&fmt=").append("json");
             URI url = new URI(urlBuilder.toString());
+            return this.query(url);
+        } catch (Exception e) {
+            logger.error("Error constructing API directQuery: " + e);
+            return null;
+        }
+    }
+
+    private JsonNode query(URI url) {
+        if (url == null) {
+            logger.debug("null url provided to query");
+            return null;
+        }
+        try {
+            if (responses.containsKey(url.toString())) {
+                return objectMapper.readTree(responses.get(url.toString()));
+            }
+        } catch (Exception e) {
+            logger.error("Error with saved query data in library cache: " + e);
+            logger.info("If this persists, reset the cache folder");
+        }
+        timeoutManager();
+        try {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
@@ -358,7 +345,7 @@ public class Library {
                         .path("message").asText());
                 return null;
             }
-            responses.put(query, response.toString());
+            responses.put(url.toString(), response.toString());
             return rootNode;
         } catch (Exception e) {
             logger.error("Error querying API: " + e);
