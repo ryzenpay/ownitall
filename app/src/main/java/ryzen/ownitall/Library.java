@@ -83,6 +83,14 @@ public class Library {
     }
 
     public Album getAlbum(String albumName, String artistName) {
+        String mbid = this.searcAlbum(albumName, artistName);
+        if (mbid == null) {
+            return null;
+        }
+        return this.getAlbum(mbid);
+    }
+
+    public String searcAlbum(String albumName, String artistName) {
         if (albumName == null) {
             logger.debug("Empty albumName parsed in searchAlbum");
             return null;
@@ -93,31 +101,11 @@ public class Library {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
         builder.append("primarytype:").append('"').append("Album").append('"');
-        JsonNode response = query("release", builder.toString());
+        JsonNode response = this.query("release", builder.toString());
         if (response != null) {
-            JsonNode albumNode = response.path("release-groups").get(0);
+            JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null && !albumNode.isMissingNode()) {
-                Album album = new Album(albumNode.path("title").asText());
-                album.addId("mbid", albumNode.path("id").asText());
-                JsonNode artistNodes = albumNode.path("artist-credit");
-                if (!artistNodes.isMissingNode()) {
-                    if (artistNodes.isArray() && !artistNodes.isEmpty()) {
-                        for (JsonNode rootArtistNode : artistNodes) {
-                            JsonNode artistNode = rootArtistNode.path("artist");
-                            if (!artistNode.isMissingNode()) {
-                                Artist artist = new Artist(artistNode.path("name").asText());
-                                artist.addId("mbid", artistNode.path("id").asText());
-                                album.addArtist(artist);
-                            } else {
-                                logger.debug("album artist missing info: " + artistNode.toString());
-                            }
-                        }
-                    }
-                } else {
-                    logger.debug("album missing artists: " + albumNode.toString());
-                }
-                // TODO: get album cover image
-                return album;
+                return albumNode.path("id").asText();
             } else {
                 logger.debug("missing data in album search result " + response.toString());
             }
@@ -126,48 +114,109 @@ public class Library {
         return null;
     }
 
-    /**
-     * construct a song using the LastFM api and their search.
-     * constructs everything except the: duration
-     * 
-     * @param songName   - name of song to search
-     * @param artistName - optional artist to match with the song
-     * @return - constructed song
-     */
+    public Album getAlbum(String mbid) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(mbid);
+        // get all songs, artists and external urls
+        builder.append("?inc=").append("recordings").append('+').append("artists");
+        JsonNode response = this.directQuery("release", builder.toString());
+        if (response != null) {
+            Album album = new Album(response.path("title").asText());
+            album.addId("mbid", response.path("id").asText());
+            JsonNode coverArtNode = response.path("cover-art-archive");
+            if (!coverArtNode.isMissingNode()) {
+                if (coverArtNode.path("artwork").asBoolean()) {
+                    // TODO: get album cover art
+                    // https://musicbrainz.org/doc/Cover_Art_Archive/API
+                }
+            }
+            JsonNode artistNodes = response.path("artist-credit");
+            if (!artistNodes.isMissingNode()) {
+                if (artistNodes.isArray()) {
+                    for (JsonNode rootArtistNode : artistNodes) {
+                        JsonNode artistNode = rootArtistNode.path("artist");
+                        Artist artist = new Artist(artistNode.path("name").asText());
+                        artist.addId("mbid", artistNode.path("id").asText());
+                    }
+                }
+            } else {
+                logger.debug("album missing artists: " + response.toString());
+            }
+            JsonNode discNodes = response.path("media");
+            if (!discNodes.isMissingNode()) {
+                if (discNodes.isArray()) {
+                    for (JsonNode discNode : discNodes) {
+                        if (discNode.isArray()) {
+                            for (JsonNode songNode : discNode) {
+                                Song song = this.getSong(songNode.path("id").asText());
+                                if (song != null) {
+                                    album.addSong(song);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Album missing songs: " + response.toString());
+            }
+            return album;
+        }
+        logger.debug("Unable to find album with mbid: " + mbid + " in library");
+        return null;
+    }
+
     public Song getSong(String songName, String artistName) {
+        String mbid = this.searchSong(songName, artistName);
+        if (mbid == null) {
+            return null;
+        }
+        return this.getSong(mbid);
+    }
+
+    public String searchSong(String songName, String artistName) {
         if (songName == null) {
             logger.debug("Empty songName passed in getSong");
             return null;
         }
-        // TODO: filter out extra stuff in brackets, after dash
         StringBuilder builder = new StringBuilder();
         builder.append('"').append(songName).append('"');
         if (artistName != null) {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
-        builder.append("primarytype:").append('"').append("Single").append('"');
-        JsonNode response = query("release", builder.toString());
+        JsonNode response = query("recording", builder.toString());
         if (response != null) {
-            JsonNode trackNode = response.path("releases").get(0);
+            JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null && !trackNode.isMissingNode()) {
-                Song song = new Song(trackNode.path("title").asText());
-                JsonNode artistNode = trackNode.path("artist-credit").get(0).path("artist");
-                if (artistNode != null && !artistNode.isMissingNode()) {
-                    Artist artist = new Artist(artistNode.path("name").asText());
-                    artist.addId("mbid", artistNode.path("id").asText());
-                    song.setArtist(artist);
-                } else {
-                    logger.debug("song missing artist: " + trackNode.toString());
-                }
-                song.setDuration((long) trackNode.path("length").asInt(), ChronoUnit.MILLIS);
-                song.addId("mbid", trackNode.path("id").asText());
-                // TODO: song cover image
-                return song;
+                return trackNode.path("id").asText();
             } else {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
         logger.debug("Could not find song '" + songName + "' in library");
+        return null;
+    }
+
+    public Song getSong(String mbid) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(mbid);
+        // get all songs, artists and external urls
+        builder.append("?inc=").append('+').append("artists").append('+').append("url-rels");
+        JsonNode response = this.directQuery("recording", builder.toString());
+        if (response != null) {
+            Song song = new Song(response.path("title").asText());
+            song.addId("mbid", response.path("id").asText());
+            JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
+            if (artistNode != null && !artistNode.isMissingNode()) {
+                Artist artist = new Artist(artistNode.path("name").asText());
+                artist.addId("mbid", artistNode.path("id").asText());
+                song.setArtist(artist);
+            } else {
+                logger.debug("Song missing artists: " + response.toString());
+            }
+            return song;
+            // TODO: get external links (spotify & youtube)
+        }
+        logger.debug("Could not find song with mbid " + mbid + " in library");
         return null;
     }
 
@@ -191,9 +240,6 @@ public class Library {
         logger.debug("could not find '" + artistName + "' in library");
         return null;
     }
-
-    // TODO: get external links:
-    // ?inc=
 
     private void timeoutManager() {
         long currentTime = System.currentTimeMillis();
@@ -243,6 +289,57 @@ public class Library {
             urlBuilder.append("?query=").append(URLEncoder.encode(query, "UTF-8"));
             urlBuilder.append("&fmt=").append("json");
             urlBuilder.append("&limit").append("1");
+            URI url = new URI(urlBuilder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            JsonNode rootNode = objectMapper.readTree(response.toString());
+
+            if (rootNode.path("status").asText().equals("error")) {
+                logger.error("unexpected query response (" + rootNode.path("code").asInt() + "): " + rootNode
+                        .path("message").asText());
+                return null;
+            }
+            responses.put(query, response.toString());
+            return rootNode;
+        } catch (Exception e) {
+            logger.error("Error querying API: " + e);
+            return null;
+        }
+    }
+
+    private JsonNode directQuery(String type, String query) {
+        if (type == null || type.isEmpty()) {
+            logger.error("null or empty type provided in directquery");
+            return null;
+        }
+        if (query == null || query.isEmpty()) {
+            logger.error("null or empty query provided in directquery");
+            return null;
+        }
+        try {
+            if (responses.containsKey(query)) {
+                return objectMapper.readTree(responses.get(query));
+            }
+        } catch (Exception e) {
+            logger.error("Error with saved query data in library cache: " + e);
+            logger.info("If this persists, reset the cache folder");
+        }
+        timeoutManager();
+        try {
+            StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
+            urlBuilder.append(type);
+            // check docs for all possible parameters:
+            // https://musicbrainz.org/doc/MusicBrainz_API
+            urlBuilder.append("/").append(query);
+            urlBuilder.append("&fmt=").append("json");
             URI url = new URI(urlBuilder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
