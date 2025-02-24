@@ -175,7 +175,6 @@ public class MusicTools {
     }
 
     public static String sanitizeFileName(String fileName) {
-        // TODO: revise sanitizeFileName to not use urlencode
         if (fileName == null) {
             logger.debug("null filename passed in SanitizeFileName");
             return null;
@@ -194,7 +193,7 @@ public class MusicTools {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Exception encoding filename: " + e);
+            logger.error("problem encoding filename: " + e);
         }
         return sanitized;
     }
