@@ -322,7 +322,8 @@ public class Upload {
         if (settings.isUseLibrary()) {
             if (mbid != null) {
                 song = library.getSong(mbid);
-            } else {
+            }
+            if (song == null) {
                 song = library.getSong(songName, artistName);
             }
         }
