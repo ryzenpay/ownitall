@@ -291,6 +291,7 @@ public class CollectionMenu {
             if (Input.request().getAgreement()) {
                 logger.info("Clearing inventory...");
                 collection.clear();
+                Sync.load().clearInventory();
                 logger.info("Successfully cleared inventory");
             }
         } catch (InterruptedException e) {

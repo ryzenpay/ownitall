@@ -171,6 +171,16 @@ public class Sync {
         }
     }
 
+    public void clearInventory() {
+        this.setDataFolder();
+        for (File file : this.dataFolder.listFiles()) {
+            if (file.isFile()) {
+                file.delete();
+                logger.debug("Deleted file: " + file.getAbsolutePath());
+            }
+        }
+    }
+
     /**
      * import collection from files
      * orchestrates import albums, playlists and liked songs
