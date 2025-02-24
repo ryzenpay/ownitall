@@ -120,7 +120,9 @@ public class Library {
         if (response != null) {
             JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null && !albumNode.isMissingNode()) {
-                return albumNode.path("id").asText();
+                String mbid = albumNode.path("id").asText();
+                this.mbids.put(builder.toString(), mbid);
+                return mbid;
             } else {
                 logger.debug("missing data in album search result " + response.toString());
             }
@@ -184,6 +186,7 @@ public class Library {
             } else {
                 logger.debug("Album missing songs: " + response.toString());
             }
+            this.albums.put(mbid, album);
             return album;
         }
         logger.debug("Unable to find album with mbid: " + mbid + " in library");
@@ -216,7 +219,9 @@ public class Library {
         if (response != null) {
             JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null && !trackNode.isMissingNode()) {
-                return trackNode.path("id").asText();
+                String mbid = trackNode.path("id").asText();
+                this.mbids.put(builder.toString(), mbid);
+                return mbid;
             } else {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
@@ -251,6 +256,7 @@ public class Library {
                 logger.debug("Song missing artists: " + response.toString());
             }
             // TODO: song cover art
+            this.songs.put(mbid, song);
             return song;
             // TODO: get external links (spotify & youtube)
         }
