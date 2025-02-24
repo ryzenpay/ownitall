@@ -21,6 +21,7 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
+    // TODO: write compatability check (boolean)
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();
     private static Library instance;
@@ -115,8 +116,9 @@ public class Library {
         if (artistName != null) {
             tmpAlbum.addArtist(new Artist(artistName));
         }
-        if (this.albums.contains(tmpAlbum)) {
-            return this.getAlbum(tmpAlbum);
+        Album foundAlbum = this.getAlbum(tmpAlbum);
+        if (foundAlbum != null) {
+            return foundAlbum;
         }
         StringBuilder builder = new StringBuilder();
         builder.append("release:").append('"').append(albumName).append('"');
@@ -191,8 +193,9 @@ public class Library {
         if (artistName != null) {
             tmpSong.setArtist(new Artist(artistName));
         }
-        if (this.songs.contains(tmpSong)) {
-            return this.getSong(tmpSong);
+        Song foundSong = this.getSong(tmpSong);
+        if (foundSong != null) {
+            return foundSong;
         }
         // TODO: filter out extra stuff in brackets, after dash
         StringBuilder builder = new StringBuilder();
@@ -224,6 +227,8 @@ public class Library {
             }
         }
         // TODO: if cant find, try again with work?
+        // with compatability check, if false do work
+        // work
         logger.debug("Could not find song '" + songName + "' in library");
         return null;
     }
@@ -243,8 +248,9 @@ public class Library {
             return null;
         }
         Artist tmpArtist = new Artist(artistName);
-        if (this.artists.contains(tmpArtist)) {
-            return this.getArtist(tmpArtist);
+        Artist foundArtist = this.getArtist(tmpArtist);
+        if (foundArtist != null) {
+            return foundArtist;
         }
         StringBuilder builder = new StringBuilder();
         builder.append("artist:").append('"').append(artistName).append('"');

@@ -9,20 +9,17 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Download;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class DownloadMenu {
     private static final Logger logger = LogManager.getLogger(DownloadMenu.class);
     private static final Settings settings = Settings.load();
-    private static final Credentials credentials = Credentials.load();
     private static Collection collection = Collection.load();
     private Download download;
 

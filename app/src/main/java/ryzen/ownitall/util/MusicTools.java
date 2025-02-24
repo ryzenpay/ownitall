@@ -89,6 +89,8 @@ public class MusicTools {
     public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
             String albumName,
             File songFile) throws Exception {
+        // TODO: write musicbrainz id
+        // and then also fetch it in upload
         if (songFile == null) {
             logger.debug("null songFile provided in writeMetaData");
             return;
@@ -129,7 +131,6 @@ public class MusicTools {
                         "Exception writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
             }
         }
-
         if (liked) {
             // Set rating using POPM frame
             tag.setField(FieldKey.RATING, "255");
