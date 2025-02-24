@@ -145,8 +145,9 @@ public class Library {
             if (!discNodes.isMissingNode()) {
                 if (discNodes.isArray()) {
                     for (JsonNode discNode : discNodes) {
-                        if (discNode.isArray()) {
-                            for (JsonNode songNode : discNode) {
+                        JsonNode songNodes = discNode.path("tracks");
+                        if (songNodes.isArray()) {
+                            for (JsonNode songNode : songNodes) {
                                 Song song = this.getSong(songNode.path("id").asText());
                                 if (song != null) {
                                     album.addSong(song);
@@ -212,6 +213,7 @@ public class Library {
             } else {
                 logger.debug("Song missing artists: " + response.toString());
             }
+            // TODO: song cover art
             return song;
             // TODO: get external links (spotify & youtube)
         }
@@ -296,7 +298,6 @@ public class Library {
             logger.error("null or empty query provided in directquery");
             return null;
         }
-        timeoutManager();
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append(type);
@@ -317,6 +318,7 @@ public class Library {
             logger.debug("null url provided to query");
             return null;
         }
+        // TODO: optimize caching, 100mb is wild
         try {
             if (responses.containsKey(url.toASCIIString())) {
                 return objectMapper.readTree(responses.get(url.toASCIIString()));
