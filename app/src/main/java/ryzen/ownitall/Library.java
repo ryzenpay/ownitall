@@ -30,7 +30,10 @@ public class Library {
     /**
      * arrays to save api queries if they already exist
      */
-    private LinkedHashMap<String, String> responses;
+    private LinkedHashMap<String, Artist> artists;
+    private LinkedHashMap<String, Album> albums;
+    private LinkedHashMap<String, Song> songs;
+    private LinkedHashMap<String, String> mbids;
 
     /**
      * instance call method
@@ -64,21 +67,30 @@ public class Library {
      */
     public Library() {
         this.objectMapper = new ObjectMapper();
-        this.responses = sync.cacheLibrary(new LinkedHashMap<>());
+        this.artists = sync.cacheArtists(new LinkedHashMap<>());
+        this.albums = sync.cacheAlbums(new LinkedHashMap<>());
+        this.songs = sync.cacheSongs(new LinkedHashMap<>());
+        this.mbids = sync.cacheMbids(new LinkedHashMap<>());
     }
 
     /**
      * dump all data into cache
      */
     public void save() {
-        sync.cacheLibrary(responses);
+        sync.cacheArtists(this.artists);
+        sync.cacheAlbums(this.albums);
+        sync.cacheSongs(this.songs);
+        sync.cacheMbids(this.mbids);
     }
 
     /**
      * clear in memory cache
      */
     public void clear() {
-        this.responses.clear();
+        this.artists.clear();
+        this.albums.clear();
+        this.songs.clear();
+        this.mbids.clear();
     }
 
     public Album getAlbum(String albumName, String artistName) {
@@ -100,6 +112,10 @@ public class Library {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
         builder.append("primarytype:").append('"').append("Album").append('"');
+        String foundMbid = this.mbids.get(builder.toString());
+        if (foundMbid != null) {
+            return foundMbid;
+        }
         JsonNode response = this.searchQuery("release", builder.toString());
         if (response != null) {
             JsonNode albumNode = response.path("releases").get(0);
@@ -114,10 +130,19 @@ public class Library {
     }
 
     public Album getAlbum(String mbid) {
+        if (mbid == null || mbid.isEmpty()) {
+            logger.debug("null or empty mbid provided in getAlbum");
+            return null;
+        }
+        Album foundAlbum = this.albums.get(mbid);
+        if (foundAlbum != null) {
+            return foundAlbum;
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(mbid);
         // get all songs, artists and external urls
         builder.append("?inc=").append("recordings").append('+').append("artists");
+        // check cache
         JsonNode response = this.directQuery("release", builder.toString());
         if (response != null) {
             Album album = new Album(response.path("title").asText());
@@ -183,6 +208,10 @@ public class Library {
         if (artistName != null) {
             builder.append("artistname:").append('"').append(artistName).append('"');
         }
+        String foundMbid = this.mbids.get(builder.toString());
+        if (foundMbid != null) {
+            return foundMbid;
+        }
         JsonNode response = this.searchQuery("recording", builder.toString());
         if (response != null) {
             JsonNode trackNode = response.path("recordings").get(0);
@@ -197,6 +226,14 @@ public class Library {
     }
 
     public Song getSong(String mbid) {
+        if (mbid == null || mbid.isEmpty()) {
+            logger.debug("null or empty mbid provided in getSong");
+            return null;
+        }
+        Song foundSong = this.songs.get(mbid);
+        if (foundSong != null) {
+            return foundSong;
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(mbid);
         // get all songs, artists and external urls
@@ -318,15 +355,6 @@ public class Library {
             logger.debug("null url provided to query");
             return null;
         }
-        // TODO: optimize caching, 100mb is wild
-        try {
-            if (responses.containsKey(url.toASCIIString())) {
-                return objectMapper.readTree(responses.get(url.toASCIIString()));
-            }
-        } catch (Exception e) {
-            logger.error("Error with saved query data in library cache: " + e);
-            logger.info("If this persists, reset the cache folder");
-        }
         timeoutManager();
         try {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
@@ -346,7 +374,6 @@ public class Library {
                         .path("message").asText());
                 return null;
             }
-            responses.put(url.toASCIIString(), response.toString());
             return rootNode;
         } catch (Exception e) {
             logger.error("Error querying API: " + e);

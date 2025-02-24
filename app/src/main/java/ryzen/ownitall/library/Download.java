@@ -283,7 +283,7 @@ public class Download {
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
             songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(this.downloadPath, settings.getLikedSongName());
+            likedSongsFolder = new File(this.downloadPath, settings.getLikedSongsName());
             likedSongsFolder.mkdirs();
         } else {
             songs = collection.getStandaloneLikedSongs();

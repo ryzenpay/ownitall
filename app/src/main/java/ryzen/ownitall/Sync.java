@@ -12,8 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
@@ -334,28 +336,103 @@ public class Sync {
         }
     }
 
-    public LinkedHashMap<String, String> cacheLibrary(LinkedHashMap<String, String> responses) {
+    public LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
         this.setCacheFolder();
-        File libraryFile = new File(this.cacheFolder, settings.cacheLibraryFile + ".json");
-        LinkedHashMap<String, String> cachedLibrary = new LinkedHashMap<>();
-        if (libraryFile.exists()) {
+        File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
+        LinkedHashMap<String, Album> cachedAlbums = new LinkedHashMap<>();
+        if (albumFile.exists()) {
             try {
-                cachedLibrary = this.objectMapper.readValue(libraryFile,
-                        new TypeReference<LinkedHashMap<String, String>>() {
+                cachedAlbums = this.objectMapper.readValue(albumFile,
+                        new TypeReference<LinkedHashMap<String, Album>>() {
                         });
-                logger.debug("loaded cached library from: " + libraryFile.getAbsolutePath());
+                logger.debug("loaded cached albums from: " + albumFile.getAbsolutePath());
             } catch (IOException e) {
-                logger.error("exception importing cached Library: " + e);
-                logger.info("If this persists, delete the file: " + libraryFile.getAbsolutePath());
+                logger.error("exception importing cached albums: " + e);
+                logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());
             }
         }
-        cachedLibrary.putAll(responses);
+        cachedAlbums.putAll(albums);
         try {
-            this.objectMapper.writeValue(libraryFile, cachedLibrary);
-            logger.debug("saved cached library to: " + libraryFile.getAbsolutePath());
+            this.objectMapper.writeValue(albumFile, cachedAlbums);
+            logger.debug("saved cached albums to: " + albumFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("exception exporting cached Library: " + e);
+            logger.error("exception exporting cached albums: " + e);
         }
-        return cachedLibrary;
+        return cachedAlbums;
+    }
+
+    public LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
+        this.setCacheFolder();
+        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
+        LinkedHashMap<String, Artist> cachedArtists = new LinkedHashMap<>();
+        if (artistFile.exists()) {
+            try {
+                cachedArtists = this.objectMapper.readValue(artistFile,
+                        new TypeReference<LinkedHashMap<String, Artist>>() {
+                        });
+                logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("exception importing cached artists: " + e);
+                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
+            }
+        }
+        cachedArtists.putAll(artists);
+        try {
+            this.objectMapper.writeValue(artistFile, cachedArtists);
+            logger.debug("saved cached artists to: " + artistFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("exception exporting cached artists: " + e);
+        }
+        return cachedArtists;
+    }
+
+    public LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
+        this.setCacheFolder();
+        File songFile = new File(this.cacheFolder, settings.songFile + ".json");
+        LinkedHashMap<String, Song> cachedSongs = new LinkedHashMap<>();
+        if (songFile.exists()) {
+            try {
+                cachedSongs = this.objectMapper.readValue(songFile,
+                        new TypeReference<LinkedHashMap<String, Song>>() {
+                        });
+                logger.debug("loaded cached songs from: " + songFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("exception importing cached songs: " + e);
+                logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
+            }
+        }
+        cachedSongs.putAll(songs);
+        try {
+            this.objectMapper.writeValue(songFile, cachedSongs);
+            logger.debug("saved cached songs to: " + songFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("exception exporting cached songs: " + e);
+        }
+        return cachedSongs;
+    }
+
+    public LinkedHashMap<String, String> cacheMbids(LinkedHashMap<String, String> mbids) {
+        this.setCacheFolder();
+        File idFile = new File(this.cacheFolder, "mbids.json");
+        LinkedHashMap<String, String> cachedMbids = new LinkedHashMap<>();
+        if (idFile.exists()) {
+            try {
+                cachedMbids = this.objectMapper.readValue(idFile,
+                        new TypeReference<LinkedHashMap<String, String>>() {
+                        });
+                logger.debug("loaded cached mbids from: " + idFile.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("exception importing cached mbids: " + e);
+                logger.info("If this persists, delete the file: " + idFile.getAbsolutePath());
+            }
+        }
+        cachedMbids.putAll(mbids);
+        try {
+            this.objectMapper.writeValue(idFile, cachedMbids);
+            logger.debug("saved cached mbids to: " + idFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("exception exporting cached mbids: " + e);
+        }
+        return cachedMbids;
     }
 }

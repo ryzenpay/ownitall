@@ -114,7 +114,7 @@ public class Upload {
                         collection.addLikedSong(song);
                     }
                 }
-                if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+                if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
                     // automatically adds them to liked
                     getSongs(file);
                 }
@@ -129,7 +129,7 @@ public class Upload {
         ArrayList<File> libraryFolders = this.getLibraryFolders();
         // get all albums
         for (File file : libraryFolders) {
-            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
                 if (isAlbum(file)) {
                     Album album = getAlbum(file);
                     if (album != null) {
@@ -140,7 +140,7 @@ public class Upload {
         }
         if (settings.isDownloadHierachy()) {
             for (File file : libraryFolders) {
-                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongName())) {
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
                     if (!isAlbum(file)) {
                         Playlist playlist = getPlaylist(file);
                         if (playlist != null) {

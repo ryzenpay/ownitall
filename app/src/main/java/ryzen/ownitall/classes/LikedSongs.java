@@ -5,15 +5,18 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ryzen.ownitall.Settings;
+
 //a playlist for just liked songs (as they might not be in playlists)
 public class LikedSongs extends Playlist {
     private static final Logger logger = LogManager.getLogger(LikedSongs.class);
+    private static final String name = Settings.load().getLikedSongsName();
 
     /**
      * LikedSongs construcor with no songs
      */
     public LikedSongs() {
-        super("Liked Songs");
+        super(name);
     }
 
     /**

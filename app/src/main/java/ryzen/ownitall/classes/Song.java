@@ -272,7 +272,6 @@ public class Song {
                 return true;
             }
         }
-        // also checks artists as they have their own "equals" and compare
         if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
             return true;
         }

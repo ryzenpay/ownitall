@@ -154,7 +154,7 @@ public class DownloadMenu {
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
             songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongName());
+            likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongsName());
         } else {
             songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(download.getDownloadPath());
