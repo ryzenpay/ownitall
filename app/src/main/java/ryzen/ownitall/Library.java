@@ -88,13 +88,14 @@ public class Library {
             return null;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("release:").append('"').append(albumName).append('"');
+        builder.append('"').append(albumName).append('"');
         if (artistName != null) {
-            builder.append("AND").append("artistname:").append('"').append(artistName).append('"');
+            builder.append("artistname:").append('"').append(artistName).append('"');
         }
+        builder.append("primarytype:").append('"').append("Album").append('"');
         JsonNode response = query("release", builder.toString());
         if (response != null) {
-            JsonNode albumNode = response.path("releases").get(0);
+            JsonNode albumNode = response.path("release-groups").get(0);
             if (albumNode != null && !albumNode.isMissingNode()) {
                 Album album = new Album(albumNode.path("title").asText());
                 album.addId("mbid", albumNode.path("id").asText());
@@ -108,7 +109,7 @@ public class Library {
                                 artist.addId("mbid", artistNode.path("id").asText());
                                 album.addArtist(artist);
                             } else {
-                                logger.debug("artist missing info: " + artistNode.toString());
+                                logger.debug("album artist missing info: " + artistNode.toString());
                             }
                         }
                     }
@@ -116,7 +117,6 @@ public class Library {
                     logger.debug("album missing artists: " + albumNode.toString());
                 }
                 // TODO: get album cover image
-                // TODO: get album tracks
                 return album;
             } else {
                 logger.debug("missing data in album search result " + response.toString());
@@ -143,11 +143,12 @@ public class Library {
         StringBuilder builder = new StringBuilder();
         builder.append('"').append(songName).append('"');
         if (artistName != null) {
-            builder.append("AND").append("artistname:").append('"').append(artistName).append('"');
+            builder.append("artistname:").append('"').append(artistName).append('"');
         }
-        JsonNode response = query("recording", builder.toString());
+        builder.append("primarytype:").append('"').append("Single").append('"');
+        JsonNode response = query("release", builder.toString());
         if (response != null) {
-            JsonNode trackNode = response.path("recordings").get(0);
+            JsonNode trackNode = response.path("releases").get(0);
             if (trackNode != null && !trackNode.isMissingNode()) {
                 Song song = new Song(trackNode.path("title").asText());
                 JsonNode artistNode = trackNode.path("artist-credit").get(0).path("artist");
@@ -166,9 +167,6 @@ public class Library {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
-        // TODO: if cant find, try again with work?
-        // with compatability check, if false do work
-        // work
         logger.debug("Could not find song '" + songName + "' in library");
         return null;
     }
