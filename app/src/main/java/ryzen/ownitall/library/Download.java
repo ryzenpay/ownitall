@@ -268,7 +268,7 @@ public class Download {
         }
         try {
             MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                    collection.isLiked(song), albumName, songFile);
+                    collection.isLiked(song), albumName, song.getId("mbid"), songFile);
         } catch (Exception e) {
             logger.error("writing song metadata for " + song.toString() + ": " + e);
         }

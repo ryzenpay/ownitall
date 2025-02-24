@@ -295,6 +295,7 @@ public class Upload {
         String songName = file.getName().substring(0, file.getName().lastIndexOf('.'));
         String artistName = null;
         String coverImage = null;
+        String mbid = null;
         long duration = 0L;
         try {
             AudioFile audioFile = AudioFileIO.read(file);
@@ -310,13 +311,20 @@ public class Upload {
                 if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
                     coverImage = tag.getFirst(FieldKey.COVER_ART);
                 }
+                if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
+                    mbid = tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID);
+                }
             }
             duration = audioHeader.getTrackLength();
         } catch (Exception e) {
             logger.error("Exception parsing metadata for file: " + file.getAbsolutePath() + " : ");
         }
         if (settings.isUseLibrary()) {
-            song = library.getSong(songName, artistName);
+            if (mbid != null) {
+                song = library.getSong(mbid);
+            } else {
+                song = library.getSong(songName, artistName);
+            }
         }
         if (song == null && !settings.isLibraryVerified()) {
             song = new Song(songName);
@@ -325,6 +333,9 @@ public class Upload {
             }
             if (coverImage != null) {
                 song.setCoverImage(coverImage);
+            }
+            if (mbid != null) {
+                song.addId("mbid", mbid);
             }
         }
         if (song != null) {

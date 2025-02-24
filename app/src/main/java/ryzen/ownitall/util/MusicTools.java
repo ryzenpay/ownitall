@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -88,10 +87,7 @@ public class MusicTools {
     }
 
     public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
-            String albumName,
-            File songFile) throws Exception {
-        // TODO: write musicbrainz id
-        // and then also fetch it in upload
+            String albumName, String mbid, File songFile) throws Exception {
         if (songFile == null) {
             logger.debug("null songFile provided in writeMetaData");
             return;
@@ -156,6 +152,9 @@ public class MusicTools {
         }
         if (albumName != null) {
             tag.setField(FieldKey.ALBUM, albumName);
+        }
+        if (mbid != null) {
+            tag.setField(FieldKey.MUSICBRAINZ_RELEASEID, mbid);
         }
         audioFile.commit();
         AudioFileIO.write(audioFile);
