@@ -265,7 +265,7 @@ public class Spotify {
         int limit = settings.getSpotifySongLimit();
         int offset = collection.getLikedSongs().getSpotifyPageOffset();
         boolean hasMore = true;
-        ProgressBar pb = Progressbar.progressBar("Spotify Liked", 1);
+        ProgressBar pb = Progressbar.progressBar("Spotify Liked", -1);
         while (hasMore) {
             GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
                     .limit(settings.getSpotifySongLimit())
@@ -292,7 +292,7 @@ public class Spotify {
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
                             collection.addLikedSong(song);
-                            pb.setExtraMessage(song.getName());
+                            pb.step().setExtraMessage(song.getName());
                         }
                     }
                     offset += limit;
@@ -320,7 +320,7 @@ public class Spotify {
         int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
-        ProgressBar pb = Progressbar.progressBar("Spotify Albums", 1);
+        ProgressBar pb = Progressbar.progressBar("Spotify Albums", -1);
         while (hasMore) {
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
@@ -339,7 +339,7 @@ public class Spotify {
                                 savedAlbum.getAlbum().getArtists()[0].getName());
                         if (album != null) {
                             collection.addAlbum(album);
-                            pb.setExtraMessage(album.getName());
+                            pb.step().setExtraMessage(album.getName());
                         }
                     }
                     offset += limit;
@@ -455,7 +455,7 @@ public class Spotify {
         int limit = settings.getSpotifyPlaylistLimit();
         int offset = 0;
         boolean hasMore = true;
-        ProgressBar pb = Progressbar.progressBar("Spotify Playlists", 1);
+        ProgressBar pb = Progressbar.progressBar("Spotify Playlists", -1);
 
         while (hasMore) {
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
@@ -482,7 +482,7 @@ public class Spotify {
                                 spotifyPlaylist.getName(), coverImageUrl);
                         if (playlist != null) {
                             collection.addPlaylist(playlist);
-                            pb.setExtraMessage(playlist.getName());
+                            pb.step().setExtraMessage(playlist.getName());
                         }
                     }
                     offset += limit;
