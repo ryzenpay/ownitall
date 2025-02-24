@@ -73,7 +73,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected double similarityPercentage = 90.0;
 
     /**
-     * if to use lastFM to fact check all data
+     * if to use library to fact check all data
      * 
      */
     protected boolean useLibrary = true;
