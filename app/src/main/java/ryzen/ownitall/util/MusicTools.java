@@ -184,8 +184,8 @@ public class MusicTools {
         String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
         sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
         sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
-        sanitized = sanitized.replaceAll("^\\.*|[^a-zA-Z]$", ""); // Remove starting and trailing non alphabetical
-                                                                  // characters
+        sanitized = sanitized.replaceAll("^([^a-zA-Z0-9]+)|([^a-zA-Z0-9]+)$", ""); // Remove starting and trailing non
+                                                                                   // alphabetical characters
         sanitized = sanitized.trim(); // remove any trailing spaces
         // Limit length to 255 characters
         if (sanitized.length() > 255) {

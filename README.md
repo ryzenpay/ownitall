@@ -14,6 +14,11 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
+## Library  
+the library uses musicbrainz and coverart archive to get the best music and coverart for your tracks.  
+due to current API limitations, this does increase the time per song to 3 seconds (1s for song, 1s for artist, 1s for coverart)  
+but this uses caching, so over time as you continue to import your music library this will speed up and decrease the time per son logarithmic  
+
 ## YoutubeDL  
 download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp 
 save the absolute executable path and provide it when needed  

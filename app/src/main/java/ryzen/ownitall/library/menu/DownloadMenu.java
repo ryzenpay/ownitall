@@ -99,7 +99,7 @@ public class DownloadMenu {
                 break;
             }
         }
-        logger.info("Done donwloading album");
+        logger.info("Done downloading album");
     }
 
     private void optionDownloadLikedSongs() {
