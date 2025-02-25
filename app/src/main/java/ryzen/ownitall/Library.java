@@ -410,7 +410,7 @@ public class Library {
         }
         try {
             StringBuilder urlBuilder = new StringBuilder(this.coverArtUrl);
-            urlBuilder.append(mbid).append("/");
+            urlBuilder.append(mbid).append("release").append('/');
             URI url = new URI(urlBuilder.toString());
             JsonNode rootNode = this.query(url);
             if (rootNode != null) {
