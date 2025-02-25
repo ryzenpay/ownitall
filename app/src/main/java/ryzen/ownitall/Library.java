@@ -348,25 +348,24 @@ public class Library {
             logger.debug("null or empty mbid provided in getCoverArt");
             return null;
         }
-        JsonNode response = this.coverArtQuery(mbid);
-        if (response != null) {
-            JsonNode imageNodes = response.path("images");
-            if (imageNodes.isArray()) {
-                for (JsonNode imageNode : imageNodes) {
-                    if (imageNode.path("front").asBoolean()) {
-                        String imagePath = imageNode.path("image").asText();
-                        try {
-                            return new URI(imagePath);
-                        } catch (URISyntaxException e) {
-                            logger.debug("Problem parsing image: " + imagePath);
-                        }
-                    }
-                }
-            } else {
-                logger.debug("Cover Art missing images: " + response.toString());
+        StringBuilder urlBuilder = new StringBuilder(this.coverArtUrl);
+        urlBuilder.append("release").append('/');
+        urlBuilder.append(mbid).append('/');
+        urlBuilder.append("front");
+        try {
+            URI url = new URI(urlBuilder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.connect();
+            String redirectUrl = connection.getHeaderField("Location");
+            connection.disconnect();
+            if (redirectUrl != null) {
+                return new URI(redirectUrl);
             }
+        } catch (Exception e) {
+            logger.debug("Exception while getting coverArt: " + e);
         }
-        logger.debug("No Coverart found for mbid: " + mbid);
+        logger.debug("No coverart found for: " + mbid);
         return null;
     }
 
@@ -403,26 +402,6 @@ public class Library {
         return builder.toString();
     }
 
-    private JsonNode coverArtQuery(String mbid) {
-        if (mbid == null || mbid.isEmpty()) {
-            logger.debug("null or empty mbid provided in coverArtQuery");
-            return null;
-        }
-        try {
-            StringBuilder urlBuilder = new StringBuilder(this.coverArtUrl);
-            urlBuilder.append("release").append("/");
-            urlBuilder.append(mbid).append('/');
-            URI url = new URI(urlBuilder.toString());
-            JsonNode rootNode = this.query(url);
-            if (rootNode != null) {
-                return rootNode;
-            }
-        } catch (Exception e) {
-            logger.error("Error querying CoverArtArchive: " + e);
-        }
-        return null;
-    }
-
     private JsonNode musicBeeQuery(String type, String query) {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in musicBeeQuery");
@@ -453,7 +432,6 @@ public class Library {
             logger.debug("null url provided to query");
             return null;
         }
-        timeoutManager();
         try {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
