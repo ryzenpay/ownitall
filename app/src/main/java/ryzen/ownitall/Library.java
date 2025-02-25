@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -161,8 +162,10 @@ public class Library {
                 if (artistNodes.isArray()) {
                     for (JsonNode rootArtistNode : artistNodes) {
                         JsonNode artistNode = rootArtistNode.path("artist");
-                        Artist artist = new Artist(artistNode.path("name").asText());
-                        artist.addId("mbid", artistNode.path("id").asText());
+                        Artist artist = this.getArtistDirect(artistNode.path("id").asText());
+                        if (artist != null) {
+                            album.addArtist(artist);
+                        }
                     }
                 }
             } else {
@@ -246,12 +249,14 @@ public class Library {
         JsonNode response = this.directQuery("recording", builder.toString());
         if (response != null) {
             Song song = new Song(response.path("title").asText());
+            song.setDuration(response.path("length").asLong(), ChronoUnit.MILLIS);
             song.addId("mbid", response.path("id").asText());
             JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
             if (artistNode != null && !artistNode.isMissingNode()) {
-                Artist artist = new Artist(artistNode.path("name").asText());
-                artist.addId("mbid", artistNode.path("id").asText());
-                song.setArtist(artist);
+                Artist artist = this.getArtistDirect(artistNode.path("id").asText());
+                if (artist != null) {
+                    song.setArtist(artist);
+                }
             } else {
                 logger.debug("Song missing artists: " + response.toString());
             }
@@ -265,23 +270,57 @@ public class Library {
     }
 
     public Artist getArtist(String artistName) {
+        String mbid = this.searchArtist(artistName);
+        if (mbid == null) {
+            return null;
+        }
+        return this.getArtistDirect(mbid);
+    }
+
+    public String searchArtist(String artistName) {
         if (artistName == null) {
             logger.debug("Empty artistName passed in getArtist");
             return null;
         }
         StringBuilder builder = new StringBuilder();
         builder.append("artist:").append('"').append(artistName).append('"');
+        String foundMbid = this.mbids.get(builder.toString());
+        if (foundMbid != null) {
+            return foundMbid;
+        }
         JsonNode response = this.searchQuery("artist", builder.toString());
         if (response != null) {
             JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null && !artistNode.isMissingNode()) {
-                Artist artist = new Artist(artistNode.path("name").asText());
-                artist.addId("mbid", artistNode.path("id").asText());
-                // TODO: artist cover image
-                return artist;
+                String mbid = artistNode.path("id").asText();
+                this.mbids.put(builder.toString(), mbid);
+                return mbid;
             }
         }
         logger.debug("could not find '" + artistName + "' in library");
+        return null;
+    }
+
+    public Artist getArtistDirect(String mbid) {
+        if (mbid == null || mbid.isEmpty()) {
+            logger.debug("null or empty mbid provided in getArtist");
+            return null;
+        }
+        Artist foundArtist = this.artists.get(mbid);
+        if (foundArtist != null) {
+            return foundArtist;
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(mbid);
+        JsonNode response = this.directQuery("artist", builder.toString());
+        if (response != null) {
+            Artist artist = new Artist(response.path("name").asText());
+            artist.addId("mbid", response.path("id").asText());
+            // TODO: artist cover image
+            this.artists.put(mbid, artist);
+            return artist;
+        }
+        logger.debug("Could not find song with mbid " + mbid + " in library");
         return null;
     }
 
