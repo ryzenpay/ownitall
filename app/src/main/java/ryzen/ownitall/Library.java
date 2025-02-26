@@ -24,6 +24,7 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
+    // TODO: allow interrupting (interrupted exception)
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();
     private static Library instance;
@@ -170,7 +171,7 @@ public class Library {
                     }
                 }
             } else {
-                logger.debug("Released song missing coverart: " + response.toString());
+                logger.debug("Album missing coverart: " + response.toString());
             }
             JsonNode artistNodes = response.path("artist-credit");
             if (artistNodes.isArray()) {
@@ -212,6 +213,7 @@ public class Library {
     public Song getSong(Song song) {
         String mbid = this.searchReleaseSong(song);
         if (mbid == null) {
+            logger.debug("release of song " + song.getName() + " not found, searching for recording");
             mbid = this.searchRecordingSong(song);
             if (mbid == null) {
                 logger.debug("Could not find song '" + song.getName() + "' in library");

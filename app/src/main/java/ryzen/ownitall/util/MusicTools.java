@@ -125,7 +125,8 @@ public class MusicTools {
                 }
             } catch (Exception e) {
                 logger.error(
-                        "Exception writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath());
+                        "Exception writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath()
+                                + ": " + e);
             }
         }
         if (liked) {
@@ -182,8 +183,8 @@ public class MusicTools {
         // Sanitize the name by removing invalid characters
         byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
         String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", ""); // Remove non-ASCII characters
-        sanitized = sanitized.replaceAll("[\\\\/<>|:]", ""); // Remove specific invalid characters
+        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", "#"); // Replace non-ASCII characters with #
+        sanitized = sanitized.replaceAll("[\\\\/<>|:*?\"']", "#"); // Replace specific invalid characters with #
         sanitized = sanitized.replaceAll("^([^a-zA-Z0-9]+)|([^a-zA-Z0-9]+)$", ""); // Remove starting and trailing non
                                                                                    // alphabetical characters
         sanitized = sanitized.trim(); // remove any trailing spaces
@@ -191,7 +192,8 @@ public class MusicTools {
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
         }
-        // Check if the sanitized name contains at least one alphabet character +/number
+        // Check if the sanitized name contains at least one alphabet character or
+        // number
         if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
             return null;
         }

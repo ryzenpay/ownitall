@@ -64,6 +64,8 @@ import java.net.URI;
 import java.awt.Desktop;
 
 public class Spotify {
+    // TODO: refresh token after 30 min, use library timeout manager as time
+    // context, look at git history for previous refresh function
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
