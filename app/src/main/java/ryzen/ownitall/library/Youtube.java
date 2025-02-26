@@ -123,17 +123,19 @@ public class Youtube {
                     if (snippet != null && contentDetails != null) {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
-                            Song song = null;
+                            Song song = new Song(snippet.getTitle());
+                            song.setArtist(new Artist(snippet.getChannelTitle()));
+                            song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
+                                    ChronoUnit.SECONDS);
                             if (settings.isUseLibrary()) {
-                                song = library.getSong(snippet.getTitle(), snippet.getChannelTitle());
-                            }
-                            if (song == null && !settings.isLibraryVerified()) {
-                                song = new Song(snippet.getTitle());
-                                song.setArtist(new Artist(snippet.getChannelTitle()));
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
+                                }
                             }
                             if (song != null) {
-                                song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
-                                        ChronoUnit.SECONDS);
                                 song.addId("youtube", video.getId());
                                 collection.addLikedSong(song);
                             }
@@ -228,17 +230,17 @@ public class Youtube {
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
-                        Song song = null;
-                        String artistName = this.getVideoChannel(videoId);
+                        Song song = new Song(snippet.getTitle());
+                        song.setArtist(new Artist(this.getVideoChannel(videoId)));
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(snippet.getTitle(), artistName);
-                        }
-                        if (song == null && !settings.isUseLibrary()) {
-                            song = new Song(snippet.getTitle());
-                            song.setArtist(new Artist(artistName));
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
+                            }
                         }
                         if (song != null) {
-                            song.setDuration(this.getDuration(videoId).getSeconds(), ChronoUnit.SECONDS);
                             song.addId("youtube", item.getContentDetails().getVideoId());
                             songs.add(song);
                         }
@@ -278,33 +280,6 @@ public class Youtube {
             logger.error("Exception checking if video is music: " + e);
         }
         return false;
-    }
-
-    /**
-     * get video duration
-     * 
-     * @param videoId - spotify video id
-     * @return - constructed Duration
-     */
-    private Duration getDuration(String videoId) {
-        if (videoId == null) {
-            logger.debug("null videoID provided in getDuration");
-            return Duration.ZERO;
-        }
-        try {
-            YouTube.Videos.List videoRequest = youtubeApi.videos()
-                    .list("contentDetails")
-                    .setId(videoId);
-
-            VideoListResponse videoResponse = videoRequest.execute();
-            if (!videoResponse.getItems().isEmpty()) {
-                Video video = videoResponse.getItems().get(0);
-                return Duration.parse(video.getContentDetails().getDuration());
-            }
-        } catch (IOException e) {
-            logger.error("Exception getting video duration: " + e);
-        }
-        return Duration.ZERO;
     }
 
     /**

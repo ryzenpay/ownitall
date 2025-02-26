@@ -59,9 +59,9 @@ public class CollectionMenu {
     }
 
     private void optionAddAlbum() {
-        Album album = null;
+        // TODO: import through mbid
         String albumName = null;
-        String albumArtistName = null;
+        String artistName = null;
         try {
             while (albumName == null || albumName.isEmpty()) {
                 System.out.print("*Enter Album Name: ");
@@ -73,21 +73,22 @@ public class CollectionMenu {
         }
         try {
             System.out.print("Enter Album Main Artist: ");
-            albumArtistName = Input.request().getString();
+            artistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting Album Artist Name");
         }
-        if (settings.useLibrary) {
-            album = library.getAlbum(albumName, albumArtistName);
+        Album album = new Album(albumName);
+        if (artistName != null) {
+            album.addArtist(new Artist(artistName));
         }
-        if (album == null && !settings.isLibraryVerified()) {
-            album = new Album(albumName);
-            if (albumArtistName != null && !albumArtistName.isEmpty()) {
-                album.addArtist(new Artist(albumArtistName));
+        if (settings.useLibrary) {
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                logger.info("Album was not found in library and `LibraryVerified` is set to true, not adding Album");
+                return;
             }
-        } else if (album == null) {
-            logger.info("Album was not found in library and `LibraryVerified` is set to true, not adding Album");
-            return;
         }
         collection.addAlbum(album);
         logger.info("Successfully added album " + album.toString() + " to collection");
@@ -134,7 +135,6 @@ public class CollectionMenu {
     private Song interactiveCreateSong() {
         String songName = null;
         String artistName = null;
-        Song song = null;
         try {
             while (songName == null || songName.isEmpty()) {
                 System.out.print("*Enter Song Name (without artists): ");
@@ -150,17 +150,18 @@ public class CollectionMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting song's artist");
         }
-        if (settings.isUseLibrary()) {
-            song = library.getSong(songName, artistName);
+        Song song = new Song(songName);
+        if (artistName != null) {
+            song.setArtist(new Artist(artistName));
         }
-        if (song == null && !settings.isLibraryVerified()) {
-            song = new Song(songName);
-            if (artistName != null && !artistName.isEmpty()) {
-                song.setArtist(new Artist(artistName));
+        if (settings.isUseLibrary()) {
+            Song foundSong = library.getSong(song);
+            if (foundSong != null) {
+                song = foundSong;
+            } else if (settings.isLibraryVerified()) {
+                logger.info("Song was not found in library and `LibraryVerified` is set to true, not adding song");
+                return null;
             }
-        } else if (song == null) {
-            logger.info("Song was not found in library and `LibraryVerified` is set to true, not adding song");
-            return null;
         }
         return song;
     }
@@ -309,7 +310,7 @@ public class CollectionMenu {
         }
         logger.info("updating current collection with library...");
         for (Song song : collection.getLikedSongs().getSongs()) {
-            Song foundSong = library.getSong(song.getName(), song.getArtist().getName());
+            Song foundSong = library.getSong(song);
             if (foundSong != null) {
                 song.setName(foundSong.getName());
                 song.setArtist(foundSong.getArtist());
@@ -321,7 +322,7 @@ public class CollectionMenu {
         }
         for (Playlist playlist : collection.getPlaylists()) {
             for (Song song : playlist.getSongs()) {
-                Song foundSong = library.getSong(song.getName(), song.getArtist().getName());
+                Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song.setName(foundSong.getName());
                     song.setArtist(foundSong.getArtist());
@@ -333,7 +334,7 @@ public class CollectionMenu {
             }
         }
         for (Album album : collection.getAlbums()) {
-            Album foundAlbum = library.getAlbum(album.getName(), album.getMainArtist().getName());
+            Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album.setName(foundAlbum.getName());
                 album.addArtists(foundAlbum.getArtists());

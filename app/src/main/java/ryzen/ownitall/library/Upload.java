@@ -291,56 +291,36 @@ public class Upload {
             logger.debug("provided file is not in extensions:" + file.getAbsolutePath());
             return null;
         }
-        Song song = null;
-        String songName = file.getName().substring(0, file.getName().lastIndexOf('.'));
-        String artistName = null;
-        String coverImage = null;
-        String mbid = null;
-        long duration = 0L;
+        Song song = new Song(file.getName().substring(0, file.getName().lastIndexOf('.')));
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             AudioHeader audioHeader = audioFile.getAudioHeader();
             Tag tag = audioFile.getTag();
             if (tag != null) {
                 if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                    songName = tag.getFirst(FieldKey.TITLE);
+                    song.setName(tag.getFirst(FieldKey.TITLE));
                 }
                 if (!tag.getFirst(FieldKey.ARTIST).isEmpty()) {
-                    artistName = tag.getFirst(FieldKey.ARTIST);
+                    song.setArtist(new Artist(tag.getFirst(FieldKey.ARTIST)));
                 }
                 if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
-                    coverImage = tag.getFirst(FieldKey.COVER_ART);
+                    song.setCoverImage(tag.getFirst(FieldKey.COVER_ART));
                 }
                 if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
-                    mbid = tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID);
+                    song.addId("mbid", tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID));
                 }
             }
-            duration = audioHeader.getTrackLength();
+            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (Exception e) {
             logger.error("Exception parsing metadata for file: " + file.getAbsolutePath() + " : ");
         }
         if (settings.isUseLibrary()) {
-            if (mbid != null) {
-                song = library.getSong(mbid);
+            Song foundSong = library.getSong(song);
+            if (foundSong != null) {
+                song = foundSong;
+            } else if (settings.isLibraryVerified()) {
+                song = null;
             }
-            if (song == null) {
-                song = library.getSong(songName, artistName);
-            }
-        }
-        if (song == null && !settings.isLibraryVerified()) {
-            song = new Song(songName);
-            if (artistName != null) {
-                song.setArtist(new Artist(artistName));
-            }
-            if (coverImage != null) {
-                song.setCoverImage(coverImage);
-            }
-            if (mbid != null) {
-                song.addId("mbid", mbid);
-            }
-        }
-        if (song != null) {
-            song.setDuration(duration, ChronoUnit.SECONDS);
         }
         return song;
     }
@@ -448,13 +428,12 @@ public class Upload {
      * @return - constructed Album without songs
      */
     public static Album constructAlbum(File folder) {
+        // TODO: parse nfo file
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null folder or non existant or non directory folder provided in construct Album");
             return null;
         }
-        Album album = null;
-        String albumName = folder.getName();
-        String artistName = null;
+        Album album = new Album(folder.getName());
         File albumSongFile = null;
         for (File file : folder.listFiles()) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
@@ -467,23 +446,20 @@ public class Upload {
                 AudioFile audioFile = AudioFileIO.read(albumSongFile);
                 Tag tag = audioFile.getTag();
                 if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-                    albumName = tag.getFirst(FieldKey.ALBUM);
-                    artistName = tag.getFirst(FieldKey.ARTIST);
+                    album.setName(tag.getFirst(FieldKey.ALBUM));
+                    album.addArtist(new Artist(tag.getFirst(FieldKey.ARTIST)));
                 }
             } catch (Exception e) {
                 logger.error("Exception parsing album: " + e);
             }
         }
         if (settings.isUseLibrary()) {
-            album = library.getAlbum(albumName, artistName);
-        }
-        if (album == null && !settings.isLibraryVerified()) {
-            if (albumName != null) {
-                album = new Album(albumName);
-            } else {
-                album = new Album(folder.getName());
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                album = null;
             }
-            album.addArtist(new Artist(artistName));
         }
         return album;
     }

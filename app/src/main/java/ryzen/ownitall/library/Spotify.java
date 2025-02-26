@@ -280,24 +280,26 @@ public class Spotify {
                 } else {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
-                        Song song = null;
+                        Song song = new Song(track.getName());
+                        song.setArtist(new Artist(track.getArtists()[0].getName()));
+                        song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
-                        }
-                        if (song == null && !settings.isLibraryVerified()) {
-                            song = new Song(track.getName());
-                            song.setArtist(new Artist(track.getArtists()[0].getName()));
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
+                            }
                         }
                         if (song != null) {
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
                             collection.addLikedSong(song);
-                            pb.step().setExtraMessage(song.getName());
+                            pb.setExtraMessage(song.getName());
                         }
+                        pb.step();
                     }
                     offset += limit;
                 }
-
                 if (offset >= savedTrackPaging.getTotal()) {
                     hasMore = false;
                     collection.getLikedSongs().setSpotifyPageOffset(offset);
@@ -360,15 +362,19 @@ public class Spotify {
             logger.debug("Null albumID or AlbumName provided in getAlbum");
             return null;
         }
-        Album album = null;
-        if (settings.isUseLibrary()) {
-            album = library.getAlbum(albumName, artistName);
+        Album album = new Album(albumName);
+        if (artistName != null) {
+            album.addArtist(new Artist(artistName));
         }
-        if (album == null && !settings.isLibraryVerified()) {
-            album = new Album(albumName);
-            if (artistName != null) {
-                album.addArtist(new Artist(artistName));
+        if (settings.isUseLibrary()) {
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                album = null;
             }
+        }
+        if (album != null) {
             Album foundAlbum = collection.getAlbum(album);
             int offset = 0;
             if (foundAlbum != null) {
@@ -379,8 +385,6 @@ public class Spotify {
                 album.addSongs(songs);
                 album.setSpotifyPageOffset(songs.size());
             }
-        }
-        if (album != null) {
             album.addId("spotify", albumId);
         }
         return album;
@@ -407,25 +411,25 @@ public class Spotify {
                     .limit(settings.getSpotifySongLimit())
                     .offset(offset)
                     .build();
-
             try {
                 Paging<TrackSimplified> trackSimplifiedPaging = getAlbumsTracksRequest.execute();
                 TrackSimplified[] items = trackSimplifiedPaging.getItems();
-
                 if (items.length == 0) {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
-                        Song song = null;
+                        Song song = new Song(track.getName());
+                        song.setArtist(new Artist(track.getArtists()[0].getName()));
+                        song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(track.getName(), track.getArtists()[0].getName());
-                        }
-                        if (song == null && !settings.isLibraryVerified()) {
-                            song = new Song(track.getName());
-                            song.setArtist(new Artist(track.getArtists()[0].getName()));
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
+                            }
                         }
                         if (song != null) {
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
                             songs.add(song);
                         }
@@ -554,35 +558,31 @@ public class Spotify {
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
                         Song song = null;
-                        String trackName;
-                        String artistName;
-                        int duration;
                         String id;
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
-                            trackName = track.getName();
-                            artistName = track.getArtists()[0].getName();
-                            duration = track.getDurationMs();
+                            song = new Song(track.getName());
+                            song.setArtist(new Artist(track.getArtists()[0].getName()));
+                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             id = track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
-                            trackName = episode.getName();
-                            artistName = null;
-                            duration = episode.getDurationMs();
+                            song = new Song(episode.getName());
+                            song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
                             id = episode.getId();
                         } else {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
                             continue;
                         }
                         if (settings.isUseLibrary()) {
-                            song = library.getSong(trackName, artistName);
-                        }
-                        if (song == null && !settings.isLibraryVerified()) {
-                            song = new Song(trackName);
-                            song.setArtist(new Artist(artistName));
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
+                            }
                         }
                         if (song != null) {
-                            song.setDuration(duration, ChronoUnit.MILLIS);
                             song.addId("spotify", id);
                             songs.add(song);
                         }
