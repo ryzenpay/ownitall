@@ -251,6 +251,7 @@ public class Library {
         }
         JsonNode response = this.musicBeeQuery("release", this.searchQueryBuilder(params));
         if (response != null) {
+            // TODO: optimize this, it sometimes gets teh kinky version
             JsonNode songNode = response.path("releases").get(0);
             if (songNode != null) {
                 String mbid = songNode.path("id").asText();
