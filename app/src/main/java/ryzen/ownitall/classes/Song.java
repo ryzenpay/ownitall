@@ -240,11 +240,7 @@ public class Song {
      */
     @JsonIgnore
     public String getFileName() {
-        String fileName = MusicTools.sanitizeFileName(this.getName());
-        if (fileName == null || fileName.isEmpty()) {
-            fileName = String.valueOf(this.hashCode());
-        }
-        return fileName + "." + downloadFormat;
+        return MusicTools.sanitizeFileName(this.getName()) + "." + downloadFormat;
     }
 
     @Override

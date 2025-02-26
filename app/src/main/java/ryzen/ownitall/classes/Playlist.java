@@ -314,11 +314,7 @@ public class Playlist {
      */
     @JsonIgnore
     public String getFolderName() {
-        String fileName = MusicTools.sanitizeFileName(this.getName());
-        if (fileName == null || fileName.isEmpty()) {
-            fileName = String.valueOf(this.hashCode());
-        }
-        return fileName;
+        return MusicTools.sanitizeFileName(this.getName());
     }
 
     /**

@@ -180,14 +180,11 @@ public class MusicTools {
             logger.debug("null filename passed in SanitizeFileName");
             return null;
         }
-        // Sanitize the name by removing invalid characters
-        byte[] utf8Bytes = fileName.getBytes(StandardCharsets.UTF_8);
-        String sanitized = new String(utf8Bytes, StandardCharsets.UTF_8);
-        sanitized = sanitized.replaceAll("[^\\u0000-\\u007F]", "#"); // Replace non-ASCII characters with #
-        sanitized = sanitized.replaceAll("[\\\\/<>|:*?\"']", "#"); // Replace specific invalid characters with #
-        sanitized = sanitized.replaceAll("^([^a-zA-Z0-9]+)|([^a-zA-Z0-9]+)$", ""); // Remove starting and trailing non
-                                                                                   // alphabetical characters
-        sanitized = sanitized.trim(); // remove any trailing spaces
+
+        // Sanitize the name by replacing invalid characters with '#'
+        String sanitized = fileName.replaceAll("[^a-zA-Z0-9]", "#");
+        // Remove any trailing spaces
+        sanitized = sanitized.trim();
         // Limit length to 255 characters
         if (sanitized.length() > 255) {
             sanitized = sanitized.substring(0, 255);
@@ -195,8 +192,9 @@ public class MusicTools {
         // Check if the sanitized name contains at least one alphabet character or
         // number
         if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
-            return null;
+            return String.valueOf(fileName.hashCode());
         }
         return sanitized;
     }
+
 }
