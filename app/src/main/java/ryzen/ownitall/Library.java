@@ -24,8 +24,6 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
-    // TODO: optimize search, as it looks for ancient tracks
-    // https://wiki.musicbrainz.org/Main_Page
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();
     private static Library instance;
@@ -163,9 +161,16 @@ public class Library {
         if (response != null) {
             Album album = new Album(response.path("title").asText());
             album.addId("mbid", response.path("id").asText());
-            URI albumCover = this.getCoverArt(response.path("id").asText());
-            if (albumCover != null) {
-                album.setCoverImage(albumCover);
+            JsonNode coverArt = response.path("cover-art-archive");
+            if (!coverArt.isMissingNode()) {
+                if (coverArt.path("count").asInt() > 1) {
+                    URI albumCover = this.getCoverArt(response.path("id").asText());
+                    if (albumCover != null) {
+                        album.setCoverImage(albumCover);
+                    }
+                }
+            } else {
+                logger.debug("Released song missing coverart: " + response.toString());
             }
             JsonNode artistNodes = response.path("artist-credit");
             if (artistNodes.isArray()) {
@@ -312,9 +317,16 @@ public class Library {
         if (response != null) {
             Song song = new Song(response.path("title").asText());
             song.addId("mbid", response.path("id").asText());
-            URI songCover = this.getCoverArt(response.path("id").asText());
-            if (songCover != null) {
-                song.setCoverImage(songCover);
+            JsonNode coverArt = response.path("cover-art-archive");
+            if (!coverArt.isMissingNode()) {
+                if (coverArt.path("count").asInt() > 1) {
+                    URI songCover = this.getCoverArt(response.path("id").asText());
+                    if (songCover != null) {
+                        song.setCoverImage(songCover);
+                    }
+                }
+            } else {
+                logger.debug("Released song missing coverart: " + response.toString());
             }
             JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
             if (artistNode != null) {
@@ -354,7 +366,6 @@ public class Library {
         LinkedHashSet<String> inclusions = new LinkedHashSet<>();
         inclusions.add("artists");
         inclusions.add("url-rels");
-        inclusions.add("releases");
         JsonNode response = this.musicBeeQuery("recording", this.directQueryBuilder(mbid, inclusions));
         if (response != null) {
             Song song = new Song(response.path("title").asText());
@@ -368,13 +379,6 @@ public class Library {
                 }
             } else {
                 logger.debug("Song missing artists: " + response.toString());
-            }
-            JsonNode releaseNode = response.path("releases").get(0);
-            if (releaseNode != null) {
-                URI songCover = this.getCoverArt(releaseNode.path("id").asText());
-                if (songCover != null) {
-                    song.setCoverImage(songCover);
-                }
             }
             this.songs.put(mbid, song);
             return song;
