@@ -24,6 +24,7 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
+    // TODO: check how jellyfin does it
     // TODO: allow interrupting (interrupted exception)
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();
@@ -102,7 +103,6 @@ public class Library {
     public Album getAlbum(Album album) {
         String mbid = this.searchAlbum(album);
         if (mbid == null) {
-            logger.debug("Could not find Album " + album.getName() + " in Library");
             return null;
         }
         return this.getAlbum(mbid);
@@ -123,7 +123,7 @@ public class Library {
             if (artistMbid != null) {
                 params.put("arid", artistMbid);
             } else {
-                params.put("artistname", album.getMainArtist().getName());
+                params.put("artist", album.getMainArtist().getName());
             }
         }
         params.put("primarytype", "Album");
@@ -142,6 +142,7 @@ public class Library {
                 logger.debug("missing data in album search result " + response.toString());
             }
         }
+        logger.debug("Could not find Album " + album.getName() + " in Library");
         return null;
     }
 
@@ -177,7 +178,7 @@ public class Library {
             if (artistNodes.isArray()) {
                 for (JsonNode rootArtistNode : artistNodes) {
                     JsonNode artistNode = rootArtistNode.path("artist");
-                    Artist artist = this.getArtistDirect(artistNode.path("id").asText());
+                    Artist artist = this.getArtist(artistNode.path("id").asText());
                     if (artist != null) {
                         album.addArtist(artist);
                     }
@@ -191,7 +192,7 @@ public class Library {
                     JsonNode songNodes = discNode.path("tracks");
                     if (songNodes.isArray()) {
                         for (JsonNode songNode : songNodes) {
-                            Song song = this.getRecordingSong(songNode.path("recording").path("id").asText());
+                            Song song = this.getSong(songNode.path("recording").path("id").asText());
                             if (song != null) {
                                 album.addSong(song);
                             }
@@ -211,60 +212,14 @@ public class Library {
     }
 
     public Song getSong(Song song) {
-        String mbid = this.searchReleaseSong(song);
+        String mbid = this.searchSong(song);
         if (mbid == null) {
-            logger.debug("release of song " + song.getName() + " not found, searching for recording");
-            mbid = this.searchRecordingSong(song);
-            if (mbid == null) {
-                logger.debug("Could not find song '" + song.getName() + "' in library");
-                return null;
-            } else {
-                return this.getRecordingSong(mbid);
-            }
-        } else {
-            return this.getReleaseSong(mbid);
-        }
-    }
-
-    private String searchReleaseSong(Song song) {
-        if (song == null) {
-            logger.debug("Empty song passed in searchReleaseSong");
             return null;
         }
-        if (song.getId("mbid") != null) {
-            return song.getId("mbid");
-        }
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("release", song.getName());
-        if (song.getArtist().getName() != null) {
-            String artistMbid = this.searchArtist(song.getArtist());
-            if (artistMbid != null) {
-                params.put("arid", artistMbid);
-            } else {
-                params.put("artistname", song.getArtist().getName());
-            }
-        }
-        params.put("primarytype", "Single");
-        String foundMbid = this.mbids.get(params.toString());
-        if (foundMbid != null) {
-            return foundMbid;
-        }
-        JsonNode response = this.musicBeeQuery("release", this.searchQueryBuilder(params));
-        if (response != null) {
-            // TODO: optimize this, it sometimes gets teh kinky version
-            JsonNode songNode = response.path("releases").get(0);
-            if (songNode != null) {
-                String mbid = songNode.path("id").asText();
-                this.mbids.put(params.toString(), mbid);
-                return mbid;
-            } else {
-                logger.debug("missing data in song search result " + response.toString());
-            }
-        }
-        return null;
+        return this.getSong(mbid);
     }
 
-    private String searchRecordingSong(Song song) {
+    private String searchSong(Song song) {
         if (song == null) {
             logger.debug("Empty song passed in searchRecordingSong");
             return null;
@@ -274,17 +229,20 @@ public class Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
+        params.put("release", song.getName());
         if (song.getArtist().getName() != null) {
             String artistMbid = this.searchArtist(song.getArtist());
             if (artistMbid != null) {
                 params.put("arid", artistMbid);
             } else {
-                params.put("artistname", song.getArtist().getName());
+                params.put("artist", song.getArtist().getName());
             }
         }
         if (song.getDuration() != null) {
             params.put("dur", String.valueOf(song.getDuration().toMillis()));
         }
+        params.put("type", "Single");
+        params.put("video", "false");
         String foundMbid = this.mbids.get(params.toString());
         if (foundMbid != null) {
             return foundMbid;
@@ -300,64 +258,11 @@ public class Library {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
+        logger.debug("Could not find song '" + song.getName() + "' in library");
         return null;
     }
 
-    public Song getReleaseSong(String mbid) {
-        if (mbid == null || mbid.isEmpty()) {
-            logger.debug("null or empty mbid provided in getSong");
-            return null;
-        }
-        Song foundSong = this.songs.get(mbid);
-        if (foundSong != null) {
-            return foundSong;
-        }
-        LinkedHashSet<String> inclusions = new LinkedHashSet<>();
-        inclusions.add("artists");
-        inclusions.add("url-rels");
-        inclusions.add("recordings");
-        JsonNode response = this.musicBeeQuery("release", this.directQueryBuilder(mbid, inclusions));
-        if (response != null) {
-            Song song = new Song(response.path("title").asText());
-            song.addId("mbid", response.path("id").asText());
-            JsonNode coverArt = response.path("cover-art-archive");
-            if (!coverArt.isMissingNode()) {
-                if (coverArt.path("count").asInt() > 1) {
-                    URI songCover = this.getCoverArt(response.path("id").asText());
-                    if (songCover != null) {
-                        song.setCoverImage(songCover);
-                    }
-                }
-            } else {
-                logger.debug("Released song missing coverart: " + response.toString());
-            }
-            JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
-            if (artistNode != null) {
-                Artist artist = this.getArtistDirect(artistNode.path("id").asText());
-                if (artist != null) {
-                    song.setArtist(artist);
-                }
-            } else {
-                logger.debug("song missing artists: " + response.toString());
-            }
-            JsonNode mediaNode = response.path("media").get(0);
-            if (mediaNode != null) {
-                JsonNode trackNode = mediaNode.path("tracks").get(0);
-                if (trackNode != null) {
-                    song.addId("mbid", trackNode.path("recording").path("id").asText());
-                    song.setDuration(trackNode.path("length").asLong(), ChronoUnit.MILLIS);
-                }
-            } else {
-                logger.debug("Song missing recordings: " + response.toString());
-            }
-            this.songs.put(mbid, song);
-            return song;
-        }
-        logger.debug("Could not find release song with mbid " + mbid + " in library");
-        return null;
-    }
-
-    public Song getRecordingSong(String mbid) {
+    public Song getSong(String mbid) {
         if (mbid == null || mbid.isEmpty()) {
             logger.debug("null or empty mbid provided in getSong");
             return null;
@@ -376,7 +281,7 @@ public class Library {
             song.addId("mbid", response.path("id").asText());
             JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
             if (artistNode != null && !artistNode.isMissingNode()) {
-                Artist artist = this.getArtistDirect(artistNode.path("id").asText());
+                Artist artist = this.getArtist(artistNode.path("id").asText());
                 if (artist != null) {
                     song.setArtist(artist);
                 }
@@ -394,10 +299,9 @@ public class Library {
     public Artist getArtist(Artist artist) {
         String mbid = this.searchArtist(artist);
         if (mbid == null) {
-            logger.debug("could not find '" + artist.getName() + "' in library");
             return null;
         }
-        return this.getArtistDirect(mbid);
+        return this.getArtist(mbid);
     }
 
     public String searchArtist(Artist artist) {
@@ -423,10 +327,11 @@ public class Library {
                 return mbid;
             }
         }
+        logger.debug("could not find '" + artist.getName() + "' in library");
         return null;
     }
 
-    public Artist getArtistDirect(String mbid) {
+    public Artist getArtist(String mbid) {
         if (mbid == null || mbid.isEmpty()) {
             logger.debug("null or empty mbid provided in getArtist");
             return null;
