@@ -103,6 +103,7 @@ public class Library {
     public Album getAlbum(Album album) {
         String mbid = this.searchAlbum(album);
         if (mbid == null) {
+            logger.debug("Could not find Album " + album.getName() + " in Library");
             return null;
         }
         return this.getAlbum(mbid);
@@ -142,7 +143,6 @@ public class Library {
                 logger.debug("missing data in album search result " + response.toString());
             }
         }
-        logger.debug("Could not find Album " + album.getName() + " in Library");
         return null;
     }
 
@@ -185,7 +185,7 @@ public class Library {
                     JsonNode songNodes = discNode.path("tracks");
                     if (songNodes.isArray()) {
                         for (JsonNode songNode : songNodes) {
-                            Song song = this.getSong(songNode.path("recording").path("id").asText());
+                            Song song = this.getRecordingSong(songNode.path("recording").path("id").asText());
                             if (song != null) {
                                 album.addSong(song);
                             }
@@ -209,10 +209,14 @@ public class Library {
         if (mbid == null) {
             mbid = this.searchRecordingSong(song);
             if (mbid == null) {
+                logger.debug("Could not find song '" + song.getName() + "' in library");
                 return null;
+            } else {
+                return this.getRecordingSong(mbid);
             }
+        } else {
+            return this.getReleaseSong(mbid);
         }
-        return this.getSong(mbid);
     }
 
     private String searchReleaseSong(Song song) {
@@ -249,7 +253,6 @@ public class Library {
                 logger.debug("missing data in song search result " + response.toString());
             }
         }
-        logger.debug("Could not find Song " + song.getName() + " in Library");
         return null;
     }
 
@@ -289,11 +292,57 @@ public class Library {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
-        logger.debug("Could not find song '" + song.getName() + "' in library");
         return null;
     }
 
-    public Song getSong(String mbid) {
+    public Song getReleaseSong(String mbid) {
+        if (mbid == null || mbid.isEmpty()) {
+            logger.debug("null or empty mbid provided in getSong");
+            return null;
+        }
+        Song foundSong = this.songs.get(mbid);
+        if (foundSong != null) {
+            return foundSong;
+        }
+        LinkedHashSet<String> inclusions = new LinkedHashSet<>();
+        inclusions.add("artists");
+        inclusions.add("url-rels");
+        inclusions.add("recordings");
+        JsonNode response = this.musicBeeQuery("release", this.directQueryBuilder(mbid, inclusions));
+        if (response != null) {
+            Song song = new Song(response.path("title").asText());
+            song.addId("mbid", response.path("id").asText());
+            URI songCover = this.getCoverArt(response.path("id").asText());
+            if (songCover != null) {
+                song.setCoverImage(songCover);
+            }
+            JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
+            if (artistNode != null) {
+                Artist artist = this.getArtistDirect(artistNode.path("id").asText());
+                if (artist != null) {
+                    song.setArtist(artist);
+                }
+            } else {
+                logger.debug("song missing artists: " + response.toString());
+            }
+            JsonNode mediaNode = response.path("media").get(0);
+            if (mediaNode != null) {
+                JsonNode trackNode = mediaNode.path("tracks").get(0);
+                if (trackNode != null) {
+                    song.addId("mbid", trackNode.path("recording").path("id").asText());
+                    song.setDuration(trackNode.path("length").asLong(), ChronoUnit.MILLIS);
+                }
+            } else {
+                logger.debug("Song missing recordings: " + response.toString());
+            }
+            this.songs.put(mbid, song);
+            return song;
+        }
+        logger.debug("Could not find release song with mbid " + mbid + " in library");
+        return null;
+    }
+
+    public Song getRecordingSong(String mbid) {
         if (mbid == null || mbid.isEmpty()) {
             logger.debug("null or empty mbid provided in getSong");
             return null;
@@ -331,13 +380,14 @@ public class Library {
             return song;
             // TODO: get external links (spotify & youtube)
         }
-        logger.debug("Could not find song with mbid " + mbid + " in library");
+        logger.debug("Could not find recording song with mbid " + mbid + " in library");
         return null;
     }
 
     public Artist getArtist(Artist artist) {
         String mbid = this.searchArtist(artist);
         if (mbid == null) {
+            logger.debug("could not find '" + artist.getName() + "' in library");
             return null;
         }
         return this.getArtistDirect(mbid);
@@ -366,7 +416,6 @@ public class Library {
                 return mbid;
             }
         }
-        logger.debug("could not find '" + artist.getName() + "' in library");
         return null;
     }
 
