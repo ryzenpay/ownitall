@@ -109,15 +109,22 @@ public class Library {
     }
 
     private String searchAlbum(Album album) {
-        // TODO: first search by artist, get mbid and then search for album
         if (album == null) {
             logger.debug("Empty album passed in searchAlbum");
             return null;
         }
+        if (album.getId("mbid") != null) {
+            return album.getId("mbid");
+        }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("release", album.getName());
         if (album.getMainArtist() != null) {
-            params.put("artistname", album.getMainArtist().getName());
+            String artistMbid = this.searchArtist(album.getMainArtist());
+            if (artistMbid != null) {
+                params.put("arid", artistMbid);
+            } else {
+                params.put("artistname", album.getMainArtist().getName());
+            }
         }
         params.put("primarytype", "Album");
         String foundMbid = this.mbids.get(params.toString());
@@ -206,7 +213,7 @@ public class Library {
     }
 
     private String searchSong(Song song) {
-        // TODO: find artist mbid, search for release, search for recording
+        // TODO: search for release, search for recording
         if (song == null) {
             logger.debug("Empty song passed in searchSong");
             return null;
@@ -217,7 +224,12 @@ public class Library {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
         if (song.getArtist().getName() != null) {
-            params.put("artistname", song.getArtist().getName());
+            String artistMbid = this.searchArtist(song.getArtist());
+            if (artistMbid != null) {
+                params.put("arid", artistMbid);
+            } else {
+                params.put("artistname", song.getArtist().getName());
+            }
         }
         if (song.getDuration() != null) {
             params.put("dur", String.valueOf(song.getDuration().toMillis()));
@@ -295,6 +307,9 @@ public class Library {
         if (artist == null) {
             logger.debug("Empty artist passed in searchArtist");
             return null;
+        }
+        if (artist.getId("mbid") != null) {
+            return artist.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
