@@ -205,17 +205,57 @@ public class Library {
     }
 
     public Song getSong(Song song) {
-        String mbid = this.searchSong(song);
+        String mbid = this.searchReleaseSong(song);
         if (mbid == null) {
-            return null;
+            mbid = this.searchRecordingSong(song);
+            if (mbid == null) {
+                return null;
+            }
         }
         return this.getSong(mbid);
     }
 
-    private String searchSong(Song song) {
-        // TODO: search for release, search for recording
+    private String searchReleaseSong(Song song) {
         if (song == null) {
-            logger.debug("Empty song passed in searchSong");
+            logger.debug("Empty song passed in searchReleaseSong");
+            return null;
+        }
+        if (song.getId("mbid") != null) {
+            return song.getId("mbid");
+        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("release", song.getName());
+        if (song.getArtist().getName() != null) {
+            String artistMbid = this.searchArtist(song.getArtist());
+            if (artistMbid != null) {
+                params.put("arid", artistMbid);
+            } else {
+                params.put("artistname", song.getArtist().getName());
+            }
+        }
+        params.put("primarytype", "Single");
+        String foundMbid = this.mbids.get(params.toString());
+        if (foundMbid != null) {
+            return foundMbid;
+        }
+        JsonNode response = this.musicBeeQuery("release", this.searchQueryBuilder(params));
+        if (response != null) {
+            JsonNode songNode = response.path("releases").get(0);
+            if (songNode != null) {
+                String mbid = songNode.path("id").asText();
+                this.mbids.put(params.toString(), mbid);
+                return mbid;
+            } else {
+                logger.debug("missing data in song search result " + response.toString());
+            }
+        }
+        logger.debug("Could not find Song " + song.getName() + " in Library");
+        return null;
+    }
+
+    private String searchRecordingSong(Song song) {
+        if (song == null) {
+            logger.debug("Empty song passed in searchRecordingSong");
             return null;
         }
         if (song.getId("mbid") != null) {
