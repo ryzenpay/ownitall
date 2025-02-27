@@ -388,15 +388,17 @@ public class Spotify {
             }
         }
         if (album != null) {
-            Album foundAlbum = collection.getAlbum(album);
-            int offset = 0;
-            if (foundAlbum != null) {
-                offset = foundAlbum.getSpotifyPageOffset();
-            }
-            LinkedHashSet<Song> songs = this.getAlbumSongs(albumId, offset);
-            if (songs != null && !songs.isEmpty()) {
-                album.addSongs(songs);
-                album.setSpotifyPageOffset(songs.size());
+            if (album.getSongs().isEmpty()) {
+                Album foundAlbum = collection.getAlbum(album);
+                int offset = 0;
+                if (foundAlbum != null) {
+                    offset = foundAlbum.getSpotifyPageOffset();
+                }
+                LinkedHashSet<Song> songs = this.getAlbumSongs(albumId, offset);
+                if (songs != null && !songs.isEmpty()) {
+                    album.addSongs(songs);
+                    album.setSpotifyPageOffset(songs.size());
+                }
             }
             album.addId("spotify", albumId);
         }
@@ -411,10 +413,12 @@ public class Spotify {
      * @return - linkedhashset of songs
      */
     public LinkedHashSet<Song> getAlbumSongs(String albumId, int offset) {
+        // TODO: progressbar for getalbumsongs and getplaylistsongs
         if (albumId == null) {
             logger.debug("null albumID provided in getAlbumSongs");
             return null;
         }
+        ProgressBar pb = Progressbar.progressBar(albumId, -1);
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = settings.getSpotifyAlbumLimit();
         boolean hasMore = true;
@@ -431,6 +435,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
+                        pb.setExtraMessage(track.getName()).step();
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
@@ -465,6 +470,7 @@ public class Spotify {
                 hasMore = false;
             }
         }
+        pb.close();
         return songs;
     }
 
@@ -559,6 +565,7 @@ public class Spotify {
             logger.debug("null playlistID provided in getPlaylistSongs");
             return null;
         }
+        ProgressBar pb = Progressbar.progressBar(playlistId, -1);
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         int limit = settings.getSpotifySongLimit();
         boolean hasMore = true;
@@ -575,6 +582,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
+                        pb.setExtraMessage(playlistTrack.getTrack().getName()).step();
                         Song song = null;
                         String id;
                         if (playlistTrack.getTrack() instanceof Track) {
@@ -625,6 +633,7 @@ public class Spotify {
                 hasMore = false;
             }
         }
+        pb.step();
         return songs;
     }
 
