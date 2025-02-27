@@ -171,7 +171,7 @@ public class Upload {
             return null;
         }
         if (!MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
-            logger.debug("provided file " + file.getAbsolutePath() + "does not end with .m3u in processM3u");
+            logger.debug("provided file '" + file.getAbsolutePath() + "' does not end with .m3u in processM3u");
             return null;
         }
         String playlistName = null;
@@ -191,7 +191,7 @@ public class Upload {
                     if (coverFile.exists()) {
                         coverImage = coverFile.toURI();
                     } else {
-                        logger.debug("coverimage referenced in m3u " + file.getAbsolutePath() + " not found: "
+                        logger.debug("coverimage referenced in m3u '" + file.getAbsolutePath() + "' not found: "
                                 + coverFile.getAbsolutePath());
                     }
                 } else if (line.startsWith("#EXTINF:")) {
@@ -204,24 +204,25 @@ public class Upload {
                             songs.add(song);
                         }
                     } else {
-                        logger.debug("Song referenced in m3u " + file.getAbsoluteFile() + " not found: "
+                        logger.debug("Song referenced in m3u '" + file.getAbsoluteFile() + "' not found: "
                                 + songFile.getAbsolutePath());
                     }
                     currSongLine = null;
                 }
             }
         } catch (IOException e) {
-            logger.error("Exception reading m3u file " + file.getAbsolutePath() + ": " + e);
+            logger.error("Exception reading m3u file '" + file.getAbsolutePath() + "': " + e);
             return null;
         }
         if (playlistName == null) {
             playlistName = file.getName().replace(".m3u", "");
             logger.warn(
-                    "Was unable to retrieve playlist name from m3u file " + file.getAbsolutePath() + ", defaulting to "
+                    "Was unable to retrieve playlist name from m3u file '" + file.getAbsolutePath()
+                            + "', defaulting to "
                             + playlistName);
         }
         if (songs.isEmpty()) {
-            logger.warn("No songs found in m3u file " + file.getAbsolutePath() + " skipping...");
+            logger.warn("No songs found in m3u file '" + file.getAbsolutePath() + "' skipping...");
             return null;
         }
         Playlist playlist = new Playlist(playlistName);
@@ -240,7 +241,7 @@ public class Upload {
         Playlist playlist = new Playlist(folder.getName());
         LinkedHashSet<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
-            logger.debug("no songs found in " + folder.getAbsolutePath());
+            logger.debug("no songs found in '" + folder.getAbsolutePath() + "'");
             return null;
         }
         playlist.addSongs(songs);
@@ -288,7 +289,7 @@ public class Upload {
             return null;
         }
         if (!extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-            logger.debug("provided file is not in extensions:" + file.getAbsolutePath());
+            logger.debug("provided file is not in extensions: '" + file.getAbsolutePath() + "'");
             return null;
         }
         Song song = new Song(file.getName().substring(0, file.getName().lastIndexOf('.')));
@@ -312,7 +313,7 @@ public class Upload {
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (Exception e) {
-            logger.error("Exception parsing metadata for file: " + file.getAbsolutePath() + " : ");
+            logger.error("Exception parsing metadata for file: '" + file.getAbsolutePath() + "': ");
         }
         if (settings.isUseLibrary()) {
             Song foundSong = library.getSong(song);
@@ -416,7 +417,7 @@ public class Upload {
                 return false;
             }
         } else {
-            logger.debug("Unsupported format for: " + file.getAbsolutePath());
+            logger.debug("Unsupported format for: '" + file.getAbsolutePath() + "'");
         }
         return false;
     }

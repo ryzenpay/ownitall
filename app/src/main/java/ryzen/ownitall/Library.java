@@ -142,7 +142,7 @@ public class Library {
                 logger.debug("missing data in album search result " + response.toString());
             }
         }
-        logger.debug("Could not find Album " + album.getName() + " in Library");
+        logger.debug("Could not find Album '" + album.getName() + "' in Library");
         return null;
     }
 
@@ -172,7 +172,7 @@ public class Library {
                     }
                 }
             } else {
-                logger.debug("Album missing coverart: " + response.toString());
+                logger.debug("Album missing coverart: '" + response.toString());
             }
             JsonNode artistNodes = response.path("artist-credit");
             if (artistNodes.isArray()) {
@@ -207,7 +207,7 @@ public class Library {
             this.albums.put(mbid, album);
             return album;
         }
-        logger.debug("Unable to find album with mbid: " + mbid + " in library");
+        logger.debug("Unable to find Album: '" + mbid + "' in library");
         return null;
     }
 
@@ -292,7 +292,7 @@ public class Library {
             return song;
             // TODO: get external links (spotify & youtube)
         }
-        logger.debug("Could not find recording song with mbid " + mbid + " in library");
+        logger.debug("Could not find Song '" + mbid + "' in library");
         return null;
     }
 
@@ -327,7 +327,7 @@ public class Library {
                 return mbid;
             }
         }
-        logger.debug("could not find '" + artist.getName() + "' in library");
+        logger.debug("could not find artist '" + artist.getName() + "' in library");
         return null;
     }
 
@@ -349,7 +349,7 @@ public class Library {
             this.artists.put(mbid, artist);
             return artist;
         }
-        logger.debug("Could not find song with mbid " + mbid + " in library");
+        logger.debug("Could not find Artist '" + mbid + "' in library");
         return null;
     }
 
@@ -390,7 +390,7 @@ public class Library {
         } catch (Exception e) {
             logger.debug("Exception while getting coverArt: " + e);
         }
-        logger.debug("No coverart found for: " + mbid);
+        logger.debug("No coverart found for: '" + mbid + "'");
         return null;
     }
 

@@ -621,7 +621,7 @@ public class Spotify {
             try {
                 Track[] items = searchTracksRequest.execute().getItems();
                 if (items.length == 0) {
-                    logger.debug("Song " + song.toString() + " not found");
+                    logger.debug("Song '" + song.toString() + "' not found");
                     return null;
                 }
                 song.addId("spotify", items[0].getId());
@@ -651,7 +651,7 @@ public class Spotify {
             try {
                 AlbumSimplified[] items = searchAlbumsRequest.execute().getItems();
                 if (items.length == 0) {
-                    logger.debug("Album " + album.toString() + " not found");
+                    logger.debug("Album '" + album.toString() + "' not found");
                     return null;
                 }
                 album.addId("spotify", items[0].getId());
@@ -745,7 +745,7 @@ public class Spotify {
             songUris.add("spotify:track:" + this.getTrackId(song));
         }
         if (songUris.isEmpty()) {
-            logger.debug("Playlist " + playlist.toString() + " is empty / no update");
+            logger.debug("Playlist '" + playlist.toString() + "' is empty / no update");
             return;
         }
         int limit = settings.getSpotifySongLimit();

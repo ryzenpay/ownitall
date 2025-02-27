@@ -302,7 +302,7 @@ public class Youtube {
                 return videoResponse.getItems().get(0).getSnippet().getChannelTitle();
             }
         } catch (IOException e) {
-            logger.error("Exception retrieving video details for " + videoId + ": " + e);
+            logger.error("Exception retrieving video details for '" + videoId + "': " + e);
         }
         return null;
     }

@@ -232,10 +232,10 @@ public class Download {
                         logger.error("Your yt-dlp needs to update");
                         break;
                     } else if (exitCode == 101) {
-                        logger.debug("Download cancelled due to boundary criteria: " + searchQuery);
+                        logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
                     } else {
-                        logger.error("Unkown error while downloading song: " + song + "with code: " + exitCode);
+                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
                         logger.error(command.toString());
                         logger.error(completeLog.toString());
                     }
@@ -246,7 +246,7 @@ public class Download {
             if (songFile.exists()) {
                 writeMetaData(song, songFile);
             } else {
-                logger.info("song " + song.toString() + " failed to download, check logs");
+                logger.info("song '" + song.toString() + "' failed to download, check logs");
             }
         } catch (Exception e) {
             logger.error("Exception preparing yt-dlp: ", e);
@@ -271,7 +271,7 @@ public class Download {
             MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
                     collection.isLiked(song), albumName, song.getId("mbid"), songFile);
         } catch (Exception e) {
-            logger.error("writing song metadata for " + song.toString() + ": " + e);
+            logger.error("writing song metadata for '" + song.toString() + "': " + e);
         }
     }
 
@@ -390,7 +390,7 @@ public class Download {
         try {
             MusicTools.writeData(playlist.getFolderName(), "m3u", collection.getPlaylistM3U(playlist), folder);
         } catch (Exception e) {
-            logger.error("Exception writing playlist (" + playlist.toString() + ") m3u: " + e);
+            logger.error("Exception writing playlist '" + playlist.toString() + "' m3u: " + e);
         }
         try {
             if (playlist.getCoverImage() != null) {
@@ -398,7 +398,7 @@ public class Download {
                         new File(folder, playlist.getFolderName() + ".png"));
             }
         } catch (Exception e) {
-            logger.error("Exception writing playlist (" + playlist.toString() + ") coverimage: " + e);
+            logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage: " + e);
         }
     }
 
@@ -414,7 +414,7 @@ public class Download {
         try {
             MusicTools.writeData("album", "nfo", album.getNFO(), folder);
         } catch (Exception e) {
-            logger.error("Exception writing album (" + album.toString() + ") nfo: " + e);
+            logger.error("Exception writing album '" + album.toString() + "' nfo: " + e);
         }
         try {
             if (album.getCoverImage() != null) {
@@ -422,7 +422,7 @@ public class Download {
                         new File(folder, "cover.png"));
             }
         } catch (Exception e) {
-            logger.error("Exception writing album (" + album.toString() + ") coverimage: " + e);
+            logger.error("Exception writing album '" + album.toString() + "' coverimage: " + e);
         }
     }
 
@@ -437,9 +437,9 @@ public class Download {
                 String extension = MusicTools.getExtension(file);
                 if (!whiteList.contains(extension)) {
                     if (file.delete()) {
-                        logger.debug("Cleaned up file: " + file.getAbsolutePath());
+                        logger.debug("Cleaned up file: '" + file.getAbsolutePath() + "'");
                     } else {
-                        logger.error("Failed to clean up file: " + file.getAbsolutePath());
+                        logger.error("Failed to clean up file: '" + file.getAbsolutePath() + "'");
                     }
                 }
             }

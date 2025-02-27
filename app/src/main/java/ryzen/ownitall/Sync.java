@@ -63,7 +63,7 @@ public class Sync {
     private void setDataFolder() {
         if (!this.dataFolder.exists()) { // create folder if it does not exist
             this.dataFolder.mkdirs();
-            logger.debug("Created datafolder " + this.dataFolder.getAbsolutePath());
+            logger.debug("Created datafolder '" + this.dataFolder.getAbsolutePath() + "'");
         }
     }
 
@@ -73,7 +73,7 @@ public class Sync {
     private void setCacheFolder() {
         if (!this.cacheFolder.exists()) {
             this.cacheFolder.mkdirs();
-            logger.debug("Created cache folder: " + this.cacheFolder.getAbsolutePath());
+            logger.debug("Created cache folder: '" + this.cacheFolder.getAbsolutePath() + "'");
         }
     }
 
@@ -91,7 +91,8 @@ public class Sync {
         if (archiveFolder.exists() && userInput) {
             try {
                 System.out.println(
-                        "You are about to overwrite the contents of the folder: " + archiveFolder.getAbsolutePath());
+                        "You are about to overwrite the contents of the folder: '" + archiveFolder.getAbsolutePath()
+                                + "'");
                 System.out.print("Are you sure y/N: ");
                 if (!Input.request().getAgreement()) {
                     return;
@@ -105,11 +106,11 @@ public class Sync {
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.renameTo(new File(archiveFolder, file.getName()));
-                logger.debug("Renamed file: " + file.getAbsolutePath());
+                logger.debug("Renamed file: '" + file.getAbsolutePath() + "'");
             }
         }
         Collection.load().clear();
-        logger.info("Successfully archived music library to: " + archiveFolder.getAbsolutePath());
+        logger.info("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
     }
 
     /**
@@ -135,11 +136,12 @@ public class Sync {
                 if (file.isFile()) {
                     File destFile = new File(this.dataFolder, file.getName());
                     if (destFile.exists()) {
-                        System.out.print("This will delete file " + destFile.getAbsolutePath() + " are you sure y/N: ");
+                        System.out
+                                .print("This will delete file '" + destFile.getAbsolutePath() + "' are you sure y/N: ");
                         try {
                             if (Input.request().getAgreement()) {
                                 destFile.delete();
-                                logger.debug("deleted old file: " + destFile.getAbsolutePath());
+                                logger.debug("deleted old file: '" + destFile.getAbsolutePath() + "'");
                             } else {
                                 continue;
                             }
@@ -152,7 +154,7 @@ public class Sync {
                 }
             }
             unarchiveFolder.delete();
-            logger.debug("Deleted old archive folder: " + unarchiveFolder.getAbsolutePath());
+            logger.debug("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
         }
         Collection collection = Collection.load();
         collection.clear();
@@ -167,7 +169,7 @@ public class Sync {
         this.setCacheFolder();
         for (File file : this.cacheFolder.listFiles()) {
             file.delete();
-            logger.debug("Deleted file: " + file.getAbsolutePath());
+            logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
         }
     }
 
@@ -176,7 +178,7 @@ public class Sync {
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
-                logger.debug("Deleted file: " + file.getAbsolutePath());
+                logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
             }
         }
     }
@@ -236,7 +238,7 @@ public class Sync {
         File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
         try {
             this.objectMapper.writeValue(albumFile, albums);
-            logger.debug("Saved albums to: " + albumFile.getAbsolutePath());
+            logger.debug("Saved albums to: '" + albumFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving albums: " + e);
         }
@@ -259,7 +261,7 @@ public class Sync {
                     });
         } catch (IOException e) {
             logger.error("exception importing albums: " + e);
-            logger.info("If this persists, delete the file:" + albumFile.getAbsolutePath());
+            logger.info("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -277,7 +279,7 @@ public class Sync {
         File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
         try {
             this.objectMapper.writeValue(playlistFile, playlists);
-            logger.debug("Saved playlists to: " + playlistFile.getAbsolutePath());
+            logger.debug("Saved playlists to: '" + playlistFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving playlists: " + e);
         }
@@ -301,7 +303,7 @@ public class Sync {
 
         } catch (IOException e) {
             logger.error("exception importing playlists: " + e);
-            logger.info("If this persists, delete the file:" + playlistFile.getAbsolutePath());
+            logger.info("If this persists, delete the file: '" + playlistFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -319,7 +321,7 @@ public class Sync {
         File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
         try {
             this.objectMapper.writeValue(likedSongFile, likedSongs);
-            logger.debug("Saved liked songs to: " + likedSongFile.getAbsolutePath());
+            logger.debug("Saved liked songs to: '" + likedSongFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving liked songs: " + e);
         }
@@ -341,7 +343,7 @@ public class Sync {
                     LikedSongs.class);
         } catch (IOException e) {
             logger.error("exception importing liked songs: " + e);
-            logger.info("If this persists, delete the file:" + likedSongFile.getAbsolutePath());
+            logger.info("If this persists, delete the file: '" + likedSongFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -355,16 +357,16 @@ public class Sync {
                 cachedAlbums = this.objectMapper.readValue(albumFile,
                         new TypeReference<LinkedHashMap<String, Album>>() {
                         });
-                logger.debug("loaded cached albums from: " + albumFile.getAbsolutePath());
+                logger.debug("loaded cached albums from: '" + albumFile.getAbsolutePath() + "'");
             } catch (IOException e) {
                 logger.error("exception importing cached albums: " + e);
-                logger.info("If this persists, delete the file: " + albumFile.getAbsolutePath());
+                logger.info("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
             }
         }
         cachedAlbums.putAll(albums);
         try {
             this.objectMapper.writeValue(albumFile, cachedAlbums);
-            logger.debug("saved cached albums to: " + albumFile.getAbsolutePath());
+            logger.debug("saved cached albums to: '" + albumFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached albums: " + e);
         }
@@ -383,13 +385,13 @@ public class Sync {
                 logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
             } catch (IOException e) {
                 logger.error("exception importing cached artists: " + e);
-                logger.info("If this persists, delete the file: " + artistFile.getAbsolutePath());
+                logger.info("If this persists, delete the file: '" + artistFile.getAbsolutePath() + "'");
             }
         }
         cachedArtists.putAll(artists);
         try {
             this.objectMapper.writeValue(artistFile, cachedArtists);
-            logger.debug("saved cached artists to: " + artistFile.getAbsolutePath());
+            logger.debug("saved cached artists to: '" + artistFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached artists: " + e);
         }
@@ -405,16 +407,16 @@ public class Sync {
                 cachedSongs = this.objectMapper.readValue(songFile,
                         new TypeReference<LinkedHashMap<String, Song>>() {
                         });
-                logger.debug("loaded cached songs from: " + songFile.getAbsolutePath());
+                logger.debug("loaded cached songs from: '" + songFile.getAbsolutePath() + "'");
             } catch (IOException e) {
                 logger.error("exception importing cached songs: " + e);
-                logger.info("If this persists, delete the file: " + songFile.getAbsolutePath());
+                logger.info("If this persists, delete the file: '" + songFile.getAbsolutePath() + "'");
             }
         }
         cachedSongs.putAll(songs);
         try {
             this.objectMapper.writeValue(songFile, cachedSongs);
-            logger.debug("saved cached songs to: " + songFile.getAbsolutePath());
+            logger.debug("saved cached songs to: '" + songFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached songs: " + e);
         }

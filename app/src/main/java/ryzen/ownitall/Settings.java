@@ -147,7 +147,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
                 instance.importSettings(Settings.class, settingsFilePath);
             } catch (Exception e) {
                 logger.error(e);
-                logger.info("If this persists, delete the file: " + settingsFilePath);
+                logger.info("If this persists, delete the file: '" + settingsFilePath + "'");
             }
             logger.debug("New instance created");
         }

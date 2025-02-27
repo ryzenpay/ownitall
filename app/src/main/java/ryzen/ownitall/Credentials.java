@@ -50,7 +50,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
                 instance.importSettings(Credentials.class, credentialsFilePath);
             } catch (Exception e) {
                 logger.error("exception importing credentials: " + e);
-                logger.info("If this persists, delete the file: " + credentialsFilePath);
+                logger.info("If this persists, delete the file: '" + credentialsFilePath + "'");
             }
             logger.debug("New instance created");
         }

@@ -91,7 +91,7 @@ public class CollectionMenu {
             }
         }
         collection.addAlbum(album);
-        logger.info("Successfully added album " + album.toString() + " to collection");
+        logger.info("Successfully added album '" + album.toString() + "' to collection");
     }
 
     private void optionAddPlaylist() {
@@ -107,7 +107,7 @@ public class CollectionMenu {
         }
         Playlist playlist = new Playlist(playlistName);
         collection.addPlaylist(playlist);
-        logger.info("Successfully added playlist " + playlist.toString() + " to collection");
+        logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
     }
 
     private void optionAddSong() {
@@ -125,7 +125,7 @@ public class CollectionMenu {
                     Song song = interactiveCreateSong();
                     if (song != null) {
                         options.get(choice).addSong(song);
-                        logger.info("Succesfully added " + song.getName() + " to: " + choice);
+                        logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
                     }
                 }
             }
@@ -203,7 +203,7 @@ public class CollectionMenu {
                     return;
                 } else {
                     collection.removePlaylist(options.get(choice));
-                    logger.info("Successfully removed playlist: " + choice);
+                    logger.info("Successfully removed playlist: '" + choice + "'");
                 }
             }
         }
@@ -232,7 +232,7 @@ public class CollectionMenu {
                         } else {
                             playlist.merge(options.get(choice2));
                             collection.removePlaylist(options.get(choice2));
-                            logger.info("Successfully merged playlist: " + choice2 + " into: " + choice);
+                            logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
                             break;
                         }
                     }
@@ -256,7 +256,7 @@ public class CollectionMenu {
                     return;
                 } else {
                     collection.removeAlbum(options.get(choice));
-                    logger.info("Successfully removed album: " + choice);
+                    logger.info("Successfully removed album: '" + choice + "'");
                 }
             }
         }
@@ -277,7 +277,7 @@ public class CollectionMenu {
                     return;
                 } else {
                     collection.removeLikedSong(options.get(choice));
-                    logger.info("Successfully removed liked song: " + choice);
+                    logger.info("Successfully removed liked song: '" + choice + "'");
                 }
             }
         }

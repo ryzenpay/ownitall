@@ -82,7 +82,7 @@ public class Settings {
         try {
             T importedSettings = this.objectMapper.readValue(settingsFile, settingsClass);
             if (importedSettings == null || importedSettings.isEmpty()) {
-                logger.error("Failed to import settings from file " + settingsFile.getAbsolutePath());
+                logger.error("Failed to import settings from file '" + settingsFile.getAbsolutePath() + "'");
             } else {
                 this.setSettings(importedSettings);
             }
@@ -162,7 +162,7 @@ public class Settings {
                 } else {
                     try {
                         if (this.changeSetting(choice)) {
-                            logger.info("Successfully changed setting " + choice);
+                            logger.info("Successfully changed setting '" + choice + "'");
                         } else {
                             logger.error("Unsuccessfully changed setting");
                         }
@@ -187,28 +187,25 @@ public class Settings {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             setting.setAccessible(true);
+            System.out.print("Enter new value " + setting.getType().toString() + " for '" + setting.getName() + "': ");
             if (setting.getType() == boolean.class) {
-                System.out.print("Enter new value (true/false) for " + setting.getName() + ": ");
                 boolean input = Input.request().getBool();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == String.class) {
-                System.out.print("Enter new value (string) for " + setting.getName() + ": ");
                 String input = Input.request().getString();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == Integer.class) {
-                System.out.print("Enter new value (int) for " + setting.getName() + ": ");
                 int input = Input.request().getInt();
                 setting.set(this, input);
                 return true;
             } else if (setting.getType() == long.class) {
-                System.out.print("Enter new value (long) for " + setting.getName() + ": ");
                 long input = Input.request().getLong();
                 setting.set(this, input);
                 return true;
             } else {
-                logger.info("Modifying settings of the type " + setting.getType() + " is currently not supported");
+                logger.info("Modifying settings of the type '" + setting.getType() + "' is currently not supported");
             }
             setting.setAccessible(false);
         } catch (InterruptedException e) {

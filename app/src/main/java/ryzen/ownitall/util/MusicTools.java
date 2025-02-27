@@ -76,7 +76,7 @@ public class MusicTools {
             return;
         }
         if (!folder.exists()) {
-            logger.debug("folder " + folder.getAbsolutePath() + " does not exist in writeM3U");
+            logger.debug("folder '" + folder.getAbsolutePath() + "' does not exist in writeM3U");
             return;
         }
         File dataFile = new File(folder, fileName + "." + extension);
@@ -92,7 +92,7 @@ public class MusicTools {
             return;
         }
         if (!songFile.exists()) {
-            logger.debug("Song File " + songFile.getAbsolutePath() + " does not exist in writeMetaData");
+            logger.debug("Song File '" + songFile.getAbsolutePath() + "' does not exist in writeMetaData");
             return;
         }
         // Set ID3v2.3 as default
@@ -124,8 +124,9 @@ public class MusicTools {
                 }
             } catch (Exception e) {
                 logger.error(
-                        "Exception writing coverImage " + coverImage.toString() + " for " + songFile.getAbsolutePath()
-                                + ": " + e);
+                        "Exception writing coverImage '" + coverImage.toString() + "' for '"
+                                + songFile.getAbsolutePath()
+                                + "': " + e);
             }
         }
         if (liked) {
@@ -166,7 +167,7 @@ public class MusicTools {
             return;
         }
         if (file.exists()) {
-            logger.debug("coverimage already found: " + file.getAbsolutePath());
+            logger.debug("coverimage already found: '" + file.getAbsolutePath() + "'");
             return;
         }
         try (InputStream in = url.toURL().openStream()) {
