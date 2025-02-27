@@ -274,6 +274,7 @@ public class Library {
         LinkedHashSet<String> inclusions = new LinkedHashSet<>();
         inclusions.add("artists");
         inclusions.add("url-rels");
+        inclusions.add("releases");
         JsonNode response = this.musicBeeQuery("recording", this.directQueryBuilder(mbid, inclusions));
         if (response != null) {
             Song song = new Song(response.path("title").asText());
@@ -287,6 +288,13 @@ public class Library {
                 }
             } else {
                 logger.debug("Song missing artists: " + response.toString());
+            }
+            JsonNode releaseNode = response.path("releases").get(0);
+            if (releaseNode != null) {
+                URI songCover = this.getCoverArt(releaseNode.path("id").asText());
+                if (songCover != null) {
+                    song.setCoverImage(songCover);
+                }
             }
             this.songs.put(mbid, song);
             return song;
