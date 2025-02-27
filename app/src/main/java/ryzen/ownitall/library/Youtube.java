@@ -128,11 +128,16 @@ public class Youtube {
                             song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
                                     ChronoUnit.SECONDS);
                             if (settings.isUseLibrary()) {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
+                                try {
+                                    Song foundSong = library.getSong(song);
+                                    if (foundSong != null) {
+                                        song = foundSong;
+                                    } else if (settings.isLibraryVerified()) {
+                                        song = null;
+                                    }
+                                } catch (InterruptedException e) {
+                                    logger.debug("Interrupted while getting youtube song");
+                                    return;
                                 }
                             }
                             if (song != null) {
@@ -233,11 +238,16 @@ public class Youtube {
                         Song song = new Song(snippet.getTitle());
                         song.setArtist(new Artist(this.getVideoChannel(videoId)));
                         if (settings.isUseLibrary()) {
-                            Song foundSong = library.getSong(song);
-                            if (foundSong != null) {
-                                song = foundSong;
-                            } else if (settings.isLibraryVerified()) {
-                                song = null;
+                            try {
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
+                                }
+                            } catch (InterruptedException e) {
+                                logger.debug("Interrupted while getting youtube song");
+                                return null;
                             }
                         }
                         if (song != null) {

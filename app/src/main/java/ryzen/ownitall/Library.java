@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import sun.misc.Signal;
 
 public class Library {
     // TODO: allow interrupting (interrupted exception)
@@ -32,7 +34,7 @@ public class Library {
     private final String coverArtUrl = "https://coverartarchive.org/";
     private static long lastQueryTime = 0;
     private ObjectMapper objectMapper;
-
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
     /**
      * arrays to save api queries if they already exist
      */
@@ -77,6 +79,10 @@ public class Library {
         this.albums = sync.cacheAlbums(new LinkedHashMap<>());
         this.songs = sync.cacheSongs(new LinkedHashMap<>());
         this.mbids = sync.cacheMbids(new LinkedHashMap<>());
+        Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT in input caught");
+            interrupted.set(true);
+        });
     }
 
     /**
@@ -99,7 +105,10 @@ public class Library {
         this.mbids.clear();
     }
 
-    public Album getAlbum(Album album) {
+    public Album getAlbum(Album album) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
         String mbid = this.searchAlbum(album);
         if (mbid == null) {
             return null;
@@ -210,7 +219,10 @@ public class Library {
         return null;
     }
 
-    public Song getSong(Song song) {
+    public Song getSong(Song song) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
         String mbid = this.searchSong(song);
         if (mbid == null) {
             return null;
@@ -313,7 +325,10 @@ public class Library {
         return null;
     }
 
-    public Artist getArtist(Artist artist) {
+    public Artist getArtist(Artist artist) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
         String mbid = this.searchArtist(artist);
         if (mbid == null) {
             return null;

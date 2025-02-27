@@ -155,7 +155,7 @@ public class MusicTools {
             tag.setField(FieldKey.ALBUM, albumName);
         }
         if (mbid != null) {
-            tag.setField(FieldKey.MUSICBRAINZ_RELEASEID, mbid);
+            tag.setField(FieldKey.MUSICBRAINZ_RECORDING_WORK_ID, mbid);
         }
         audioFile.commit();
         AudioFileIO.write(audioFile);

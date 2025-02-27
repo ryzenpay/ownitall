@@ -316,11 +316,16 @@ public class Upload {
             logger.error("Exception parsing metadata for file: '" + file.getAbsolutePath() + "': ");
         }
         if (settings.isUseLibrary()) {
-            Song foundSong = library.getSong(song);
-            if (foundSong != null) {
-                song = foundSong;
-            } else if (settings.isLibraryVerified()) {
-                song = null;
+            try {
+                Song foundSong = library.getSong(song);
+                if (foundSong != null) {
+                    song = foundSong;
+                } else if (settings.isLibraryVerified()) {
+                    song = null;
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while uploading song");
+                return null;
             }
         }
         return song;
@@ -455,11 +460,16 @@ public class Upload {
             }
         }
         if (settings.isUseLibrary()) {
-            Album foundAlbum = library.getAlbum(album);
-            if (foundAlbum != null) {
-                album = foundAlbum;
-            } else if (settings.isLibraryVerified()) {
-                album = null;
+            try {
+                Album foundAlbum = library.getAlbum(album);
+                if (foundAlbum != null) {
+                    album = foundAlbum;
+                } else if (settings.isLibraryVerified()) {
+                    album = null;
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while uploading album");
+                return null;
             }
         }
         return album;

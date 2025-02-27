@@ -282,22 +282,27 @@ public class Spotify {
                 } else {
                     for (SavedTrack savedTrack : items) {
                         Track track = savedTrack.getTrack();
+                        pb.setExtraMessage(track.getName());
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         song.setAlbumName(track.getAlbum().getName());
                         if (settings.isUseLibrary()) {
-                            Song foundSong = library.getSong(song);
-                            if (foundSong != null) {
-                                song = foundSong;
-                            } else if (settings.isLibraryVerified()) {
-                                song = null;
+                            try {
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
+                                }
+                            } catch (InterruptedException e) {
+                                logger.debug("Interrupted while getting spotify song");
+                                return;
                             }
                         }
                         if (song != null) {
                             song.addId("spotify", track.getId());
                             collection.addLikedSong(song);
-                            pb.setExtraMessage(song.getName());
                         }
                         pb.step();
                     }
@@ -340,11 +345,11 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
+                        pb.step().setExtraMessage(savedAlbum.getAlbum().getId());
                         Album album = this.getAlbum(savedAlbum.getAlbum().getId(), savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
                         if (album != null) {
                             collection.addAlbum(album);
-                            pb.step().setExtraMessage(album.getName());
                         }
                     }
                     offset += limit;
@@ -370,11 +375,16 @@ public class Spotify {
             album.addArtist(new Artist(artistName));
         }
         if (settings.isUseLibrary()) {
-            Album foundAlbum = library.getAlbum(album);
-            if (foundAlbum != null) {
-                album = foundAlbum;
-            } else if (settings.isLibraryVerified()) {
-                album = null;
+            try {
+                Album foundAlbum = library.getAlbum(album);
+                if (foundAlbum != null) {
+                    album = foundAlbum;
+                } else if (settings.isLibraryVerified()) {
+                    album = null;
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting spotify album");
+                return null;
             }
         }
         if (album != null) {
@@ -425,11 +435,16 @@ public class Spotify {
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                         if (settings.isUseLibrary()) {
-                            Song foundSong = library.getSong(song);
-                            if (foundSong != null) {
-                                song = foundSong;
-                            } else if (settings.isLibraryVerified()) {
-                                song = null;
+                            try {
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
+                                }
+                            } catch (InterruptedException e) {
+                                logger.debug("Interrupted while getting spotify song");
+                                return null;
                             }
                         }
                         if (song != null) {
@@ -485,11 +500,11 @@ public class Spotify {
                         if (images != null && images.length > 0) {
                             coverImageUrl = images[images.length - 1].getUrl();
                         }
+                        pb.step().setExtraMessage(spotifyPlaylist.getName());
                         Playlist playlist = this.getPlaylist(spotifyPlaylist.getId(),
                                 spotifyPlaylist.getName(), coverImageUrl);
                         if (playlist != null) {
                             collection.addPlaylist(playlist);
-                            pb.step().setExtraMessage(playlist.getName());
                         }
                     }
                     offset += limit;
@@ -579,11 +594,16 @@ public class Spotify {
                             continue;
                         }
                         if (settings.isUseLibrary()) {
-                            Song foundSong = library.getSong(song);
-                            if (foundSong != null) {
-                                song = foundSong;
-                            } else if (settings.isLibraryVerified()) {
-                                song = null;
+                            try {
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
+                                }
+                            } catch (InterruptedException e) {
+                                logger.debug("Interrupted while getting spotify song");
+                                return null;
                             }
                         }
                         if (song != null) {

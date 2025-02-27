@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.units.qual.m;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -99,12 +98,17 @@ public class CollectionMenu {
                 album.addArtist(new Artist(artistName));
             }
             if (settings.useLibrary) {
-                Album foundAlbum = library.getAlbum(album);
-                if (foundAlbum != null) {
-                    album = foundAlbum;
-                } else if (settings.isLibraryVerified()) {
-                    logger.info(
-                            "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
+                try {
+                    Album foundAlbum = library.getAlbum(album);
+                    if (foundAlbum != null) {
+                        album = foundAlbum;
+                    } else if (settings.isLibraryVerified()) {
+                        logger.info(
+                                "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
+                        return;
+                    }
+                } catch (InterruptedException e) {
+                    logger.debug("Interruption caught while getting album");
                     return;
                 }
             }
@@ -188,11 +192,17 @@ public class CollectionMenu {
                 song.setArtist(new Artist(artistName));
             }
             if (settings.isUseLibrary()) {
-                Song foundSong = library.getSong(song);
-                if (foundSong != null) {
-                    song = foundSong;
-                } else if (settings.isLibraryVerified()) {
-                    logger.info("Song was not found in library and `LibraryVerified` is set to true, not adding song");
+                try {
+                    Song foundSong = library.getSong(song);
+                    if (foundSong != null) {
+                        song = foundSong;
+                    } else if (settings.isLibraryVerified()) {
+                        logger.info(
+                                "Song was not found in library and `LibraryVerified` is set to true, not adding song");
+                        return null;
+                    }
+                } catch (InterruptedException e) {
+                    logger.debug("Interruption caugth while adding song");
                     return null;
                 }
             }
@@ -343,19 +353,8 @@ public class CollectionMenu {
             return;
         }
         logger.info("updating current collection with library...");
-        for (Song song : collection.getLikedSongs().getSongs()) {
-            Song foundSong = library.getSong(song);
-            if (foundSong != null) {
-                song.setName(foundSong.getName());
-                song.setArtist(foundSong.getArtist());
-                if (foundSong.getCoverImage() != null) {
-                    song.setCoverImage(foundSong.getCoverImage());
-                }
-                song.addIds(foundSong.getIds());
-            }
-        }
-        for (Playlist playlist : collection.getPlaylists()) {
-            for (Song song : playlist.getSongs()) {
+        try {
+            for (Song song : collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song.setName(foundSong.getName());
@@ -366,17 +365,33 @@ public class CollectionMenu {
                     song.addIds(foundSong.getIds());
                 }
             }
-        }
-        for (Album album : collection.getAlbums()) {
-            Album foundAlbum = library.getAlbum(album);
-            if (foundAlbum != null) {
-                album.setName(foundAlbum.getName());
-                album.addArtists(foundAlbum.getArtists());
-                if (foundAlbum.getCoverImage() != null) {
-                    album.setCoverImage(foundAlbum.getCoverImage());
+            for (Playlist playlist : collection.getPlaylists()) {
+                for (Song song : playlist.getSongs()) {
+                    Song foundSong = library.getSong(song);
+                    if (foundSong != null) {
+                        song.setName(foundSong.getName());
+                        song.setArtist(foundSong.getArtist());
+                        if (foundSong.getCoverImage() != null) {
+                            song.setCoverImage(foundSong.getCoverImage());
+                        }
+                        song.addIds(foundSong.getIds());
+                    }
                 }
-                album.addIds(foundAlbum.getIds());
             }
+            for (Album album : collection.getAlbums()) {
+                Album foundAlbum = library.getAlbum(album);
+                if (foundAlbum != null) {
+                    album.setName(foundAlbum.getName());
+                    album.addArtists(foundAlbum.getArtists());
+                    if (foundAlbum.getCoverImage() != null) {
+                        album.setCoverImage(foundAlbum.getCoverImage());
+                    }
+                    album.addIds(foundAlbum.getIds());
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught while verifying inventory");
+            return;
         }
         logger.info("done updating collection content");
     }
