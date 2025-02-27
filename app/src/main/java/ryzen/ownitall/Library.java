@@ -24,7 +24,6 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Library {
-    // TODO: check how jellyfin does it
     // TODO: allow interrupting (interrupted exception)
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Sync sync = Sync.load();

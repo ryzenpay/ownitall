@@ -48,10 +48,12 @@ public class UploadMenu {
     }
 
     private void optionUploadPlaylist() {
-        File folder;
+        File folder = null;
         try {
-            System.out.print("Please provide playlist path / m3u file: ");
-            folder = Input.request().getFile(true);
+            while (folder == null) {
+                System.out.print("*Please provide playlist path / m3u file: ");
+                folder = Input.request().getFile(true);
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted getting playlist path");
             return;
@@ -66,10 +68,12 @@ public class UploadMenu {
     }
 
     private void optionUploadAlbum() {
-        File folder;
+        File folder = null;
         try {
-            System.out.print("Please provide album path: ");
-            folder = Input.request().getFile(true);
+            while (folder == null) {
+                System.out.print("*Please provide album path: ");
+                folder = Input.request().getFile(true);
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting album path");
             return;
@@ -81,10 +85,12 @@ public class UploadMenu {
     }
 
     private void optionUploadLikedSongs() {
-        File folder;
+        File folder = null;
         try {
-            System.out.print("Please provide folder path: ");
-            folder = Input.request().getFile(true);
+            while (folder == null) {
+                System.out.print("*Please provide folder path: ");
+                folder = Input.request().getFile(true);
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting liked songs path");
             return;

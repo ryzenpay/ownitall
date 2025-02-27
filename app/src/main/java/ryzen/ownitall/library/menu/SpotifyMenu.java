@@ -76,15 +76,24 @@ public class SpotifyMenu {
     }
 
     private void optionImportAlbum() {
-        String albumId;
-        String albumName;
+        String albumName = null;
         try {
-            System.out.print("Enter Spotify Album name: ");
-            albumName = Input.request().getString();
-            System.out.print("Enter Spotify Album ID: ");
-            albumId = Input.request().getString();
+            while (albumName == null) {
+                System.out.print("*Enter Spotify Album name: ");
+                albumName = Input.request().getString();
+            }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting album info");
+            logger.debug("Interrupted while getting album name");
+            return;
+        }
+        String albumId = null;
+        try {
+            while (albumId == null) {
+                System.out.print("*Enter Spotify Album ID: ");
+                albumId = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting album id");
             return;
         }
         logger.info("Importing Spotify Album...");
@@ -94,13 +103,22 @@ public class SpotifyMenu {
     }
 
     private void optionImportPlaylist() {
-        String playlistId;
-        String playlistName;
+        String playlistName = null;
         try {
-            System.out.print("Enter Spotify Playlist name: ");
-            playlistName = Input.request().getString();
-            System.out.print("Enter Spotify Playlist ID: ");
-            playlistId = Input.request().getString();
+            while (playlistName == null) {
+                System.out.print("*Enter Spotify Playlist name: ");
+                playlistName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting playlist Name");
+            return;
+        }
+        String playlistId = null;
+        try {
+            while (playlistId == null) {
+                System.out.print("*Enter Spotify Playlist ID: ");
+                playlistId = Input.request().getString();
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting playlist info");
             return;
