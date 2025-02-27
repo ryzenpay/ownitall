@@ -26,6 +26,7 @@ public class Song {
     private Artist artist;
     private Duration duration;
     private URI coverImage;
+    private String albumName;
     private LinkedHashMap<String, String> ids;
 
     /**
@@ -51,7 +52,8 @@ public class Song {
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("duration") double duration, @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
+            @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         if (artist != null) {
             this.setArtist(artist);
@@ -59,6 +61,9 @@ public class Song {
         this.ids = new LinkedHashMap<>();
         if (ids != null) {
             this.addIds(ids);
+        }
+        if (albumName != null) {
+            this.setAlbumName(albumName);
         }
         this.setDuration((long) duration, ChronoUnit.SECONDS);
         if (coverImage != null) {
@@ -102,6 +107,18 @@ public class Song {
      */
     public Artist getArtist() {
         return this.artist;
+    }
+
+    public String getAlbumName() {
+        return this.albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        if (albumName == null || albumName.isEmpty()) {
+            logger.debug(this.toString() + ": empty albumName provided in setAlbumName");
+            return;
+        }
+        this.albumName = albumName;
     }
 
     /**

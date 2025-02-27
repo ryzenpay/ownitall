@@ -78,7 +78,7 @@ public class SpotifyMenu {
     private void optionImportAlbum() {
         String albumName = null;
         try {
-            while (albumName == null) {
+            while (albumName == null || albumName.isEmpty()) {
                 System.out.print("*Enter Spotify Album name: ");
                 albumName = Input.request().getString();
             }
@@ -88,7 +88,7 @@ public class SpotifyMenu {
         }
         String albumId = null;
         try {
-            while (albumId == null) {
+            while (albumId == null || albumId.isEmpty()) {
                 System.out.print("*Enter Spotify Album ID: ");
                 albumId = Input.request().getString();
             }
@@ -105,7 +105,7 @@ public class SpotifyMenu {
     private void optionImportPlaylist() {
         String playlistName = null;
         try {
-            while (playlistName == null) {
+            while (playlistName == null || playlistName.isEmpty()) {
                 System.out.print("*Enter Spotify Playlist name: ");
                 playlistName = Input.request().getString();
             }
@@ -115,7 +115,7 @@ public class SpotifyMenu {
         }
         String playlistId = null;
         try {
-            while (playlistId == null) {
+            while (playlistId == null || playlistId.isEmpty()) {
                 System.out.print("*Enter Spotify Playlist ID: ");
                 playlistId = Input.request().getString();
             }

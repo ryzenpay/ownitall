@@ -240,6 +240,16 @@ public class Library {
         if (song.getDuration() != null) {
             params.put("dur", String.valueOf(song.getDuration().toMillis()));
         }
+        if (song.getAlbumName() != null) {
+            Album album = new Album(song.getAlbumName());
+            if (!song.getArtist().isEmpty()) {
+                album.addArtist(song.getArtist());
+            }
+            String albumMbid = this.searchAlbum(album);
+            if (albumMbid != null) {
+                params.put("reid", albumMbid);
+            }
+        }
         params.put("type", "Single");
         params.put("video", "false");
         String foundMbid = this.mbids.get(params.toString());

@@ -285,6 +285,7 @@ public class Spotify {
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                        song.setAlbumName(track.getAlbum().getName());
                         if (settings.isUseLibrary()) {
                             Song foundSong = library.getSong(song);
                             if (foundSong != null) {
@@ -566,6 +567,7 @@ public class Spotify {
                             song = new Song(track.getName());
                             song.setArtist(new Artist(track.getArtists()[0].getName()));
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                            song.setAlbumName(track.getAlbum().getName());
                             id = track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
