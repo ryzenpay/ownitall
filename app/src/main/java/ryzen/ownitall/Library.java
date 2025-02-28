@@ -133,7 +133,7 @@ public class Library {
                 if (artist != null) {
                     album.addArtist(artist);
                 }
-                album.addId("lastfm", albumNode.path("url").asText());
+                album.addId("mbid", albumNode.path("mbid").asText());
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
@@ -143,8 +143,8 @@ public class Library {
                 } else {
                     logger.debug(album.toString() + ": album missing images: " + albumNode.toString());
                 }
-                JsonNode trackNodes = albumNode.path("tracks");
-                if (trackNodes.isArray() && !trackNodes.isEmpty()) {
+                JsonNode trackNodes = albumNode.path("tracks").path("track");
+                if (trackNodes != null && trackNodes.isArray() && !trackNodes.isEmpty()) {
                     for (JsonNode trackNode : trackNodes) {
                         Song song = new Song(trackNode.path("name").asText());
                         Artist songArtist = null;
@@ -194,7 +194,7 @@ public class Library {
             JsonNode trackNode = response.path("track");
             if (!trackNode.isMissingNode()) {
                 song = new Song(trackNode.path("name").asText());
-                song.addId("lastfm", trackNode.path("url").asText());
+                song.addId("mbid", trackNode.path("mbid").asText());
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
                 JsonNode artistNode = trackNode.path("artist");
                 if (!artistNode.isMissingNode()) {
@@ -246,7 +246,7 @@ public class Library {
             JsonNode artistNode = response.path("artist");
             if (!artistNode.isMissingNode()) {
                 artist = new Artist(artistNode.path("name").asText());
-                artist.addId("lastfm", artistNode.path("url").asText());
+                artist.addId("mbid", artistNode.path("mbid").asText());
                 JsonNode imageNode = artistNode.path("image");
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();

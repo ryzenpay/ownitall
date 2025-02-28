@@ -263,8 +263,8 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        if (this.getId("id") != null && song.getId("id") != null) {
-            if (this.getId("id").equals(song.getId("id"))) {
+        if (this.getId("mbid") != null && song.getId("mbid") != null) {
+            if (this.getId("mbid").equals(song.getId("mbid"))) {
                 return true;
             }
         }
