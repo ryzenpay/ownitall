@@ -581,17 +581,18 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
-                        pb.setExtraMessage(playlistTrack.getTrack().getName()).step();
                         Song song = null;
                         String id;
                         if (playlistTrack.getTrack() instanceof Track) {
                             Track track = (Track) playlistTrack.getTrack();
+                            pb.setExtraMessage(track.getName()).step();
                             song = new Song(track.getName());
                             song.setArtist(new Artist(track.getArtists()[0].getName()));
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             id = track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();
+                            pb.setExtraMessage(episode.getName()).step();
                             song = new Song(episode.getName());
                             song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
                             id = episode.getId();
