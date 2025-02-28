@@ -247,8 +247,8 @@ public class Album extends Playlist {
         }
         Album album = (Album) object;
         // only valid if library used
-        if (this.getId("mbid") != null && album.getId("mbid") != null) {
-            if (this.getId("mbid").equals(album.getId("mbid"))) {
+        if (this.getId("id") != null && album.getId("id") != null) {
+            if (this.getId("id").equals(album.getId("id"))) {
                 return true;
             }
         }

@@ -42,6 +42,12 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     protected String soundCloudClientId = "";
     protected String soundCloudClientSecret = "";
 
+    /**
+     * Last FM Credentials
+     * 
+     */
+    protected String lastFMApiKey = "";
+
     @JsonIgnore
     public static Credentials load() {
         if (instance == null) {
@@ -108,6 +114,10 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return this.soundCloudClientSecret;
     }
 
+    public String getLastFMApiKey() {
+        return lastFMApiKey;
+    }
+
     public void setYoutubeCredentials() {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
@@ -133,6 +143,16 @@ public class Credentials extends ryzen.ownitall.util.Settings {
             spotifyRedirectUrl = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting spotify credentials");
+        }
+    }
+
+    public void setLastFMCredentials() {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Please enter LastFM API key: ");
+            lastFMApiKey = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting lastFM credentials");
         }
     }
 
@@ -167,6 +187,19 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     public boolean soundCloudIsEmpty() {
         if (this.soundCloudClientId.isEmpty() || this.soundCloudClientSecret.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * check if Last FM credentials empty (if successfully initialized)
+     * 
+     * @return - true if empty, false if not
+     */
+    @JsonIgnore
+    public boolean lastFMIsEmpty() {
+        if (this.lastFMApiKey.isEmpty()) {
             return true;
         }
         return false;

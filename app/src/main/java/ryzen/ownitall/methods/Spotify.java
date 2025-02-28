@@ -1,4 +1,4 @@
-package ryzen.ownitall.library;
+package ryzen.ownitall.methods;
 
 import java.util.ArrayList;
 //https://developer.spotify.com/documentation/web-api
@@ -286,7 +286,6 @@ public class Spotify {
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        song.setAlbumName(track.getAlbum().getName());
                         if (settings.isUseLibrary()) {
                             try {
                                 Song foundSong = library.getSong(song);
@@ -590,7 +589,6 @@ public class Spotify {
                             song = new Song(track.getName());
                             song.setArtist(new Artist(track.getArtists()[0].getName()));
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.setAlbumName(track.getAlbum().getName());
                             id = track.getId();
                         } else if (playlistTrack.getTrack() instanceof Episode) {
                             Episode episode = (Episode) playlistTrack.getTrack();

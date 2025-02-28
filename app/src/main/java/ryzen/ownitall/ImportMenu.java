@@ -2,9 +2,9 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.library.menu.SpotifyMenu;
-import ryzen.ownitall.library.menu.UploadMenu;
-import ryzen.ownitall.library.menu.YoutubeMenu;
+import ryzen.ownitall.methods.menu.SpotifyMenu;
+import ryzen.ownitall.methods.menu.UploadMenu;
+import ryzen.ownitall.methods.menu.YoutubeMenu;
 import ryzen.ownitall.util.Menu;
 
 public class ImportMenu {

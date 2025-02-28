@@ -167,8 +167,8 @@ public class Artist {
         }
         Artist artist = (Artist) object;
         // only valid if library used
-        if (this.getId("mbid") != null && artist.getId("mbid") != null) {
-            if (this.getId("mbid").equals(artist.getId("mbid"))) {
+        if (this.getId("id") != null && artist.getId("id") != null) {
+            if (this.getId("id").equals(artist.getId("id"))) {
                 return true;
             }
         }

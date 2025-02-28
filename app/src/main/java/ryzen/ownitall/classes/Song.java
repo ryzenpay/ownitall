@@ -26,7 +26,6 @@ public class Song {
     private Artist artist;
     private Duration duration;
     private URI coverImage;
-    private String albumName;
     private LinkedHashMap<String, String> ids;
 
     /**
@@ -52,8 +51,7 @@ public class Song {
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
-            @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("duration") double duration, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         if (artist != null) {
             this.setArtist(artist);
@@ -61,9 +59,6 @@ public class Song {
         this.ids = new LinkedHashMap<>();
         if (ids != null) {
             this.addIds(ids);
-        }
-        if (albumName != null) {
-            this.setAlbumName(albumName);
         }
         this.setDuration((long) duration, ChronoUnit.SECONDS);
         if (coverImage != null) {
@@ -107,18 +102,6 @@ public class Song {
      */
     public Artist getArtist() {
         return this.artist;
-    }
-
-    public String getAlbumName() {
-        return this.albumName;
-    }
-
-    public void setAlbumName(String albumName) {
-        if (albumName == null || albumName.isEmpty()) {
-            logger.debug(this.toString() + ": empty albumName provided in setAlbumName");
-            return;
-        }
-        this.albumName = albumName;
     }
 
     /**
@@ -280,8 +263,8 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        if (this.getId("mbid") != null && song.getId("mbid") != null) {
-            if (this.getId("mbid").equals(song.getId("mbid"))) {
+        if (this.getId("id") != null && song.getId("id") != null) {
+            if (this.getId("id").equals(song.getId("id"))) {
                 return true;
             }
         }

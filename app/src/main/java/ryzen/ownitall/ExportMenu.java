@@ -2,8 +2,8 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.methods.menu.*;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.library.menu.*;
 
 public class ExportMenu {
     /**

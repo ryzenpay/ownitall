@@ -15,9 +15,17 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## Library  
-the library uses musicbrainz and coverart archive to get the best music and coverart for your tracks.  
-due to current API limitations, this does increase the time per song up to 4 seconds (2s for song, 1s for artist, 1s for coverart)  
-but this uses caching, so over time as you continue to import your music library this will speed up and decrease the time per son logarithmic  
+A library can be used to get the best metadata and coverart for your tracks, there are several options and they each have their benefits and drawbacks
+### MusicBrainz
+MusicBrainz is the most popular database for music tracks, but from personal experience has a lot of drawbacks
+- low api limits (can take up to 4s per song)
+- lot of "garbage" data which can really mess up ur library
+    - example of this: songs have many different versions (instrumental, remix,..) and musicbrainz its difficult to differenciate
+### LastFM
+to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  
+- Great with popular songs, easy and precise searches
+- doesnt have all data
+
 
 ## YoutubeDL  
 download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp 

@@ -1,4 +1,4 @@
-package ryzen.ownitall.library.menu;
+package ryzen.ownitall.methods.menu;
 
 import java.util.LinkedHashMap;
 
@@ -9,7 +9,7 @@ import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.library.Spotify;
+import ryzen.ownitall.methods.Spotify;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;

@@ -1,4 +1,4 @@
-package ryzen.ownitall.library.menu;
+package ryzen.ownitall.methods.menu;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -13,7 +13,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.library.Download;
+import ryzen.ownitall.methods.Download;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 

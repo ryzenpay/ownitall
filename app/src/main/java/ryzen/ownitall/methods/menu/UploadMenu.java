@@ -1,4 +1,4 @@
-package ryzen.ownitall.library.menu;
+package ryzen.ownitall.methods.menu;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.library.Upload;
+import ryzen.ownitall.methods.Upload;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;

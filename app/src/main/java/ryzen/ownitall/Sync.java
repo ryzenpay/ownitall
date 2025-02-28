@@ -423,28 +423,28 @@ public class Sync {
         return cachedSongs;
     }
 
-    public LinkedHashMap<String, String> cacheMbids(LinkedHashMap<String, String> mbids) {
+    public LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
         this.setCacheFolder();
-        File idFile = new File(this.cacheFolder, "mbids.json");
-        LinkedHashMap<String, String> cachedMbids = new LinkedHashMap<>();
+        File idFile = new File(this.cacheFolder, "ids.json");
+        LinkedHashMap<String, String> cachedIds = new LinkedHashMap<>();
         if (idFile.exists()) {
             try {
-                cachedMbids = this.objectMapper.readValue(idFile,
+                cachedIds = this.objectMapper.readValue(idFile,
                         new TypeReference<LinkedHashMap<String, String>>() {
                         });
-                logger.debug("loaded cached mbids from: " + idFile.getAbsolutePath());
+                logger.debug("loaded cached ids from: '" + idFile.getAbsolutePath() + "'");
             } catch (IOException e) {
-                logger.error("exception importing cached mbids: " + e);
-                logger.info("If this persists, delete the file: " + idFile.getAbsolutePath());
+                logger.error("exception importing cached ids: " + e);
+                logger.info("If this persists, delete the file: '" + idFile.getAbsolutePath() + "'");
             }
         }
-        cachedMbids.putAll(mbids);
+        cachedIds.putAll(ids);
         try {
-            this.objectMapper.writeValue(idFile, cachedMbids);
-            logger.debug("saved cached mbids to: " + idFile.getAbsolutePath());
+            this.objectMapper.writeValue(idFile, cachedIds);
+            logger.debug("saved cached ids to: '" + idFile.getAbsolutePath() + "'");
         } catch (IOException e) {
-            logger.error("exception exporting cached mbids: " + e);
+            logger.error("exception exporting cached ids: " + e);
         }
-        return cachedMbids;
+        return ids;
     }
 }

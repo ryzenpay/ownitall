@@ -1,0 +1,509 @@
+package ryzen.ownitall.library;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ryzen.ownitall.Sync;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.Song;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import sun.misc.Signal;
+
+public class MusicBrainz {
+    // TODO: allow interrupting (interrupted exception)
+    private static final Logger logger = LogManager.getLogger(MusicBrainz.class);
+    private static final Sync sync = Sync.load();
+    private static MusicBrainz instance;
+    private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
+    private final String coverArtUrl = "https://coverartarchive.org/";
+    private static long lastQueryTime = 0;
+    private static long queryDiff = 10; // query timeout in ms
+    private ObjectMapper objectMapper;
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
+    /**
+     * arrays to save api queries if they already exist
+     */
+    private LinkedHashMap<String, Artist> artists;
+    private LinkedHashMap<String, Album> albums;
+    private LinkedHashMap<String, Song> songs;
+    private LinkedHashMap<String, String> ids;
+
+    /**
+     * instance call method
+     * 
+     * @return - new or existing Library
+     */
+    public static MusicBrainz load() {
+        if (instance == null) {
+            instance = new MusicBrainz();
+            logger.debug("New instance created");
+        }
+        return instance;
+    }
+
+    /**
+     * check if library has an instance
+     * to prevent setting it up and logging in when clearing
+     * 
+     * @return - true if instance set
+     */
+    public static boolean checkInstance() {
+        if (instance != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * default Library constructor
+     * initializes all values and loads from cache
+     */
+    public MusicBrainz() {
+        this.objectMapper = new ObjectMapper();
+        this.artists = sync.cacheArtists(new LinkedHashMap<>());
+        this.albums = sync.cacheAlbums(new LinkedHashMap<>());
+        this.songs = sync.cacheSongs(new LinkedHashMap<>());
+        this.ids = sync.cacheIds(new LinkedHashMap<>());
+        // TODO: fix interruption catching
+        Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT in input caught");
+            interrupted.set(true);
+        });
+    }
+
+    /**
+     * dump all data into cache
+     */
+    public void save() {
+        sync.cacheArtists(this.artists);
+        sync.cacheAlbums(this.albums);
+        sync.cacheSongs(this.songs);
+        sync.cacheIds(this.ids);
+    }
+
+    /**
+     * clear in memory cache
+     */
+    public void clear() {
+        this.artists.clear();
+        this.albums.clear();
+        this.songs.clear();
+        this.ids.clear();
+    }
+
+    public Album getAlbum(Album album) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
+        String id = this.searchAlbum(album);
+        if (id == null) {
+            return null;
+        }
+        return this.getAlbum(id);
+    }
+
+    private String searchAlbum(Album album) {
+        if (album == null) {
+            logger.debug("Empty album passed in searchAlbum");
+            return null;
+        }
+        if (album.getId("id") != null) {
+            return album.getId("id");
+        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("release", album.getName());
+        if (album.getMainArtist() != null) {
+            String artistId = this.searchArtist(album.getMainArtist());
+            if (artistId != null) {
+                params.put("arid", artistId);
+            } else {
+                params.put("artist", album.getMainArtist().getName());
+            }
+        }
+        params.put("primarytype", "Album");
+        String foundId = this.ids.get(params.toString());
+        if (foundId != null) {
+            return foundId;
+        }
+        JsonNode response = this.musicBeeQuery("release", this.searchQueryBuilder(params));
+        if (response != null) {
+            JsonNode albumNode = response.path("releases").get(0);
+            if (albumNode != null) {
+                String id = albumNode.path("id").asText();
+                this.ids.put(params.toString(), id);
+                return id;
+            } else {
+                logger.debug("missing data in album search result " + response.toString());
+            }
+        }
+        logger.debug("Could not find Album '" + album.getName() + "' in Library");
+        return null;
+    }
+
+    public Album getAlbum(String id) {
+        if (id == null || id.isEmpty()) {
+            logger.debug("null or empty id provided in getAlbum");
+            return null;
+        }
+        Album foundAlbum = this.albums.get(id);
+        if (foundAlbum != null) {
+            return foundAlbum;
+        }
+        LinkedHashSet<String> inclusions = new LinkedHashSet<>();
+        inclusions.add("recordings");
+        inclusions.add("artists");
+        // check cache
+        JsonNode response = this.musicBeeQuery("release", this.directQueryBuilder(id, inclusions));
+        if (response != null) {
+            Album album = new Album(response.path("title").asText());
+            album.addId("id", response.path("id").asText());
+            JsonNode coverArt = response.path("cover-art-archive");
+            if (!coverArt.isMissingNode()) {
+                if (coverArt.path("count").asInt() > 1) {
+                    URI albumCover = this.getCoverArt(response.path("id").asText());
+                    if (albumCover != null) {
+                        album.setCoverImage(albumCover);
+                    }
+                }
+            } else {
+                logger.debug("Album missing coverart: '" + response.toString());
+            }
+            JsonNode artistNodes = response.path("artist-credit");
+            if (artistNodes.isArray()) {
+                for (JsonNode rootArtistNode : artistNodes) {
+                    JsonNode artistNode = rootArtistNode.path("artist");
+                    Artist artist = this.getArtist(artistNode.path("id").asText());
+                    if (artist != null) {
+                        album.addArtist(artist);
+                    }
+                }
+            } else {
+                logger.debug("album missing artists: " + response.toString());
+            }
+            JsonNode discNodes = response.path("media");
+            if (discNodes.isArray()) {
+                for (JsonNode discNode : discNodes) {
+                    JsonNode songNodes = discNode.path("tracks");
+                    if (songNodes.isArray()) {
+                        for (JsonNode songNode : songNodes) {
+                            Song song = this.getSong(songNode.path("recording").path("id").asText());
+                            if (song != null) {
+                                album.addSong(song);
+                            }
+                        }
+                    } else {
+                        logger.debug("Album disc missing songs: " + discNode.toString());
+                    }
+                }
+            } else {
+                logger.debug("Album missing songs: " + response.toString());
+            }
+            this.albums.put(id, album);
+            return album;
+        }
+        logger.debug("Unable to find Album: '" + id + "' in library");
+        return null;
+    }
+
+    public Song getSong(Song song) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
+        String id = this.searchSong(song);
+        if (id == null) {
+            return null;
+        }
+        return this.getSong(id);
+    }
+
+    private String searchSong(Song song) {
+        if (song == null) {
+            logger.debug("Empty song passed in searchRecordingSong");
+            return null;
+        }
+        if (song.getId("id") != null) {
+            return song.getId("id");
+        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("recording", song.getName());
+        params.put("release", song.getName());
+        if (song.getArtist().getName() != null) {
+            String artistId = this.searchArtist(song.getArtist());
+            if (artistId != null) {
+                params.put("arid", artistId);
+            } else {
+                params.put("artist", song.getArtist().getName());
+            }
+        }
+        if (song.getDuration() != null) {
+            params.put("dur", String.valueOf(song.getDuration().toMillis()));
+        }
+        params.put("type", "Single");
+        params.put("video", "false");
+        String foundId = this.ids.get(params.toString());
+        if (foundId != null) {
+            return foundId;
+        }
+        JsonNode response = this.musicBeeQuery("recording", this.searchQueryBuilder(params));
+        if (response != null) {
+            JsonNode trackNode = response.path("recordings").get(0);
+            if (trackNode != null) {
+                String id = trackNode.path("id").asText();
+                this.ids.put(params.toString(), id);
+                return id;
+            } else {
+                logger.error("Missing data while getting Song: " + response.toString());
+            }
+        }
+        logger.debug("Could not find song '" + song.getName() + "' in library");
+        return null;
+    }
+
+    public Song getSong(String id) {
+        if (id == null || id.isEmpty()) {
+            logger.debug("null or empty id provided in getSong");
+            return null;
+        }
+        Song foundSong = this.songs.get(id);
+        if (foundSong != null) {
+            return foundSong;
+        }
+        LinkedHashSet<String> inclusions = new LinkedHashSet<>();
+        inclusions.add("artists");
+        inclusions.add("url-rels");
+        inclusions.add("releases");
+        JsonNode response = this.musicBeeQuery("recording", this.directQueryBuilder(id, inclusions));
+        if (response != null) {
+            Song song = new Song(response.path("title").asText());
+            song.setDuration(response.path("length").asLong(), ChronoUnit.MILLIS);
+            song.addId("id", response.path("id").asText());
+            JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
+            if (artistNode != null && !artistNode.isMissingNode()) {
+                Artist artist = this.getArtist(artistNode.path("id").asText());
+                if (artist != null) {
+                    song.setArtist(artist);
+                }
+            } else {
+                logger.debug("Song missing artists: " + response.toString());
+            }
+            JsonNode releaseNode = response.path("releases").get(0);
+            if (releaseNode != null) {
+                URI songCover = this.getCoverArt(releaseNode.path("id").asText());
+                if (songCover != null) {
+                    song.setCoverImage(songCover);
+                }
+            }
+            this.songs.put(id, song);
+            return song;
+            // TODO: get external links (spotify & youtube)
+        }
+        logger.debug("Could not find Song '" + id + "' in library");
+        return null;
+    }
+
+    public Artist getArtist(Artist artist) throws InterruptedException {
+        if (interrupted.get()) {
+            throw new InterruptedException();
+        }
+        String id = this.searchArtist(artist);
+        if (id == null) {
+            return null;
+        }
+        return this.getArtist(id);
+    }
+
+    public String searchArtist(Artist artist) {
+        if (artist == null) {
+            logger.debug("Empty artist passed in searchArtist");
+            return null;
+        }
+        if (artist.getId("id") != null) {
+            return artist.getId("id");
+        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("artist", artist.getName());
+        String foundId = this.ids.get(params.toString());
+        if (foundId != null) {
+            return foundId;
+        }
+        JsonNode response = this.musicBeeQuery("artist", this.searchQueryBuilder(params));
+        if (response != null) {
+            JsonNode artistNode = response.path("artists").get(0);
+            if (artistNode != null) {
+                String id = artistNode.path("id").asText();
+                this.ids.put(params.toString(), id);
+                return id;
+            }
+        }
+        logger.debug("could not find artist '" + artist.getName() + "' in library");
+        return null;
+    }
+
+    public Artist getArtist(String id) {
+        if (id == null || id.isEmpty()) {
+            logger.debug("null or empty id provided in getArtist");
+            return null;
+        }
+        Artist foundArtist = this.artists.get(id);
+        if (foundArtist != null) {
+            return foundArtist;
+        }
+        LinkedHashSet<String> inclusions = new LinkedHashSet<>();
+        inclusions.add("releases");
+        JsonNode response = this.musicBeeQuery("artist", this.directQueryBuilder(id, inclusions));
+        if (response != null) {
+            Artist artist = new Artist(response.path("name").asText());
+            artist.addId("id", response.path("id").asText());
+            this.artists.put(id, artist);
+            return artist;
+        }
+        logger.debug("Could not find Artist '" + id + "' in library");
+        return null;
+    }
+
+    private void timeoutManager() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastQueryTime;
+
+        if (elapsedTime < queryDiff) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(queryDiff - elapsedTime);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("Interrupted while waiting second: " + e);
+            }
+        }
+        lastQueryTime = System.currentTimeMillis();
+    }
+
+    private URI getCoverArt(String id) {
+        if (id == null || id.isEmpty()) {
+            logger.debug("null or empty id provided in getCoverArt");
+            return null;
+        }
+        StringBuilder urlBuilder = new StringBuilder(this.coverArtUrl);
+        urlBuilder.append("release").append('/');
+        urlBuilder.append(id).append('/');
+        urlBuilder.append("front");
+        try {
+            URI url = new URI(urlBuilder.toString());
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.connect();
+            String redirectUrl = connection.getHeaderField("Location");
+            connection.disconnect();
+            if (redirectUrl != null) {
+                return new URI(redirectUrl);
+            }
+        } catch (Exception e) {
+            logger.debug("Exception while getting coverArt: " + e);
+        }
+        logger.debug("No coverart found for: '" + id + "'");
+        return null;
+    }
+
+    private String searchQueryBuilder(LinkedHashMap<String, String> params) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("?query=");
+        StringBuilder paramBuilder = new StringBuilder();
+        for (String param : params.keySet()) {
+            paramBuilder.append(param).append(':').append('"').append(params.get(param)).append('"');
+        }
+        try {
+            builder.append(URLEncoder.encode(paramBuilder.toString(), StandardCharsets.UTF_8.toString()));
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Exception while encoding query: " + e);
+            return null;
+        }
+        builder.append("&fmt=json");
+        builder.append("&limit=1");
+        return builder.toString();
+    }
+
+    private String directQueryBuilder(String mbid, LinkedHashSet<String> inclusions) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("/").append(mbid);
+        StringBuilder incBuilder = new StringBuilder("?inc=");
+        for (String inc : inclusions) {
+            if (!incBuilder.toString().isEmpty()) {
+                incBuilder.append("+");
+            }
+            incBuilder.append(inc);
+        }
+        builder.append(incBuilder.toString());
+        builder.append("&fmt=json");
+        return builder.toString();
+    }
+
+    private JsonNode musicBeeQuery(String type, String query) {
+        if (type == null || type.isEmpty()) {
+            logger.debug("null or empty type provided in musicBeeQuery");
+            return null;
+        }
+        if (query == null || query.isEmpty()) {
+            logger.debug("null or empty query provided in musicBeeQuery");
+            return null;
+        }
+        timeoutManager();
+        try {
+            StringBuilder urlBuilder = new StringBuilder(this.musicBeeUrl);
+            urlBuilder.append(type);
+            urlBuilder.append(query);
+            URI url = new URI(urlBuilder.toString());
+            JsonNode rootNode = this.query(url);
+            if (rootNode != null) {
+                return rootNode;
+            }
+        } catch (Exception e) {
+            logger.error("Error querying MusicBee: " + e);
+        }
+        return null;
+    }
+
+    private JsonNode query(URI url) {
+        if (url == null) {
+            logger.debug("null url provided to query");
+            return null;
+        }
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            JsonNode rootNode = objectMapper.readTree(response.toString());
+
+            if (rootNode.path("status").asText().equals("error")) {
+                logger.error("unexpected query response (" + rootNode.path("code").asInt() + "): " + rootNode
+                        .path("message").asText());
+                return null;
+            }
+            return rootNode;
+        } catch (Exception e) {
+            logger.error("Error querying API: " + e);
+            return null;
+        }
+    }
+}

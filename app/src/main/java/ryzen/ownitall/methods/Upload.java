@@ -1,4 +1,4 @@
-package ryzen.ownitall.library;
+package ryzen.ownitall.methods;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,4 +1,4 @@
-package ryzen.ownitall.library;
+package ryzen.ownitall.methods;
 
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -178,15 +178,15 @@ public class Download {
         }
         // metadata and formatting
         command.add("--extract-audio");
-        command.add("--embed-thumbnail");
+        // command.add("--embed-thumbnail");
         command.add("--format");
         command.add("bestaudio/best");
         command.add("--audio-format");
         command.add(settings.getDownloadFormat());
         command.add("--audio-quality");
         command.add(String.valueOf(settings.getDownloadQuality()));
-        command.add("--embed-metadata"); // metadata we have overwrites this
-        command.add("--no-write-comments");
+        // command.add("--embed-metadata"); // metadata we have overwrites this
+        // command.add("--no-write-comments");
         // download location
         command.add("--paths");
         command.add(path.getAbsolutePath());

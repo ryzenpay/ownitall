@@ -59,60 +59,43 @@ public class CollectionMenu {
     }
 
     private void optionAddAlbum() {
-        String mbid = null;
         String albumName = null;
         String artistName = null;
-        if (settings.isUseLibrary()) {
-            try {
-                System.out.print("Enter Album release MBID: ");
-                mbid = Input.request().getString();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting album MBID");
+        try {
+            while (albumName == null || albumName.isEmpty()) {
+                System.out.print("*Enter Album Name: ");
+                albumName = Input.request().getString();
             }
-        } else if (mbid == null) {
-            try {
-                while (albumName == null || albumName.isEmpty()) {
-                    System.out.print("*Enter Album Name: ");
-                    albumName = Input.request().getString();
-                }
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting Album Name");
-                return;
-            }
-            try {
-                System.out.print("Enter Album Main Artist: ");
-                artistName = Input.request().getString();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting Album Artist Name");
-            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Album Name");
+            return;
         }
-        Album album;
-        if (mbid != null) {
-            album = library.getAlbum(mbid);
-            if (album == null) {
-                return;
-            }
-        } else {
-            album = new Album(albumName);
-            if (artistName != null) {
-                album.addArtist(new Artist(artistName));
-            }
-            if (settings.useLibrary) {
-                try {
-                    Album foundAlbum = library.getAlbum(album);
-                    if (foundAlbum != null) {
-                        album = foundAlbum;
-                    } else if (settings.isLibraryVerified()) {
-                        logger.info(
-                                "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
-                        return;
-                    }
-                } catch (InterruptedException e) {
-                    logger.debug("Interruption caught while getting album");
+        try {
+            System.out.print("Enter Album Main Artist: ");
+            artistName = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Album Artist Name");
+        }
+        Album album = new Album(albumName);
+        if (artistName != null) {
+            album.addArtist(new Artist(artistName));
+        }
+        if (settings.useLibrary) {
+            try {
+                Album foundAlbum = library.getAlbum(album);
+                if (foundAlbum != null) {
+                    album = foundAlbum;
+                } else if (settings.isLibraryVerified()) {
+                    logger.info(
+                            "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
                     return;
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interruption caught while getting album");
+                return;
             }
         }
+
         collection.addAlbum(album);
         logger.info("Successfully added album '" + album.toString() + "' to collection");
     }
@@ -156,55 +139,42 @@ public class CollectionMenu {
     }
 
     private Song interactiveCreateSong() {
-        String mbid = null;
         String songName = null;
         String artistName = null;
+
+        try {
+            while (songName == null || songName.isEmpty()) {
+                System.out.print("*Enter Song Name (without artists): ");
+                songName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting songname");
+            return null;
+        }
+        try {
+            System.out.print("Enter main artist name: ");
+            artistName = Input.request().getString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting song's artist");
+        }
+
+        Song song = new Song(songName);
+        if (artistName != null) {
+            song.setArtist(new Artist(artistName));
+        }
         if (settings.isUseLibrary()) {
             try {
-                System.out.print("Enter song MBID: ");
-                mbid = Input.request().getString();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting song mbid");
-            }
-        } else if (mbid == null) {
-            try {
-                while (songName == null || songName.isEmpty()) {
-                    System.out.print("*Enter Song Name (without artists): ");
-                    songName = Input.request().getString();
-                }
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while setting songname");
-                return null;
-            }
-            try {
-                System.out.print("Enter main artist name: ");
-                artistName = Input.request().getString();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting song's artist");
-            }
-        }
-        Song song = null;
-        if (mbid != null) {
-            song = library.getSong(mbid);
-        } else {
-            song = new Song(songName);
-            if (artistName != null) {
-                song.setArtist(new Artist(artistName));
-            }
-            if (settings.isUseLibrary()) {
-                try {
-                    Song foundSong = library.getSong(song);
-                    if (foundSong != null) {
-                        song = foundSong;
-                    } else if (settings.isLibraryVerified()) {
-                        logger.info(
-                                "Song was not found in library and `LibraryVerified` is set to true, not adding song");
-                        return null;
-                    }
-                } catch (InterruptedException e) {
-                    logger.debug("Interruption caugth while adding song");
+                Song foundSong = library.getSong(song);
+                if (foundSong != null) {
+                    song = foundSong;
+                } else if (settings.isLibraryVerified()) {
+                    logger.info(
+                            "Song was not found in library and `LibraryVerified` is set to true, not adding song");
                     return null;
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interruption caugth while adding song");
+                return null;
             }
         }
         return song;
