@@ -1,9 +1,14 @@
 package ryzen.ownitall.classes;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
 
@@ -17,6 +22,25 @@ public class LikedSongs extends Playlist {
      */
     public LikedSongs() {
         super(name);
+    }
+
+    /**
+     * full playlist contructor
+     * 
+     * @param name              - playlist name
+     * @param songs             - linkedhashset of song
+     * @param ids               - linkedhashmap of id's
+     * @param youtubePageToken  - string youtube page token
+     * @param spotifyPageOffset - int spotify page token
+     * @param coverImage        - string playlist coverImage
+     */
+    @JsonCreator
+    public LikedSongs(@JsonProperty("name") String name,
+            @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids,
+            @JsonProperty("youtubePageToken") String youtubePageToken,
+            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage) {
+        super(name, songs, ids, youtubePageToken, spotifyPageOffset, coverImage);
     }
 
     /**

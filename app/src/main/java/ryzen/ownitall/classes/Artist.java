@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.Settings;
-
 public class Artist {
     private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
