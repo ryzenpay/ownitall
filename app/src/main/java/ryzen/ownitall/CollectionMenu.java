@@ -1,6 +1,7 @@
 package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +47,7 @@ public class CollectionMenu {
         options.put("Add Album", this::optionAddAlbum);
         options.put("Add Playlist", this::optionAddPlaylist);
         options.put("Add Song", this::optionAddSong);
+        options.put("Add Artist", this::optionAddArtist);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "ADD INVENTORY MENU");
             if (choice != null) {
@@ -178,6 +180,38 @@ public class CollectionMenu {
             }
         }
         return song;
+    }
+
+    private void optionAddArtist() {
+        if (settings.getLibrayType() != 1) {
+            logger.info("LastFM library type is required for this");
+            return;
+        }
+        String artistName = null;
+        try {
+            while (artistName == null || artistName.isEmpty()) {
+                System.out.print("*Enter Artist Name: ");
+                artistName = Input.request().getString();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting Artist Name");
+            return;
+        }
+        try {
+            Artist artist = library.getArtist(new Artist(artistName));
+            if (artist == null) {
+                return;
+            }
+            LinkedHashSet<Album> albums = library.getArtistAlbums(artist);
+            if (albums != null) {
+                collection.addAlbums(albums);
+                logger.info("Successfully added " + albums.size() + " albums from '" + artist.toString()
+                        + "' to collection");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while adding artist");
+            return;
+        }
     }
 
     /**

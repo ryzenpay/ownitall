@@ -36,6 +36,7 @@ public class LastFM extends Library {
     }
 
     // https://www.last.fm/api/show/album.getInfo
+    @Override
     public Album getAlbum(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("Empty album passed in getAlbum");
@@ -45,6 +46,9 @@ public class LastFM extends Library {
         params.put("album", album.getName());
         if (album.getMainArtist() != null) {
             params.put("artist", album.getMainArtist().getName());
+        } else {
+            logger.debug(album.toString() + ": Album requires atleast one artist");
+            return null;
         }
         params.put("autocorrect", "1");
         if (this.albums.containsKey(params.toString())) {
@@ -101,6 +105,7 @@ public class LastFM extends Library {
         return null;
     }
 
+    @Override
     public Song getSong(Song song) throws InterruptedException {
         if (song == null) {
             logger.debug("Empty song passed in getSong");
@@ -157,6 +162,7 @@ public class LastFM extends Library {
         return null;
     }
 
+    @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
             logger.debug("Empty artist passed in getArtist");
@@ -192,6 +198,7 @@ public class LastFM extends Library {
         return null;
     }
 
+    @Override
     public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         if (artist == null) {
             logger.debug("Empty artist passed to getArtistAlbums");
@@ -208,6 +215,7 @@ public class LastFM extends Library {
                 if (albumNodes.isArray() && !albumNodes.isEmpty()) {
                     for (JsonNode albumNode : albumNodes) {
                         Album album = new Album(albumNode.path("name").asText());
+                        album.addArtist(artist);
                         album = this.getAlbum(album);
                         if (album != null) {
                             // ensure the search worked

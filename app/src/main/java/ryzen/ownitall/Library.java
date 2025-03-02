@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +59,7 @@ public class Library {
             }
         }
         if (instance != null) {
-            instance.save();
+            instance.cache();
         }
         return instance;
     }
@@ -82,19 +83,21 @@ public class Library {
      */
     public Library() {
         this.objectMapper = new ObjectMapper();
-        this.artists = sync.cacheArtists(new LinkedHashMap<>());
-        this.albums = sync.cacheAlbums(new LinkedHashMap<>());
-        this.songs = sync.cacheSongs(new LinkedHashMap<>());
-        this.ids = sync.cacheIds(new LinkedHashMap<>());
+        this.artists = new LinkedHashMap<>();
+        this.albums = new LinkedHashMap<>();
+        this.songs = new LinkedHashMap<>();
+        this.ids = new LinkedHashMap<>();
+        this.cache();
     }
 
     /**
      * dump all data into cache
      */
-    public void save() {
-        sync.cacheArtists(this.artists);
-        sync.cacheAlbums(this.albums);
-        sync.cacheSongs(this.songs);
+    public void cache() {
+        this.artists = sync.cacheArtists(this.artists);
+        this.albums = sync.cacheAlbums(this.albums);
+        this.songs = sync.cacheSongs(this.songs);
+        this.ids = sync.cacheIds(this.ids);
     }
 
     /**
@@ -115,6 +118,10 @@ public class Library {
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
+        return null;
+    }
+
+    public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         return null;
     }
 

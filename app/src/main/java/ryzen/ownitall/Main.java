@@ -72,7 +72,7 @@ public class Main {
             Credentials.load().save();
         }
         if (Library.checkInstance()) {
-            Library.load().save();
+            Library.load().cache();
         }
     }
 

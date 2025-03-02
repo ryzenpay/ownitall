@@ -33,6 +33,7 @@ public class MusicBrainz extends Library {
         this.queryDiff = 1000;
     }
 
+    @Override
     public Album getAlbum(Album album) throws InterruptedException {
         String id = this.searchAlbum(album);
         if (id == null) {
@@ -144,6 +145,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    @Override
     public Song getSong(Song song) throws InterruptedException {
         String id = this.searchSong(song);
         if (id == null) {
@@ -237,6 +239,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
         String id = this.searchArtist(artist);
         if (id == null) {
