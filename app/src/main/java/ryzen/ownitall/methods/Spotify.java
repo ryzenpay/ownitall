@@ -286,7 +286,7 @@ public class Spotify {
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        if (settings.isUseLibrary()) {
+                        if (library != null) {
                             try {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
@@ -373,7 +373,7 @@ public class Spotify {
         if (artistName != null) {
             album.addArtist(new Artist(artistName));
         }
-        if (settings.isUseLibrary()) {
+        if (library != null) {
             try {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
@@ -438,7 +438,7 @@ public class Spotify {
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
                         song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                        if (settings.isUseLibrary()) {
+                        if (library != null) {
                             try {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
@@ -600,7 +600,7 @@ public class Spotify {
                             logger.info("Skipping non-Track in playlist: " + playlistId);
                             continue;
                         }
-                        if (settings.isUseLibrary()) {
+                        if (library != null) {
                             try {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {

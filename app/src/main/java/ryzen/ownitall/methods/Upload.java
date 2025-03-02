@@ -315,7 +315,7 @@ public class Upload {
         } catch (Exception e) {
             logger.error("Exception parsing metadata for file: '" + file.getAbsolutePath() + "': ");
         }
-        if (settings.isUseLibrary()) {
+        if (library != null) {
             try {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
@@ -459,7 +459,7 @@ public class Upload {
                 logger.error("Exception parsing album: " + e);
             }
         }
-        if (settings.isUseLibrary()) {
+        if (library != null) {
             try {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {

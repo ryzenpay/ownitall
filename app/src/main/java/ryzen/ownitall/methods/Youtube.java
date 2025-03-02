@@ -127,7 +127,7 @@ public class Youtube {
                             song.setArtist(new Artist(snippet.getChannelTitle()));
                             song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
                                     ChronoUnit.SECONDS);
-                            if (settings.isUseLibrary()) {
+                            if (library != null) {
                                 try {
                                     Song foundSong = library.getSong(song);
                                     if (foundSong != null) {
@@ -237,7 +237,7 @@ public class Youtube {
                         PlaylistItemSnippet snippet = item.getSnippet();
                         Song song = new Song(snippet.getTitle());
                         song.setArtist(new Artist(this.getVideoChannel(videoId)));
-                        if (settings.isUseLibrary()) {
+                        if (library != null) {
                             try {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {

@@ -80,7 +80,7 @@ public class CollectionMenu {
         if (artistName != null) {
             album.addArtist(new Artist(artistName));
         }
-        if (settings.useLibrary) {
+        if (library != null) {
             try {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
@@ -162,7 +162,7 @@ public class CollectionMenu {
         if (artistName != null) {
             song.setArtist(new Artist(artistName));
         }
-        if (settings.isUseLibrary()) {
+        if (library != null) {
             try {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
@@ -318,7 +318,7 @@ public class CollectionMenu {
      * library verify all of inventory
      */
     private void optionUpdateInventory() {
-        if (!settings.isUseLibrary()) {
+        if (library == null) {
             logger.info("This requires library to be enabled");
             return;
         }

@@ -1,7 +1,5 @@
 package ryzen.ownitall.library;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -10,108 +8,32 @@ import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ryzen.ownitall.Sync;
+import ryzen.ownitall.Library;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import sun.misc.Signal;
 
-public class MusicBrainz {
-    // TODO: allow interrupting (interrupted exception)
+public class MusicBrainz extends Library {
     private static final Logger logger = LogManager.getLogger(MusicBrainz.class);
-    private static final Sync sync = Sync.load();
-    private static MusicBrainz instance;
     private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
     private final String coverArtUrl = "https://coverartarchive.org/";
-    private static long lastQueryTime = 0;
-    private static long queryDiff = 10; // query timeout in ms
-    private ObjectMapper objectMapper;
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
-    /**
-     * arrays to save api queries if they already exist
-     */
-    private LinkedHashMap<String, Artist> artists;
-    private LinkedHashMap<String, Album> albums;
-    private LinkedHashMap<String, Song> songs;
-    private LinkedHashMap<String, String> ids;
 
     /**
-     * instance call method
-     * 
-     * @return - new or existing Library
-     */
-    public static MusicBrainz load() {
-        if (instance == null) {
-            instance = new MusicBrainz();
-            logger.debug("New instance created");
-        }
-        return instance;
-    }
-
-    /**
-     * check if library has an instance
-     * to prevent setting it up and logging in when clearing
-     * 
-     * @return - true if instance set
-     */
-    public static boolean checkInstance() {
-        if (instance != null) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * default Library constructor
+     * default MusicBrainz constructor
      * initializes all values and loads from cache
      */
     public MusicBrainz() {
-        this.objectMapper = new ObjectMapper();
-        this.artists = sync.cacheArtists(new LinkedHashMap<>());
-        this.albums = sync.cacheAlbums(new LinkedHashMap<>());
-        this.songs = sync.cacheSongs(new LinkedHashMap<>());
-        this.ids = sync.cacheIds(new LinkedHashMap<>());
-        // TODO: fix interruption catching
-        Signal.handle(new Signal("INT"), signal -> {
-            logger.debug("SIGINT in input caught");
-            interrupted.set(true);
-        });
-    }
-
-    /**
-     * dump all data into cache
-     */
-    public void save() {
-        sync.cacheArtists(this.artists);
-        sync.cacheAlbums(this.albums);
-        sync.cacheSongs(this.songs);
-        sync.cacheIds(this.ids);
-    }
-
-    /**
-     * clear in memory cache
-     */
-    public void clear() {
-        this.artists.clear();
-        this.albums.clear();
-        this.songs.clear();
-        this.ids.clear();
+        super();
+        this.queryDiff = 1000;
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
-        if (interrupted.get()) {
-            throw new InterruptedException();
-        }
         String id = this.searchAlbum(album);
         if (id == null) {
             return null;
@@ -119,7 +41,7 @@ public class MusicBrainz {
         return this.getAlbum(id);
     }
 
-    private String searchAlbum(Album album) {
+    private String searchAlbum(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("Empty album passed in searchAlbum");
             return null;
@@ -223,9 +145,6 @@ public class MusicBrainz {
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        if (interrupted.get()) {
-            throw new InterruptedException();
-        }
         String id = this.searchSong(song);
         if (id == null) {
             return null;
@@ -319,9 +238,6 @@ public class MusicBrainz {
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        if (interrupted.get()) {
-            throw new InterruptedException();
-        }
         String id = this.searchArtist(artist);
         if (id == null) {
             return null;
@@ -376,21 +292,6 @@ public class MusicBrainz {
         }
         logger.debug("Could not find Artist '" + id + "' in library");
         return null;
-    }
-
-    private void timeoutManager() {
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastQueryTime;
-
-        if (elapsedTime < queryDiff) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(queryDiff - elapsedTime);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                logger.error("Interrupted while waiting second: " + e);
-            }
-        }
-        lastQueryTime = System.currentTimeMillis();
     }
 
     private URI getCoverArt(String id) {
@@ -461,7 +362,6 @@ public class MusicBrainz {
             logger.debug("null or empty query provided in musicBeeQuery");
             return null;
         }
-        timeoutManager();
         try {
             StringBuilder urlBuilder = new StringBuilder(this.musicBeeUrl);
             urlBuilder.append(type);
@@ -475,35 +375,5 @@ public class MusicBrainz {
             logger.error("Error querying MusicBee: " + e);
         }
         return null;
-    }
-
-    private JsonNode query(URI url) {
-        if (url == null) {
-            logger.debug("null url provided to query");
-            return null;
-        }
-        try {
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-
-            if (rootNode.path("status").asText().equals("error")) {
-                logger.error("unexpected query response (" + rootNode.path("code").asInt() + "): " + rootNode
-                        .path("message").asText());
-                return null;
-            }
-            return rootNode;
-        } catch (Exception e) {
-            logger.error("Error querying API: " + e);
-            return null;
-        }
     }
 }

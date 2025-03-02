@@ -74,15 +74,17 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected double similarityPercentage = 90.0;
 
     /**
-     * if to use library to fact check all data
-     * 
-     */
-    protected boolean useLibrary = true;
-
-    /**
      * only put songs in collection if they are library verified
      */
     protected boolean libraryVerified = true;
+
+    /**
+     * int representative of which library to use
+     * 0 - dont use library
+     * 1 - lastFM
+     * 2 - musicBrainz
+     */
+    protected int libraryType = 1;
 
     /**
      * youtube dl installation path
@@ -303,12 +305,12 @@ public class Settings extends ryzen.ownitall.util.Settings {
         this.similarityPercentage = similarityPercentage;
     }
 
-    public boolean isUseLibrary() {
-        return useLibrary;
+    public int getLibrayType() {
+        return this.libraryType;
     }
 
-    public void setUseLibrary(boolean useLibrary) {
-        this.useLibrary = useLibrary;
+    public void setLibraryType(int libraryType) {
+        this.libraryType = libraryType;
     }
 
     public String getYoutubedlPath() {
