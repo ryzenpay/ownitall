@@ -32,7 +32,6 @@ public class Main {
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
             if (choice.equals("Exit")) {
-                System.out.println("Exiting program. Goodbye!");
                 logger.info("Exiting program...");
                 System.exit(0);
             } else {

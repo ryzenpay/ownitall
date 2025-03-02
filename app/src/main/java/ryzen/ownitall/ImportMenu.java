@@ -2,6 +2,7 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.methods.menu.ManualMenu;
 import ryzen.ownitall.methods.menu.SpotifyMenu;
 import ryzen.ownitall.methods.menu.UploadMenu;
 import ryzen.ownitall.methods.menu.YoutubeMenu;
@@ -18,6 +19,7 @@ public class ImportMenu {
         options.put("Youtube", this::optionYoutube);
         options.put("Spotify", this::optionSpotify);
         options.put("Local", this::optionLocal);
+        options.put("Manual", this::optionManual);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "IMPORT");
             if (choice.equals("Exit")) {
@@ -48,6 +50,10 @@ public class ImportMenu {
      */
     private void optionLocal() {
         new UploadMenu();
+    }
+
+    private void optionManual() {
+        new ManualMenu();
     }
 
 }

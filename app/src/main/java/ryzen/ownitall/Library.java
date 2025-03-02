@@ -110,18 +110,22 @@ public class Library {
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
+        logger.info("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
+        logger.info("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
+        logger.info("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
+        logger.info("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
