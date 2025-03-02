@@ -63,7 +63,16 @@ public class LastFM extends Library {
                 if (artist != null) {
                     album.addArtist(artist);
                 }
-                album.addId("lastfm", albumNode.path("url").asText());
+                JsonNode idNode = albumNode.path("id");
+                if (!idNode.isMissingNode()) {
+                    album.addId("lastfm", albumNode.path("url").asText());
+                } else {
+                    album.addId("lastfm", String.valueOf(idNode.asInt()));
+                }
+                JsonNode mbidNode = albumNode.path("mbid");
+                if (!mbidNode.isMissingNode()) {
+                    album.addId("mbid", mbidNode.asText());
+                }
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
@@ -125,7 +134,16 @@ public class LastFM extends Library {
             JsonNode trackNode = response.path("track");
             if (!trackNode.isMissingNode()) {
                 song = new Song(trackNode.path("name").asText());
-                song.addId("lastfm", trackNode.path("url").asText());
+                JsonNode idNode = trackNode.path("id");
+                if (!idNode.isMissingNode()) {
+                    song.addId("lastfm", trackNode.path("url").asText());
+                } else {
+                    song.addId("lastfm", String.valueOf(idNode.asInt()));
+                }
+                JsonNode mbidNode = trackNode.path("mbid");
+                if (!mbidNode.isMissingNode()) {
+                    song.addId("mbid", mbidNode.asText());
+                }
                 song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
                 JsonNode artistNode = trackNode.path("artist");
                 if (!artistNode.isMissingNode()) {
@@ -178,7 +196,16 @@ public class LastFM extends Library {
             JsonNode artistNode = response.path("artist");
             if (!artistNode.isMissingNode()) {
                 artist = new Artist(artistNode.path("name").asText());
-                artist.addId("lastfm", artistNode.path("url").asText());
+                JsonNode idNode = artistNode.path("id");
+                if (!idNode.isMissingNode()) {
+                    artist.addId("lastfm", artistNode.path("url").asText());
+                } else {
+                    artist.addId("lastfm", String.valueOf(idNode.asInt()));
+                }
+                JsonNode mbidNode = artistNode.path("mbid");
+                if (!mbidNode.isMissingNode()) {
+                    artist.addId("mbid", mbidNode.asText());
+                }
                 JsonNode imageNode = artistNode.path("image");
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
