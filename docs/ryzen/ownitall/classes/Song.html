@@ -160,10 +160,10 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-java.time.Duration-java.lang.String-">Song</a></span>&#8203;(java.lang.String&nbsp;name,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-double-java.lang.String-">Song</a></span>&#8203;(java.lang.String&nbsp;name,
     <a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist,
     java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids,
-    java.time.Duration&nbsp;duration,
+    double&nbsp;duration,
     java.lang.String&nbsp;coverImage)</code></th>
 <td class="colLast">
 <div class="block">full song constructor</div>
@@ -261,33 +261,26 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#merge-ryzen.ownitall.classes.Song-">merge</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
-<td class="colLast">
-<div class="block">merge song into this song</div>
-</td>
-</tr>
-<tr id="i12" class="altColor">
-<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setArtist-ryzen.ownitall.classes.Artist-">setArtist</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)</code></th>
 <td class="colLast">
 <div class="block">set song artist</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setCoverImage-java.lang.String-">setCoverImage</a></span>&#8203;(java.lang.String&nbsp;coverImage)</code></th>
 <td class="colLast">
 <div class="block">set song coverimage (string)</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setCoverImage-java.net.URI-">setCoverImage</a></span>&#8203;(java.net.URI&nbsp;coverImage)</code></th>
 <td class="colLast">
 <div class="block">set song coverimage (URI)</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setDuration-long-java.time.temporal.ChronoUnit-">setDuration</a></span>&#8203;(long&nbsp;duration,
            java.time.temporal.ChronoUnit&nbsp;unit)</code></th>
@@ -295,12 +288,17 @@ extends java.lang.Object</pre>
 <div class="block">set songs duration</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setDuration-java.time.Duration-">setDuration</a></span>&#8203;(java.time.Duration&nbsp;duration)</code></th>
 <td class="colLast">
 <div class="block">set songs duration</div>
 </td>
+</tr>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Song.html#setName-java.lang.String-">setName</a></span>&#8203;(java.lang.String&nbsp;name)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
@@ -343,7 +341,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-java.time.Duration-java.lang.String-">
+<a name="Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-double-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -352,7 +350,7 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;Song&#8203;(java.lang.String&nbsp;name,
             <a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist,
             java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;ids,
-            java.time.Duration&nbsp;duration,
+            double&nbsp;duration,
             java.lang.String&nbsp;coverImage)</pre>
 <div class="block">full song constructor</div>
 <dl>
@@ -373,20 +371,6 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="merge-ryzen.ownitall.classes.Song-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>merge</h4>
-<pre>public&nbsp;void&nbsp;merge&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
-<div class="block">merge song into this song</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>song</code> - - song to merge</dd>
-</dl>
-</li>
-</ul>
 <a name="getName--">
 <!--   -->
 </a>
@@ -399,6 +383,15 @@ extends java.lang.Object</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- string song name</dd>
 </dl>
+</li>
+</ul>
+<a name="setName-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setName</h4>
+<pre>public&nbsp;void&nbsp;setName&#8203;(java.lang.String&nbsp;name)</pre>
 </li>
 </ul>
 <a name="setArtist-ryzen.ownitall.classes.Artist-">

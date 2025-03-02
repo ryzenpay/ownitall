@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -200,26 +200,20 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeCollectionData-java.lang.String-java.lang.String-java.io.File-java.net.URI-">writeCollectionData</a></span>&#8203;(java.lang.String&nbsp;folderName,
-                   java.lang.String&nbsp;data,
-                   java.io.File&nbsp;folder,
-                   java.net.URI&nbsp;coverImage)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeData-java.lang.String-java.lang.String-java.lang.String-java.io.File-">writeData</a></span>&#8203;(java.lang.String&nbsp;fileName,
+         java.lang.String&nbsp;extension,
+         java.lang.String&nbsp;data,
+         java.io.File&nbsp;folder)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeM3U-java.lang.String-java.lang.String-java.io.File-">writeM3U</a></span>&#8203;(java.lang.String&nbsp;fileName,
-        java.lang.String&nbsp;M3UData,
-        java.io.File&nbsp;folder)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.io.File-">writeMetaData</a></span>&#8203;(java.lang.String&nbsp;songName,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.lang.String-java.io.File-">writeMetaData</a></span>&#8203;(java.lang.String&nbsp;songName,
              java.lang.String&nbsp;artistName,
              java.net.URI&nbsp;coverImage,
              boolean&nbsp;liked,
              java.lang.String&nbsp;albumName,
+             java.lang.String&nbsp;mbid,
              java.io.File&nbsp;songFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -294,35 +288,24 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="writeCollectionData-java.lang.String-java.lang.String-java.io.File-java.net.URI-">
+<a name="writeData-java.lang.String-java.lang.String-java.lang.String-java.io.File-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>writeCollectionData</h4>
-<pre>public static&nbsp;void&nbsp;writeCollectionData&#8203;(java.lang.String&nbsp;folderName,
-                                       java.lang.String&nbsp;data,
-                                       java.io.File&nbsp;folder,
-                                       java.net.URI&nbsp;coverImage)</pre>
-</li>
-</ul>
-<a name="writeM3U-java.lang.String-java.lang.String-java.io.File-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>writeM3U</h4>
-<pre>public static&nbsp;void&nbsp;writeM3U&#8203;(java.lang.String&nbsp;fileName,
-                            java.lang.String&nbsp;M3UData,
-                            java.io.File&nbsp;folder)
-                     throws java.lang.Exception</pre>
+<h4>writeData</h4>
+<pre>public static&nbsp;void&nbsp;writeData&#8203;(java.lang.String&nbsp;fileName,
+                             java.lang.String&nbsp;extension,
+                             java.lang.String&nbsp;data,
+                             java.io.File&nbsp;folder)
+                      throws java.lang.Exception</pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.Exception</code></dd>
 </dl>
 </li>
 </ul>
-<a name="writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.io.File-">
+<a name="writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.lang.String-java.io.File-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -333,6 +316,7 @@ extends java.lang.Object</pre>
                                  java.net.URI&nbsp;coverImage,
                                  boolean&nbsp;liked,
                                  java.lang.String&nbsp;albumName,
+                                 java.lang.String&nbsp;mbid,
                                  java.io.File&nbsp;songFile)
                           throws java.lang.Exception</pre>
 <dl>

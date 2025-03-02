@@ -93,7 +93,7 @@ var pathtoroot = "./";loadScripts(document, 'script');</script>
 $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 //-->
 </script>
-<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Y">Y</a>&nbsp;<a name="I:A">
+<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Y">Y</a>&nbsp;<a name="I:A">
 <!--   -->
 </a>
 <h2 class="title">A</h2>
@@ -115,6 +115,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">add artists to album artists</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#addId-java.lang.String-java.lang.String-">addId(String, String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">add id to song</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#addId-java.lang.String-java.lang.String-">addId(String, String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
 <div class="block">add id to playlist id's</div>
@@ -122,6 +126,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#addId-java.lang.String-java.lang.String-">addId(String, String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
 <div class="block">add id to song</div>
+</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#addIds-java.util.LinkedHashMap-">addIds(LinkedHashMap&lt;String, String&gt;)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">add multiple ids to artist</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#addIds-java.util.LinkedHashMap-">addIds(LinkedHashMap&lt;String, String&gt;)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
@@ -173,6 +181,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#albumFile">albumFile</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#albums">albums</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#archive-boolean-">archive(boolean)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
 <dd>
 <div class="block">create archive folder (current date) in dataPath and move all current files
@@ -184,26 +194,34 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">default artist constructor</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#Artist-java.lang.String-java.util.LinkedHashMap-java.lang.String-">Artist(String, LinkedHashMap&lt;String, String&gt;, String)</a></span> - Constructor for class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#artistFile">artistFile</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#artists">artists</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>
+<div class="block">arrays to save api queries if they already exist</div>
+</dd>
 </dl>
 <a name="I:C">
 <!--   -->
 </a>
 <h2 class="title">C</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheAlbums-java.util.LinkedHashSet-">cacheAlbums(LinkedHashSet&lt;Album&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#cache--">cache()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
 <dd>
-<div class="block">cache albums
- ^ syncs with local files</div>
+<div class="block">dump all data into cache</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheAlbums-java.util.LinkedHashMap-">cacheAlbums(LinkedHashMap&lt;String, Album&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheArtists-java.util.LinkedHashMap-">cacheArtists(LinkedHashMap&lt;String, Artist&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#cacheFolderPath">cacheFolderPath</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheSongs-java.util.LinkedHashSet-">cacheSongs(LinkedHashSet&lt;Song&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
-<dd>
-<div class="block">cache songs
- ^ syncs with local files</div>
-</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheIds-java.util.LinkedHashMap-">cacheIds(LinkedHashMap&lt;String, String&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#cacheSongs-java.util.LinkedHashMap-">cacheSongs(LinkedHashMap&lt;String, Song&gt;)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Settings.html#changeSettings--">changeSettings()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Settings.html" title="class in ryzen.ownitall.util">Settings</a></dt>
 <dd>
 <div class="block">print menu of settings and values, prompt user for which to change</div>
@@ -213,7 +231,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">check if library has an instance
  to prevent setting it up and logging in when clearing</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#cleanFolder-java.io.File-">cleanFolder(File)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#cleanFolder-java.io.File-">cleanFolder(File)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/LikedSongs.html#clear--">clear()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a></dt>
 <dd>
@@ -235,6 +253,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">clear cache files</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#clearInventory--">clearInventory()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Menu.html#clearScreen--">clearScreen()</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Menu.html" title="class in ryzen.ownitall.util">Menu</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Settings.html#clearSettings-java.lang.String-">clearSettings(String)</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Settings.html" title="class in ryzen.ownitall.util">Settings</a></dt>
@@ -257,7 +277,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Levenshtein.html#computeSimilarityCheck-java.lang.String-java.lang.String-double-">computeSimilarityCheck(String, String, double)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Levenshtein.html" title="class in ryzen.ownitall.util">Levenshtein</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#constructAlbum-java.io.File-">constructAlbum(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#constructAlbum-java.io.File-">constructAlbum(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">construct Album class from an album folder</div>
 </dd>
@@ -284,16 +304,16 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">default file names (without extensions)</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Download</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dt><a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Download</span></a> - Class in <a href="ryzen/ownitall/methods/package-summary.html">ryzen.ownitall.methods</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#Download--">Download()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#Download--">Download()</a></span> - Constructor for class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>
 <div class="block">default download constructor
  setting all settings / credentials</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadAlbum-ryzen.ownitall.classes.Album-">downloadAlbum(Album)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadAlbum-ryzen.ownitall.classes.Album-">downloadAlbum(Album)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadAlbums--">downloadAlbums()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadAlbums--">downloadAlbums()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#downloadCookiesBrowser">downloadCookiesBrowser</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>
@@ -321,19 +341,19 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#downloadImage-java.net.URI-java.io.File-">downloadImage(URI, File)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadLikedSongs--">downloadLikedSongs()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadLikedSongs--">downloadLikedSongs()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>
 <div class="block">orchestrator of DownloadSong for all standalone liked songs</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/menu/DownloadMenu.html" title="class in ryzen.ownitall.library.menu"><span class="typeNameLink">DownloadMenu</span></a> - Class in <a href="ryzen/ownitall/library/menu/package-summary.html">ryzen.ownitall.library.menu</a></dt>
+<dt><a href="ryzen/ownitall/methods/menu/DownloadMenu.html" title="class in ryzen.ownitall.methods.menu"><span class="typeNameLink">DownloadMenu</span></a> - Class in <a href="ryzen/ownitall/methods/menu/package-summary.html">ryzen.ownitall.methods.menu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/DownloadMenu.html#DownloadMenu--">DownloadMenu()</a></span> - Constructor for class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/DownloadMenu.html" title="class in ryzen.ownitall.library.menu">DownloadMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/DownloadMenu.html#DownloadMenu--">DownloadMenu()</a></span> - Constructor for class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/DownloadMenu.html" title="class in ryzen.ownitall.methods.menu">DownloadMenu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadPlaylist-ryzen.ownitall.classes.Playlist-">downloadPlaylist(Playlist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadPlaylist-ryzen.ownitall.classes.Playlist-">downloadPlaylist(Playlist)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>
 <div class="block">orchestrator for downloading a playlist</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadPlaylists--">downloadPlaylists()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadPlaylists--">downloadPlaylists()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>
 <div class="block">orchestrator of downloadPlaylist</div>
 </dd>
@@ -343,7 +363,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
  0 - best, 10 - worst
  also respectfully increases file size</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#downloadSong-ryzen.ownitall.classes.Song-java.io.File-">downloadSong(Song, File)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#downloadSong-ryzen.ownitall.classes.Song-java.io.File-">downloadSong(Song, File)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>
 <div class="block">download a specified song</div>
 </dd>
@@ -410,13 +430,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dl>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Input.html#getAgreement--">getAgreement()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#getAlbum-java.io.File-">getAlbum(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#getAlbum-java.io.File-">getAlbum(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getAlbum-java.lang.String-java.lang.String-">getAlbum(String, String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
-<dd>
-<div class="block">get constructed album backed up with music library</div>
-</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getAlbum-java.lang.String-java.lang.String-java.lang.String-java.lang.String-">getAlbum(String, String, String, String)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getAlbum-java.lang.String-">getAlbum(String)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getAlbum-java.lang.String-java.lang.String-java.lang.String-">getAlbum(String, String, String)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getAlbum-java.util.LinkedHashSet-ryzen.ownitall.classes.Album-">getAlbum(LinkedHashSet&lt;Album&gt;, Album)</a></span> - Static method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
@@ -426,23 +444,29 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">get album from collection</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum(Album)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/LastFM.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum(Album)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library">LastFM</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum(Album)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getAlbumFile--">getAlbumFile()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getAlbumId-ryzen.ownitall.classes.Album-">getAlbumId(Album)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getAlbumId-ryzen.ownitall.classes.Album-">getAlbumId(Album)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getAlbums--">getAlbums()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">get this collections albums</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getAlbums--">getAlbums()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getAlbums--">getAlbums()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">get all current user saved albums and add them to collection</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Youtube.html#getAlbums--">getAlbums()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Youtube.html" title="class in ryzen.ownitall.library">Youtube</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Youtube.html#getAlbums--">getAlbums()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Youtube.html" title="class in ryzen.ownitall.methods">Youtube</a></dt>
 <dd>
 <div class="block">save all youtube albums to collection</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getAlbumSongs-java.lang.String-int-">getAlbumSongs(String, int)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getAlbumSongs-java.lang.String-int-">getAlbumSongs(String, int)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">get all songs in an album</div>
 </dd>
@@ -454,7 +478,17 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">get song artist</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getArtistFile--">getArtistFile()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getArtist-java.lang.String-">getArtist(String)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist(Artist)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/LastFM.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist(Artist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library">LastFM</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist(Artist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getArtistAlbums-ryzen.ownitall.classes.Artist-">getArtistAlbums(Artist)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/LastFM.html#getArtistAlbums-ryzen.ownitall.classes.Artist-">getArtistAlbums(Artist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library">LastFM</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Album.html#getArtists--">getArtists()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></dt>
 <dd>
@@ -466,9 +500,13 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Input.html#getChar--">getChar()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#getCoverImage--">getCoverImage()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">get coverimage</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getCoverImage--">getCoverImage()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
-<div class="block">get coverart of current playlist class</div>
+<div class="block">get coverimage of current playlist class</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#getCoverImage--">getCoverImage()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
@@ -484,7 +522,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getDownloadFormat--">getDownloadFormat()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#getDownloadPath--">getDownloadPath()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#getDownloadPath--">getDownloadPath()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getDownloadQuality--">getDownloadQuality()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -513,6 +551,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">get playlist folder name
  respects UTF-8</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#getId-java.lang.String-">getId(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">get artist id</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getId-java.lang.String-">getId(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
 <div class="block">get id from playlist id's</div>
@@ -520,6 +562,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#getId-java.lang.String-">getId(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
 <div class="block">get song id</div>
+</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#getIds--">getIds()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">get all artist id's</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getIds--">getIds()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
@@ -535,29 +581,33 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#getLastFMApiKey--">getLastFMApiKey()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getLikedSongFile--">getLikedSongFile()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getLibrayType--">getLibrayType()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getLikedSongName--">getLikedSongName()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getLikedSongFile--">getLikedSongFile()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">get this collections likedsongs</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">Get all liked songs from current spotify account and add them to collection</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">Get local liked songs and put them in collection
  current criteria:
+ - exclude all below and only look at metadata rating if download hierachy set
+ to false
  - songs in root folder (library path)
  - folder named "liked songs" (changeable in settings)</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Youtube.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Youtube.html" title="class in ryzen.ownitall.library">Youtube</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Youtube.html#getLikedSongs--">getLikedSongs()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Youtube.html" title="class in ryzen.ownitall.methods">Youtube</a></dt>
 <dd>
 <div class="block">save all youtube liked songs to collection</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getLikedSongsName--">getLikedSongsName()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Input.html#getLong--">getLong()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getM3UHeader--">getM3UHeader()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
@@ -584,9 +634,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">get .nfo data for album</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#getPlaylist-java.io.File-">getPlaylist(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#getPlaylist-java.io.File-">getPlaylist(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getPlaylist-java.lang.String-java.lang.String-java.lang.String-">getPlaylist(String, String, String)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getPlaylist-java.lang.String-java.lang.String-java.lang.String-">getPlaylist(String, String, String)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getPlaylist-java.util.LinkedHashSet-ryzen.ownitall.classes.Playlist-">getPlaylist(LinkedHashSet&lt;Playlist&gt;, Playlist)</a></span> - Static method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
@@ -604,18 +654,18 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">get this collections playlists</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getPlaylists--">getPlaylists()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getPlaylists--">getPlaylists()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">get all playlists contributed by current spotify user and add them to
  collection</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Youtube.html#getPlaylists--">getPlaylists()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Youtube.html" title="class in ryzen.ownitall.library">Youtube</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Youtube.html#getPlaylists--">getPlaylists()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Youtube.html" title="class in ryzen.ownitall.methods">Youtube</a></dt>
 <dd>
 <div class="block">get saved youtube playlists
  current criteria:
  - gets all videos from any playlist with category id 10</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getPlaylistSongs-java.lang.String-int-">getPlaylistSongs(String, int)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getPlaylistSongs-java.lang.String-int-">getPlaylistSongs(String, int)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">get all songs from a playlist</div>
 </dd>
@@ -623,14 +673,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getSimilarityPercentage--">getSimilarityPercentage()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#getSong-java.io.File-">getSong(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#getSong-java.io.File-">getSong(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">getting metadata from music file</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getSong-java.lang.String-java.lang.String-">getSong(String, String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
-<dd>
-<div class="block">construct a song using the LastFM api and their search.</div>
-</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getSong-java.lang.String-">getSong(String)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getSong-java.util.LinkedHashSet-ryzen.ownitall.classes.Song-">getSong(LinkedHashSet&lt;Song&gt;, Song)</a></span> - Static method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">get specific song from linkedhashset</div>
@@ -639,17 +687,21 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">get song in playlist</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#getSong-ryzen.ownitall.classes.Song-">getSong(Song)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/LastFM.html#getSong-ryzen.ownitall.classes.Song-">getSong(Song)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library">LastFM</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#getSong-ryzen.ownitall.classes.Song-">getSong(Song)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getSongAlbum-ryzen.ownitall.classes.Song-">getSongAlbum(Song)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">check if song is already in an album, and if so return the album folder</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getSongFile--">getSongFile()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getSongs--">getSongs()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
 <div class="block">get all playlist songs</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#getSongs-java.io.File-">getSongs(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#getSongs-java.io.File-">getSongs(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">get all songs in a folder</div>
 </dd>
@@ -683,15 +735,19 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">function to get standalone liked songs (not in any albums or playlists)</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#getStandalonePlaylistSongs-ryzen.ownitall.classes.Playlist-">getStandalonePlaylistSongs(Playlist)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Input.html#getString--">getString()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#getTotalDuration--">getTotalDuration()</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
 <div class="block">get total playlist duration</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#getTrackId-ryzen.ownitall.classes.Song-">getTrackId(Song)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#getTrackId-ryzen.ownitall.classes.Song-">getTrackId(Song)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#getUploadFolder--">getUploadFolder()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Input.html#getURL--">getURL()</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#getYoutubeApplicationName--">getYoutubeApplicationName()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
@@ -729,6 +785,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a>
 <h2 class="title">I</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#ids">ids</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Sync.html#importAlbums--">importAlbums()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Sync.html" title="class in ryzen.ownitall">Sync</a></dt>
 <dd>
 <div class="block">import saved albums</div>
@@ -758,7 +816,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><a href="ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Input</span></a> - Class in <a href="ryzen/ownitall/util/package-summary.html">ryzen.ownitall.util</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#isAlbum-java.io.File-">isAlbum(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#isAlbum-java.io.File-">isAlbum(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">function to check if folder is an album
  current criteria: all mp3's with metadata say the same album</div>
@@ -773,7 +831,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#isLibraryVerified--">isLibraryVerified()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#isLiked-java.io.File-">isLiked(File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#isLiked-java.io.File-">isLiked(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#isLiked-ryzen.ownitall.classes.Song-">isLiked(Song)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
@@ -783,17 +841,22 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#isSpotifyShowDialog--">isSpotifyShowDialog()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#isUseLibrary--">isUseLibrary()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <a name="I:L">
 <!--   -->
 </a>
 <h2 class="title">L</h2>
 <dl>
+<dt><a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">LastFM</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/LastFM.html#LastFM--">LastFM()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/LastFM.html" title="class in ryzen.ownitall.library">LastFM</a></dt>
+<dd>
+<div class="block">default LastFM constructor
+ initializes all values and loads from cache</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#lastFMApiKey">lastFMApiKey</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>
-<div class="block">Last FM credentials</div>
+<div class="block">Last FM Credentials</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#lastFMIsEmpty--">lastFMIsEmpty()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>
@@ -810,13 +873,18 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">default Library constructor
  initializes all values and loads from cache</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#libraryType">libraryType</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dd>
+<div class="block">int representative of which library to use
+ 0 - dont use library
+ 1 - lastFM
+ 2 - musicBrainz</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#libraryVerified">libraryVerified</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>
 <div class="block">only put songs in collection if they are library verified</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#likedSongFile">likedSongFile</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#likedSongName">likedSongName</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes"><span class="typeNameLink">LikedSongs</span></a> - Class in <a href="ryzen/ownitall/classes/package-summary.html">ryzen.ownitall.classes</a></dt>
 <dd>&nbsp;</dd>
@@ -824,6 +892,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">LikedSongs construcor with no songs</div>
 </dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#likedSongsName">likedSongsName</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#load--">load()</a></span> - Static method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">initialize collection instance</div>
@@ -872,14 +942,17 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">merge playlist into current playlist
  used when existing playlist found and want to add new</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#merge-ryzen.ownitall.classes.Song-">merge(Song)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
-<dd>
-<div class="block">merge song into this song</div>
-</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Collection.html#mergeCollection-ryzen.ownitall.Collection-">mergeCollection(Collection)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></dt>
 <dd>
 <div class="block">merge a collection into the current collection
  orchestrates the merge albums, playlists and liked songs</div>
+</dd>
+<dt><a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">MusicBrainz</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#MusicBrainz--">MusicBrainz()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>
+<div class="block">default MusicBrainz constructor
+ initializes all values and loads from cache</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#musicTime-java.time.Duration-">musicTime(Duration)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
 <dd>
@@ -925,9 +998,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Menu.html#printLogo--">printLogo()</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Menu.html" title="class in ryzen.ownitall.util">Menu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#processFolders--">processFolders()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#processFolders--">processFolders()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#processM3U-java.io.File-">processM3U(File)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#processM3U-java.io.File-">processM3U(File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Progressbar.html#progressBar-java.lang.String-int-">progressBar(String, int)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Progressbar.html" title="class in ryzen.ownitall.util">Progressbar</a></dt>
 <dd>
@@ -938,12 +1011,22 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Progressbar.html#Progressbar--">Progressbar()</a></span> - Constructor for class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Progressbar.html" title="class in ryzen.ownitall.util">Progressbar</a></dt>
 <dd>&nbsp;</dd>
 </dl>
+<a name="I:Q">
+<!--   -->
+</a>
+<h2 class="title">Q</h2>
+<dl>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#query-java.net.URI-">query(URI)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#queryDiff">queryDiff</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
+<dd>&nbsp;</dd>
+</dl>
 <a name="I:R">
 <!--   -->
 </a>
 <h2 class="title">R</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#refreshToken--">refreshToken()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#refreshToken--">refreshToken()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">refresh the spotify api token incase of expiring</div>
 </dd>
@@ -971,7 +1054,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a> - package ryzen.ownitall.library</dt>
 <dd>&nbsp;</dd>
-<dt><a href="ryzen/ownitall/library/menu/package-summary.html">ryzen.ownitall.library.menu</a> - package ryzen.ownitall.library.menu</dt>
+<dt><a href="ryzen/ownitall/methods/package-summary.html">ryzen.ownitall.methods</a> - package ryzen.ownitall.methods</dt>
+<dd>&nbsp;</dd>
+<dt><a href="ryzen/ownitall/methods/menu/package-summary.html">ryzen.ownitall.methods.menu</a> - package ryzen.ownitall.methods.menu</dt>
 <dd>&nbsp;</dd>
 <dt><a href="ryzen/ownitall/util/package-summary.html">ryzen.ownitall.util</a> - package ryzen.ownitall.util</dt>
 <dd>&nbsp;</dd>
@@ -989,10 +1074,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#save--">save()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#save--">save()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
-<dd>
-<div class="block">dump all data into cache</div>
-</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#save--">save()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Settings.html#save-java.lang.String-">save(String)</a></span> - Method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Settings.html" title="class in ryzen.ownitall.util">Settings</a></dt>
@@ -1004,24 +1085,20 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">to save credentials of anything 3rd party logins (youtube, spotify etc)
  to prevent having to provide them each time</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#searchAlbum-java.lang.String-java.lang.String-">searchAlbum(String, String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
-<dd>
-<div class="block">do a lastfm search for the album</div>
-</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#searchSong-java.lang.String-java.lang.String-">searchSong(String, String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
-<dd>
-<div class="block">search lastFM for song</div>
-</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/MusicBrainz.html#searchArtist-ryzen.ownitall.classes.Artist-">searchArtist(Artist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library">MusicBrainz</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setAlbumFile-java.lang.String-">setAlbumFile(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#setArtist-ryzen.ownitall.classes.Artist-">setArtist(Artist)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
 <div class="block">set song artist</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setArtistFile-java.lang.String-">setArtistFile(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setCacheFolderPath-java.lang.String-">setCacheFolderPath(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#setCoverImage-java.lang.String-">setCoverImage(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">set artist coverimage (string)</div>
+</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#setCoverImage-java.lang.String-">setCoverImage(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>
 <div class="block">set playlist cover art</div>
@@ -1029,6 +1106,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#setCoverImage-java.lang.String-">setCoverImage(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
 <div class="block">set song coverimage (string)</div>
+</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#setCoverImage-java.net.URI-">setCoverImage(URI)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>
+<div class="block">set song coverimage (URI)</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#setCoverImage-java.net.URI-">setCoverImage(URI)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
 <dd>&nbsp;</dd>
@@ -1068,9 +1149,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setFfmpegPath-java.lang.String-">setFfmpegPath(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setLastFMApiKey-java.lang.String-">setLastFMApiKey(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setLastFMCredentials--">setLastFMCredentials()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setLibraryType-int-">setLibraryType(int)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setLibraryVerified-boolean-">setLibraryVerified(boolean)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1078,21 +1159,21 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setLikedSongName-java.lang.String-">setLikedSongName(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Artist.html#setName-java.lang.String-">setName(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#setName-java.lang.String-">setName(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#setName-java.lang.String-">setName(String)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setPlaylistFile-java.lang.String-">setPlaylistFile(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSaveCredentials-boolean-">setSaveCredentials(boolean)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSimilarityPercentage-double-">setSimilarityPercentage(double)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSongFile-java.lang.String-">setSongFile(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSoundCloudAlbumLimit-int-">setSoundCloudAlbumLimit(int)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSoundCloudAlbumLimit-java.lang.Integer-">setSoundCloudAlbumLimit(Integer)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSoundCloudClientId-java.lang.String-">setSoundCloudClientId(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSoundCloudClientSecret-java.lang.String-">setSoundCloudClientSecret(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSoundCloudPlaylistLimit-int-">setSoundCloudPlaylistLimit(int)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1106,10 +1187,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSpotifyAlbumLimit-java.lang.Integer-">setSpotifyAlbumLimit(Integer)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSpotifyClientId-java.lang.String-">setSpotifyClientId(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSpotifyClientSecret-java.lang.String-">setSpotifyClientSecret(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSpotifyCredentials--">setSpotifyCredentials()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Playlist.html#setSpotifyPageOffset-int-">setSpotifyPageOffset(int)</a></span> - Method in class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></dt>
@@ -1119,8 +1196,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSpotifyPlaylistLimit-int-">setSpotifyPlaylistLimit(int)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSpotifyPlaylistLimit-java.lang.Integer-">setSpotifyPlaylistLimit(Integer)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setSpotifyRedirectUrl-java.lang.String-">setSpotifyRedirectUrl(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setSpotifyShowDialog-boolean-">setSpotifyShowDialog(boolean)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1141,14 +1216,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/util/Settings.html#Settings--">Settings()</a></span> - Constructor for class ryzen.ownitall.util.<a href="ryzen/ownitall/util/Settings.html" title="class in ryzen.ownitall.util">Settings</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setUploadFolder-java.lang.String-">setUploadFolder(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#setUseLibrary-boolean-">setUseLibrary(boolean)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setYoutubeApplicationName-java.lang.String-">setYoutubeApplicationName(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setYoutubeClientId-java.lang.String-">setYoutubeClientId(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setYoutubeClientSecret-java.lang.String-">setYoutubeClientSecret(String)</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#setYoutubeCredentials--">setYoutubeCredentials()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
@@ -1181,11 +1248,13 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">default song constructor</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-java.time.Duration-java.lang.String-">Song(String, Artist, LinkedHashMap&lt;String, String&gt;, Duration, String)</a></span> - Constructor for class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/classes/Song.html#Song-java.lang.String-ryzen.ownitall.classes.Artist-java.util.LinkedHashMap-double-java.lang.String-">Song(String, Artist, LinkedHashMap&lt;String, String&gt;, double, String)</a></span> - Constructor for class ryzen.ownitall.classes.<a href="ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></dt>
 <dd>
 <div class="block">full song constructor</div>
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#songFile">songFile</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/Library.html#songs">songs</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#soundCloudAlbumLimit">soundCloudAlbumLimit</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1203,9 +1272,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">to limit number of songs in each soundcloud API batch query</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Spotify</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dt><a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Spotify</span></a> - Class in <a href="ryzen/ownitall/methods/package-summary.html">ryzen.ownitall.methods</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#Spotify--">Spotify()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#Spotify--">Spotify()</a></span> - Constructor for class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">Default spotify constructor asking for user input</div>
 </dd>
@@ -1217,17 +1286,17 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#spotifyClientSecret">spotifyClientSecret</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/SpotifyMenu.html#spotifyExportMenu--">spotifyExportMenu()</a></span> - Method in class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/SpotifyMenu.html" title="class in ryzen.ownitall.library.menu">SpotifyMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/SpotifyMenu.html#spotifyExportMenu--">spotifyExportMenu()</a></span> - Method in class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/SpotifyMenu.html" title="class in ryzen.ownitall.methods.menu">SpotifyMenu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/SpotifyMenu.html#spotifyImportMenu--">spotifyImportMenu()</a></span> - Method in class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/SpotifyMenu.html" title="class in ryzen.ownitall.library.menu">SpotifyMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/SpotifyMenu.html#spotifyImportMenu--">spotifyImportMenu()</a></span> - Method in class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/SpotifyMenu.html" title="class in ryzen.ownitall.methods.menu">SpotifyMenu</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#spotifyIsEmpty--">spotifyIsEmpty()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>
 <div class="block">check if spotify credentials empty (if successfully initialized)</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/menu/SpotifyMenu.html" title="class in ryzen.ownitall.library.menu"><span class="typeNameLink">SpotifyMenu</span></a> - Class in <a href="ryzen/ownitall/library/menu/package-summary.html">ryzen.ownitall.library.menu</a></dt>
+<dt><a href="ryzen/ownitall/methods/menu/SpotifyMenu.html" title="class in ryzen.ownitall.methods.menu"><span class="typeNameLink">SpotifyMenu</span></a> - Class in <a href="ryzen/ownitall/methods/menu/package-summary.html">ryzen.ownitall.methods.menu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/SpotifyMenu.html#SpotifyMenu--">SpotifyMenu()</a></span> - Constructor for class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/SpotifyMenu.html" title="class in ryzen.ownitall.library.menu">SpotifyMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/SpotifyMenu.html#SpotifyMenu--">SpotifyMenu()</a></span> - Constructor for class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/SpotifyMenu.html" title="class in ryzen.ownitall.methods.menu">SpotifyMenu</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#spotifyPlaylistLimit">spotifyPlaylistLimit</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1243,7 +1312,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">to limit number of songs in each spotify API batch query</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#startLocalServer--">startLocalServer()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#startLocalServer--">startLocalServer()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>
 <div class="block">start temporary local server to "intercept" spotify api code</div>
 </dd>
@@ -1259,11 +1328,11 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a>
 <h2 class="title">T</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#threadDownload-ryzen.ownitall.classes.Song-java.io.File-">threadDownload(Song, File)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#threadDownload-ryzen.ownitall.classes.Song-java.io.File-">threadDownload(Song, File)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#threadInit--">threadInit()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#threadInit--">threadInit()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#threadShutdown--">threadShutdown()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#threadShutdown--">threadShutdown()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="ryzen/ownitall/Tools.html" title="class in ryzen.ownitall"><span class="typeNameLink">Tools</span></a> - Class in <a href="ryzen/ownitall/package-summary.html">ryzen.ownitall</a></dt>
 <dd>&nbsp;</dd>
@@ -1291,45 +1360,43 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
  to unarchive
  also archives current files with todays date to prevent data loss</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Upload</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dt><a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Upload</span></a> - Class in <a href="ryzen/ownitall/methods/package-summary.html">ryzen.ownitall.methods</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Upload.html#Upload--">Upload()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Upload.html" title="class in ryzen.ownitall.library">Upload</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Upload.html#Upload--">Upload()</a></span> - Constructor for class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Upload.html" title="class in ryzen.ownitall.methods">Upload</a></dt>
 <dd>
 <div class="block">default local constructor asking for library path</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#uploadAlbums--">uploadAlbums()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#uploadAlbums--">uploadAlbums()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#uploadFolder">uploadFolder</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>
 <div class="block">optional to hardcode local upload path</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#uploadLikedSongs--">uploadLikedSongs()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#uploadLikedSongs--">uploadLikedSongs()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="ryzen/ownitall/library/menu/UploadMenu.html" title="class in ryzen.ownitall.library.menu"><span class="typeNameLink">UploadMenu</span></a> - Class in <a href="ryzen/ownitall/library/menu/package-summary.html">ryzen.ownitall.library.menu</a></dt>
+<dt><a href="ryzen/ownitall/methods/menu/UploadMenu.html" title="class in ryzen.ownitall.methods.menu"><span class="typeNameLink">UploadMenu</span></a> - Class in <a href="ryzen/ownitall/methods/menu/package-summary.html">ryzen.ownitall.methods.menu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/UploadMenu.html#UploadMenu--">UploadMenu()</a></span> - Constructor for class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/UploadMenu.html" title="class in ryzen.ownitall.library.menu">UploadMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/UploadMenu.html#UploadMenu--">UploadMenu()</a></span> - Constructor for class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/UploadMenu.html" title="class in ryzen.ownitall.methods.menu">UploadMenu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#uploadPlaylist-ryzen.ownitall.classes.Playlist-">uploadPlaylist(Playlist)</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#uploadPlaylist-ryzen.ownitall.classes.Playlist-">uploadPlaylist(Playlist)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Spotify.html#uploadPlaylists--">uploadPlaylists()</a></span> - Method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Spotify.html" title="class in ryzen.ownitall.library">Spotify</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Spotify.html#uploadPlaylists--">uploadPlaylists()</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods">Spotify</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#useLibrary">useLibrary</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
-<dd>
-<div class="block">if to use lastFM to fact check all data</div>
-</dd>
 </dl>
 <a name="I:W">
 <!--   -->
 </a>
 <h2 class="title">W</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#writeCollectionData-java.lang.String-java.lang.String-java.io.File-java.net.URI-">writeCollectionData(String, String, File, URI)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#writeAlbumData-ryzen.ownitall.classes.Album-java.io.File-">writeAlbumData(Album, File)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#writeM3U-java.lang.String-java.lang.String-java.io.File-">writeM3U(String, String, File)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#writeData-java.lang.String-java.lang.String-java.lang.String-java.io.File-">writeData(String, String, String, File)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.io.File-">writeMetaData(String, String, URI, boolean, String, File)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/util/MusicTools.html#writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.lang.String-java.io.File-">writeMetaData(String, String, URI, boolean, String, String, File)</a></span> - Static method in class ryzen.ownitall.util.<a href="ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util">MusicTools</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Download.html#writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">writeMetaData(Song, File)</a></span> - Static method in class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Download.html" title="class in ryzen.ownitall.library">Download</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">writeMetaData(Song, File)</a></span> - Static method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Download.html#writePlaylistData-ryzen.ownitall.classes.Playlist-java.io.File-">writePlaylistData(Playlist, File)</a></span> - Method in class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Download.html" title="class in ryzen.ownitall.methods">Download</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:Y">
@@ -1337,9 +1404,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a>
 <h2 class="title">Y</h2>
 <dl>
-<dt><a href="ryzen/ownitall/library/Youtube.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Youtube</span></a> - Class in <a href="ryzen/ownitall/library/package-summary.html">ryzen.ownitall.library</a></dt>
+<dt><a href="ryzen/ownitall/methods/Youtube.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Youtube</span></a> - Class in <a href="ryzen/ownitall/methods/package-summary.html">ryzen.ownitall.methods</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/Youtube.html#Youtube--">Youtube()</a></span> - Constructor for class ryzen.ownitall.library.<a href="ryzen/ownitall/library/Youtube.html" title="class in ryzen.ownitall.library">Youtube</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/Youtube.html#Youtube--">Youtube()</a></span> - Constructor for class ryzen.ownitall.methods.<a href="ryzen/ownitall/methods/Youtube.html" title="class in ryzen.ownitall.methods">Youtube</a></dt>
 <dd>
 <div class="block">default youtube constructor asking for user input</div>
 </dd>
@@ -1355,15 +1422,15 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">youtube dl installation path</div>
 </dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/YoutubeMenu.html#youtubeImportMenu--">youtubeImportMenu()</a></span> - Method in class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/YoutubeMenu.html" title="class in ryzen.ownitall.library.menu">YoutubeMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/YoutubeMenu.html#youtubeImportMenu--">youtubeImportMenu()</a></span> - Method in class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/YoutubeMenu.html" title="class in ryzen.ownitall.methods.menu">YoutubeMenu</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Credentials.html#youtubeIsEmpty--">youtubeIsEmpty()</a></span> - Method in class ryzen.ownitall.<a href="ryzen/ownitall/Credentials.html" title="class in ryzen.ownitall">Credentials</a></dt>
 <dd>
 <div class="block">check if youtube credentials empty (if successfully initialized)</div>
 </dd>
-<dt><a href="ryzen/ownitall/library/menu/YoutubeMenu.html" title="class in ryzen.ownitall.library.menu"><span class="typeNameLink">YoutubeMenu</span></a> - Class in <a href="ryzen/ownitall/library/menu/package-summary.html">ryzen.ownitall.library.menu</a></dt>
+<dt><a href="ryzen/ownitall/methods/menu/YoutubeMenu.html" title="class in ryzen.ownitall.methods.menu"><span class="typeNameLink">YoutubeMenu</span></a> - Class in <a href="ryzen/ownitall/methods/menu/package-summary.html">ryzen.ownitall.methods.menu</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="ryzen/ownitall/library/menu/YoutubeMenu.html#YoutubeMenu--">YoutubeMenu()</a></span> - Constructor for class ryzen.ownitall.library.menu.<a href="ryzen/ownitall/library/menu/YoutubeMenu.html" title="class in ryzen.ownitall.library.menu">YoutubeMenu</a></dt>
+<dt><span class="memberNameLink"><a href="ryzen/ownitall/methods/menu/YoutubeMenu.html#YoutubeMenu--">YoutubeMenu()</a></span> - Constructor for class ryzen.ownitall.methods.menu.<a href="ryzen/ownitall/methods/menu/YoutubeMenu.html" title="class in ryzen.ownitall.methods.menu">YoutubeMenu</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="ryzen/ownitall/Settings.html#youtubePlaylistLimit">youtubePlaylistLimit</a></span> - Variable in class ryzen.ownitall.<a href="ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -1372,7 +1439,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">to limit number of songs in each youtube API batch query</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Y">Y</a>&nbsp;</div>
+<a href="#I:A">A</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:Q">Q</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:W">W</a>&nbsp;<a href="#I:Y">Y</a>&nbsp;</div>
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
 <div class="bottomNav"><a name="navbar.bottom">
 <!--   -->

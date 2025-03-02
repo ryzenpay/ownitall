@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"ryzen.ownitall"},{"l":"ryzen.ownitall.classes"},{"l":"ryzen.ownitall.library"},{"l":"ryzen.ownitall.library.menu"},{"l":"ryzen.ownitall.util"}]
+packageSearchIndex = [{"l":"ryzen.ownitall"},{"l":"ryzen.ownitall.classes"},{"l":"ryzen.ownitall.library"},{"l":"ryzen.ownitall.methods"},{"l":"ryzen.ownitall.methods.menu"},{"l":"ryzen.ownitall.util"}]

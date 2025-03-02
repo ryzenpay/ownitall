@@ -186,4 +186,6 @@ public class DownloadMenu {
     }
 
     // TODO: jellyfin api
+    // log in with get user id + api key
+    // mark each liked song as favorite
 }
