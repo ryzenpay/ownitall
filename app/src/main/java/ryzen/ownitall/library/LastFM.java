@@ -104,8 +104,10 @@ public class LastFM extends Library {
                 } else {
                     logger.debug(album.toString() + ": album missing tracks: " + albumNode.toString());
                 }
-                this.albums.put(params.toString(), album);
-                return album;
+                if (album.size() != 0) {
+                    this.albums.put(params.toString(), album);
+                    return album;
+                }
             } else {
                 logger.debug(album.toString() + ": album.getInfo missing album: " + response.toString());
             }

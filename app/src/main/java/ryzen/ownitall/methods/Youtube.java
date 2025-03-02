@@ -203,6 +203,9 @@ public class Youtube {
                 }
                 pageToken = playlistResponse.getNextPageToken();
             } while (pageToken != null);
+
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting playlist");
         } catch (IOException e) {
             logger.error("Exception retrieving playlists: " + e);
         }
@@ -215,7 +218,7 @@ public class Youtube {
      * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
      */
-    private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) {
+    private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("null playlistID provided in getPlaylistSongs");
             return null;
@@ -238,16 +241,11 @@ public class Youtube {
                         Song song = new Song(snippet.getTitle());
                         song.setArtist(new Artist(this.getVideoChannel(videoId)));
                         if (library != null) {
-                            try {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
-                                }
-                            } catch (InterruptedException e) {
-                                logger.debug("Interrupted while getting youtube song");
-                                return null;
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
                             }
                         }
                         if (song != null) {
