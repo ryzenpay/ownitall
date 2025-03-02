@@ -104,6 +104,9 @@ public class Album extends Playlist {
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
+        if (song.getCoverImage() == null && this.getCoverImage() != null) {
+            song.setCoverImage(this.getCoverImage());
+        }
         super.addSong(song);
         this.addArtist(song.getArtist());
     }
