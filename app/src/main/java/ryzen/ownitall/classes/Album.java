@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.util.Levenshtein;
-
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
     private LinkedHashSet<Artist> artists;
@@ -104,6 +102,7 @@ public class Album extends Playlist {
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
+        // ensure every song in album has (default) coverimage
         if (song.getCoverImage() == null && this.getCoverImage() != null) {
             song.setCoverImage(this.getCoverImage());
         }
@@ -249,14 +248,12 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        // only valid if library used
-        if (this.getId("lastfm") != null && album.getId("lastfm") != null) {
-            if (this.getId("lastfm").equals(album.getId("lastfm"))) {
+        for (String id : this.getIds().keySet()) {
+            if (this.getId(id).equals(album.getId(id))) {
                 return true;
             }
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), album.toString(),
-                simularityPercentage)) {
+        if (this.toString().equals(album.toString())) {
             return true;
         }
         return false;

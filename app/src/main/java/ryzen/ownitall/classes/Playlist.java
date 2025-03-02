@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.util.Levenshtein;
 import ryzen.ownitall.util.MusicTools;
 
 import org.apache.logging.log4j.LogManager;
@@ -400,8 +399,7 @@ public class Playlist {
         if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
             return true;
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), playlist.toString(),
-                simularityPercentage)) {
+        if (this.toString().equals(playlist.toString())) {
             return true;
         }
         return false;

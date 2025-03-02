@@ -233,7 +233,6 @@ public class MusicBrainz extends Library {
             }
             this.songs.put(id, song);
             return song;
-            // TODO: get external links (spotify & youtube)
         }
         logger.info("Could not find Song '" + id + "' in library");
         return null;

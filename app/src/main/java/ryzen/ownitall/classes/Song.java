@@ -15,12 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.util.Levenshtein;
 import ryzen.ownitall.util.MusicTools;
 
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
-    private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private static final String downloadFormat = Settings.load().getDownloadFormat();
     private String name;
     private Artist artist;
@@ -241,6 +239,7 @@ public class Song {
     @JsonIgnore
     public String getFileName() {
         // TODO: just make hashcode to prevent conflicts?
+        // or place part / the hashcode into the filename
         return MusicTools.sanitizeFileName(this.getName()) + "." + downloadFormat;
     }
 
@@ -264,12 +263,12 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        if (this.getId("lastfm") != null && song.getId("lastfm") != null) {
-            if (this.getId("lastfm").equals(song.getId("lastfm"))) {
+        for (String id : this.getIds().keySet()) {
+            if (this.getId(id).equals(song.getId(id))) {
                 return true;
             }
         }
-        if (Levenshtein.computeSimilarityCheck(this.toString(), song.toString(), simularityPercentage)) {
+        if (this.toString().equals(song.toString())) {
             return true;
         }
         return false;

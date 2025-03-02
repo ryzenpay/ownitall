@@ -13,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.util.Levenshtein;
 
 public class Artist {
-    private static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
     private URI coverImage;
@@ -167,13 +165,12 @@ public class Artist {
         }
         Artist artist = (Artist) object;
         // only valid if library used
-        if (this.getId("lastfm") != null && artist.getId("lastfm") != null) {
-            if (this.getId("lastfm").equals(artist.getId("lastfm"))) {
+        for (String id : this.getIds().keySet()) {
+            if (this.getId(id).equals(artist.getId(id))) {
                 return true;
             }
         }
-        if (Levenshtein.computeSimilarityCheck(this.name.toString(), artist.toString(),
-                simularityPercentage)) {
+        if (this.toString().equals(artist.toString())) {
             return true;
         }
         return false;
