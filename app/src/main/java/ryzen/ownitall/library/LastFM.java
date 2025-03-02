@@ -101,7 +101,7 @@ public class LastFM extends Library {
                 logger.debug(album.toString() + ": album.getInfo missing album: " + response.toString());
             }
         }
-        logger.debug("Unable to find Album '" + album.toString() + "' in library ");
+        logger.info("Unable to find Album '" + album.toString() + "' in library ");
         return null;
     }
 
@@ -158,7 +158,7 @@ public class LastFM extends Library {
                 logger.debug(song.toString() + ": track.getInfo missing track: " + response.toString());
             }
         }
-        logger.debug("Unable to find song '" + song.toString() + "' in library");
+        logger.info("Unable to find song '" + song.toString() + "' in library");
         return null;
     }
 
@@ -194,7 +194,7 @@ public class LastFM extends Library {
                 logger.debug(artist.toString() + ": artist.getInfo missing artist");
             }
         }
-        logger.debug("Unable to find artist " + artist.toString() + " in Library");
+        logger.info("Unable to find artist " + artist.toString() + " in Library");
         return null;
     }
 
@@ -241,7 +241,7 @@ public class LastFM extends Library {
             }
         }
         if (albums.isEmpty()) {
-            logger.debug("Unable to find albums for '" + artist.getName() + "' in Library");
+            logger.info("Unable to find albums for '" + artist.getName() + "' in Library");
             return null;
         }
         return albums;
@@ -256,7 +256,7 @@ public class LastFM extends Library {
             }
             return builder.toString();
         } catch (Exception e) {
-            logger.error("Unalbe to build a query: " + e);
+            logger.error("Unable to build a query: " + e);
             return null;
         }
     }
@@ -282,7 +282,7 @@ public class LastFM extends Library {
                 return rootNode;
             }
         } catch (Exception e) {
-            logger.error("Error querying LastFM: " + e);
+            logger.error("Exception querying LastFM: " + e);
         }
         return null;
     }

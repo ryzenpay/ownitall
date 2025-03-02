@@ -154,7 +154,7 @@ public class Sync {
                 }
             }
             unarchiveFolder.delete();
-            logger.debug("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
+            logger.info("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
         }
         Collection collection = Collection.load();
         collection.clear();
@@ -169,7 +169,7 @@ public class Sync {
         this.setCacheFolder();
         for (File file : this.cacheFolder.listFiles()) {
             file.delete();
-            logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
+            logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
         }
     }
 
@@ -178,7 +178,7 @@ public class Sync {
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
-                logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
+                logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
             }
         }
     }

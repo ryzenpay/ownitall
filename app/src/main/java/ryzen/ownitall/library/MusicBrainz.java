@@ -76,7 +76,7 @@ public class MusicBrainz extends Library {
                 logger.debug("missing data in album search result " + response.toString());
             }
         }
-        logger.debug("Could not find Album '" + album.getName() + "' in Library");
+        logger.info("Could not find Album '" + album.getName() + "' in Library");
         return null;
     }
 
@@ -141,7 +141,7 @@ public class MusicBrainz extends Library {
             this.albums.put(id, album);
             return album;
         }
-        logger.debug("Unable to find Album: '" + id + "' in library");
+        logger.info("Unable to find Album: '" + id + "' in library");
         return null;
     }
 
@@ -193,7 +193,7 @@ public class MusicBrainz extends Library {
                 logger.error("Missing data while getting Song: " + response.toString());
             }
         }
-        logger.debug("Could not find song '" + song.getName() + "' in library");
+        logger.info("Could not find song '" + song.getName() + "' in library");
         return null;
     }
 
@@ -235,7 +235,7 @@ public class MusicBrainz extends Library {
             return song;
             // TODO: get external links (spotify & youtube)
         }
-        logger.debug("Could not find Song '" + id + "' in library");
+        logger.info("Could not find Song '" + id + "' in library");
         return null;
     }
 
@@ -293,7 +293,7 @@ public class MusicBrainz extends Library {
             this.artists.put(id, artist);
             return artist;
         }
-        logger.debug("Could not find Artist '" + id + "' in library");
+        logger.info("Could not find Artist '" + id + "' in library");
         return null;
     }
 

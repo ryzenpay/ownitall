@@ -12,11 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.misc.Signal;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
@@ -37,7 +35,6 @@ public class Download {
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
-    private volatile AtomicBoolean interrupted = new AtomicBoolean(false);
 
     /**
      * default download constructor
@@ -81,23 +78,15 @@ public class Download {
         }
     }
 
-    public void threadDownload(Song song, File path) {
+    public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("Empty song or path provided in threadDownload");
-            return;
-        }
-        if (interrupted.get()) {
             return;
         }
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        // Set up a signal handler for SIGINT (Ctrl+C)
-        Signal.handle(new Signal("INT"), signal -> {
-            logger.info("Download interruption caught, finishing any in queue");
-            interrupted.set(true);
-        });
-        while (!interrupted.get()) {
+        while (true) {
             try {
                 // Attempt to execute the task
                 executor.execute(() -> {
@@ -105,17 +94,8 @@ public class Download {
                 });
                 break;
             } catch (RejectedExecutionException e) {
-                // If the queue is full, wait for a thread to become free
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ie) {
-                    interrupted.set(true);
-                    logger.error("Awaiting for free thread was interrupted" + ie);
-                }
+                Thread.sleep(100);
             }
-        }
-        if (interrupted.get()) {
-            threadShutdown();
         }
     }
 
@@ -279,7 +259,7 @@ public class Download {
      * orchestrator of DownloadSong for all standalone liked songs
      * 
      */
-    public void downloadLikedSongs() {
+    public void downloadLikedSongs() throws InterruptedException {
         LinkedHashSet<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
@@ -304,7 +284,7 @@ public class Download {
     /**
      * orchestrator of downloadPlaylist
      */
-    public void downloadPlaylists() {
+    public void downloadPlaylists() throws InterruptedException {
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
         ProgressBar pbPlaylist = Progressbar.progressBar("Playlist Downloads", playlists.size());
         for (Playlist playlist : playlists) {
@@ -320,7 +300,7 @@ public class Download {
      * 
      * @param playlist - constructed playlist to download
      */
-    public void downloadPlaylist(Playlist playlist) {
+    public void downloadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("Empty playlist provided in downloadPlaylist");
             return;
@@ -347,7 +327,7 @@ public class Download {
         pb.setExtraMessage("Done").close();
     }
 
-    public void downloadAlbums() {
+    public void downloadAlbums() throws InterruptedException {
         LinkedHashSet<Album> albums = collection.getAlbums();
         ProgressBar pbAlbum = Progressbar.progressBar("Album Downloads", albums.size());
         for (Album album : albums) {
@@ -358,11 +338,13 @@ public class Download {
         pbAlbum.setExtraMessage("Done").step().close();
     }
 
-    public void downloadAlbum(Album album) {
+    public void downloadAlbum(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("Empty album provided in downloadAlbum");
             return;
         }
+        // TODO: check if album song's exist in root folder, if so delete them
+        // this prevents duplicate songs
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());

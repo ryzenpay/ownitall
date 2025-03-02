@@ -47,13 +47,17 @@ public class DownloadMenu {
     private void optionDownloadCollection() {
         logger.info("Downloading music...");
         ProgressBar pb = Progressbar.progressBar("Download music", 3);
-        pb.setExtraMessage("Liked songs");
-        download.downloadLikedSongs();
-        pb.setExtraMessage("Playlists").step();
-        download.downloadPlaylists();
-        pb.setExtraMessage("Albums").step();
-        download.downloadAlbums();
-        pb.setExtraMessage("Done").step();
+        try {
+            pb.setExtraMessage("Liked songs");
+            download.downloadLikedSongs();
+            pb.setExtraMessage("Playlists").step();
+            download.downloadPlaylists();
+            pb.setExtraMessage("Albums").step();
+            download.downloadAlbums();
+            pb.setExtraMessage("Done").step();
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught in download Collection");
+        }
         pb.close();
         logger.info("Done downloading music");
     }
@@ -64,18 +68,22 @@ public class DownloadMenu {
         for (Playlist playlist : collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD PLAYLIST");
-            if (choice.equals("Exit")) {
-                break;
-            } else if (choice.equals("All")) {
-                logger.info("Downloading all playlists...");
-                download.downloadPlaylists();
-            } else {
-                logger.info("Downloading playlist " + choice + "...");
-                download.downloadPlaylist(options.get(choice));
-                break;
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD PLAYLIST");
+                if (choice.equals("Exit")) {
+                    break;
+                } else if (choice.equals("All")) {
+                    logger.info("Downloading all playlists...");
+                    download.downloadPlaylists();
+                } else {
+                    logger.info("Downloading playlist " + choice + "...");
+                    download.downloadPlaylist(options.get(choice));
+                    break;
+                }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught downloading playlist");
         }
         logger.info("Done downloading playlist");
     }
@@ -86,25 +94,33 @@ public class DownloadMenu {
         for (Album album : collection.getAlbums()) {
             options.put(album.toString(), album);
         }
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD ALBUM");
-            if (choice.equals("Exit")) {
-                break;
-            } else if (choice.equals("All")) {
-                logger.info("Downloading all albums");
-                download.downloadAlbums();
-            } else {
-                logger.info("Downloading album " + choice + "...");
-                download.downloadAlbum(options.get(choice));
-                break;
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD ALBUM");
+                if (choice.equals("Exit")) {
+                    break;
+                } else if (choice.equals("All")) {
+                    logger.info("Downloading all albums");
+                    download.downloadAlbums();
+                } else {
+                    logger.info("Downloading album " + choice + "...");
+                    download.downloadAlbum(options.get(choice));
+                    break;
+                }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught downloading Album");
         }
         logger.info("Done downloading album");
     }
 
     private void optionDownloadLikedSongs() {
         logger.info("Downloading liked songs...");
-        download.downloadLikedSongs();
+        try {
+            download.downloadLikedSongs();
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught downloading liked songs");
+        }
         logger.info("Done downloading liked songs");
     }
 
