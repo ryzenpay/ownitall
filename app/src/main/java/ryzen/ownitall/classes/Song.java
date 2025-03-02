@@ -240,6 +240,7 @@ public class Song {
      */
     @JsonIgnore
     public String getFileName() {
+        // TODO: just make hashcode to prevent conflicts?
         return MusicTools.sanitizeFileName(this.getName()) + "." + downloadFormat;
     }
 

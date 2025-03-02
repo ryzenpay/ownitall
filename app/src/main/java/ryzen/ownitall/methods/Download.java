@@ -94,7 +94,7 @@ public class Download {
                 });
                 break;
             } catch (RejectedExecutionException e) {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             }
         }
     }
@@ -108,19 +108,15 @@ public class Download {
                 new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
     }
 
-    public void threadShutdown() {
+    public void threadShutdown() throws InterruptedException {
         if (this.executor == null || this.executor.isShutdown()) {
             return;
         }
-        try {
-            executor.shutdown();
-            logger.debug("Awaiting current threads to shutdown (max 10 min)");
-            executor.awaitTermination(10, TimeUnit.MINUTES);
-            logger.debug("All threads shut down");
-        } catch (InterruptedException e) {
-            logger.error("Awaiting for threads to finish was interrupted, shutting down now: " + e);
-            executor.shutdownNow();
-        }
+        executor.shutdown();
+        logger.debug("Awaiting current threads to shutdown (max 10 min)");
+        executor.awaitTermination(10, TimeUnit.MINUTES);
+        logger.debug("All threads shut down");
+
     }
 
     /**
@@ -343,8 +339,16 @@ public class Download {
             logger.debug("Empty album provided in downloadAlbum");
             return;
         }
-        // TODO: check if album song's exist in root folder, if so delete them
-        // this prevents duplicate songs
+        if (!settings.isDownloadHierachy()) {
+            for (Song song : album.getSongs()) {
+                File songFile = new File(this.downloadPath, song.getFileName());
+                if (songFile.exists()) {
+                    songFile.delete();
+                    logger.debug("Deleted song not in album '" + album.getFolderName() + "' folder: "
+                            + songFile.getAbsolutePath());
+                }
+            }
+        }
         ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
