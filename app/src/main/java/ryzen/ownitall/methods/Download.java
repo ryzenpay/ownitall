@@ -246,7 +246,7 @@ public class Download {
         if (artist != null) {
             id3Data.put(FieldKey.ARTIST, artist.getName());
         }
-        String albumName = song.getAlbumname();
+        String albumName = song.getAlbumName();
         if (albumName != null) {
             id3Data.put(FieldKey.ALBUM, albumName);
         }
