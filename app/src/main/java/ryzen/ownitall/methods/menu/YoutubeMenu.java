@@ -14,7 +14,7 @@ public class YoutubeMenu {
     private static final Logger logger = LogManager.getLogger(YoutubeMenu.class);
     private Youtube youtube;
 
-    public YoutubeMenu() {
+    public YoutubeMenu() throws InterruptedException {
         this.youtube = new Youtube();
     }
 
@@ -22,33 +22,43 @@ public class YoutubeMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import Liked Songs", this::optionImportLikedSongs);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "IMPORT YOUTUBE");
-            if (choice.equals("Exit")) {
-                break;
-            } else {
-                options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "IMPORT YOUTUBE");
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting youtube import menu choice");
         }
     }
 
     private void optionImportCollection() {
         logger.info("Importing youtube music");
-        ProgressBar pb = Progressbar.progressBar("Youtube Import", 3);
-        pb.setExtraMessage("Liked songs");
-        this.youtube.getLikedSongs();
-        pb.setExtraMessage("Saved Albums").step();
-        this.youtube.getAlbums();
-        pb.setExtraMessage("Playlists").step();
-        this.youtube.getPlaylists();
-        pb.setExtraMessage("Done").step();
-        pb.close();
-        logger.info("Done importing youtube music");
+        try (ProgressBar pb = Progressbar.progressBar("Youtube Import", 3)) {
+            pb.setExtraMessage("Liked songs");
+            this.youtube.getLikedSongs();
+            pb.setExtraMessage("Saved Albums").step();
+            this.youtube.getAlbums();
+            pb.setExtraMessage("Playlists").step();
+            this.youtube.getPlaylists();
+            pb.setExtraMessage("Done").step();
+            logger.info("Done importing youtube music");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing collection");
+        }
     }
 
     private void optionImportLikedSongs() {
         logger.info("Importing youtube liked songs...");
-        this.youtube.getLikedSongs();
-        logger.info("Done importing youtube liked songs");
+        try {
+            this.youtube.getLikedSongs();
+            logger.info("Done importing youtube liked songs");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing liked song");
+        }
     }
 }

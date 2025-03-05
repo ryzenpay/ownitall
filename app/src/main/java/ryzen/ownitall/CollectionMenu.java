@@ -26,15 +26,19 @@ public class CollectionMenu {
         options.put("Update Inventory", this::optionUpdateInventory);
         options.put("Edit Inventory", this::editMenu);
         options.put("Clear Inventory", this::optionClearInventory);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    break;
-                } else {
-                    options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        break;
+                    } else {
+                        options.get(choice).run();
+                    }
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught while getting collection menu choice");
         }
     }
 
@@ -47,15 +51,19 @@ public class CollectionMenu {
         options.put("Merge Playlists", this::optionMergePlaylist);
         options.put("Delete Album", this::optionDeleteAlbum);
         options.put("Delete Liked Song", this::optionDeleteLikedSong);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    break;
-                } else {
-                    options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        break;
+                    } else {
+                        options.get(choice).run();
+                    }
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting collection edit menu choice");
         }
     }
 
@@ -69,14 +77,19 @@ public class CollectionMenu {
             for (Playlist playlist : collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    collection.removePlaylist(options.get(choice));
-                    logger.info("Successfully removed playlist: '" + choice + "'");
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        return;
+                    } else {
+                        collection.removePlaylist(options.get(choice));
+                        logger.info("Successfully removed playlist: '" + choice + "'");
+                    }
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting collection delete playlist choice");
+                return;
             }
         }
     }
@@ -89,27 +102,31 @@ public class CollectionMenu {
         for (Playlist playlist : collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    Playlist playlist = options.get(choice);
-                    options.remove(choice);
-                    String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
-                    if (choice2 != null) {
-                        if (choice2.equals("Exit")) {
-                            return;
-                        } else {
-                            playlist.merge(options.get(choice2));
-                            collection.removePlaylist(options.get(choice2));
-                            logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
-                            break;
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        return;
+                    } else {
+                        Playlist playlist = options.get(choice);
+                        options.remove(choice);
+                        String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
+                        if (choice2 != null) {
+                            if (choice2.equals("Exit")) {
+                                return;
+                            } else {
+                                playlist.merge(options.get(choice2));
+                                collection.removePlaylist(options.get(choice2));
+                                logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
+                                break;
+                            }
                         }
                     }
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting collection merge playlist choice");
         }
     }
 
@@ -122,14 +139,19 @@ public class CollectionMenu {
             for (Album album : collection.getAlbums()) {
                 options.put(album.toString(), album);
             }
-            String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    collection.removeAlbum(options.get(choice));
-                    logger.info("Successfully removed album: '" + choice + "'");
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        return;
+                    } else {
+                        collection.removeAlbum(options.get(choice));
+                        logger.info("Successfully removed album: '" + choice + "'");
+                    }
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting collection delete album option");
+                return;
             }
         }
     }
@@ -143,14 +165,19 @@ public class CollectionMenu {
             for (Song song : collection.getLikedSongs().getSongs()) {
                 options.put(song.toString(), song);
             }
-            String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    collection.removeLikedSong(options.get(choice));
-                    logger.info("Successfully removed liked song: '" + choice + "'");
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        return;
+                    } else {
+                        collection.removeLikedSong(options.get(choice));
+                        logger.info("Successfully removed liked song: '" + choice + "'");
+                    }
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting collection delete liked song choice");
+                return;
             }
         }
     }

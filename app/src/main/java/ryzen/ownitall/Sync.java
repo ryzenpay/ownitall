@@ -126,7 +126,13 @@ public class Sync {
                 archiveFolders.put(file.getName(), file);
             }
         }
-        String choice = Menu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
+        String choice;
+        try {
+            choice = Menu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting unarchive folder choice");
+            return;
+        }
         if (choice.equals("Exit")) {
             return;
         } else {

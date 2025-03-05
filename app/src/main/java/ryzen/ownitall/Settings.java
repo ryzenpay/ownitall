@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ryzen.ownitall.util.Input;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -147,8 +149,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
             instance = new Settings();
             try {
                 instance.importSettings(Settings.class, settingsFilePath);
-            } catch (Exception e) {
-                logger.error(e);
+            } catch (IOException e) {
+                logger.error("Exception loading settings: " + e);
                 logger.info("If this persists, delete the file: '" + settingsFilePath + "'");
             }
             logger.debug("New instance created");
@@ -162,11 +164,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     }
 
     public void save() {
-        try {
-            super.save(settingsFilePath);
-        } catch (Exception e) {
-            logger.error("exception saving settings: " + e);
-        }
+        super.save(settingsFilePath);
     }
 
     public String getDataFolderPath() {

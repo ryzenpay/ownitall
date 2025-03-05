@@ -4,6 +4,7 @@ import java.util.ArrayList;
 //https://developer.spotify.com/documentation/web-api
 //https://github.com/spotify-web-api-java/spotify-web-api-java
 import java.util.LinkedHashSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.time.temporal.ChronoUnit;
 
 import se.michaelthelin.spotify.SpotifyApi;
@@ -42,6 +43,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.misc.Signal;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
@@ -76,14 +78,19 @@ public class Spotify {
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
     private SpotifyApi spotifyApi;
     private String code;
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
 
     /**
      * Default spotify constructor asking for user input
      */
-    public Spotify() {
+    public Spotify() throws InterruptedException {
         if (credentials.spotifyIsEmpty()) {
             credentials.setSpotifyCredentials();
         }
+        Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT received");
+            interrupted.set(true);
+        });
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(credentials.getSpotifyClientId())
                 .setClientSecret(credentials.getSpotifyClientSecret())
@@ -98,13 +105,12 @@ public class Spotify {
      * 
      * @return - the oauth code with permissions
      */
-    private void requestCode() {
+    private void requestCode() throws InterruptedException {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
                 .show_dialog(settings.isSpotifyShowDialog())
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
-
         // Open the default browser with the authorization URL
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             try {
@@ -115,12 +121,8 @@ public class Spotify {
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
-            try {
-                System.out.print("Please provide the code it presents (in url): ");
-                this.code = Input.request().getString();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting code");
-            }
+            System.out.print("Please provide the code it presents (in url): ");
+            this.code = Input.request().getString();
         }
     }
 
@@ -161,7 +163,7 @@ public class Spotify {
     /**
      * start temporary local server to "intercept" spotify api code
      */
-    public void startLocalServer() {
+    public void startLocalServer() throws InterruptedException {
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
             logger.info("Waiting for the authorization code...");
             Socket clientSocket = serverSocket.accept();
@@ -194,12 +196,8 @@ public class Spotify {
 
             clientSocket.close();
         } catch (IOException e) {
-            try {
-                System.out.println("Please provide the code it provides (in url)");
-                this.code = Input.request().getString();
-            } catch (InterruptedException ie) {
-                logger.debug("Interrupted while getting code (localserver failed)");
-            }
+            System.out.println("Please provide the code it provides (in url)");
+            this.code = Input.request().getString();
         }
     }
 
@@ -250,13 +248,16 @@ public class Spotify {
      * 
      * @param seconds - long amount of seconds to sleep for
      */
-    private void sleep(long seconds) {
+    private void sleep(long seconds) throws InterruptedException {
         logger.debug("Spotify timeout sleeping for: " + seconds + "s");
         long msec = seconds * 1000;
-        try {
-            Thread.sleep(msec);
-        } catch (Exception e) {
-            logger.error("Exception in spotify sleep: " + e);
+        Thread.sleep(msec);
+    }
+
+    private void throwHandleInterruption() throws InterruptedException {
+        if (interrupted.get()) {
+            interrupted.set(false);
+            throw new InterruptedException();
         }
     }
 
@@ -264,60 +265,58 @@ public class Spotify {
      * Get all liked songs from current spotify account and add them to collection
      * 
      */
-    public void getLikedSongs() {
+    public void getLikedSongs() throws InterruptedException {
         int limit = settings.getSpotifySongLimit();
         int offset = collection.getLikedSongs().getSpotifyPageOffset();
         boolean hasMore = true;
         ProgressBar pb = Progressbar.progressBar("Spotify Liked", -1);
-        try {
-            while (hasMore) {
-                GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                        .limit(settings.getSpotifySongLimit())
-                        .offset(offset)
-                        .build();
-                try {
-                    final Paging<SavedTrack> savedTrackPaging = getUsersSavedTracksRequest.execute();
-                    SavedTrack[] items = savedTrackPaging.getItems();
+        while (hasMore) {
+            throwHandleInterruption();
+            GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
+                    .limit(settings.getSpotifySongLimit())
+                    .offset(offset)
+                    .build();
+            try {
+                final Paging<SavedTrack> savedTrackPaging = getUsersSavedTracksRequest.execute();
+                SavedTrack[] items = savedTrackPaging.getItems();
 
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (SavedTrack savedTrack : items) {
-                            Track track = savedTrack.getTrack();
-                            pb.setExtraMessage(track.getName());
-                            Song song = new Song(track.getName());
-                            song.setArtist(new Artist(track.getArtists()[0].getName()));
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            if (library != null) {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
-                                }
-                            }
-                            if (song != null) {
-                                song.addId("spotify", track.getId());
-                                collection.addLikedSong(song);
-                            }
-                            pb.step();
-                        }
-                        offset += limit;
-                    }
-                    if (offset >= savedTrackPaging.getTotal()) {
-                        hasMore = false;
-                        collection.getLikedSongs().setSpotifyPageOffset(offset);
-                    }
-                } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching liked songs: " + e);
+                if (items.length == 0) {
                     hasMore = false;
+                } else {
+                    for (SavedTrack savedTrack : items) {
+                        throwHandleInterruption();
+                        Track track = savedTrack.getTrack();
+                        pb.setExtraMessage(track.getName());
+                        Song song = new Song(track.getName());
+                        song.setArtist(new Artist(track.getArtists()[0].getName()));
+                        song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                        if (library != null) {
+                            Song foundSong = library.getSong(song);
+                            if (foundSong != null) {
+                                song = foundSong;
+                            } else if (settings.isLibraryVerified()) {
+                                song = null;
+                            }
+                        }
+                        if (song != null) {
+                            song.addId("spotify", track.getId());
+                            collection.addLikedSong(song);
+                        }
+                        pb.step();
+                    }
+                    offset += limit;
                 }
+                if (offset >= savedTrackPaging.getTotal()) {
+                    hasMore = false;
+                    collection.getLikedSongs().setSpotifyPageOffset(offset);
+                }
+            } catch (TooManyRequestsException e) {
+                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                this.sleep(e.getRetryAfter());
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                logger.error("Exception fetching liked songs: " + e);
+                hasMore = false;
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting spotify liked songs");
         }
         pb.step().close();
     }
@@ -325,12 +324,13 @@ public class Spotify {
     /**
      * get all current user saved albums and add them to collection
      */
-    public void getAlbums() {
+    public void getAlbums() throws InterruptedException {
         int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
         ProgressBar pb = Progressbar.progressBar("Spotify Albums", -1);
         while (hasMore) {
+            throwHandleInterruption();
             GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                     .getCurrentUsersSavedAlbums()
                     .limit(settings.getSpotifyAlbumLimit())
@@ -344,6 +344,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (SavedAlbum savedAlbum : items) {
+                        throwHandleInterruption();
                         pb.step().setExtraMessage(savedAlbum.getAlbum().getId());
                         Album album = this.getAlbum(savedAlbum.getAlbum().getId(), savedAlbum.getAlbum().getName(),
                                 savedAlbum.getAlbum().getArtists()[0].getName());
@@ -364,44 +365,40 @@ public class Spotify {
         pb.step().close();
     }
 
-    public Album getAlbum(String albumId, String albumName, String artistName) {
+    public Album getAlbum(String albumId, String albumName, String artistName) throws InterruptedException {
         if (albumId == null || albumName == null) {
             logger.debug("Null albumID or AlbumName provided in getAlbum");
             return null;
         }
         Album album = new Album(albumName);
-        try {
-            if (artistName != null) {
-                album.addArtist(new Artist(artistName));
-            }
-            if (library != null) {
-                Album foundAlbum = library.getAlbum(album);
-                if (foundAlbum != null) {
-                    album = foundAlbum;
-                } else if (settings.isLibraryVerified()) {
-                    album = null;
-                }
-
-            }
-            if (album != null) {
-                if (album.getSongs().isEmpty()) {
-                    Album foundAlbum = collection.getAlbum(album);
-                    int offset = 0;
-                    if (foundAlbum != null) {
-                        offset = foundAlbum.getSpotifyPageOffset();
-                    }
-                    LinkedHashSet<Song> songs = this.getAlbumSongs(albumId, offset);
-                    if (songs != null && !songs.isEmpty()) {
-                        album.addSongs(songs);
-                        album.setSpotifyPageOffset(songs.size());
-                    }
-                }
-                album.addId("spotify", albumId);
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting spotify album");
-            return null;
+        if (artistName != null) {
+            album.addArtist(new Artist(artistName));
         }
+        if (library != null) {
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                album = null;
+            }
+
+        }
+        if (album != null) {
+            if (album.getSongs().isEmpty()) {
+                Album foundAlbum = collection.getAlbum(album);
+                int offset = 0;
+                if (foundAlbum != null) {
+                    offset = foundAlbum.getSpotifyPageOffset();
+                }
+                LinkedHashSet<Song> songs = this.getAlbumSongs(albumId, offset);
+                if (songs != null && !songs.isEmpty()) {
+                    album.addSongs(songs);
+                    album.setSpotifyPageOffset(songs.size());
+                }
+            }
+            album.addId("spotify", albumId);
+        }
+
         return album;
     }
 
@@ -423,6 +420,7 @@ public class Spotify {
         int limit = settings.getSpotifyAlbumLimit();
         boolean hasMore = true;
         while (hasMore) {
+            throwHandleInterruption();
             GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
                     .limit(settings.getSpotifySongLimit())
                     .offset(offset)
@@ -434,6 +432,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (TrackSimplified track : items) {
+                        throwHandleInterruption();
                         pb.setExtraMessage(track.getName()).step();
                         Song song = new Song(track.getName());
                         song.setArtist(new Artist(track.getArtists()[0].getName()));
@@ -473,12 +472,13 @@ public class Spotify {
      * collection
      * 
      */
-    public void getPlaylists() {
+    public void getPlaylists() throws InterruptedException {
         int limit = settings.getSpotifyPlaylistLimit();
         int offset = 0;
         boolean hasMore = true;
         ProgressBar pb = Progressbar.progressBar("Spotify Playlists", -1);
         while (hasMore) {
+            throwHandleInterruption();
             GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                     .getListOfCurrentUsersPlaylists()
                     .limit(settings.getSpotifyPlaylistLimit())
@@ -494,6 +494,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistSimplified spotifyPlaylist : items) {
+                        throwHandleInterruption();
                         String coverImageUrl = null;
                         Image[] images = spotifyPlaylist.getImages();
                         if (images != null && images.length > 0) {
@@ -522,7 +523,8 @@ public class Spotify {
         pb.step().close();
     }
 
-    public Playlist getPlaylist(String playlistId, String playlistName, String playlistImageUrl) {
+    public Playlist getPlaylist(String playlistId, String playlistName, String playlistImageUrl)
+            throws InterruptedException {
         if (playlistId == null || playlistName == null) {
             logger.debug("null playlistID or playlistName provided in getPlaylist");
             return null;
@@ -533,19 +535,15 @@ public class Spotify {
         if (foundPlaylist != null) {
             offset = foundPlaylist.getSpotifyPageOffset();
         }
-        try {
-            LinkedHashSet<Song> songs = this.getPlaylistSongs(playlistId, offset);
-            if (songs != null && !songs.isEmpty()) {
-                playlist.addSongs(songs);
-                playlist.setSpotifyPageOffset(songs.size());
-                if (playlistImageUrl != null) {
-                    playlist.setCoverImage(playlistImageUrl);
-                }
-                playlist.addId("spotify", playlistId);
-                return playlist;
+        LinkedHashSet<Song> songs = this.getPlaylistSongs(playlistId, offset);
+        if (songs != null && !songs.isEmpty()) {
+            playlist.addSongs(songs);
+            playlist.setSpotifyPageOffset(songs.size());
+            if (playlistImageUrl != null) {
+                playlist.setCoverImage(playlistImageUrl);
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting spotify playlist");
+            playlist.addId("spotify", playlistId);
+            return playlist;
         }
         return null;
     }
@@ -568,6 +566,7 @@ public class Spotify {
         boolean hasMore = true;
 
         while (hasMore) {
+            throwHandleInterruption();
             GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
                     .limit(settings.getSpotifySongLimit())
                     .offset(offset)
@@ -579,6 +578,7 @@ public class Spotify {
                     hasMore = false;
                 } else {
                     for (PlaylistTrack playlistTrack : items) {
+                        throwHandleInterruption();
                         Song song = null;
                         String id;
                         if (playlistTrack.getTrack() instanceof Track) {
@@ -630,7 +630,7 @@ public class Spotify {
         return songs;
     }
 
-    public String getTrackId(Song song) {
+    public String getTrackId(Song song) throws InterruptedException {
         if (song == null) {
             logger.debug("null song provided in getTrackId");
             return null;
@@ -660,7 +660,7 @@ public class Spotify {
         }
     }
 
-    public String getAlbumId(Album album) {
+    public String getAlbumId(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in getAlbumId");
             return null;
@@ -690,7 +690,7 @@ public class Spotify {
         }
     }
 
-    public void uploadLikedSongs() {
+    public void uploadLikedSongs() throws InterruptedException {
         ArrayList<String> likedSongIds = new ArrayList<>();
         for (Song likedSong : collection.getLikedSongs().getSongs()) {
             likedSongIds.add(this.getTrackId(likedSong));
@@ -703,6 +703,7 @@ public class Spotify {
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
+            throwHandleInterruption();
             String[] currentLikedSongsIds = likedSongIds.subList(offset,
                     Math.min(offset + limit, likedSongIds.size())).toArray(new String[0]);
             SaveTracksForUserRequest saveTracksForUserRequest = spotifyApi
@@ -723,7 +724,7 @@ public class Spotify {
         }
     }
 
-    public void uploadPlaylists() {
+    public void uploadPlaylists() throws InterruptedException {
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
         ProgressBar pb = Progressbar.progressBar("Uploading Playlists", playlists.size());
         for (Playlist playlist : playlists) {
@@ -733,21 +734,17 @@ public class Spotify {
         pb.setExtraMessage("Done").close();
     }
 
-    public void uploadPlaylist(Playlist playlist) {
+    public void uploadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("null playlist provided in uploadPlaylist");
             return;
         }
         String playlistId = playlist.getId("spotify");
         LinkedHashSet<Song> currentSongs = new LinkedHashSet<>();
-        try {
-            if (playlistId != null) {
-                // TODO: this still references to a deleted / archived playlist and therefore
-                // doesnt trigger to make new one
-                currentSongs = this.getPlaylistSongs(playlistId, 0);
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + playlist.getName() + "' songs");
+        if (playlistId != null) {
+            // TODO: this still references to a deleted / archived playlist and therefore
+            // doesnt trigger to make new one
+            currentSongs = this.getPlaylistSongs(playlistId, 0);
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
         if (currentSongs.isEmpty()) {
@@ -780,6 +777,7 @@ public class Spotify {
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
+            throwHandleInterruption();
             String[] currentSongUris = songUris.subList(offset,
                     Math.min(offset + limit, songUris.size())).toArray(new String[0]);
             AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
@@ -800,7 +798,7 @@ public class Spotify {
         }
     }
 
-    public void uploadAlbums() {
+    public void uploadAlbums() throws InterruptedException {
         ArrayList<String> albumIds = new ArrayList<>();
         for (Album album : collection.getAlbums()) {
             albumIds.add(this.getAlbumId(album));
@@ -813,6 +811,7 @@ public class Spotify {
         int offset = 0;
         boolean hasMore = true;
         while (hasMore) {
+            throwHandleInterruption();
             String[] currentAlbumIds = albumIds.subList(offset,
                     Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
             SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = spotifyApi

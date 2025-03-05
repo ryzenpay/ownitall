@@ -2,6 +2,9 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import ryzen.ownitall.methods.menu.ManualMenu;
 import ryzen.ownitall.methods.menu.SpotifyMenu;
 import ryzen.ownitall.methods.menu.UploadMenu;
@@ -9,6 +12,7 @@ import ryzen.ownitall.methods.menu.YoutubeMenu;
 import ryzen.ownitall.util.Menu;
 
 public class ImportMenu {
+    private static final Logger logger = LogManager.getLogger(ImportMenu.class);
 
     /**
      * constructor for Import which also prompts user for import options
@@ -20,13 +24,18 @@ public class ImportMenu {
         options.put("Spotify", this::optionSpotify);
         options.put("Local", this::optionLocal);
         options.put("Manual", this::optionManual);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "IMPORT");
-            if (choice.equals("Exit")) {
-                break;
-            } else {
-                options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "IMPORT");
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
+
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting import menu choice");
         }
     }
 
@@ -34,15 +43,22 @@ public class ImportMenu {
      * import music from youtube, getting or setting credentials as needed
      */
     private void optionYoutube() {
-        YoutubeMenu menu = new YoutubeMenu();
-        menu.youtubeImportMenu();
+        try {
+            new YoutubeMenu().youtubeImportMenu();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting up youtube import menu");
+        }
     }
 
     /**
      * import music from spotify, getting or setting credentials as needed
      */
     private void optionSpotify() {
-        new SpotifyMenu().spotifyImportMenu();
+        try {
+            new SpotifyMenu().spotifyImportMenu();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting up spotify import menu");
+        }
     }
 
     /**

@@ -28,15 +28,19 @@ public class ManualMenu {
         options.put("Add Playlist", this::optionAddPlaylist);
         options.put("Add Song", this::optionAddSong);
         options.put("Add Artist", this::optionAddArtist);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "ADD INVENTORY MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    break;
-                } else {
-                    options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "ADD INVENTORY MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        break;
+                    } else {
+                        options.get(choice).run();
+                    }
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting manual menu choice");
         }
     }
 
@@ -105,17 +109,22 @@ public class ManualMenu {
             for (Playlist playlist : collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    return;
-                } else {
-                    Song song = interactiveCreateSong();
-                    if (song != null) {
-                        options.get(choice).addSong(song);
-                        logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        return;
+                    } else {
+                        Song song = interactiveCreateSong();
+                        if (song != null) {
+                            options.get(choice).addSong(song);
+                            logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
+                        }
                     }
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting manual add song playlist option");
+                return;
             }
         }
     }

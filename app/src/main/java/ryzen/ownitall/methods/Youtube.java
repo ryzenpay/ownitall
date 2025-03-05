@@ -34,9 +34,11 @@ import java.util.Arrays;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.misc.Signal;
 
 public class Youtube {
     private static final Logger logger = LogManager.getLogger(Youtube.class);
@@ -44,6 +46,7 @@ public class Youtube {
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -51,10 +54,14 @@ public class Youtube {
     /**
      * default youtube constructor asking for user input
      */
-    public Youtube() {
+    public Youtube() throws InterruptedException {
         if (credentials.youtubeIsEmpty()) {
             credentials.setYoutubeCredentials();
         }
+        Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT received");
+            interrupted.set(true);
+        });
         this.youtubeApi = this.getService();
     }
 
@@ -63,7 +70,7 @@ public class Youtube {
      *
      * @return an authorized API client service
      */
-    private com.google.api.services.youtube.YouTube getService() {
+    private com.google.api.services.youtube.YouTube getService() throws InterruptedException {
         try {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
@@ -72,7 +79,7 @@ public class Youtube {
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Exception logging in with youtube api: " + e);
-            return null;
+            throw new InterruptedException();
         }
     }
 
@@ -98,16 +105,24 @@ public class Youtube {
         return credential;
     }
 
+    private void throwHandleInterruption() throws InterruptedException {
+        if (interrupted.get()) {
+            interrupted.set(false);
+            throw new InterruptedException();
+        }
+    }
+
     /**
      * save all youtube liked songs to collection
      */
-    public void getLikedSongs() {
+    public void getLikedSongs() throws InterruptedException {
         if (youtubeApi == null) {
             return;
         }
         String pageToken = collection.getLikedSongs().getYoutubePageToken();
         try {
             do {
+                throwHandleInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
@@ -118,6 +133,7 @@ public class Youtube {
 
                 List<Video> items = response.getItems();
                 for (Video video : items) {
+                    throwHandleInterruption();
                     VideoSnippet snippet = video.getSnippet();
                     VideoContentDetails contentDetails = video.getContentDetails();
                     if (snippet != null && contentDetails != null) {
@@ -128,16 +144,11 @@ public class Youtube {
                             song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
                                     ChronoUnit.SECONDS);
                             if (library != null) {
-                                try {
-                                    Song foundSong = library.getSong(song);
-                                    if (foundSong != null) {
-                                        song = foundSong;
-                                    } else if (settings.isLibraryVerified()) {
-                                        song = null;
-                                    }
-                                } catch (InterruptedException e) {
-                                    logger.debug("Interrupted while getting youtube song");
-                                    return;
+                                Song foundSong = library.getSong(song);
+                                if (foundSong != null) {
+                                    song = foundSong;
+                                } else if (settings.isLibraryVerified()) {
+                                    song = null;
                                 }
                             }
                             if (song != null) {
@@ -171,13 +182,14 @@ public class Youtube {
      * - gets all videos from any playlist with category id 10
      * 
      */
-    public void getPlaylists() {
+    public void getPlaylists() throws InterruptedException {
         String pageToken = null;
         if (youtubeApi == null) {
             return;
         }
         try {
             do {
+                throwHandleInterruption();
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
@@ -187,6 +199,7 @@ public class Youtube {
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
+                    throwHandleInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     Playlist foundPlaylist = collection.getPlaylist(playlist);
                     LinkedHashSet<Song> songs;
@@ -203,9 +216,6 @@ public class Youtube {
                 }
                 pageToken = playlistResponse.getNextPageToken();
             } while (pageToken != null);
-
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting playlist");
         } catch (IOException e) {
             logger.error("Exception retrieving playlists: " + e);
         }
@@ -226,15 +236,15 @@ public class Youtube {
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         try {
             do {
+                throwHandleInterruption();
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
                         .setMaxResults(settings.getYoutubeSongLimit())
                         .setPageToken(pageToken);
-
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
-
                 for (PlaylistItem item : itemResponse.getItems()) {
+                    throwHandleInterruption();
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();

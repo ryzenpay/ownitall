@@ -44,20 +44,17 @@ public class Upload {
     /**
      * default local constructor asking for library path
      */
-    public Upload() {
+    public Upload() throws InterruptedException {
         if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
             this.setLocalLibrary();
         }
     }
 
-    private void setLocalLibrary() {
+    private void setLocalLibrary() throws InterruptedException {
         while (this.localLibrary == null || !this.localLibrary.exists()) {
-            try {
-                System.out.print("Provide absolute path to local music library (folder): ");
-                this.localLibrary = Input.request().getFile(true);
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting music library path");
-            }
+            System.out.print("Provide absolute path to local music library (folder): ");
+            this.localLibrary = Input.request().getFile(true);
+
         }
     }
 
@@ -105,31 +102,27 @@ public class Upload {
      * - folder named "liked songs" (changeable in settings)
      * 
      */
-    public void getLikedSongs() {
-        try {
-            if (settings.isDownloadHierachy()) {
-                for (File file : this.localLibrary.listFiles()) {
-                    if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                        Song song = getSong(file);
-                        if (song != null) {
-                            collection.addLikedSong(song);
-                        }
-                    }
-                    if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        // automatically adds them to liked
-                        getSongs(file);
+    public void getLikedSongs() throws InterruptedException {
+        if (settings.isDownloadHierachy()) {
+            for (File file : this.localLibrary.listFiles()) {
+                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                    Song song = getSong(file);
+                    if (song != null) {
+                        collection.addLikedSong(song);
                     }
                 }
-            } else {
-                // automatically adds them to liked
-                getSongs(this.localLibrary);
+                if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                    // automatically adds them to liked
+                    getSongs(file);
+                }
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting liked songs");
+        } else {
+            // automatically adds them to liked
+            getSongs(this.localLibrary);
         }
     }
 
-    public void processFolders() {
+    public void processFolders() throws InterruptedException {
         ArrayList<File> libraryFolders = this.getLibraryFolders();
         // get all albums
         for (File file : libraryFolders) {
@@ -169,7 +162,7 @@ public class Upload {
         }
     }
 
-    public static Playlist processM3U(File file) {
+    public static Playlist processM3U(File file) throws InterruptedException {
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
             return null;
@@ -214,7 +207,7 @@ public class Upload {
                     currSongLine = null;
                 }
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Exception reading m3u file '" + file.getAbsolutePath() + "': " + e);
             return null;
         }
@@ -237,7 +230,7 @@ public class Upload {
         return playlist;
     }
 
-    public static Playlist getPlaylist(File folder) {
+    public static Playlist getPlaylist(File folder) throws InterruptedException {
         if (folder == null || !folder.exists()) {
             logger.debug("null folder or non existing folder provided");
             return null;
@@ -256,34 +249,30 @@ public class Upload {
         return playlist;
     }
 
-    public static Album getAlbum(File folder) {
+    public static Album getAlbum(File folder) throws InterruptedException {
         if (folder == null || !folder.exists()) {
             logger.debug("null folder or non existing folder passed in getAlbum");
             return null;
         }
-        try {
-            Album album = constructAlbum(folder);
-            if (album == null) {
-                return null;
-            }
-            // incase constructAlbum didnt get songs from library
-            if (album.size() == 0) {
-                LinkedHashSet<Song> songs = getSongs(folder);
-                if (songs == null || songs.isEmpty()) {
-                    logger.debug("no songs found in album " + folder.getAbsolutePath());
-                    return null;
-                }
-                album.addSongs(songs);
-            }
-            File coverFile = new File(folder, album.getFolderName() + ".png");
-            if (coverFile.exists()) {
-                album.setCoverImage(coverFile.toURI());
-            }
-            return album;
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting album from: " + folder.getAbsolutePath());
+        Album album = constructAlbum(folder);
+        if (album == null) {
             return null;
         }
+        // incase constructAlbum didnt get songs from library
+        if (album.size() == 0) {
+            LinkedHashSet<Song> songs = getSongs(folder);
+            if (songs == null || songs.isEmpty()) {
+                logger.debug("no songs found in album " + folder.getAbsolutePath());
+                return null;
+            }
+            album.addSongs(songs);
+        }
+        File coverFile = new File(folder, album.getFolderName() + ".png");
+        if (coverFile.exists()) {
+            album.setCoverImage(coverFile.toURI());
+        }
+        return album;
+
     }
 
     /**
@@ -344,28 +333,24 @@ public class Upload {
      * @param folder - folder to get all songs from
      * @return - linkedhashset of constructed songs
      */
-    public static LinkedHashSet<Song> getSongs(File folder) {
+    public static LinkedHashSet<Song> getSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null or non directory or non existant folder passed in getSongs");
             return null;
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        try {
-            for (File file : folder.listFiles()) {
-                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                    Song song = getSong(file);
-                    if (song != null) {
-                        songs.add(song);
-                        if (isLiked(file)) {
-                            collection.addLikedSong(song);
-                        }
+        for (File file : folder.listFiles()) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                Song song = getSong(file);
+                if (song != null) {
+                    songs.add(song);
+                    if (isLiked(file)) {
+                        collection.addLikedSong(song);
                     }
                 }
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting songs from: " + folder.getAbsolutePath());
-            return null;
         }
+
         return songs;
     }
 

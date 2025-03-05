@@ -3,6 +3,7 @@ package ryzen.ownitall.util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
@@ -67,7 +68,7 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    public static void writeData(String fileName, String extension, String data, File folder) throws Exception {
+    public static void writeData(String fileName, String extension, String data, File folder) throws IOException {
         if (folder == null || fileName == null) {
             logger.debug("null folder or filename provided in writem3u");
             return;
@@ -86,7 +87,8 @@ public class MusicTools {
         }
     }
 
-    public static void writeMetaData(LinkedHashMap<FieldKey, String> id3Data, boolean liked, URI coverImage, File songFile) throws Exception {
+    public static void writeMetaData(LinkedHashMap<FieldKey, String> id3Data, boolean liked, URI coverImage,
+            File songFile) throws Exception {
         if (songFile == null) {
             logger.debug("null songFIle provided in writeMetaData");
             return;
@@ -155,7 +157,8 @@ public class MusicTools {
         audioFile.commit();
         AudioFileIO.write(audioFile);
     }
-    public static void downloadImage(URI url, File file) throws Exception {
+
+    public static void downloadImage(URI url, File file) throws IOException {
         if (url == null || file == null) {
             logger.debug("null url or file passed in downloadImage");
             return;

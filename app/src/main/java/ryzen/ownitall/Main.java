@@ -5,6 +5,9 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
 import ryzen.ownitall.util.Menu;
 
 public class Main {
@@ -19,7 +22,8 @@ public class Main {
      */
     public static void main(String[] args) {
         Menu.clearScreen();
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::optionSave));
+        // do nothing with SIGINT as menu should catch it
+        Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         sync.importCollection();
         // main menu
@@ -29,14 +33,19 @@ public class Main {
         options.put("Save", Main::optionSave);
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-            if (choice.equals("Exit")) {
-                logger.info("Exiting program...");
-                System.exit(0);
-            } else {
-                options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
+                if (choice.equals("Exit")) {
+                    logger.info("Exiting program...");
+                    System.exit(0);
+                } else {
+                    options.get(choice).run();
+                }
             }
+        } catch (InterruptedException e) {
+            logger.info("Interruption caught in main menu, gracefully closing program");
+            optionSave();
         }
     }
 
@@ -86,10 +95,6 @@ public class Main {
      * change settings menu
      */
     private static void optionSettings() {
-        try {
-            settings.changeSettings();
-        } catch (Exception e) {
-            logger.error(e);
-        }
+        settings.changeSettings();
     }
 }

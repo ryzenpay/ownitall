@@ -70,7 +70,7 @@ public class Settings {
      * @param filePath      - filepath to save to
      * @throws Exception - incase of running into error while saving
      */
-    protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws Exception {
+    protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws IOException {
         setSettingsFolder();
         File settingsFile = new File(this.getSettingsFolderPath(), filePath);
 
@@ -78,17 +78,13 @@ public class Settings {
             this.save(filePath);
             return;
         }
-
-        try {
-            T importedSettings = this.objectMapper.readValue(settingsFile, settingsClass);
-            if (importedSettings == null || importedSettings.isEmpty()) {
-                logger.error("Failed to import settings from file '" + settingsFile.getAbsolutePath() + "'");
-            } else {
-                this.setSettings(importedSettings);
-            }
-        } catch (IOException e) {
-            throw new Exception("Error loading settings: " + e);
+        T importedSettings = this.objectMapper.readValue(settingsFile, settingsClass);
+        if (importedSettings == null || importedSettings.isEmpty()) {
+            logger.error("Failed to import settings from file '" + settingsFile.getAbsolutePath() + "'");
+        } else {
+            this.setSettings(importedSettings);
         }
+
     }
 
     /**
@@ -97,13 +93,13 @@ public class Settings {
      * @param filePath - filepath of settings file
      * @throws Exception - if unable to save to file
      */
-    protected void save(String filePath) throws Exception {
+    protected void save(String filePath) {
         this.setSettingsFolder();
         File settingsFile = new File(settingsFolderPath, filePath);
         try {
             this.objectMapper.writeValue(settingsFile, this);
         } catch (IOException e) {
-            throw new Exception("Error saving settings: " + e);
+            logger.error("Exception saving settings: " + e);
         }
     }
 
@@ -122,22 +118,16 @@ public class Settings {
      * flexibly get all settings
      * 
      * @return - ArrayList of all setting varialbes as Object
-     * @throws Exception - if get into error obtaining and setting settings
-     *                   accessibility
      */
     @JsonIgnore
-    public ArrayList<Field> getAllSettings() throws Exception {
+    public ArrayList<Field> getAllSettings() {
         ArrayList<Field> allSettings = new ArrayList<>();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             // only allow option to change non final and protected fields
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-                try {
-                    field.setAccessible(true);
-                    allSettings.add(field); // Add field value to the list
-                } catch (Exception e) {
-                    throw new Exception("Error getting all settings: " + e);
-                }
+                field.setAccessible(true);
+                allSettings.add(field); // Add field value to the list
             }
         }
         return allSettings;
@@ -146,9 +136,8 @@ public class Settings {
     /**
      * print menu of settings and values, prompt user for which to change
      * 
-     * @throws Exception - exception if unable to modify setting
      */
-    public void changeSettings() throws Exception {
+    public void changeSettings() {
         System.out.println("Choose a setting to change: ");
         Map<String, String> options = new HashMap<>();
         try {
@@ -160,19 +149,17 @@ public class Settings {
                 if (choice.equals("Exit")) {
                     break;
                 } else {
-                    try {
-                        if (this.changeSetting(choice)) {
-                            logger.info("Successfully changed setting '" + choice + "'");
-                        } else {
-                            logger.error("Unsuccessfully changed setting");
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new Exception("Error updating setting: " + e);
+                    if (this.changeSetting(choice)) {
+                        logger.info("Successfully changed setting '" + choice + "'");
+                    } else {
+                        logger.error("Unsuccessfully changed setting");
                     }
                 }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting change setting option");
         } catch (IllegalAccessException e) {
-            throw new Exception("Error listing settings: " + e);
+            logger.debug("Exception while getting setting in changeSettings: " + e);
         }
     }
 
@@ -183,7 +170,7 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
-    private boolean changeSetting(String settingName) throws IllegalAccessException, Exception {
+    private boolean changeSetting(String settingName) throws InterruptedException {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             setting.setAccessible(true);
@@ -208,11 +195,10 @@ public class Settings {
                 logger.info("Modifying settings of the type '" + setting.getType() + "' is currently not supported");
             }
             setting.setAccessible(false);
-        } catch (InterruptedException e) {
-            logger.info("Changing settings interrupted");
-            return false;
         } catch (NoSuchFieldException e) {
-            throw new Exception("Error modifying setting: " + e);
+            logger.error("Exception modifying setting (No Such Field Exception): " + e);
+        } catch (IllegalAccessException e) {
+            logger.error("Exception modifying setting (IllegalAccessException): " + e);
         }
         return false;
     }
@@ -223,7 +209,7 @@ public class Settings {
      * @param setting - constructed Settings
      */
     @JsonIgnore
-    private <T extends Settings> void setSettings(T settings) throws Exception {
+    private <T extends Settings> void setSettings(T settings) {
         for (Field field : settings.getClass().getDeclaredFields()) {
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
                 try {
@@ -232,7 +218,7 @@ public class Settings {
                     field.set(this, value);
                     field.setAccessible(false);
                 } catch (IllegalAccessException e) {
-                    throw new Exception("Error copying over settings: " + e);
+                    logger.error("Exception setting setting (Illegal Access Exception): " + e);
                 }
             }
         }

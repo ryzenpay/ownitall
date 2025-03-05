@@ -1,8 +1,10 @@
 package ryzen.ownitall.library;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
@@ -80,7 +82,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
-    public Album getAlbum(String id) {
+    public Album getAlbum(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getAlbum");
             return null;
@@ -154,7 +156,7 @@ public class MusicBrainz extends Library {
         return this.getSong(id);
     }
 
-    private String searchSong(Song song) {
+    private String searchSong(Song song) throws InterruptedException {
         if (song == null) {
             logger.debug("Empty song passed in searchRecordingSong");
             return null;
@@ -197,7 +199,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
-    public Song getSong(String id) {
+    public Song getSong(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getSong");
             return null;
@@ -247,7 +249,7 @@ public class MusicBrainz extends Library {
         return this.getArtist(id);
     }
 
-    public String searchArtist(Artist artist) {
+    public String searchArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
             logger.debug("Empty artist passed in searchArtist");
             return null;
@@ -274,7 +276,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
-    public Artist getArtist(String id) {
+    public Artist getArtist(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getArtist");
             return null;
@@ -315,7 +317,7 @@ public class MusicBrainz extends Library {
             if (redirectUrl != null) {
                 return new URI(redirectUrl);
             }
-        } catch (Exception e) {
+        } catch (IOException | URISyntaxException e) {
             logger.debug("Exception while getting coverArt: " + e);
         }
         logger.debug("No coverart found for: '" + id + "'");
@@ -355,7 +357,7 @@ public class MusicBrainz extends Library {
         return builder.toString();
     }
 
-    private JsonNode musicBeeQuery(String type, String query) {
+    private JsonNode musicBeeQuery(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in musicBeeQuery");
             return null;
@@ -373,7 +375,7 @@ public class MusicBrainz extends Library {
             if (rootNode != null) {
                 return rootNode;
             }
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
             logger.error("Error querying MusicBee: " + e);
         }
         return null;

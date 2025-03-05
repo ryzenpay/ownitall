@@ -24,27 +24,40 @@ public class UploadMenu {
         options.put("Upload Playlist", this::optionUploadPlaylist);
         options.put("Upload Album", this::optionUploadAlbum);
         options.put("Upload Liked Songs", this::optionUploadLikedSongs);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "UPLOAD");
-            if (choice.equals("Exit")) {
-                break;
-            } else {
-                options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "UPLOAD");
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting upload menu choice");
         }
     }
 
     private void optionUploadCollection() {
-        Upload upload = new Upload();
+        Upload upload;
+        try {
+            upload = new Upload();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting up upload");
+            return;
+        }
         logger.info("Uploading local music...");
-        ProgressBar pb = Progressbar.progressBar("Upload", 2);
-        pb.setExtraMessage("Liked Songs");
-        upload.getLikedSongs();
-        pb.setExtraMessage("Saved Albums +/ Playlists").step();
-        upload.processFolders();
-        pb.setExtraMessage("Done").step();
-        pb.close();
-        logger.info("done uploading local music");
+        try (ProgressBar pb = Progressbar.progressBar("Upload", 2)) {
+            pb.setExtraMessage("Liked Songs");
+            upload.getLikedSongs();
+            pb.setExtraMessage("Saved Albums +/ Playlists").step();
+            upload.processFolders();
+            pb.setExtraMessage("Done").step();
+            logger.info("done uploading local music");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while uploading collection");
+            return;
+        }
     }
 
     private void optionUploadPlaylist() {
@@ -59,12 +72,16 @@ public class UploadMenu {
             return;
         }
         logger.info("Uploading local Playlist...");
-        if (MusicTools.getExtension(folder).equalsIgnoreCase("m3u")) {
-            this.collection.addPlaylist(Upload.processM3U(folder));
-        } else {
-            this.collection.addPlaylist(Upload.getPlaylist(folder));
+        try {
+            if (MusicTools.getExtension(folder).equalsIgnoreCase("m3u")) {
+                this.collection.addPlaylist(Upload.processM3U(folder));
+            } else {
+                this.collection.addPlaylist(Upload.getPlaylist(folder));
+            }
+            logger.info("done uploading playlist");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while uploading playlist");
         }
-        logger.info("done uploading playlist");
     }
 
     private void optionUploadAlbum() {
@@ -79,8 +96,12 @@ public class UploadMenu {
             return;
         }
         logger.info("Uploading local Album...");
-        this.collection.addAlbum(Upload.getAlbum(folder));
-        logger.info("Done uploading Album");
+        try {
+            this.collection.addAlbum(Upload.getAlbum(folder));
+            logger.info("Done uploading Album");
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught while uploading album");
+        }
 
     }
 
@@ -96,7 +117,11 @@ public class UploadMenu {
             return;
         }
         logger.info("Uploading Liked Songs...");
-        this.collection.addLikedSongs(Upload.getSongs(folder));
-        logger.info("Done Uploading Liked Songs");
+        try {
+            this.collection.addLikedSongs(Upload.getSongs(folder));
+            logger.info("Done Uploading Liked Songs");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while uploading liked songs");
+        }
     }
 }

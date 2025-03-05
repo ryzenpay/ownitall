@@ -1,6 +1,8 @@
 package ryzen.ownitall.library;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +29,7 @@ public class LastFM extends Library {
      * default LastFM constructor
      * initializes all values and loads from cache
      */
-    public LastFM() {
+    public LastFM() throws InterruptedException {
         super();
         if (credentials.lastFMIsEmpty()) {
             credentials.setLastFMCredentials();
@@ -285,13 +287,13 @@ public class LastFM extends Library {
                         .append(URLEncoder.encode(params.get(param), StandardCharsets.UTF_8.toString()));
             }
             return builder.toString();
-        } catch (Exception e) {
+        } catch (UnsupportedEncodingException e) {
             logger.error("Unable to build a query: " + e);
             return null;
         }
     }
 
-    private JsonNode lastFMQuery(String type, String query) {
+    private JsonNode lastFMQuery(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in musicBeeQuery");
             return null;
@@ -311,7 +313,7 @@ public class LastFM extends Library {
             if (rootNode != null) {
                 return rootNode;
             }
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
             logger.error("Exception querying LastFM: " + e);
         }
         return null;

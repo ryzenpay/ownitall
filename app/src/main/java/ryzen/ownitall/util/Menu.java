@@ -39,7 +39,7 @@ public class Menu {
      * @return - string choice
      * 
      */
-    public static String optionMenu(Set<String> setOptions, String menuName) {
+    public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null || setOptions.isEmpty()) {
             logger.debug("null or empty optionset provided in optionMenu");
             return null;
@@ -58,12 +58,7 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            try {
-                choice = Input.request().getInt();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting menu response");
-                choice = 0;
-            }
+            choice = Input.request().getInt();
             if (choice < 0 || choice > options.size()) {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");
@@ -75,7 +70,7 @@ public class Menu {
         }
     }
 
-    public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) {
+    public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null || setOptions.isEmpty()) {
             logger.debug("null or empty optionset provided in optionMenuWithValue");
             return null;
@@ -93,12 +88,7 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            try {
-                choice = Input.request().getInt();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting menu response");
-                choice = 0;
-            }
+            choice = Input.request().getInt();
             if (choice < 0 || choice > options.size()) {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");

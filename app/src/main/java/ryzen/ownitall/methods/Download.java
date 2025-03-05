@@ -3,6 +3,7 @@ package ryzen.ownitall.methods;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -226,7 +227,7 @@ public class Download {
             } else {
                 logger.info("song '" + song.toString() + "' failed to download, check logs");
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
         }
     }
@@ -393,7 +394,7 @@ public class Download {
                 MusicTools.downloadImage(playlist.getCoverImage(),
                         new File(folder, playlist.getFolderName() + ".png"));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage: " + e);
         }
     }
@@ -417,7 +418,7 @@ public class Download {
                 MusicTools.downloadImage(album.getCoverImage(),
                         new File(folder, "cover.png"));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage: " + e);
         }
     }

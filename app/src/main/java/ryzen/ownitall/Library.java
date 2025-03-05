@@ -1,6 +1,7 @@
 package ryzen.ownitall;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -43,19 +44,23 @@ public class Library {
      */
     public static Library load() {
         if (instance == null) {
-            switch (settings.getLibrayType()) {
-                case 0:
-                    instance = null;
-                    break;
-                case 1:
-                    instance = new LastFM();
-                    break;
-                case 2:
-                    instance = new MusicBrainz();
-                    break;
-                default:
-                    logger.error("Library type set in settings '" + settings.getLibrayType() + "' does not exist");
-                    break;
+            try {
+                switch (settings.getLibrayType()) {
+                    case 0:
+                        instance = null;
+                        break;
+                    case 1:
+                        instance = new LastFM();
+                        break;
+                    case 2:
+                        instance = new MusicBrainz();
+                        break;
+                    default:
+                        logger.error("Library type set in settings '" + settings.getLibrayType() + "' does not exist");
+                        break;
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while setting up library");
             }
         }
         if (instance != null) {
@@ -168,7 +173,7 @@ public class Library {
                 }
             }
             return rootNode;
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Error querying API: " + e);
             return null;
         }

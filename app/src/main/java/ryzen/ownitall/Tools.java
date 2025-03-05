@@ -22,15 +22,20 @@ public class Tools {
         options.put("Clear Cache", this::optionClearCache);
         options.put("Clear Saved Logins", this::optionClearCredentials);
         options.put("Reset Settings", this::optionClearSettings);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
-            if (choice != null) {
-                if (choice.equals("Exit")) {
-                    break;
-                } else {
-                    options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
+                if (choice != null) {
+                    if (choice.equals("Exit")) {
+                        break;
+                    } else {
+                        options.get(choice).run();
+                    }
                 }
+
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting tools menu response");
         }
     }
 

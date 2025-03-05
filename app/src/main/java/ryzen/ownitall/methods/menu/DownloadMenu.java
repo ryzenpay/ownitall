@@ -31,13 +31,17 @@ public class DownloadMenu {
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
         options.put("Write Collection Data", this::optionCollectionData);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
-            if (choice.equals("Exit")) {
-                break;
-            } else {
-                options.get(choice).run();
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
+                if (choice.equals("Exit")) {
+                    break;
+                } else {
+                    options.get(choice).run();
+                }
             }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting download menu choice");
         }
     }
 
@@ -81,11 +85,11 @@ public class DownloadMenu {
                     download.downloadPlaylist(options.get(choice));
                     break;
                 }
+                logger.info("Done downloading playlist");
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught downloading playlist");
         }
-        logger.info("Done downloading playlist");
     }
 
     private void optionDownloadAlbum() {
@@ -107,11 +111,11 @@ public class DownloadMenu {
                     download.downloadAlbum(options.get(choice));
                     break;
                 }
+                logger.info("Done downloading album");
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught downloading Album");
         }
-        logger.info("Done downloading album");
     }
 
     private void optionDownloadLikedSongs() {
