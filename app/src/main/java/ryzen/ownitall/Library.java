@@ -170,7 +170,7 @@ public class Library {
                 // to prevent it triggering on songs named "error" or "failed"
                 if (errorCode != 0) {
                     String errorMessage = rootNode.path("message").asText();
-                    logger.error("Received error code (" + errorCode + ") while querying: " + errorMessage);
+                    this.queryErrorHandle(errorCode, errorMessage);
                     return null;
                 }
             }
@@ -179,5 +179,9 @@ public class Library {
             logger.error("Error querying API: " + e);
             return null;
         }
+    }
+
+    protected void queryErrorHandle(int code, String message) {
+        logger.error("Received error code (" + code + ") while querying: " + message);
     }
 }

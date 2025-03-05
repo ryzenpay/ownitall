@@ -318,4 +318,61 @@ public class LastFM extends Library {
         }
         return null;
     }
+
+    /**
+     * barebones method of handling library query response errors
+     * 
+     * @param code    - error code thrown
+     * @param message - additional message
+     */
+    @Override
+    protected void queryErrorHandle(int code, String message) {
+        switch (code) {
+            case 2:
+                logger.error("Invalid service - This service does not exist");
+                break;
+            case 3:
+                logger.error("Invalid Method - No method with that name in this package");
+                break;
+            case 4:
+                logger.error("Authentication Failed - You do not have permissions to access the service");
+                break;
+            case 5:
+                logger.error("Invalid format - This service doesn't exist in that format");
+                break;
+            case 6:
+                logger.error("Invalid parameters - Your request is missing a required parameter");
+                break;
+            case 7:
+                logger.error("Invalid resource specified");
+                break;
+            case 8:
+                logger.error("Operation failed - Something else went wrong");
+                break;
+            case 9:
+                logger.error("Invalid session key - Please re-authenticate");
+                break;
+            case 10:
+                logger.error("Invalid API key - You must be granted a valid key by last.fm");
+                break;
+            case 11:
+                logger.error("Service Offline - This service is temporarily offline. Try again later");
+                break;
+            case 13:
+                logger.error("Invalid method signature supplied");
+                break;
+            case 16:
+                logger.error("There was a temporary error processing your request. Please try again");
+                break;
+            case 26:
+                logger.error("Suspended API key - Access for your account has been suspended, please contact Last.fm");
+                break;
+            case 29:
+                logger.error("Rate limit exceeded - Your IP has made too many requests in a short period");
+                break;
+            default:
+                logger.error("Unknown error: " + message);
+                break;
+        }
+    }
 }
