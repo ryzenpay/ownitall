@@ -204,7 +204,7 @@ public class Song {
         this.albumName = albumName;
     }
 
-    public String getAlbumname() {
+    public String getAlbumName() {
         return this.albumName;
     }
 

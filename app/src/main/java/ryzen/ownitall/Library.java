@@ -107,6 +107,7 @@ public class Library {
         this.artists.clear();
         this.albums.clear();
         this.songs.clear();
+        this.ids.clear();
     }
 
     public Album getAlbum(Album album) throws InterruptedException {

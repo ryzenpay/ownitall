@@ -464,7 +464,7 @@ public class Spotify {
                 hasMore = false;
             }
         }
-        pb.close();
+        pb.step().close();
         return songs;
     }
 
@@ -626,7 +626,7 @@ public class Spotify {
                 hasMore = false;
             }
         }
-        pb.step();
+        pb.step().close();
         return songs;
     }
 

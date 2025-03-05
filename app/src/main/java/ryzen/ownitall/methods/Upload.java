@@ -319,6 +319,9 @@ public class Upload {
                 if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
                     song.addId("mbid", tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID));
                 }
+                if (!tag.getFirst(FieldKey.ALBUM).isEmpty()) {
+                    song.setAlbumName(tag.getFirst(FieldKey.ALBUM));
+                }
             }
             song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
         } catch (Exception e) {
