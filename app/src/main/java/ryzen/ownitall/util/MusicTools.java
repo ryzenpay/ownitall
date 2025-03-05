@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,30 +86,30 @@ public class MusicTools {
         }
     }
 
-    public static void writeMetaData(String songName, String artistName, URI coverImage, boolean liked,
-            String albumName, String mbid, File songFile) throws Exception {
+    public static void writeMetaData(LinkedHashMap<FieldKey, String> id3Data, boolean liked, URI coverImage, File songFile) throws Exception {
         if (songFile == null) {
-            logger.debug("null songFile provided in writeMetaData");
+            logger.debug("null songFIle provided in writeMetaData");
             return;
         }
         if (!songFile.exists()) {
             logger.debug("Song File '" + songFile.getAbsolutePath() + "' does not exist in writeMetaData");
             return;
         }
+        if (id3Data == null) {
+            logger.debug("no id3data provided in writeMetaData");
+            return;
+        }
         // Set ID3v2.3 as default
         TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V24);
-
         AudioFile audioFile = AudioFileIO.read(songFile);
         ID3v24Tag tag = (ID3v24Tag) audioFile.getTagAndConvertOrCreateAndSetDefault();
-
-        tag.setField(FieldKey.TITLE, songName);
-        if (artistName != null) {
-            tag.setField(FieldKey.ARTIST, artistName);
+        for (FieldKey key : id3Data.keySet()) {
+            tag.setField(key, id3Data.get(key));
         }
         if (coverImage != null) {
             try {
                 // Download the image to a temporary file
-                File tempFile = File.createTempFile(String.valueOf(songName.hashCode()), ".png");
+                File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()), ".png");
                 tempFile.delete(); // to prevent throwing off the downloadimage function
                 downloadImage(coverImage, tempFile);
                 if (tempFile.exists()) {
@@ -125,8 +126,7 @@ public class MusicTools {
             } catch (Exception e) {
                 logger.error(
                         "Exception writing coverImage '" + coverImage.toString() + "' for '"
-                                + songFile.getAbsolutePath()
-                                + "': " + e);
+                                + songFile.getAbsolutePath() + "': " + e);
             }
         }
         if (liked) {
@@ -151,16 +151,10 @@ public class MusicTools {
             tag.deleteField(FieldKey.RATING);
             tag.removeFrame("TXXX");
         }
-        if (albumName != null) {
-            tag.setField(FieldKey.ALBUM, albumName);
-        }
-        if (mbid != null) {
-            tag.setField(FieldKey.MUSICBRAINZ_RECORDING_WORK_ID, mbid);
-        }
+        // save changes
         audioFile.commit();
         AudioFileIO.write(audioFile);
     }
-
     public static void downloadImage(URI url, File file) throws Exception {
         if (url == null || file == null) {
             logger.debug("null url or file passed in downloadImage");

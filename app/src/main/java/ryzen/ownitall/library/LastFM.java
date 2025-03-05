@@ -158,6 +158,7 @@ public class LastFM extends Library {
                 }
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
+                    song.setAlbumName(albumNode.path("title").asText());
                     JsonNode imageNode = albumNode.path("image");
                     if (imageNode.isArray() && !imageNode.isEmpty()) {
                         String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();

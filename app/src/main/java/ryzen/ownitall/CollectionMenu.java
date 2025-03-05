@@ -237,113 +237,15 @@ public class CollectionMenu {
             logger.debug("Interrupted while getting inventory recursion");
             return;
         }
-        int playlistCount = collection.getPlaylists().size();
-        int playlistTrackCount = 0;
-        int albumCount = collection.getAlbums().size();
-        int albumTrackCount = 0;
-        for (Playlist playlist : collection.getPlaylists()) {
-            playlistTrackCount += playlist.size();
-        }
-        for (Album album : collection.getAlbums()) {
-            albumTrackCount += album.size();
-        }
-        int likedSongsTrackCount = collection.getLikedSongs().size();
-        int trackCount = collection.getStandaloneLikedSongs().size() + playlistTrackCount + albumTrackCount;
-        int i = 1;
-        int y = 1;
         switch (recursion) {
             case 1:
-                System.out
-                        .println("Total playlists: " + playlistCount + "  (" + playlistTrackCount
-                                + " songs)");
-                System.out.println(
-                        "Total albums: " + albumCount + "  (" + albumTrackCount + " songs)");
-                System.out.println("Total liked songs: " + likedSongsTrackCount);
-                System.out.println("With a total of " + trackCount + " songs");
+                this.printInventoryR1();
                 break;
             case 2:
-                System.out.println("Liked Songs (" + collection.getLikedSongs().size() + ")");
-                System.out.println(
-                        "Playlists (" + playlistCount + "): (" + playlistTrackCount + " songs)");
-                i = 1;
-                for (Playlist playlist : collection.getPlaylists()) {
-                    System.out
-                            .println(
-                                    i + "/" + playlistCount + " - " + playlist.getName() + " | "
-                                            + playlist.size()
-                                            + " - "
-                                            + MusicTools.musicTime(playlist.getTotalDuration()));
-                    i++;
-                }
-                i = 1;
-                System.out.println("Albums (" + albumCount + "): (" + albumTrackCount + " songs)");
-                for (Album album : collection.getAlbums()) {
-                    System.out
-                            .println(i + "/" + albumCount + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
-                    if (album.getArtists() != null) {
-                        System.out.println("    - Artist: " + album.getArtists().toString());
-                    }
-                    i++;
-                }
+                this.printInventoryR2();
                 break;
             case 3:
-                System.out.println("Liked Songs (" + likedSongsTrackCount + "): ");
-                i = 1;
-                for (Song likedSong : collection.getStandaloneLikedSongs()) {
-                    System.out.println("    " + i + "/" + likedSongsTrackCount + " = " + likedSong.getName() + " | "
-                            + MusicTools.musicTime(likedSong.getDuration()));
-                    if (likedSong.getArtist() != null) {
-                        System.out.println("        - Artist: " + likedSong.getArtist().toString());
-                    }
-                    i++;
-                }
-                System.out.println("Playlists (" + playlistCount + "): (" + playlistTrackCount + " songs)");
-                i = 1;
-                for (Playlist playlist : collection.getPlaylists()) {
-                    y = 1;
-                    System.out
-                            .println(
-                                    i + "/" + playlistCount + " - " + playlist.getName() + " | "
-                                            + playlist.size()
-                                            + " - " + MusicTools.musicTime(playlist.getTotalDuration()));
-                    i++;
-                    for (Song song : playlist.getSongs()) {
-                        if (collection.isLiked(song)) {
-                            System.out.print("*");
-                        } else {
-                            System.out.print(" ");
-                        }
-                        System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
-                                + MusicTools.musicTime(song.getDuration()));
-                        if (song.getArtist() != null) {
-                            System.out.println("        - Artist: " + song.getArtist().toString());
-                        }
-                        y++;
-                    }
-                }
-                i = 1;
-                System.out.println("Albums (" + albumCount + "): (" + albumTrackCount + " songs)");
-                for (Album album : collection.getAlbums()) {
-                    y = 1;
-                    System.out
-                            .println(i + "/" + albumCount + " - " + album.getName() + " | " + album.size()
-                                    + " - " + MusicTools.musicTime(album.getTotalDuration()));
-                    i++;
-                    for (Song song : album.getSongs()) {
-                        if (collection.isLiked(song)) {
-                            System.out.print("*");
-                        } else {
-                            System.out.print(" ");
-                        }
-                        System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
-                                + MusicTools.musicTime(song.getDuration()));
-                        if (song.getArtist() != null) {
-                            System.out.println("        - Artist: " + song.getArtist().toString());
-                        }
-                        y++;
-                    }
-                }
+                this.printInventoryR3();
                 break;
             default:
                 System.err.println("Invalid recursion option.");
@@ -351,5 +253,108 @@ public class CollectionMenu {
         }
         System.out.print("Press enter to continue: ");
         Input.request().getEnter();
+    }
+
+    public void printInventoryR1() {
+        System.out
+                .println("Total playlists: " + collection.getPlaylistCount() + "  ("
+                        + collection.getPlaylistsTrackCount()
+                        + " songs)");
+        System.out.println(
+                "Total albums: " + collection.getAlbumCount() + "  (" + collection.getAlbumsTrackCount()
+                        + " songs)");
+        System.out.println("Total liked songs: " + collection.getLikedSongs().size());
+        System.out.println("With a total of " + collection.getTotalTrackCount() + " songs");
+    }
+
+    public void printInventoryR2() {
+        System.out.println("Liked Songs (" + collection.getLikedSongs().size() + ")");
+        System.out.println(
+                "Playlists (" + collection.getPlaylistCount() + "): (" + collection.getPlaylistsTrackCount()
+                        + " songs)");
+        int i = 1;
+        for (Playlist playlist : collection.getPlaylists()) {
+            System.out
+                    .println(
+                            i + "/" + collection.getPlaylistCount() + " - " + playlist.getName() + " | "
+                                    + playlist.size()
+                                    + " - "
+                                    + MusicTools.musicTime(playlist.getTotalDuration()));
+            i++;
+        }
+        i = 1;
+        System.out.println(
+                "Albums (" + collection.getAlbumCount() + "): (" + collection.getAlbumsTrackCount() + " songs)");
+        for (Album album : collection.getAlbums()) {
+            System.out
+                    .println(i + "/" + collection.getAlbumCount() + " - " + album.getName() + " | " + album.size()
+                            + " - " + MusicTools.musicTime(album.getTotalDuration()));
+            if (album.getArtists() != null) {
+                System.out.println("    - Artist: " + album.getArtists().toString());
+            }
+            i++;
+        }
+    }
+
+    public void printInventoryR3() {
+        System.out.println("Liked Songs (" + collection.getLikedSongs().size() + "): ");
+        int i = 1;
+        for (Song likedSong : collection.getStandaloneLikedSongs()) {
+            System.out
+                    .println("    " + i + "/" + collection.getLikedSongs().size() + " = " + likedSong.getName() + " | "
+                            + MusicTools.musicTime(likedSong.getDuration()));
+            if (likedSong.getArtist() != null) {
+                System.out.println("        - Artist: " + likedSong.getArtist().toString());
+            }
+            i++;
+        }
+        System.out.println("Playlists (" + collection.getPlaylistCount() + "): (" + collection.getPlaylistsTrackCount()
+                + " songs)");
+        i = 1;
+        for (Playlist playlist : collection.getPlaylists()) {
+            int y = 1;
+            System.out
+                    .println(
+                            i + "/" + collection.getPlaylistCount() + " - " + playlist.getName() + " | "
+                                    + playlist.size()
+                                    + " - " + MusicTools.musicTime(playlist.getTotalDuration()));
+            i++;
+            for (Song song : playlist.getSongs()) {
+                if (collection.isLiked(song)) {
+                    System.out.print("*");
+                } else {
+                    System.out.print(" ");
+                }
+                System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
+                        + MusicTools.musicTime(song.getDuration()));
+                if (song.getArtist() != null) {
+                    System.out.println("        - Artist: " + song.getArtist().toString());
+                }
+                y++;
+            }
+        }
+        i = 1;
+        System.out.println(
+                "Albums (" + collection.getAlbumCount() + "): (" + collection.getAlbumsTrackCount() + " songs)");
+        for (Album album : collection.getAlbums()) {
+            int y = 1;
+            System.out
+                    .println(i + "/" + collection.getAlbumCount() + " - " + album.getName() + " | " + album.size()
+                            + " - " + MusicTools.musicTime(album.getTotalDuration()));
+            i++;
+            for (Song song : album.getSongs()) {
+                if (collection.isLiked(song)) {
+                    System.out.print("*");
+                } else {
+                    System.out.print(" ");
+                }
+                System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
+                        + MusicTools.musicTime(song.getDuration()));
+                if (song.getArtist() != null) {
+                    System.out.println("        - Artist: " + song.getArtist().toString());
+                }
+                y++;
+            }
+        }
     }
 }

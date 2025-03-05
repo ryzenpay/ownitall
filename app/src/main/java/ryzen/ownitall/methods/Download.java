@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jaudiotagger.tag.FieldKey;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
@@ -22,6 +24,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
@@ -74,7 +77,6 @@ public class Download {
             this.downloadPath = Input.request().getFile(false).getAbsolutePath();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting download path");
-            return;
         }
     }
 
@@ -238,14 +240,22 @@ public class Download {
             logger.debug("null or non existant songFile provided in writeMetaData");
             return;
         }
-        Album foundAlbum = collection.getSongAlbum(song);
-        String albumName = null;
-        if (foundAlbum != null) {
-            albumName = foundAlbum.getName();
+        LinkedHashMap<FieldKey, String> id3Data = new LinkedHashMap<>();
+        id3Data.put(FieldKey.TITLE, song.getName());
+        Artist artist = song.getArtist();
+        if (artist != null) {
+            id3Data.put(FieldKey.ARTIST, artist.getName());
+        }
+        String albumName = song.getAlbumname();
+        if (albumName != null) {
+            id3Data.put(FieldKey.ALBUM, albumName);
+        }
+        String mbid = song.getId("mbid");
+        if (mbid != null) {
+            id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
         }
         try {
-            MusicTools.writeMetaData(song.getName(), song.getArtist().getName(), song.getCoverImage(),
-                    collection.isLiked(song), albumName, song.getId("mbid"), songFile);
+            MusicTools.writeMetaData(id3Data, collection.isLiked(song), song.getCoverImage(), songFile);
         } catch (Exception e) {
             logger.error("writing song metadata for '" + song.toString() + "': " + e);
         }

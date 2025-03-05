@@ -102,6 +102,7 @@ public class Album extends Playlist {
         if (this.artists == null) {
             this.artists = new LinkedHashSet<>();
         }
+        song.setAlbumName(this.getName());
         // ensure every song in album has (default) coverimage
         if (song.getCoverImage() == null && this.getCoverImage() != null) {
             song.setCoverImage(this.getCoverImage());

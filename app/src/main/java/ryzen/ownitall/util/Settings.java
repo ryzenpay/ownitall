@@ -48,8 +48,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
     private static final Logger logger = LogManager.getLogger(Settings.class);
-    private ObjectMapper objectMapper = new ObjectMapper()
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
+    private final ObjectMapper objectMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD,
+            JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
     private final String settingsFolderPath = ".appdata";
 
     /**
@@ -157,7 +157,7 @@ public class Settings {
                     options.put(setting.getName(), setting.get(this).toString());
                 }
                 String choice = Menu.optionMenuWithValue(options, "SETTINGS");
-                if (choice == "Exit") {
+                if (choice.equals("Exit")) {
                     break;
                 } else {
                     try {
@@ -254,8 +254,8 @@ public class Settings {
                     }
                     field.setAccessible(false);
                 } catch (IllegalAccessException e) {
-                    // Log the exception or handle it as needed
-                    e.printStackTrace();
+                    logger.error("Exception checking field: " + e);
+
                 }
             }
         }

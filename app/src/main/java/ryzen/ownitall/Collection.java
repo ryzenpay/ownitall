@@ -406,4 +406,36 @@ public class Collection {
         }
         return output.toString();
     }
+
+    public int getPlaylistsTrackCount() {
+        int trackCount = 0;
+        for (Playlist playlist : this.playlists) {
+            trackCount += playlist.size();
+        }
+        return trackCount;
+    }
+
+    public int getAlbumsTrackCount() {
+        int trackCount = 0;
+        for (Album album : this.albums) {
+            trackCount += album.size();
+        }
+        return trackCount;
+    }
+
+    public int getTotalTrackCount() {
+        int trackCount = 0;
+        trackCount += this.getStandaloneLikedSongs().size();
+        trackCount += this.getPlaylistsTrackCount();
+        trackCount += this.getAlbumsTrackCount();
+        return trackCount;
+    }
+
+    public int getPlaylistCount() {
+        return this.playlists.size();
+    }
+
+    public int getAlbumCount() {
+        return this.albums.size();
+    }
 }

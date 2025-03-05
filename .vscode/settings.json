@@ -1,7 +1,6 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
-    "editor.unicodeHighlight.includeComments": "inUntrustedWorkspace",
     "editor.comments.ignoreEmptyLines": true,
     "editor.comments.insertSpace": true,
     "comments.collapseOnResolve": true,
@@ -9,5 +8,6 @@
     "comments.useRelativeTime": true,
     "comments.visible": true,
     "java.format.comments.enabled": true,
-    "java.codeGeneration.generateComments": true
+    "java.codeGeneration.generateComments": true,
+    "java.saveActions.organizeImports": true,
 }
