@@ -5,12 +5,14 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.Progressbar;
 
 public class CollectionMenu {
     private static final Logger logger = LogManager.getLogger(CollectionMenu.class);
@@ -204,11 +206,11 @@ public class CollectionMenu {
      */
     private void optionUpdateInventory() {
         if (library == null) {
-            logger.info("This requires library to be enabled");
+            logger.warn("This requires library to be enabled");
             return;
         }
-        logger.info("updating current collection with library...");
-        try {
+        logger.debug("updating current collection with library...");
+        try (ProgressBar pb = Progressbar.progressBar("Updating Collection", collection.getTotalTrackCount())) {
             for (Song song : collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
@@ -219,6 +221,7 @@ public class CollectionMenu {
                     }
                     song.addIds(foundSong.getIds());
                 }
+                pb.setExtraMessage(song.getName()).step();
             }
             for (Playlist playlist : collection.getPlaylists()) {
                 for (Song song : playlist.getSongs()) {
@@ -231,6 +234,7 @@ public class CollectionMenu {
                         }
                         song.addIds(foundSong.getIds());
                     }
+                    pb.setExtraMessage(song.getName()).step();
                 }
             }
             for (Album album : collection.getAlbums()) {
@@ -243,12 +247,13 @@ public class CollectionMenu {
                     }
                     album.addIds(foundAlbum.getIds());
                 }
+                pb.setExtraMessage(album.getName()).stepBy(album.size());
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught while verifying inventory");
             return;
         }
-        logger.info("done updating collection content");
+        logger.debug("done updating collection content");
     }
 
     /**

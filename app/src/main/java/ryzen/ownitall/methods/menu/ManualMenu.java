@@ -72,7 +72,7 @@ public class ManualMenu {
                 if (foundAlbum != null) {
                     album = foundAlbum;
                 } else if (settings.isLibraryVerified()) {
-                    logger.info(
+                    logger.warn(
                             "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
                     return;
                 }
@@ -159,7 +159,7 @@ public class ManualMenu {
                 if (foundSong != null) {
                     song = foundSong;
                 } else if (settings.isLibraryVerified()) {
-                    logger.info(
+                    logger.warn(
                             "Song was not found in library and `LibraryVerified` is set to true, not adding song");
                     return null;
                 }
@@ -173,7 +173,7 @@ public class ManualMenu {
 
     private void optionAddArtist() {
         if (settings.getLibrayType() != 1) {
-            logger.info("LastFM library type is required for this");
+            logger.warn("LastFM library type is required for this");
             return;
         }
         String artistName = null;

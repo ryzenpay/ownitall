@@ -225,7 +225,7 @@ public class Download {
             if (songFile.exists()) {
                 writeMetaData(song, songFile);
             } else {
-                logger.info("song '" + song.toString() + "' failed to download, check logs");
+                logger.warn("song '" + song.toString() + "' failed to download, check logs");
             }
         } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
@@ -277,15 +277,16 @@ public class Download {
             songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadPath);
         }
-        ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
-        for (Song song : songs) {
-            pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, likedSongsFolder);
+        try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1)) {
+            for (Song song : songs) {
+                pb.setExtraMessage(song.getName()).step();
+                this.threadDownload(song, likedSongsFolder);
+            }
+            pb.setExtraMessage("cleaning up").step();
+            this.threadShutdown();
+            this.cleanFolder(likedSongsFolder);
+            pb.setExtraMessage("Done");
         }
-        pb.setExtraMessage("cleaning up").step();
-        this.threadShutdown();
-        this.cleanFolder(likedSongsFolder);
-        pb.setExtraMessage("Done").close();
     }
 
     /**
@@ -293,13 +294,13 @@ public class Download {
      */
     public void downloadPlaylists() throws InterruptedException {
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
-        ProgressBar pbPlaylist = Progressbar.progressBar("Playlist Downloads", playlists.size());
-        for (Playlist playlist : playlists) {
-            pbPlaylist.setExtraMessage(playlist.getName());
-            this.downloadPlaylist(playlist);
-            pbPlaylist.step();
+        try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
+            for (Playlist playlist : playlists) {
+                this.downloadPlaylist(playlist);
+                pb.setExtraMessage(playlist.getName()).step();
+            }
+            pb.setExtraMessage("Done").step();
         }
-        pbPlaylist.setExtraMessage("Done").step().close();
     }
 
     /**
@@ -322,27 +323,29 @@ public class Download {
             songs = collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = new File(this.downloadPath);
         }
-        ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(), playlist.size() + 1);
-        this.writePlaylistData(playlist, playlistFolder);
-        for (Song song : songs) {
-            pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, playlistFolder);
+        try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
+                playlist.size() + 1)) {
+            this.writePlaylistData(playlist, playlistFolder);
+            for (Song song : songs) {
+                pb.setExtraMessage(song.getName()).step();
+                this.threadDownload(song, playlistFolder);
+            }
+            pb.setExtraMessage("cleaning up").step();
+            this.threadShutdown();
+            this.cleanFolder(playlistFolder);
+            pb.setExtraMessage("Done");
         }
-        pb.setExtraMessage("cleaning up").step();
-        this.threadShutdown();
-        this.cleanFolder(playlistFolder);
-        pb.setExtraMessage("Done").close();
     }
 
     public void downloadAlbums() throws InterruptedException {
         LinkedHashSet<Album> albums = collection.getAlbums();
-        ProgressBar pbAlbum = Progressbar.progressBar("Album Downloads", albums.size());
-        for (Album album : albums) {
-            pbAlbum.setExtraMessage(album.getName());
-            this.downloadAlbum(album);
-            pbAlbum.step();
+        try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
+            for (Album album : albums) {
+                this.downloadAlbum(album);
+                pb.setExtraMessage(album.getName()).step();
+            }
+            pb.setExtraMessage("Done").step();
         }
-        pbAlbum.setExtraMessage("Done").step().close();
     }
 
     public void downloadAlbum(Album album) throws InterruptedException {
@@ -360,19 +363,20 @@ public class Download {
                 }
             }
         }
-        ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
-        // albums are always in a folder
-        File albumFolder = new File(this.downloadPath, album.getFolderName());
-        albumFolder.mkdirs();
-        this.writeAlbumData(album, albumFolder);
-        for (Song song : album.getSongs()) {
-            pb.setExtraMessage(song.getName()).step();
-            this.threadDownload(song, albumFolder);
+        try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1)) {
+            // albums are always in a folder
+            File albumFolder = new File(this.downloadPath, album.getFolderName());
+            albumFolder.mkdirs();
+            this.writeAlbumData(album, albumFolder);
+            for (Song song : album.getSongs()) {
+                pb.setExtraMessage(song.getName()).step();
+                this.threadDownload(song, albumFolder);
+            }
+            pb.setExtraMessage("cleaning up").step();
+            this.threadShutdown();
+            this.cleanFolder(albumFolder);
+            pb.setExtraMessage("Done");
         }
-        pb.setExtraMessage("cleaning up").step();
-        this.threadShutdown();
-        this.cleanFolder(albumFolder);
-        pb.setExtraMessage("Done").close();
     }
 
     public void writePlaylistData(Playlist playlist, File folder) {

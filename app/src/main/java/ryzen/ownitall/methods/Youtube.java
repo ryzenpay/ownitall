@@ -19,6 +19,7 @@ import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Library;
@@ -26,6 +27,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Progressbar;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -120,7 +122,7 @@ public class Youtube {
             return;
         }
         String pageToken = collection.getLikedSongs().getYoutubePageToken();
-        try {
+        try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1)) {
             do {
                 throwHandleInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
@@ -152,6 +154,7 @@ public class Youtube {
                                 }
                             }
                             if (song != null) {
+                                pb.setExtraMessage(song.getName()).step();
                                 song.addId("youtube", video.getId());
                                 collection.addLikedSong(song);
                             }

@@ -49,9 +49,8 @@ public class DownloadMenu {
      * option to locally download entire collection
      */
     private void optionDownloadCollection() {
-        logger.info("Downloading music...");
-        ProgressBar pb = Progressbar.progressBar("Download music", 3);
-        try {
+        logger.debug("Downloading music...");
+        try (ProgressBar pb = Progressbar.progressBar("Download music", 3)) {
             pb.setExtraMessage("Liked songs");
             download.downloadLikedSongs();
             pb.setExtraMessage("Playlists").step();
@@ -59,11 +58,10 @@ public class DownloadMenu {
             pb.setExtraMessage("Albums").step();
             download.downloadAlbums();
             pb.setExtraMessage("Done").step();
+            logger.debug("Done downloading music");
         } catch (InterruptedException e) {
             logger.debug("Interruption caught in download Collection");
         }
-        pb.close();
-        logger.info("Done downloading music");
     }
 
     private void optionDownloadPlaylist() {
@@ -78,14 +76,14 @@ public class DownloadMenu {
                 if (choice.equals("Exit")) {
                     break;
                 } else if (choice.equals("All")) {
-                    logger.info("Downloading all playlists...");
+                    logger.debug("Downloading all playlists...");
                     download.downloadPlaylists();
                 } else {
-                    logger.info("Downloading playlist " + choice + "...");
+                    logger.debug("Downloading playlist " + choice + "...");
                     download.downloadPlaylist(options.get(choice));
                     break;
                 }
-                logger.info("Done downloading playlist");
+                logger.debug("Done downloading playlist");
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught downloading playlist");
@@ -104,14 +102,14 @@ public class DownloadMenu {
                 if (choice.equals("Exit")) {
                     break;
                 } else if (choice.equals("All")) {
-                    logger.info("Downloading all albums");
+                    logger.debug("Downloading all albums");
                     download.downloadAlbums();
                 } else {
-                    logger.info("Downloading album " + choice + "...");
+                    logger.debug("Downloading album " + choice + "...");
                     download.downloadAlbum(options.get(choice));
                     break;
                 }
-                logger.info("Done downloading album");
+                logger.debug("Done downloading album");
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught downloading Album");
@@ -129,64 +127,65 @@ public class DownloadMenu {
     }
 
     private void optionCollectionData() {
-        logger.info("Writing collection data (M3U, NFO, coverimages)...");
-        ProgressBar pb = Progressbar.progressBar("Music Metadata", 3);
-        pb.setExtraMessage("Albums");
-        String downloadPath = download.getDownloadPath();
-        for (Album album : collection.getAlbums()) {
-            File albumFolder = new File(downloadPath, album.getFolderName());
-            if (!albumFolder.exists()) {
-                continue;
-            }
-            download.writeAlbumData(album, albumFolder);
-            for (Song song : album.getSongs()) {
-                File songFile = new File(albumFolder, song.getFileName());
-                if (songFile.exists()) {
-                    Download.writeMetaData(song, songFile);
+        logger.debug("Writing collection data (M3U, NFO, coverimages)...");
+        try (ProgressBar pb = Progressbar.progressBar("Music Metadata", 3)) {
+            pb.setExtraMessage("Albums");
+            String downloadPath = download.getDownloadPath();
+            for (Album album : collection.getAlbums()) {
+                File albumFolder = new File(downloadPath, album.getFolderName());
+                if (!albumFolder.exists()) {
+                    continue;
+                }
+                download.writeAlbumData(album, albumFolder);
+                for (Song song : album.getSongs()) {
+                    File songFile = new File(albumFolder, song.getFileName());
+                    if (songFile.exists()) {
+                        Download.writeMetaData(song, songFile);
+                    }
                 }
             }
-        }
-        pb.setExtraMessage("Playlists").step();
-        for (Playlist playlist : collection.getPlaylists()) {
-            File playlistFolder;
+            pb.setExtraMessage("Playlists").step();
+            for (Playlist playlist : collection.getPlaylists()) {
+                File playlistFolder;
+                LinkedHashSet<Song> songs;
+                if (settings.isDownloadHierachy()) {
+                    songs = playlist.getSongs();
+                    playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
+                    playlistFolder.mkdirs();
+                } else {
+                    songs = collection.getStandalonePlaylistSongs(playlist);
+                    playlistFolder = new File(downloadPath);
+                }
+                if (!playlistFolder.exists()) {
+                    continue;
+                }
+                download.writePlaylistData(playlist, playlistFolder);
+                for (Song song : songs) {
+                    File songFile = new File(playlistFolder, song.getFileName());
+                    if (songFile.exists()) {
+                        Download.writeMetaData(song, songFile);
+                    }
+                }
+            }
+            pb.setExtraMessage("Liked Songs").step();
             LinkedHashSet<Song> songs;
+            File likedSongsFolder;
             if (settings.isDownloadHierachy()) {
-                songs = playlist.getSongs();
-                playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
-                playlistFolder.mkdirs();
+                songs = collection.getLikedSongs().getSongs();
+                likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongsName());
             } else {
-                songs = collection.getStandalonePlaylistSongs(playlist);
-                playlistFolder = new File(downloadPath);
+                songs = collection.getStandaloneLikedSongs();
+                likedSongsFolder = new File(download.getDownloadPath());
             }
-            if (!playlistFolder.exists()) {
-                continue;
-            }
-            download.writePlaylistData(playlist, playlistFolder);
             for (Song song : songs) {
-                File songFile = new File(playlistFolder, song.getFileName());
+                File songFile = new File(likedSongsFolder, song.getFileName());
                 if (songFile.exists()) {
                     Download.writeMetaData(song, songFile);
                 }
             }
+            pb.setExtraMessage("Done").step();
+            logger.debug("Done writing collection data");
         }
-        pb.setExtraMessage("Liked Songs").step();
-        LinkedHashSet<Song> songs;
-        File likedSongsFolder;
-        if (settings.isDownloadHierachy()) {
-            songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongsName());
-        } else {
-            songs = collection.getStandaloneLikedSongs();
-            likedSongsFolder = new File(download.getDownloadPath());
-        }
-        for (Song song : songs) {
-            File songFile = new File(likedSongsFolder, song.getFileName());
-            if (songFile.exists()) {
-                Download.writeMetaData(song, songFile);
-            }
-        }
-        pb.setExtraMessage("Done").step().close();
-        logger.info("Done writing collection data");
     }
 
     // TODO: jellyfin api

@@ -37,7 +37,7 @@ public class YoutubeMenu {
     }
 
     private void optionImportCollection() {
-        logger.info("Importing youtube music");
+        logger.debug("Importing youtube music");
         try (ProgressBar pb = Progressbar.progressBar("Youtube Import", 3)) {
             pb.setExtraMessage("Liked songs");
             this.youtube.getLikedSongs();
@@ -46,17 +46,17 @@ public class YoutubeMenu {
             pb.setExtraMessage("Playlists").step();
             this.youtube.getPlaylists();
             pb.setExtraMessage("Done").step();
-            logger.info("Done importing youtube music");
+            logger.debug("Done importing youtube music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing collection");
         }
     }
 
     private void optionImportLikedSongs() {
-        logger.info("Importing youtube liked songs...");
+        logger.debug("Importing youtube liked songs...");
         try {
             this.youtube.getLikedSongs();
-            logger.info("Done importing youtube liked songs");
+            logger.debug("Done importing youtube liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing liked song");
         }

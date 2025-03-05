@@ -197,16 +197,17 @@ public class Collection {
      * @param collection - collection to get values to merge into this collection
      */
     public void mergeCollection(Collection collection) {
-        logger.info("Updating Music Collection");
-        ProgressBar pb = Progressbar.progressBar("Update Collection", 3);
-        pb.setExtraMessage("Albums");
-        this.addAlbums(collection.getAlbums());
-        pb.setExtraMessage("Playlists").step();
-        this.addPlaylists(collection.getPlaylists());
-        pb.setExtraMessage("Liked Songs").step();
-        this.addLikedSongs(collection.getLikedSongs().getSongs());
-        pb.setExtraMessage("Done").step();
-        pb.close();
+        logger.debug("Updating Music Collection");
+        try (ProgressBar pb = Progressbar.progressBar("Update Collection", 3)) {
+            pb.setExtraMessage("Albums");
+            this.addAlbums(collection.getAlbums());
+            pb.setExtraMessage("Playlists").step();
+            this.addPlaylists(collection.getPlaylists());
+            pb.setExtraMessage("Liked Songs").step();
+            this.addLikedSongs(collection.getLikedSongs().getSongs());
+            pb.setExtraMessage("Done").step();
+            logger.debug("Successfully updated music collection");
+        }
     }
 
     /**

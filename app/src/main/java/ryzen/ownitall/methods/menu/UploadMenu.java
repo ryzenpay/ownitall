@@ -46,14 +46,14 @@ public class UploadMenu {
             logger.debug("Interrupted while setting up upload");
             return;
         }
-        logger.info("Uploading local music...");
+        logger.debug("Uploading local music...");
         try (ProgressBar pb = Progressbar.progressBar("Upload", 2)) {
             pb.setExtraMessage("Liked Songs");
             upload.getLikedSongs();
             pb.setExtraMessage("Saved Albums +/ Playlists").step();
             upload.processFolders();
             pb.setExtraMessage("Done").step();
-            logger.info("done uploading local music");
+            logger.debug("done uploading local music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading collection");
             return;

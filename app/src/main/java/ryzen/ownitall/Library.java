@@ -113,25 +113,27 @@ public class Library {
         this.albums.clear();
         this.songs.clear();
         this.ids.clear();
+        Sync.load().clearCache();
+        instance = null;
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.info("not supported for library type: " + settings.getLibrayType());
+        logger.warn("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        logger.info("not supported for library type: " + settings.getLibrayType());
+        logger.warn("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.info("not supported for library type: " + settings.getLibrayType());
+        logger.warn("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.info("not supported for library type: " + settings.getLibrayType());
+        logger.warn("not supported for library type: " + settings.getLibrayType());
         return null;
     }
 

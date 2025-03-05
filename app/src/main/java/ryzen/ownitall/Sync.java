@@ -197,7 +197,7 @@ public class Sync {
      */
     public Collection importCollection() {
         Collection collection = Collection.load();
-
+        logger.debug("importing collection... ");
         try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
             pb.setExtraMessage("Albums");
             collection.addAlbums(importAlbums());
@@ -209,6 +209,7 @@ public class Sync {
                 collection.addLikedSongs(likedSongs.getSongs());
             }
             pb.setExtraMessage("Done").step();
+            logger.debug("Successfully imported collection");
         }
         return collection;
     }
@@ -220,6 +221,7 @@ public class Sync {
      */
     public void exportCollection() {
         Collection collection = Collection.load();
+        logger.debug("Exporting music collection...");
         try (ProgressBar pb = Progressbar.progressBar("Saving Data", 3)) {
             pb.setExtraMessage("Albums");
             exportAlbums(collection.getAlbums());
@@ -228,6 +230,7 @@ public class Sync {
             pb.setExtraMessage("Liked Songs").step();
             exportLikedSongs(collection.getLikedSongs());
             pb.setExtraMessage("Done").step();
+            logger.debug("Successfully exported music collection");
         }
     }
 
@@ -267,7 +270,7 @@ public class Sync {
                     });
         } catch (IOException e) {
             logger.error("exception importing albums: " + e);
-            logger.info("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
+            logger.warn("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -309,7 +312,7 @@ public class Sync {
 
         } catch (IOException e) {
             logger.error("exception importing playlists: " + e);
-            logger.info("If this persists, delete the file: '" + playlistFile.getAbsolutePath() + "'");
+            logger.warn("If this persists, delete the file: '" + playlistFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -349,7 +352,7 @@ public class Sync {
                     LikedSongs.class);
         } catch (IOException e) {
             logger.error("exception importing liked songs: " + e);
-            logger.info("If this persists, delete the file: '" + likedSongFile.getAbsolutePath() + "'");
+            logger.warn("If this persists, delete the file: '" + likedSongFile.getAbsolutePath() + "'");
             return null;
         }
     }
@@ -366,7 +369,7 @@ public class Sync {
                 logger.debug("loaded cached albums from: '" + albumFile.getAbsolutePath() + "'");
             } catch (IOException e) {
                 logger.error("exception importing cached albums: " + e);
-                logger.info("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
+                logger.warn("If this persists, delete the file: '" + albumFile.getAbsolutePath() + "'");
             }
         }
         cachedAlbums.putAll(albums);
@@ -391,7 +394,7 @@ public class Sync {
                 logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
             } catch (IOException e) {
                 logger.error("exception importing cached artists: " + e);
-                logger.info("If this persists, delete the file: '" + artistFile.getAbsolutePath() + "'");
+                logger.warn("If this persists, delete the file: '" + artistFile.getAbsolutePath() + "'");
             }
         }
         cachedArtists.putAll(artists);
@@ -416,7 +419,7 @@ public class Sync {
                 logger.debug("loaded cached songs from: '" + songFile.getAbsolutePath() + "'");
             } catch (IOException e) {
                 logger.error("exception importing cached songs: " + e);
-                logger.info("If this persists, delete the file: '" + songFile.getAbsolutePath() + "'");
+                logger.warn("If this persists, delete the file: '" + songFile.getAbsolutePath() + "'");
             }
         }
         cachedSongs.putAll(songs);
@@ -441,7 +444,7 @@ public class Sync {
                 logger.debug("loaded cached ids from: '" + idFile.getAbsolutePath() + "'");
             } catch (IOException e) {
                 logger.error("exception importing cached ids: " + e);
-                logger.info("If this persists, delete the file: '" + idFile.getAbsolutePath() + "'");
+                logger.warn("If this persists, delete the file: '" + idFile.getAbsolutePath() + "'");
             }
         }
         cachedIds.putAll(ids);

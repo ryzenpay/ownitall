@@ -77,7 +77,6 @@ public class Tools {
             System.out.print("Are you sure you wan to clear cache (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing cache...");
-                Sync.load().clearCache();
                 Library.load().clear();
                 logger.info("Done clearing cache");
             }

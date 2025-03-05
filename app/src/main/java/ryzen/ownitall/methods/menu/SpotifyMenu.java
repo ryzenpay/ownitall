@@ -64,7 +64,7 @@ public class SpotifyMenu {
     }
 
     private void optionImportCollection() {
-        logger.info("Importing Spotify music...");
+        logger.debug("Importing Spotify music...");
         try (ProgressBar pb = Progressbar.progressBar("Spotify Import", 3)) {
             pb.setExtraMessage("Liked Songs");
             spotify.getLikedSongs();
@@ -73,17 +73,17 @@ public class SpotifyMenu {
             pb.setExtraMessage("Playlists").step();
             spotify.getPlaylists();
             pb.setExtraMessage("Done").step();
-            logger.info("done importing Spotify music");
+            logger.debug("done importing Spotify music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing spotify music");
         }
     }
 
     private void optionImportLikedSongs() {
-        logger.info("Importing Spotify Liked Songs...");
+        logger.debug("Importing Spotify Liked Songs...");
         try {
             spotify.getLikedSongs();
-            logger.info("done importing Spotify Liked songs");
+            logger.debug("done importing Spotify Liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing spotify liked songs");
         }
@@ -152,7 +152,7 @@ public class SpotifyMenu {
     }
 
     private void optionExportCollection() {
-        logger.info("Uploading Spotify music...");
+        logger.debug("Uploading Spotify music...");
         try (ProgressBar pb = Progressbar.progressBar("Spotify Upload", 3)) {
             pb.setExtraMessage("Liked Songs");
             spotify.uploadLikedSongs();
@@ -161,37 +161,37 @@ public class SpotifyMenu {
             pb.setExtraMessage("Playlists").step();
             spotify.uploadPlaylists();
             pb.setExtraMessage("Done").step();
-            logger.info("done uploading Spotify music");
+            logger.debug("done uploading Spotify music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify music");
         }
     }
 
     private void optionExportLikedSongs() {
-        logger.info("Uploading Spotify Liked Songs...");
+        logger.debug("Uploading Spotify Liked Songs...");
         try {
             spotify.uploadLikedSongs();
-            logger.info("done uploading Spotify Liked songs");
+            logger.debug("done uploading Spotify Liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify liked songs");
         }
     }
 
     private void optionExportPlaylists() {
-        logger.info("Uploading Spotify Playlists...");
+        logger.debug("Uploading Spotify Playlists...");
         try {
             spotify.uploadPlaylists();
-            logger.info("done uploading Spotify Playlists");
+            logger.debug("done uploading Spotify Playlists");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify playlists");
         }
     }
 
     private void optionExportAlbums() {
-        logger.info("Uploading Spotify Albums...");
+        logger.debug("Uploading Spotify Albums...");
         try {
             spotify.uploadAlbums();
-            logger.info("done uploading Spotify Albums");
+            logger.debug("done uploading Spotify Albums");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify albums");
         }

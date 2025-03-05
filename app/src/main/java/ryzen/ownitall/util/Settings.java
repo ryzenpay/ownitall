@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * "Settings"
  * } catch (Exception e) {
  * logger.error(e);
- * logger.info("If this persists, delete the file: " +
+ * logger.warn("If this persists, delete the file: " +
  * instance.getSettingsFilePath());
  * }
  * }
@@ -192,7 +192,7 @@ public class Settings {
                 setting.set(this, input);
                 return true;
             } else {
-                logger.info("Modifying settings of the type '" + setting.getType() + "' is currently not supported");
+                logger.warn("Modifying settings of the type '" + setting.getType() + "' is currently not supported");
             }
             setting.setAccessible(false);
         } catch (NoSuchFieldException e) {
