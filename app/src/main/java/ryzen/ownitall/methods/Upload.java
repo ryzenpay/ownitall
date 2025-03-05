@@ -14,6 +14,7 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
@@ -23,6 +24,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.Progressbar;
 
 import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
@@ -103,59 +105,68 @@ public class Upload {
      * 
      */
     public void getLikedSongs() throws InterruptedException {
-        if (settings.isDownloadHierachy()) {
-            for (File file : this.localLibrary.listFiles()) {
-                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                    Song song = getSong(file);
-                    if (song != null) {
-                        collection.addLikedSong(song);
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
+            if (settings.isDownloadHierachy()) {
+                for (File file : this.localLibrary.listFiles()) {
+                    if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                        Song song = getSong(file);
+                        if (song != null) {
+                            pb.setExtraMessage(song.getName()).step();
+                            collection.addLikedSong(song);
+                        }
+                    }
+                    if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                        // automatically adds them to liked
+                        getSongs(file);
                     }
                 }
-                if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                    // automatically adds them to liked
-                    getSongs(file);
-                }
+            } else {
+                // automatically adds them to liked
+                pb.setExtraMessage("Download Hierachy").step();
+                getSongs(this.localLibrary);
             }
-        } else {
-            // automatically adds them to liked
-            getSongs(this.localLibrary);
         }
     }
 
     public void processFolders() throws InterruptedException {
         ArrayList<File> libraryFolders = this.getLibraryFolders();
-        // get all albums
-        for (File file : libraryFolders) {
-            if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                if (isAlbum(file)) {
-                    Album album = getAlbum(file);
-                    if (album != null) {
-                        collection.addAlbum(album);
-                    }
-                }
-            }
-        }
-        if (settings.isDownloadHierachy()) {
+        try (ProgressBar pb = Progressbar.progressBar("Folders", -1)) {
+            // get all albums
             for (File file : libraryFolders) {
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                    if (!isAlbum(file)) {
-                        Playlist playlist = getPlaylist(file);
-                        if (playlist != null) {
-                            if (playlist.size() == 1) { // filter out singles
-                                collection.addLikedSongs(playlist.getSongs());
-                            } else {
-                                collection.addPlaylist(playlist);
-                            }
+                    if (isAlbum(file)) {
+                        pb.setExtraMessage(file.getName()).step();
+                        Album album = getAlbum(file);
+                        if (album != null) {
+                            collection.addAlbum(album);
                         }
                     }
                 }
             }
-        } else {
-            for (File inFile : this.localLibrary.listFiles()) {
-                if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
-                    Playlist playlist = processM3U(inFile);
-                    if (playlist != null) {
-                        collection.addPlaylist(playlist);
+            if (settings.isDownloadHierachy()) {
+                for (File file : libraryFolders) {
+                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                        if (!isAlbum(file)) {
+                            pb.setExtraMessage(file.getName()).step();
+                            Playlist playlist = getPlaylist(file);
+                            if (playlist != null) {
+                                if (playlist.size() == 1) { // filter out singles
+                                    collection.addLikedSongs(playlist.getSongs());
+                                } else {
+                                    collection.addPlaylist(playlist);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (File inFile : this.localLibrary.listFiles()) {
+                    if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
+                        pb.setExtraMessage(inFile.getName()).step();
+                        Playlist playlist = processM3U(inFile);
+                        if (playlist != null) {
+                            collection.addPlaylist(playlist);
+                        }
                     }
                 }
             }

@@ -38,6 +38,7 @@ public class Main {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
                     logger.info("Exiting program...");
+                    optionSave();
                     System.exit(0);
                 } else {
                     options.get(choice).run();
