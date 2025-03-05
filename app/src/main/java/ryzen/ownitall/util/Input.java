@@ -6,9 +6,13 @@ import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class Input {
+    private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
     private static Scanner scanner;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
@@ -25,7 +29,8 @@ public class Input {
     }
 
     public String getString() throws InterruptedException {
-        Signal.handle(new Signal("INT"), signal -> {
+        SignalHandler signalHandler = Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT received");
             interrupted.set(true);
         });
         try {
@@ -42,6 +47,8 @@ public class Input {
                 throw new RuntimeException(e);
             }
         } finally {
+            // reset signal handler
+            Signal.handle(new Signal("INT"), signalHandler);
             if (interrupted.get()) {
                 scanner = new Scanner(System.in);
             }

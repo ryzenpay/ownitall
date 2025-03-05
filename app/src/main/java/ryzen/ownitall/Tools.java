@@ -73,9 +73,7 @@ public class Tools {
             if (Input.request().getAgreement()) {
                 logger.info("Clearing cache...");
                 Sync.load().clearCache();
-                if (Library.checkInstance()) { // to prevent logging in
-                    Library.load().clear();
-                }
+                Library.load().clear();
                 logger.info("Done clearing cache");
             }
         } catch (InterruptedException e) {
