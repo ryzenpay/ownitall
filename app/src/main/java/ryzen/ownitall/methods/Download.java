@@ -358,8 +358,9 @@ public class Download {
                 File songFile = new File(this.downloadPath, song.getFileName());
                 if (songFile.exists()) {
                     songFile.delete();
-                    logger.debug("Deleted song not in album '" + album.getFolderName() + "' folder: "
-                            + songFile.getAbsolutePath());
+                    logger.debug(
+                            "Deleted song not in album (to prevent duplicates) '" + album.getFolderName() + "' folder: "
+                                    + songFile.getAbsolutePath());
                 }
             }
         }

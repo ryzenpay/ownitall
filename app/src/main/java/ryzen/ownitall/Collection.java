@@ -389,6 +389,7 @@ public class Collection {
         return null;
     }
 
+    // TODO: function does not work
     public String getPlaylistM3U(Playlist playlist) {
         // all relational, doesnt use downloadpath
         StringBuilder output = new StringBuilder();

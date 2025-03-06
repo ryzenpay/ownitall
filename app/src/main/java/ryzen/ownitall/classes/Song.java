@@ -287,6 +287,14 @@ public class Song {
         if (this.toString().equals(song.toString())) {
             return true;
         }
+        // individual combinations
+        if (this.getName().equals(song.getName())) {
+            if (this.getAlbumName().equals(song.getAlbumName())) {
+                return true;
+            } else if (this.duration == song.getDuration()) {
+                return true;
+            }
+        }
         return false;
     }
 
