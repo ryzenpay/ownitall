@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -289,6 +288,8 @@ public class Song {
         }
         // individual combinations
         if (this.getName().equals(song.getName())) {
+            // TODO: some songs have a diff artist set, missing vital data, fix?
+            // ex: PAID - kanye west and PAID - (yuan)$
             if (this.getAlbumName().equals(song.getAlbumName())) {
                 return true;
             } else if (this.duration == song.getDuration()) {

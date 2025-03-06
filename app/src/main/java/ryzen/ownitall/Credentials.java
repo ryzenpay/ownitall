@@ -51,6 +51,13 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      */
     protected String lastFMApiKey = "";
 
+    /**
+     * Jellyfin Credentials
+     * 
+     */
+    protected String jellyfinApiKey = "";
+    protected String jellyfinUrl = "";
+
     @JsonIgnore
     public static Credentials load() {
         if (instance == null) {
@@ -122,25 +129,33 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         System.out.print("Enter youtube application name: ");
         youtubeApplicationName = Input.request().getString();
         System.out.print("Enter youtube client id: ");
-        youtubeClientId = Input.request().getString();
+        youtubeClientId = Input.request().getString(72);
         System.out.print("Enter youtube client secret: ");
-        youtubeClientSecret = Input.request().getString();
+        youtubeClientSecret = Input.request().getString(35);
     }
 
     public void setSpotifyCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Please provide your client id: ");
-        spotifyClientId = Input.request().getString();
+        spotifyClientId = Input.request().getString(32);
         System.out.print("Please provide your client secret: ");
-        spotifyClientSecret = Input.request().getString();
+        spotifyClientSecret = Input.request().getString(32);
         System.out.print("Please provide redirect url:");
-        spotifyRedirectUrl = Input.request().getString();
+        spotifyRedirectUrl = Input.request().getURL().toString();
     }
 
     public void setLastFMCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
         System.out.print("Please enter LastFM API key: ");
-        lastFMApiKey = Input.request().getString();
+        lastFMApiKey = Input.request().getString(32);
+    }
+
+    public void setJellyfinCredentials() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        System.out.print("instance url: ");
+        jellyfinUrl = Input.request().getURL().toString();
+        System.out.print("api key: ");
+        jellyfinApiKey = Input.request().getString(32);
     }
 
     /**
@@ -150,8 +165,13 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      */
     @JsonIgnore
     public boolean youtubeIsEmpty() {
-        if (this.youtubeClientId.isEmpty() || this.youtubeClientSecret.isEmpty()
-                || this.youtubeApplicationName.isEmpty()) {
+        if (this.youtubeClientId.isEmpty()) {
+            return true;
+        }
+        if (this.youtubeApplicationName.isEmpty()) {
+            return true;
+        }
+        if (this.youtubeClientSecret.isEmpty()) {
             return true;
         }
         return false;
@@ -164,8 +184,13 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      */
     @JsonIgnore
     public boolean spotifyIsEmpty() {
-        if (this.spotifyClientId.isEmpty() || this.spotifyClientSecret.isEmpty()
-                || this.spotifyRedirectUrl.isEmpty()) {
+        if (this.spotifyClientId.isEmpty()) {
+            return true;
+        }
+        if (this.spotifyClientSecret.isEmpty()) {
+            return true;
+        }
+        if (this.spotifyRedirectUrl.isEmpty()) {
             return true;
         }
         return false;
@@ -173,7 +198,10 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     @JsonIgnore
     public boolean soundCloudIsEmpty() {
-        if (this.soundCloudClientId.isEmpty() || this.soundCloudClientSecret.isEmpty()) {
+        if (this.soundCloudClientId.isEmpty()) {
+            return true;
+        }
+        if (this.soundCloudClientSecret.isEmpty()) {
             return true;
         }
         return false;
@@ -187,6 +215,17 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
     public boolean lastFMIsEmpty() {
         if (this.lastFMApiKey.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public boolean jellyfinIsEmpty() {
+        if (this.jellyfinApiKey.isEmpty()) {
+            return true;
+        }
+        if (this.jellyfinUrl.isEmpty()) {
             return true;
         }
         return false;

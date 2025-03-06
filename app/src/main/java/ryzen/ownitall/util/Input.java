@@ -56,6 +56,18 @@ public class Input {
         }
     }
 
+    public String getString(int length) throws InterruptedException {
+        while (true) {
+            String input = getString();
+            if (input.length() != length) {
+                logger.info("String needs to be of length: " + length);
+                System.err.print("Invalid string provided, try again: ");
+            } else {
+                return input;
+            }
+        }
+    }
+
     public char getChar() throws InterruptedException {
         while (true) {
             try {

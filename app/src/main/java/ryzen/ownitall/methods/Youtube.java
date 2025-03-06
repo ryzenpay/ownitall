@@ -22,11 +22,11 @@ import com.google.api.services.youtube.model.VideoSnippet;
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
-import ryzen.ownitall.Library;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Progressbar;
 
 import java.io.IOException;

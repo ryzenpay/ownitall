@@ -1,4 +1,4 @@
-package ryzen.ownitall;
+package ryzen.ownitall.library;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,11 +15,11 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.Sync;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.library.LastFM;
-import ryzen.ownitall.library.MusicBrainz;
 
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
