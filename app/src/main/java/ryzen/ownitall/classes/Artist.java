@@ -177,6 +177,9 @@ public class Artist {
     @Override
     @JsonIgnore
     public int hashCode() {
+        if (this.getId("mbid") != null) {
+            return this.getId("mbid").hashCode();
+        }
         return Objects.hashCode(this.name.toLowerCase().trim());
     }
 

@@ -72,15 +72,15 @@ public class MusicTools {
 
     public static void writeData(String fileName, String extension, String data, File folder) throws IOException {
         if (folder == null || fileName == null) {
-            logger.debug("null folder or filename provided in writem3u");
+            logger.debug("null folder or filename provided in writeData");
             return;
         }
         if (data == null || data.isEmpty()) {
-            logger.debug("null or empty m3u data provided in writem3u");
+            logger.debug("null or empty data provided in writeData");
             return;
         }
         if (!folder.exists()) {
-            logger.debug("folder '" + folder.getAbsolutePath() + "' does not exist in writeM3U");
+            logger.debug("folder '" + folder.getAbsolutePath() + "' does not exist in writeData");
             return;
         }
         File dataFile = new File(folder, fileName + "." + extension);

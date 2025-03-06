@@ -241,7 +241,7 @@ public class Collection {
     public LinkedHashSet<Song> getStandalonePlaylistSongs(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
-            return new LinkedHashSet<>();
+            return null;
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
         for (Album album : this.albums) {

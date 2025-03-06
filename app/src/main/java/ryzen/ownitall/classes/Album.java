@@ -272,6 +272,9 @@ public class Album extends Playlist {
     @Override
     @JsonIgnore
     public int hashCode() {
+        if (this.getId("mbid") != null) {
+            return this.getId("mbid").hashCode();
+        }
         return Objects.hash(super.hashCode(), artists);
     }
 }

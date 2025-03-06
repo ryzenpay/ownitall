@@ -293,6 +293,9 @@ public class Song {
     @Override
     @JsonIgnore
     public int hashCode() {
+        if (this.getId("mbid") != null) {
+            return this.getId("mbid").hashCode();
+        }
         return Objects.hash(this.name.toLowerCase().trim(), artist);
     }
 }
