@@ -37,10 +37,8 @@ public class LikedSongs extends Playlist {
     @JsonCreator
     public LikedSongs(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage) {
-        super(name, songs, ids, youtubePageToken, spotifyPageOffset, coverImage);
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
+        super(name, songs, ids, coverImage);
     }
 
     /**

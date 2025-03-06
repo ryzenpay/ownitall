@@ -67,11 +67,11 @@ public class SpotifyMenu {
         logger.debug("Importing Spotify music...");
         try (ProgressBar pb = Progressbar.progressBar("Spotify Import", 3)) {
             pb.setExtraMessage("Liked Songs");
-            spotify.getLikedSongs();
+            collection.addLikedSongs(spotify.getLikedSongs());
             pb.setExtraMessage("Saved Albums").step();
-            spotify.getAlbums();
+            collection.addAlbums(spotify.getAlbums());
             pb.setExtraMessage("Playlists").step();
-            spotify.getPlaylists();
+            collection.addPlaylists(spotify.getPlaylists());
             pb.setExtraMessage("Done").step();
             logger.debug("done importing Spotify music");
         } catch (InterruptedException e) {
@@ -82,7 +82,7 @@ public class SpotifyMenu {
     private void optionImportLikedSongs() {
         logger.debug("Importing Spotify Liked Songs...");
         try {
-            spotify.getLikedSongs();
+            collection.addLikedSongs(spotify.getLikedSongs());
             logger.debug("done importing Spotify Liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing spotify liked songs");
@@ -113,7 +113,9 @@ public class SpotifyMenu {
         logger.info("Importing Spotify Album...");
         try {
             Album album = spotify.getAlbum(albumId, albumName, null);
-            collection.addAlbum(album);
+            if (album != null) {
+                collection.addAlbum(album);
+            }
             logger.info("Done importing Spotify album");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting spotify album");
@@ -144,7 +146,9 @@ public class SpotifyMenu {
         logger.info("Importing Spotify Playlist...");
         try {
             Playlist playlist = spotify.getPlaylist(playlistId, playlistName, null);
-            collection.addPlaylist(playlist);
+            if (playlist != null) {
+                collection.addPlaylist(playlist);
+            }
             logger.info("Done importing Spotify Playlist");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting spotify playlist");
@@ -155,11 +159,11 @@ public class SpotifyMenu {
         logger.debug("Uploading Spotify music...");
         try (ProgressBar pb = Progressbar.progressBar("Spotify Upload", 3)) {
             pb.setExtraMessage("Liked Songs");
-            spotify.uploadLikedSongs();
+            spotify.uploadLikedSongs(collection.getLikedSongs().getSongs());
             pb.setExtraMessage("Saved Albums").step();
-            spotify.uploadAlbums();
+            spotify.uploadAlbums(collection.getAlbums());
             pb.setExtraMessage("Playlists").step();
-            spotify.uploadPlaylists();
+            spotify.uploadPlaylists(collection.getPlaylists());
             pb.setExtraMessage("Done").step();
             logger.debug("done uploading Spotify music");
         } catch (InterruptedException e) {
@@ -170,7 +174,7 @@ public class SpotifyMenu {
     private void optionExportLikedSongs() {
         logger.debug("Uploading Spotify Liked Songs...");
         try {
-            spotify.uploadLikedSongs();
+            spotify.uploadLikedSongs(collection.getLikedSongs().getSongs());
             logger.debug("done uploading Spotify Liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify liked songs");
@@ -180,7 +184,7 @@ public class SpotifyMenu {
     private void optionExportPlaylists() {
         logger.debug("Uploading Spotify Playlists...");
         try {
-            spotify.uploadPlaylists();
+            spotify.uploadPlaylists(collection.getPlaylists());
             logger.debug("done uploading Spotify Playlists");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify playlists");
@@ -190,7 +194,7 @@ public class SpotifyMenu {
     private void optionExportAlbums() {
         logger.debug("Uploading Spotify Albums...");
         try {
-            spotify.uploadAlbums();
+            spotify.uploadAlbums(collection.getAlbums());
             logger.debug("done uploading Spotify Albums");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading spotify albums");

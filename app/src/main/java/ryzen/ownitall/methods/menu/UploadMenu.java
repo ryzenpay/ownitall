@@ -76,9 +76,9 @@ public class UploadMenu {
         logger.info("Uploading local Playlist...");
         try {
             if (MusicTools.getExtension(folder).equalsIgnoreCase("m3u")) {
-                this.collection.addPlaylist(Upload.getM3UPlaylist(folder));
+                collection.addPlaylist(Upload.getM3UPlaylist(folder));
             } else {
-                this.collection.addPlaylist(Upload.getPlaylist(folder));
+                collection.addPlaylist(Upload.getPlaylist(folder));
             }
             logger.info("done uploading playlist");
         } catch (InterruptedException e) {
@@ -99,7 +99,7 @@ public class UploadMenu {
         }
         logger.info("Uploading local Album...");
         try {
-            this.collection.addAlbum(Upload.getAlbum(folder));
+            collection.addAlbum(Upload.getAlbum(folder));
             logger.info("Done uploading Album");
         } catch (InterruptedException e) {
             logger.debug("Interruption caught while uploading album");
@@ -120,7 +120,7 @@ public class UploadMenu {
         }
         logger.info("Uploading Liked Songs...");
         try {
-            this.collection.addLikedSongs(Upload.getSongs(folder));
+            collection.addLikedSongs(Upload.getSongs(folder));
             logger.info("Done Uploading Liked Songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading liked songs");

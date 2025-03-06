@@ -49,11 +49,9 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links,
-            @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage,
+            @JsonProperty("links") LinkedHashMap<String, String> links, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
-        super(name, songs, links, youtubePageToken, spotifyPageOffset, coverImage);
+        super(name, songs, links, coverImage);
         this.artists = new LinkedHashSet<>();
         if (artists != null && !artists.isEmpty()) {
             this.addArtists(artists);
@@ -74,12 +72,6 @@ public class Album extends Playlist {
         this.addSongs(album.getSongs());
         if (this.getCoverImage() == null && album.getCoverImage() != null) {
             this.setCoverImage(album.getCoverImage());
-        }
-        if (album.getYoutubePageToken() != null) {
-            this.setYoutubePageToken(album.getYoutubePageToken());
-        }
-        if (album.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
-            this.setSpotifyPageOffset(album.getSpotifyPageOffset());
         }
         this.addArtists(album.getArtists());
     }

@@ -25,12 +25,6 @@ public class Playlist {
     private LinkedHashMap<String, String> ids;
 
     /**
-     * to save api requests
-     */
-    private String youtubePageToken = null;
-    private int spotifyPageOffset = 0;
-
-    /**
      * Default playlist constructor
      * 
      * @param name - name of the playlist
@@ -54,9 +48,7 @@ public class Playlist {
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") LinkedHashSet<Song> songs,
-            @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("youtubePageToken") String youtubePageToken,
-            @JsonProperty("spotifyPageOffset") int spotifyPageOffset, @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         this.songs = new LinkedHashSet<>();
         this.ids = new LinkedHashMap<>();
@@ -65,13 +57,6 @@ public class Playlist {
         }
         if (ids != null) {
             this.addIds(ids);
-        }
-        if (youtubePageToken != null) {
-            this.setYoutubePageToken(youtubePageToken);
-        }
-        this.setSpotifyPageOffset(spotifyPageOffset);
-        if (coverImage != null) {
-            this.setCoverImage(coverImage);
         }
     }
 
@@ -89,12 +74,6 @@ public class Playlist {
         this.addSongs(playlist.getSongs());
         if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
             this.setCoverImage(playlist.getCoverImage());
-        }
-        if (playlist.getYoutubePageToken() != null) {
-            this.setYoutubePageToken(playlist.getYoutubePageToken());
-        }
-        if (playlist.getSpotifyPageOffset() > this.getSpotifyPageOffset()) {
-            this.spotifyPageOffset = playlist.spotifyPageOffset;
         }
     }
 
@@ -260,50 +239,6 @@ public class Playlist {
      */
     public LinkedHashSet<Song> getSongs() {
         return this.songs;
-    }
-
-    /**
-     * get youtube page token of youtube playlist
-     * 
-     * @return - String youtube page token
-     */
-    public String getYoutubePageToken() {
-        return this.youtubePageToken;
-    }
-
-    /**
-     * set youtube page token of youtube playlist
-     * 
-     * @param token - String youtube page token
-     */
-    public void setYoutubePageToken(String token) {
-        if (token == null || token.isEmpty()) {
-            logger.debug(this.toString() + ": empty youtube page token provided");
-            return;
-        }
-        this.youtubePageToken = token;
-    }
-
-    /**
-     * get spotify offset for spotify playlist
-     * 
-     * @return - int spotify offset
-     */
-    public int getSpotifyPageOffset() {
-        return this.spotifyPageOffset;
-    }
-
-    /**
-     * set spotify offset for spotify playlist
-     * 
-     * @param offset - int spotify offset
-     */
-    public void setSpotifyPageOffset(int offset) {
-        if (offset < 0) {
-            logger.debug(this.toString() + ": provided spotify offset is below 0, defaulting to 0");
-            offset = 0;
-        }
-        this.spotifyPageOffset = offset;
     }
 
     /**

@@ -20,9 +20,9 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 
 import me.tongfei.progressbar.ProgressBar;
-import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -47,7 +47,6 @@ public class Youtube {
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
-    private static Collection collection = Collection.load();
     private AtomicBoolean interrupted = new AtomicBoolean(false);
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
@@ -117,11 +116,12 @@ public class Youtube {
     /**
      * save all youtube liked songs to collection
      */
-    public void getLikedSongs() throws InterruptedException {
+    public LinkedHashSet<Song> getLikedSongs() throws InterruptedException {
         if (youtubeApi == null) {
-            return;
+            return new LinkedHashSet<>();
         }
-        String pageToken = collection.getLikedSongs().getYoutubePageToken();
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        String pageToken = null;
         try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1)) {
             do {
                 throwHandleInterruption();
@@ -156,27 +156,29 @@ public class Youtube {
                             if (song != null) {
                                 pb.setExtraMessage(song.getName()).step();
                                 song.addId("youtube", video.getId());
-                                collection.addLikedSong(song);
+                                songs.add(song);
                             }
                         }
                     }
                 }
-                collection.getLikedSongs().setYoutubePageToken(pageToken);
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
             logger.error("Exception obtaining liked songs: " + e);
         }
+        return songs;
     }
 
     /**
      * save all youtube albums to collection
      * 
      */
-    public void getAlbums() { // currently not supported (no youtube music API)
+    public LinkedHashSet<Album> getAlbums() { // currently not supported (no youtube music API)
         if (youtubeApi == null) {
-            return;
+            return new LinkedHashSet<>();
         }
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+        return albums;
     }
 
     /**
@@ -185,11 +187,12 @@ public class Youtube {
      * - gets all videos from any playlist with category id 10
      * 
      */
-    public void getPlaylists() throws InterruptedException {
+    public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
         if (youtubeApi == null) {
-            return;
+            return new LinkedHashSet<>();
         }
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
         try {
             do {
                 throwHandleInterruption();
@@ -204,17 +207,10 @@ public class Youtube {
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
                     throwHandleInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
-                    Playlist foundPlaylist = collection.getPlaylist(playlist);
-                    LinkedHashSet<Song> songs;
-                    if (foundPlaylist != null) {
-                        songs = this.getPlaylistSongs(currentPlaylist.getId(),
-                                foundPlaylist.getYoutubePageToken());
-                    } else {
-                        songs = this.getPlaylistSongs(currentPlaylist.getId(), null);
-                    }
+                    LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (!songs.isEmpty()) {
                         playlist.addSongs(songs);
-                        collection.addPlaylist(playlist);
+                        playlists.add(playlist);
                     }
                 }
                 pageToken = playlistResponse.getNextPageToken();
@@ -222,6 +218,7 @@ public class Youtube {
         } catch (IOException e) {
             logger.error("Exception retrieving playlists: " + e);
         }
+        return playlists;
     }
 
     /**
@@ -231,12 +228,13 @@ public class Youtube {
      * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
      */
-    private LinkedHashSet<Song> getPlaylistSongs(String playlistId, String pageToken) throws InterruptedException {
+    private LinkedHashSet<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("null playlistID provided in getPlaylistSongs");
             return null;
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        String pageToken = null;
         try {
             do {
                 throwHandleInterruption();
