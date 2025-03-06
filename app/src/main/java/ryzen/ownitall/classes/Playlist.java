@@ -222,9 +222,6 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in getSong");
             return null;
         }
-        if (!this.songs.contains(song)) {
-            return null;
-        }
         for (Song thisSong : this.songs) {
             if (thisSong.equals(song)) {
                 return thisSong;
@@ -249,7 +246,12 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in contains");
             return false;
         }
-        return this.songs.contains(song);
+        for (Song thisSong : this.songs) {
+            if (thisSong.equals(song)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

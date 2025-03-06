@@ -300,11 +300,9 @@ public class Collection {
      * @return - found album or null
      */
     public static Album getAlbum(LinkedHashSet<Album> albums, Album album) {
-        if (albums.contains(album)) {
-            for (Album thisAlbum : albums) {
-                if (thisAlbum.equals(album)) {
-                    return thisAlbum;
-                }
+        for (Album thisAlbum : albums) {
+            if (thisAlbum.equals(album)) {
+                return thisAlbum;
             }
         }
         return null;
@@ -317,13 +315,12 @@ public class Collection {
      * @return - found constructed album or null
      */
     public Album getAlbum(Album album) {
-        if (this.albums.contains(album)) {
-            for (Album thisAlbum : this.albums) {
-                if (thisAlbum.equals(album)) {
-                    return thisAlbum;
-                }
+        for (Album thisAlbum : this.albums) {
+            if (thisAlbum.equals(album)) {
+                return thisAlbum;
             }
         }
+
         return null;
     }
 
@@ -344,11 +341,9 @@ public class Collection {
      * @return - found playlist or null
      */
     public static Playlist getPlaylist(LinkedHashSet<Playlist> playlists, Playlist playlist) {
-        if (playlists.contains(playlist)) {
-            for (Playlist thisPlaylist : playlists) {
-                if (thisPlaylist.equals(playlist)) {
-                    return thisPlaylist;
-                }
+        for (Playlist thisPlaylist : playlists) {
+            if (thisPlaylist.equals(playlist)) {
+                return thisPlaylist;
             }
         }
         return null;
@@ -361,11 +356,9 @@ public class Collection {
      * @return - found playlist or null
      */
     public Playlist getPlaylist(Playlist playlist) {
-        if (this.playlists.contains(playlist)) {
-            for (Playlist thisPlaylist : this.playlists) {
-                if (thisPlaylist.equals(playlist)) {
-                    return thisPlaylist;
-                }
+        for (Playlist thisPlaylist : this.playlists) {
+            if (thisPlaylist.equals(playlist)) {
+                return thisPlaylist;
             }
         }
         return null;
@@ -379,11 +372,9 @@ public class Collection {
      * @return - found constructed song
      */
     public static Song getSong(LinkedHashSet<Song> songs, Song song) {
-        if (songs.contains(song)) {
-            for (Song thisSong : songs) {
-                if (thisSong.equals(song)) {
-                    return thisSong;
-                }
+        for (Song thisSong : songs) {
+            if (thisSong.equals(song)) {
+                return thisSong;
             }
         }
         return null;
