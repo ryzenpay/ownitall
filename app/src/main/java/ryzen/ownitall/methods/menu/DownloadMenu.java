@@ -128,10 +128,12 @@ public class DownloadMenu {
 
     private void optionCollectionData() {
         logger.debug("Writing collection data (M3U, NFO, coverimages)...");
-        try (ProgressBar pb = Progressbar.progressBar("Music Metadata", 3)) {
+        try (ProgressBar pb = Progressbar.progressBar("Music Metadata",
+                collection.getAlbumCount() + collection.getPlaylistCount() + collection.getLikedSongs().size())) {
             pb.setExtraMessage("Albums");
             String downloadPath = download.getDownloadPath();
             for (Album album : collection.getAlbums()) {
+                pb.setExtraMessage(album.getName()).step();
                 File albumFolder = new File(downloadPath, album.getFolderName());
                 if (!albumFolder.exists()) {
                     continue;
@@ -146,6 +148,7 @@ public class DownloadMenu {
             }
             pb.setExtraMessage("Playlists").step();
             for (Playlist playlist : collection.getPlaylists()) {
+                pb.setExtraMessage(playlist.getName()).step();
                 File playlistFolder;
                 LinkedHashSet<Song> songs;
                 if (settings.isDownloadHierachy()) {
@@ -178,12 +181,13 @@ public class DownloadMenu {
                 likedSongsFolder = new File(download.getDownloadPath());
             }
             for (Song song : songs) {
+                pb.setExtraMessage(song.getName()).step();
                 File songFile = new File(likedSongsFolder, song.getFileName());
                 if (songFile.exists()) {
                     Download.writeMetaData(song, songFile);
                 }
             }
-            pb.setExtraMessage("Done").step();
+            pb.setExtraMessage("Done");
             logger.debug("Done writing collection data");
         }
     }

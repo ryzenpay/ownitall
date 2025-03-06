@@ -6,13 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.AudioHeader;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
@@ -27,10 +22,11 @@ import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 import java.util.ArrayList;
-import java.time.temporal.ChronoUnit;
+import java.time.Duration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jaudiotagger.tag.FieldKey;
 
 public class Upload {
     private static final Logger logger = LogManager.getLogger(Upload.class);
@@ -39,9 +35,6 @@ public class Upload {
     private static Library library = Library.load();
     private static Collection collection = Collection.load();
     private File localLibrary;
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-    }
 
     /**
      * default local constructor asking for library path
@@ -57,41 +50,6 @@ public class Upload {
             System.out.print("Provide absolute path to local music library (folder): ");
             this.localLibrary = Input.request().getFile(true);
 
-        }
-    }
-
-    /**
-     * get all sub folders of the library folder
-     * 
-     * @return - arraylist of constructed File
-     */
-    private ArrayList<File> getLibraryFolders() {
-        ArrayList<File> folders = new ArrayList<>();
-        for (File file : this.localLibrary.listFiles()) {
-            if (file.isDirectory()) {
-                folders.add(file);
-                addSubFolders(file, folders);
-            }
-        }
-        return folders;
-    }
-
-    /**
-     * recursive function used in getLibraryFolders to traverse through sub
-     * directories
-     * 
-     * @param directory - constructed File of the directory to traverse
-     * @param folders   - arraylist of current folders to add to
-     */
-    private void addSubFolders(File directory, ArrayList<File> folders) {
-        File[] subFiles = directory.listFiles();
-        if (subFiles != null) {
-            for (File subFile : subFiles) {
-                if (subFile.isDirectory()) {
-                    folders.add(subFile);
-                    addSubFolders(subFile, folders);
-                }
-            }
         }
     }
 
@@ -116,12 +74,11 @@ public class Upload {
                         }
                     }
                     if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        // automatically adds them to liked
-                        getSongs(file);
+                        collection.addLikedSongs(getSongs(file));
                     }
                 }
             } else {
-                // automatically adds them to liked
+                // automatically adds them to liked by their metadata
                 pb.setExtraMessage("Download Hierachy").step();
                 getSongs(this.localLibrary);
             }
@@ -129,44 +86,32 @@ public class Upload {
     }
 
     public void processFolders() throws InterruptedException {
-        ArrayList<File> libraryFolders = this.getLibraryFolders();
         try (ProgressBar pb = Progressbar.progressBar("Folders", -1)) {
             // get all albums
-            for (File file : libraryFolders) {
+            for (File file : this.localLibrary.listFiles()) {
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
                     if (isAlbum(file)) {
-                        pb.setExtraMessage(file.getName()).step();
                         Album album = getAlbum(file);
                         if (album != null) {
+                            pb.setExtraMessage(album.getName()).step();
                             collection.addAlbum(album);
                         }
-                    }
-                }
-            }
-            if (settings.isDownloadHierachy()) {
-                for (File file : libraryFolders) {
-                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        if (!isAlbum(file)) {
-                            pb.setExtraMessage(file.getName()).step();
-                            Playlist playlist = getPlaylist(file);
-                            if (playlist != null) {
-                                if (playlist.size() == 1) { // filter out singles
-                                    collection.addLikedSongs(playlist.getSongs());
-                                } else {
-                                    collection.addPlaylist(playlist);
-                                }
+                    } else if (settings.isDownloadHierachy()) {
+                        Playlist playlist = getPlaylist(file);
+                        if (playlist != null) {
+                            pb.setExtraMessage(playlist.getName()).step();
+                            if (playlist.size() == 1) { // filter out singles
+                                collection.addLikedSongs(playlist.getSongs());
+                            } else {
+                                collection.addPlaylist(playlist);
                             }
                         }
                     }
-                }
-            } else {
-                for (File inFile : this.localLibrary.listFiles()) {
-                    if (MusicTools.getExtension(inFile).equalsIgnoreCase("m3u")) {
-                        pb.setExtraMessage(inFile.getName()).step();
-                        Playlist playlist = processM3U(inFile);
-                        if (playlist != null) {
-                            collection.addPlaylist(playlist);
-                        }
+                } else if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+                    Playlist playlist = processM3U(file);
+                    if (playlist != null) {
+                        pb.setExtraMessage(playlist.getName()).step();
+                        collection.addPlaylist(playlist);
                     }
                 }
             }
@@ -182,9 +127,7 @@ public class Upload {
             logger.debug("provided file '" + file.getAbsolutePath() + "' does not end with .m3u in processM3u");
             return null;
         }
-        String playlistName = null;
-        URI coverImage = null;
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        Playlist playlist = new Playlist(file.getName().substring(0, file.getName().lastIndexOf('.')));
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             String currSongLine = null;
@@ -193,11 +136,11 @@ public class Upload {
                 if (line.startsWith("#EXTM3U")) {
                     continue;
                 } else if (line.startsWith("#PLAYLIST:")) {
-                    playlistName = line.substring(10).trim();
+                    playlist.setName(line.substring(10).trim());
                 } else if (line.startsWith("#EXTIMG:")) {
                     File coverFile = new File(file.getParent(), line.substring(8).trim());
                     if (coverFile.exists()) {
-                        coverImage = coverFile.toURI();
+                        playlist.setCoverImage(coverFile.toURI());
                     } else {
                         logger.debug("coverimage referenced in m3u '" + file.getAbsolutePath() + "' not found: "
                                 + coverFile.getAbsolutePath());
@@ -209,7 +152,7 @@ public class Upload {
                     if (songFile.exists()) {
                         Song song = getSong(songFile);
                         if (song != null) {
-                            songs.add(song);
+                            playlist.addSong(song);
                         }
                     } else {
                         logger.debug("Song referenced in m3u '" + file.getAbsoluteFile() + "' not found: "
@@ -222,22 +165,6 @@ public class Upload {
             logger.error("Exception reading m3u file '" + file.getAbsolutePath() + "': " + e);
             return null;
         }
-        if (playlistName == null) {
-            playlistName = file.getName().replace(".m3u", "");
-            logger.warn(
-                    "Was unable to retrieve playlist name from m3u file '" + file.getAbsolutePath()
-                            + "', defaulting to "
-                            + playlistName);
-        }
-        if (songs.isEmpty()) {
-            logger.warn("No songs found in m3u file '" + file.getAbsolutePath() + "' skipping...");
-            return null;
-        }
-        Playlist playlist = new Playlist(playlistName);
-        if (coverImage != null) {
-            playlist.setCoverImage(coverImage);
-        }
-        playlist.addSongs(songs);
         return playlist;
     }
 
@@ -249,7 +176,7 @@ public class Upload {
         Playlist playlist = new Playlist(folder.getName());
         LinkedHashSet<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
-            logger.debug("no songs found in '" + folder.getAbsolutePath() + "'");
+            logger.debug("no songs found in playlist: '" + folder.getAbsolutePath() + "'");
             return null;
         }
         playlist.addSongs(songs);
@@ -260,82 +187,77 @@ public class Upload {
         return playlist;
     }
 
+    /**
+     * construct Album class from an album folder
+     * 
+     * @param folder - folder to get files from
+     * @return - constructed Album without songs
+     */
     public static Album getAlbum(File folder) throws InterruptedException {
-        if (folder == null || !folder.exists()) {
-            logger.debug("null folder or non existing folder passed in getAlbum");
+        // TODO: parse nfo file
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("null folder or non existant or non directory folder provided in construct Album");
             return null;
         }
-        Album album = constructAlbum(folder);
-        if (album == null) {
-            return null;
-        }
-        // incase constructAlbum didnt get songs from library
-        if (album.size() == 0) {
-            LinkedHashSet<Song> songs = getSongs(folder);
-            if (songs == null || songs.isEmpty()) {
-                logger.debug("no songs found in album " + folder.getAbsolutePath());
-                return null;
+        Album album = new Album(folder.getName());
+        LinkedHashSet<Song> songs = getSongs(folder);
+        for (Song song : songs) {
+            if (song.getAlbumName() != null) {
+                album.setName(song.getAlbumName());
             }
-            album.addSongs(songs);
+            album.addSong(song);
         }
-        File coverFile = new File(folder, album.getFolderName() + ".png");
-        if (coverFile.exists()) {
-            album.setCoverImage(coverFile.toURI());
+        File albumCover = new File(folder, "cover.png");
+        if (albumCover.exists()) {
+            album.setCoverImage(albumCover.toURI());
+        }
+        if (library != null) {
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                album = null;
+            }
         }
         return album;
-
     }
 
     /**
-     * getting metadata from music file
+     * function to check if folder is an album
+     * current criteria: all mp3's with metadata say the same album
      * 
-     * @param file - file to get metadata from
-     * @return - constructed Song
+     * @param folder - folder of the playlist/album
+     * @return - true if album, false if playlist
      */
-    public static Song getSong(File file) throws InterruptedException {
-        if (file == null || !file.exists()) {
-            logger.debug("null or non existant file provided in getSong");
-            return null;
+    public static boolean isAlbum(File folder) throws InterruptedException {
+        if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
+            logger.debug("empty folder, non directory, non existant or directory with less than 1 files provided: "
+                    + folder);
+            return false;
         }
-        if (!extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-            logger.debug("provided file is not in extensions: '" + file.getAbsolutePath() + "'");
-            return null;
+        File nfoFile = new File(folder, "album.nfo");
+        if (nfoFile.exists()) {
+            return true;
         }
-        Song song = new Song(file.getName().substring(0, file.getName().lastIndexOf('.')));
-        try {
-            AudioFile audioFile = AudioFileIO.read(file);
-            AudioHeader audioHeader = audioFile.getAudioHeader();
-            Tag tag = audioFile.getTag();
-            if (tag != null) {
-                if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
-                    song.setName(tag.getFirst(FieldKey.TITLE));
-                }
-                if (!tag.getFirst(FieldKey.ARTIST).isEmpty()) {
-                    song.setArtist(new Artist(tag.getFirst(FieldKey.ARTIST)));
-                }
-                if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
-                    song.setCoverImage(tag.getFirst(FieldKey.COVER_ART));
-                }
-                if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
-                    song.addId("mbid", tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID));
-                }
-                if (!tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-                    song.setAlbumName(tag.getFirst(FieldKey.ALBUM));
-                }
-            }
-            song.setDuration(audioHeader.getTrackLength(), ChronoUnit.SECONDS);
-        } catch (Exception e) {
-            logger.error("Exception parsing metadata for file: '" + file.getAbsolutePath() + "': ");
+        LinkedHashSet<Song> songs = getSongs(folder);
+        if (songs == null) {
+            return false;
         }
-        if (library != null) {
-            Song foundSong = library.getSong(song);
-            if (foundSong != null) {
-                song = foundSong;
-            } else if (settings.isLibraryVerified()) {
-                song = null;
+        String albumName = null;
+        boolean foundAnyAlbum = false;
+        for (Song song : songs) {
+            if (song.getAlbumName() != null) {
+                foundAnyAlbum = true;
+                if (albumName == null) {
+                    albumName = song.getAlbumName();
+                } else if (!albumName.equals(song.getAlbumName())) {
+                    return false;
+                }
+            } else if (foundAnyAlbum) {
+                return false;
             }
         }
-        return song;
+        return foundAnyAlbum;
     }
 
     /**
@@ -355,126 +277,69 @@ public class Upload {
                 Song song = getSong(file);
                 if (song != null) {
                     songs.add(song);
-                    if (isLiked(file)) {
-                        collection.addLikedSong(song);
+                    try {
+                        if (MusicTools.isSongLiked(file)) {
+                            collection.addLikedSong(song);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error checking if song '" + song.getName() + "' is liked");
                     }
                 }
             }
         }
-
         return songs;
     }
 
     /**
-     * function to check if folder is an album
-     * current criteria: all mp3's with metadata say the same album
+     * getting metadata from music file
      * 
-     * @param folder - folder of the playlist/album
-     * @return - true if album, false if playlist
+     * @param file - file to get metadata from
+     * @return - constructed Song
      */
-    public static boolean isAlbum(File folder) {
-        if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
-            logger.debug("empty folder, non directory, non existant or directory with less than 1 files provided: "
-                    + folder);
-            return false;
-        }
-        String album = null;
-        boolean foundAnyAlbum = false;
-        for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                try {
-                    AudioFile audioFile = AudioFileIO.read(file);
-                    Tag tag = audioFile.getTag();
-                    if (tag != null) {
-                        String foundAlbum = tag.getFirst(FieldKey.ALBUM);
-                        if (!foundAlbum.isEmpty()) {
-                            foundAnyAlbum = true;
-                            if (album == null) {
-                                album = foundAlbum;
-                            } else if (!album.equals(foundAlbum)) {
-                                return false;
-                            }
-                        } else if (foundAnyAlbum) {
-                            return false;
-                        }
-                    } else if (foundAnyAlbum) {
-                        return false;
-                    }
-                } catch (Exception e) {
-                    logger.error("Exception checking folder if album: " + e);
-                    return false;
-                }
-            }
-        }
-
-        return foundAnyAlbum;
-    }
-
-    public static boolean isLiked(File file) {
-        if (file == null || !file.isFile()) {
-            logger.debug("Empty file or non file provided: " + file);
-            return false;
-        }
-        if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-            try {
-                AudioFile audioFile = AudioFileIO.read(file);
-                Tag tag = audioFile.getTag();
-                if (tag != null) {
-                    String rating = tag.getFirst(FieldKey.RATING);
-                    if (rating.equals("255")) {
-                        return true;
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("Exception checking folder if album: " + e);
-                return false;
-            }
-        } else {
-            logger.debug("Unsupported format for: '" + file.getAbsolutePath() + "'");
-        }
-        return false;
-    }
-
-    /**
-     * construct Album class from an album folder
-     * 
-     * @param folder - folder to get files from
-     * @return - constructed Album without songs
-     */
-    public static Album constructAlbum(File folder) throws InterruptedException {
-        // TODO: parse nfo file
-        if (folder == null || !folder.exists() || !folder.isDirectory()) {
-            logger.debug("null folder or non existant or non directory folder provided in construct Album");
+    public static Song getSong(File file) throws InterruptedException {
+        if (file == null || !file.exists()) {
+            logger.debug("null or non existant file provided in getSong");
             return null;
         }
-        Album album = new Album(folder.getName());
-        File albumSongFile = null;
-        for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                albumSongFile = file;
-                break;
-            }
+        if (!extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+            logger.debug("provided file is not in extensions: '" + file.getAbsolutePath() + "'");
+            return null;
         }
-        if (albumSongFile != null) {
-            try {
-                AudioFile audioFile = AudioFileIO.read(albumSongFile);
-                Tag tag = audioFile.getTag();
-                if (tag != null && !tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-                    album.setName(tag.getFirst(FieldKey.ALBUM));
-                    album.addArtist(new Artist(tag.getFirst(FieldKey.ARTIST)));
+        Song song = new Song(file.getName().substring(0, file.getName().lastIndexOf('.')));
+        try {
+            LinkedHashMap<FieldKey, String> songData = MusicTools.readMetaData(file);
+            if (songData != null) {
+                if (songData.get(FieldKey.TITLE) != null) {
+                    song.setName(songData.get(FieldKey.TITLE));
                 }
-            } catch (Exception e) {
-                logger.error("Exception parsing album: " + e);
+                if (songData.get(FieldKey.ARTIST) != null) {
+                    song.setArtist(new Artist(songData.get(FieldKey.ARTIST)));
+                }
+                if (songData.get(FieldKey.COVER_ART) != null) {
+                    song.setCoverImage(songData.get(FieldKey.COVER_ART));
+                }
+                if (songData.get(FieldKey.MUSICBRAINZ_RELEASEID) != null) {
+                    song.addId("mbid", songData.get(FieldKey.MUSICBRAINZ_RELEASEID));
+                }
+                if (songData.get(FieldKey.ALBUM) != null) {
+                    song.setAlbumName(songData.get(FieldKey.ALBUM));
+                }
+                Duration duration = MusicTools.getSongDuration(file);
+                if (!duration.isZero()) {
+                    song.setDuration(duration);
+                }
             }
+        } catch (Exception e) {
+            logger.error("Unable to read file '" + file.getAbsolutePath() + "' metadata: " + e);
         }
         if (library != null) {
-            Album foundAlbum = library.getAlbum(album);
-            if (foundAlbum != null) {
-                album = foundAlbum;
+            Song foundSong = library.getSong(song);
+            if (foundSong != null) {
+                song = foundSong;
             } else if (settings.isLibraryVerified()) {
-                album = null;
+                song = null;
             }
         }
-        return album;
+        return song;
     }
 }

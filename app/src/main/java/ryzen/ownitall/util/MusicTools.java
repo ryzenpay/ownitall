@@ -14,7 +14,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagOptionSingleton;
 import org.jaudiotagger.tag.id3.ID3v24Frame;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
@@ -156,6 +158,60 @@ public class MusicTools {
         // save changes
         audioFile.commit();
         AudioFileIO.write(audioFile);
+    }
+
+    public static LinkedHashMap<FieldKey, String> readMetaData(File songFile) throws Exception {
+        if (songFile == null || !songFile.exists()) {
+            logger.debug("Invalid or non existant file provided in readMetaData");
+            return null;
+        }
+        LinkedHashMap<FieldKey, String> data = new LinkedHashMap<>();
+        AudioFile audioFile = AudioFileIO.read(songFile);
+        Tag tag = audioFile.getTag();
+        if (tag != null) {
+            if (!tag.getFirst(FieldKey.TITLE).isEmpty()) {
+                data.put(FieldKey.TITLE, tag.getFirst(FieldKey.TITLE));
+            }
+            if (!tag.getFirst(FieldKey.ARTIST).isEmpty()) {
+                data.put(FieldKey.ARTIST, tag.getFirst(FieldKey.ARTIST));
+            }
+            if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
+                data.put(FieldKey.COVER_ART, tag.getFirst(FieldKey.COVER_ART));
+            }
+            if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
+                data.put(FieldKey.MUSICBRAINZ_RELEASEID, tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID));
+            }
+            if (!tag.getFirst(FieldKey.ALBUM).isEmpty()) {
+                data.put(FieldKey.ALBUM, tag.getFirst(FieldKey.ALBUM));
+            }
+        }
+        return data;
+    }
+
+    public static boolean isSongLiked(File songFile) throws Exception {
+        if (songFile == null || !songFile.isFile()) {
+            logger.debug("Empty file or non file provided in isSongLiked");
+            return false;
+        }
+        AudioFile audioFile = AudioFileIO.read(songFile);
+        Tag tag = audioFile.getTag();
+        if (tag != null) {
+            String rating = tag.getFirst(FieldKey.RATING);
+            if (rating.equals("255")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Duration getSongDuration(File songFile) throws Exception {
+        if (songFile == null || !songFile.isFile()) {
+            logger.debug("Empty file or non file provided in isSongLiked");
+            return Duration.ZERO;
+        }
+        AudioFile audioFile = AudioFileIO.read(songFile);
+        AudioHeader audioHeader = audioFile.getAudioHeader();
+        return Duration.ofSeconds(audioHeader.getTrackLength());
     }
 
     public static void downloadImage(URI url, File file) throws IOException {
