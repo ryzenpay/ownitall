@@ -68,8 +68,6 @@ public class LastFM extends Library {
                 JsonNode idNode = albumNode.path("id");
                 if (!idNode.isMissingNode()) {
                     album.addId("lastfm", String.valueOf(idNode.asInt()));
-                } else {
-                    album.addId("lastfm", albumNode.path("url").asText());
                 }
                 JsonNode mbidNode = albumNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
@@ -141,8 +139,6 @@ public class LastFM extends Library {
                 JsonNode idNode = trackNode.path("id");
                 if (!idNode.isMissingNode()) {
                     song.addId("lastfm", String.valueOf(idNode.asInt()));
-                } else {
-                    song.addId("lastfm", trackNode.path("url").asText());
                 }
                 JsonNode mbidNode = trackNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
@@ -204,8 +200,6 @@ public class LastFM extends Library {
                 JsonNode idNode = artistNode.path("id");
                 if (!idNode.isMissingNode()) {
                     artist.addId("lastfm", String.valueOf(idNode.asInt()));
-                } else {
-                    artist.addId("lastfm", artistNode.path("url").asText());
                 }
                 JsonNode mbidNode = artistNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
