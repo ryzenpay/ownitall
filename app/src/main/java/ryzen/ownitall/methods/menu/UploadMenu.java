@@ -58,7 +58,6 @@ public class UploadMenu {
             logger.debug("done uploading local music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading collection");
-            return;
         }
     }
 

@@ -5,10 +5,10 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Menu;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);

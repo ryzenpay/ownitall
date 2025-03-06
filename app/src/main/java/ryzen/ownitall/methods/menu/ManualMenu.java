@@ -199,7 +199,6 @@ public class ManualMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while adding artist");
-            return;
         }
     }
 }
