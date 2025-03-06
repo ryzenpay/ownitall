@@ -268,13 +268,4 @@ public class Album extends Playlist {
         }
         return super.contains(song);
     }
-
-    @Override
-    @JsonIgnore
-    public int hashCode() {
-        if (this.getId("mbid") != null) {
-            return this.getId("mbid").hashCode();
-        }
-        return Objects.hash(super.hashCode(), artists);
-    }
 }

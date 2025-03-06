@@ -406,10 +406,4 @@ public class Playlist {
         }
         return false;
     }
-
-    @Override
-    @JsonIgnore
-    public int hashCode() {
-        return Objects.hash(this.name.toLowerCase().trim());
-    }
 }
