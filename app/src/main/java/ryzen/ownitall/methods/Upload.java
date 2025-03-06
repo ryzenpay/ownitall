@@ -31,7 +31,6 @@ public class Upload {
     private static final Settings settings = Settings.load();
     private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav"));
     private static Library library = Library.load();
-    private static Collection collection = Collection.load();
     private File localLibrary;
 
     /**
@@ -60,63 +59,97 @@ public class Upload {
      * - folder named "liked songs" (changeable in settings)
      * 
      */
-    public void getLikedSongs() throws InterruptedException {
+    public LinkedHashSet<Song> getLikedSongs() throws InterruptedException {
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
-            if (settings.isDownloadHierachy()) {
-                for (File file : this.localLibrary.listFiles()) {
-                    if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                        Song song = getSong(file);
-                        if (song != null) {
-                            pb.setExtraMessage(song.getName()).step();
-                            collection.addLikedSong(song);
-                        }
-                    }
-                    if (file.isDirectory() && file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        collection.addLikedSongs(getSongs(file));
-                    }
+            getLikedSongs(this.localLibrary);
+            for (File folder : this.localLibrary.listFiles()) {
+                if (!folder.isDirectory()) {
+                    continue;
                 }
-            } else {
-                // automatically adds them to liked by their metadata
-                pb.setExtraMessage("Download Hierachy").step();
-                getSongs(this.localLibrary);
+                if (settings.isDownloadHierachy()) {
+                    if (folder.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                        songs.addAll(getSongs(folder));
+                    }
+                } else {
+                    getLikedSongs(folder);
+                }
             }
         }
+        return songs;
     }
 
-    public void processFolders() throws InterruptedException {
-        try (ProgressBar pb = Progressbar.progressBar("Folders", -1)) {
-            // get all albums
-            for (File file : this.localLibrary.listFiles()) {
-                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                    if (isAlbum(file)) {
-                        Album album = getAlbum(file);
-                        if (album != null) {
-                            pb.setExtraMessage(album.getName()).step();
-                            collection.addAlbum(album);
+    public static LinkedHashSet<Song> getLikedSongs(File folder) throws InterruptedException {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("null, non existant or non folder passed in getLikedSongs");
+            return new LinkedHashSet<>();
+        }
+        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        for (File file : folder.listFiles()) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                Song song = getSong(file);
+                if (song != null) {
+                    if (settings.isDownloadHierachy()) {
+                        songs.add(song);
+                    } else {
+                        try {
+                            if (MusicTools.isSongLiked(file)) {
+                                songs.add(song);
+                            }
+                        } catch (Exception e) {
                         }
-                    } else if (settings.isDownloadHierachy()) {
+                    }
+                }
+            }
+        }
+        return songs;
+    }
+
+    public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
+        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1)) {
+            for (File file : this.localLibrary.listFiles()) {
+                if (settings.isDownloadHierachy()) {
+                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())
+                            && !isAlbum(file)) {
                         Playlist playlist = getPlaylist(file);
                         if (playlist != null) {
                             pb.setExtraMessage(playlist.getName()).step();
-                            if (playlist.size() == 1) { // filter out singles
-                                collection.addLikedSongs(playlist.getSongs());
-                            } else {
-                                collection.addPlaylist(playlist);
-                            }
+                            playlists.add(playlist);
                         }
                     }
-                } else if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
-                    Playlist playlist = processM3U(file);
-                    if (playlist != null) {
-                        pb.setExtraMessage(playlist.getName()).step();
-                        collection.addPlaylist(playlist);
+                } else if (file.isFile()) {
+                    if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+                        Playlist playlist = getM3UPlaylist(file);
+                        if (playlist != null) {
+                            pb.setExtraMessage(playlist.getName()).step();
+                            playlists.add(playlist);
+                        }
                     }
                 }
             }
         }
+        return playlists;
     }
 
-    public static Playlist processM3U(File file) throws InterruptedException {
+    public LinkedHashSet<Album> getAlbums() throws InterruptedException {
+        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+        try (ProgressBar pb = Progressbar.progressBar("Albums", -1)) {
+            for (File file : this.localLibrary.listFiles()) {
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName()) && isAlbum(
+                        file)) {
+                    Album album = getAlbum(file);
+                    if (album != null) {
+                        pb.setExtraMessage(album.getName()).step();
+                        albums.add(album);
+                    }
+                }
+            }
+        }
+        return albums;
+    }
+
+    public static Playlist getM3UPlaylist(File file) throws InterruptedException {
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
             return null;
@@ -167,8 +200,8 @@ public class Upload {
     }
 
     public static Playlist getPlaylist(File folder) throws InterruptedException {
-        if (folder == null || !folder.exists()) {
-            logger.debug("null folder or non existing folder provided");
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            logger.debug("null folder, non existing or non folder provided in getPlaylist");
             return null;
         }
         Playlist playlist = new Playlist(folder.getName());
@@ -192,7 +225,7 @@ public class Upload {
      * @return - constructed Album without songs
      */
     public static Album getAlbum(File folder) throws InterruptedException {
-        // TODO: parse nfo file
+        // parse nfo file?
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null folder or non existant or non directory folder provided in construct Album");
             return null;
@@ -275,13 +308,6 @@ public class Upload {
                 Song song = getSong(file);
                 if (song != null) {
                     songs.add(song);
-                    try {
-                        if (MusicTools.isSongLiked(file)) {
-                            collection.addLikedSong(song);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Error checking if song '" + song.getName() + "' is liked");
-                    }
                 }
             }
         }

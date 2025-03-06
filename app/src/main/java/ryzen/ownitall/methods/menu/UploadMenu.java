@@ -47,11 +47,13 @@ public class UploadMenu {
             return;
         }
         logger.debug("Uploading local music...");
-        try (ProgressBar pb = Progressbar.progressBar("Upload", 2)) {
+        try (ProgressBar pb = Progressbar.progressBar("Upload", 3)) {
             pb.setExtraMessage("Liked Songs");
-            upload.getLikedSongs();
-            pb.setExtraMessage("Saved Albums +/ Playlists").step();
-            upload.processFolders();
+            collection.addLikedSongs(upload.getLikedSongs());
+            pb.setExtraMessage("Albums").step();
+            collection.addAlbums(upload.getAlbums());
+            pb.setExtraMessage("Playlists").step();
+            collection.addPlaylists(upload.getPlaylists());
             pb.setExtraMessage("Done").step();
             logger.debug("done uploading local music");
         } catch (InterruptedException e) {
@@ -74,7 +76,7 @@ public class UploadMenu {
         logger.info("Uploading local Playlist...");
         try {
             if (MusicTools.getExtension(folder).equalsIgnoreCase("m3u")) {
-                this.collection.addPlaylist(Upload.processM3U(folder));
+                this.collection.addPlaylist(Upload.getM3UPlaylist(folder));
             } else {
                 this.collection.addPlaylist(Upload.getPlaylist(folder));
             }

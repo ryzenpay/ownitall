@@ -277,6 +277,16 @@ public class Download {
             songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadPath);
         }
+        if (settings.isDownloadDelete()) {
+            LinkedHashSet<Song> localSongs = Upload.getLikedSongs(likedSongsFolder);
+            localSongs.removeAll(songs);
+            for (Song song : localSongs) {
+                File songFile = new File(likedSongsFolder, song.getFileName());
+                songFile.delete();
+                logger.debug("Deleted liked song '" + songFile.getAbsolutePath()
+                        + "' as it was not in collection and downloaddelete is enabled");
+            }
+        }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1)) {
             for (Song song : songs) {
                 pb.setExtraMessage(song.getName()).step();
@@ -323,6 +333,27 @@ public class Download {
             songs = collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = new File(this.downloadPath);
         }
+        if (settings.isDownloadDelete()) {
+            Playlist localPlaylist = null;
+            if (settings.isDownloadHierachy()) {
+                localPlaylist = Upload.getPlaylist(playlistFolder);
+            } else {
+                File m3uFile = new File(this.downloadPath, playlist.getFolderName() + ".m3u");
+                if (m3uFile.exists()) {
+                    localPlaylist = Upload.getM3UPlaylist(m3uFile);
+                }
+            }
+            if (localPlaylist != null) {
+                LinkedHashSet<Song> localSongs = localPlaylist.getSongs();
+                localSongs.removeAll(songs);
+                for (Song song : localSongs) {
+                    File songFile = new File(playlistFolder, song.getFileName());
+                    songFile.delete();
+                    logger.debug("Deleted playlist (" + playlist.getName() + ") song '" + songFile.getAbsolutePath()
+                            + "' as it was not in collection and downloaddelete is enabled");
+                }
+            }
+        }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1)) {
             this.writePlaylistData(playlist, playlistFolder);
@@ -353,6 +384,8 @@ public class Download {
             logger.debug("Empty album provided in downloadAlbum");
             return;
         }
+        // albums are always in a folder
+        File albumFolder = new File(this.downloadPath, album.getFolderName());
         if (!settings.isDownloadHierachy()) {
             for (Song song : album.getSongs()) {
                 File songFile = new File(this.downloadPath, song.getFileName());
@@ -364,9 +397,20 @@ public class Download {
                 }
             }
         }
+        if (settings.isDownloadDelete() && albumFolder.exists()) {
+            Album localAlbum = Upload.getAlbum(new File(this.downloadPath, album.getFolderName()));
+            if (localAlbum != null) {
+                LinkedHashSet<Song> localSongs = localAlbum.getSongs();
+                localSongs.removeAll(album.getSongs());
+                for (Song song : localSongs) {
+                    File songFile = new File(albumFolder, song.getFileName());
+                    songFile.delete();
+                    logger.debug("Deleted album (" + album.getName() + ") song '" + songFile.getAbsolutePath()
+                            + "' as it was not in collection and downloaddelete is enabled");
+                }
+            }
+        }
         try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1)) {
-            // albums are always in a folder
-            File albumFolder = new File(this.downloadPath, album.getFolderName());
             albumFolder.mkdirs();
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {

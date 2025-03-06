@@ -128,6 +128,12 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected boolean downloadHierachy = false;
 
     /**
+     * Delete files found in library which are not in collection
+     * this can be used to clean up local copy after mistakes
+     */
+    protected boolean downloadDelete = false;
+
+    /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
@@ -171,152 +177,76 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return dataFolderPath;
     }
 
-    public void setDataFolderPath(String dataFolderPath) {
-        this.dataFolderPath = dataFolderPath;
-    }
-
     public String getLikedSongsName() {
         return likedSongsName;
-    }
-
-    public void setLikedSongName(String likedSongName) {
-        this.likedSongsName = likedSongName;
     }
 
     public String getAlbumFile() {
         return albumFile;
     }
 
-    public void setAlbumFile(String albumFile) {
-        this.albumFile = albumFile;
-    }
-
     public String getLikedSongFile() {
         return likedSongFile;
-    }
-
-    public void setLikedSongFile(String likedSongFile) {
-        this.likedSongFile = likedSongFile;
     }
 
     public String getPlaylistFile() {
         return playlistFile;
     }
 
-    public void setPlaylistFile(String playlistFile) {
-        this.playlistFile = playlistFile;
-    }
-
     public String getCacheFolderPath() {
         return cacheFolderPath;
-    }
-
-    public void setCacheFolderPath(String cacheFolderPath) {
-        this.cacheFolderPath = cacheFolderPath;
     }
 
     public boolean isSaveCredentials() {
         return saveCredentials;
     }
 
-    public void setSaveCredentials(boolean saveCredentials) {
-        this.saveCredentials = saveCredentials;
-    }
-
     public boolean isSpotifyShowDialog() {
         return spotifyShowDialog;
-    }
-
-    public void setSpotifyShowDialog(boolean spotifyShowDialog) {
-        this.spotifyShowDialog = spotifyShowDialog;
     }
 
     public int getSpotifySongLimit() {
         return spotifySongLimit;
     }
 
-    public void setSpotifySongLimit(int spotifySongLimit) {
-        this.spotifySongLimit = spotifySongLimit;
-    }
-
     public int getSpotifyAlbumLimit() {
         return spotifyAlbumLimit;
-    }
-
-    public void setSpotifyAlbumLimit(int spotifyAlbumLimit) {
-        this.spotifyAlbumLimit = spotifyAlbumLimit;
     }
 
     public int getSpotifyPlaylistLimit() {
         return spotifyPlaylistLimit;
     }
 
-    public void setSpotifyPlaylistLimit(int spotifyPlaylistLimit) {
-        this.spotifyPlaylistLimit = spotifyPlaylistLimit;
-    }
-
     public Long getYoutubeSongLimit() {
         return youtubeSongLimit;
-    }
-
-    public void setYoutubeSongLimit(Long youtubeSongLimit) {
-        this.youtubeSongLimit = youtubeSongLimit;
     }
 
     public Long getYoutubePlaylistLimit() {
         return youtubePlaylistLimit;
     }
 
-    public void setYoutubePlaylistLimit(Long youtubePlaylistLimit) {
-        this.youtubePlaylistLimit = youtubePlaylistLimit;
-    }
-
     public int getSoundCloudSongLimit() {
         return soundCloudSongLimit;
-    }
-
-    public void setSoundCloudSongLimit(int soundCloudSongLimit) {
-        this.soundCloudSongLimit = soundCloudSongLimit;
     }
 
     public int getSoundCloudAlbumLimit() {
         return soundCloudAlbumLimit;
     }
 
-    public void setSoundCloudAlbumLimit(int soundCloudAlbumLimit) {
-        this.soundCloudAlbumLimit = soundCloudAlbumLimit;
-    }
-
     public int getSoundCloudPlaylistLimit() {
         return soundCloudPlaylistLimit;
-    }
-
-    public void setSoundCloudPlaylistLimit(int soundCloudPlaylistLimit) {
-        this.soundCloudPlaylistLimit = soundCloudPlaylistLimit;
     }
 
     public double getSimilarityPercentage() {
         return similarityPercentage;
     }
 
-    public void setSimilarityPercentage(double similarityPercentage) {
-        this.similarityPercentage = similarityPercentage;
-    }
-
     public int getLibrayType() {
         return this.libraryType;
     }
 
-    public void setLibraryType(int libraryType) {
-        this.libraryType = libraryType;
-    }
-
     public String getYoutubedlPath() {
         return youtubedlPath;
-    }
-
-    public void setYoutubedlPath(String youtubedlPath) {
-        this.youtubedlPath = youtubedlPath;
     }
 
     public void setYoutubedlPath() {
@@ -333,24 +263,12 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return downloadFormat;
     }
 
-    public void setDownloadFormat(String downloadFormat) {
-        this.downloadFormat = downloadFormat;
-    }
-
     public int getDownloadQuality() {
         return downloadQuality;
     }
 
-    public void setDownloadQuality(int downloadQuality) {
-        this.downloadQuality = downloadQuality;
-    }
-
     public String getFfmpegPath() {
         return ffmpegPath;
-    }
-
-    public void setFfmpegPath(String ffmpegPath) {
-        this.ffmpegPath = ffmpegPath;
     }
 
     public void setFfmpegPath() {
@@ -368,87 +286,55 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return downloadFolder;
     }
 
-    public void setDownloadFolder(String downloadFolder) {
-        this.downloadFolder = downloadFolder;
-    }
-
     public boolean isDownloadHierachy() {
         return downloadHierachy;
-    }
-
-    public void setDownloadHierachy(boolean downloadHierachy) {
-        this.downloadHierachy = downloadHierachy;
     }
 
     public String getUploadFolder() {
         return uploadFolder;
     }
 
-    public void setUploadFolder(String uploadFolder) {
-        this.uploadFolder = uploadFolder;
-    }
-
     public int getDownloadThreads() {
         return downloadThreads;
-    }
-
-    public void setDownloadThreads(int downloadThreads) {
-        this.downloadThreads = downloadThreads;
-    }
-
-    public void setSpotifySongLimit(Integer spotifySongLimit) {
-        this.spotifySongLimit = spotifySongLimit;
-    }
-
-    public void setSpotifyAlbumLimit(Integer spotifyAlbumLimit) {
-        this.spotifyAlbumLimit = spotifyAlbumLimit;
-    }
-
-    public void setSpotifyPlaylistLimit(Integer spotifyPlaylistLimit) {
-        this.spotifyPlaylistLimit = spotifyPlaylistLimit;
-    }
-
-    public void setSoundCloudSongLimit(Integer soundCloudSongLimit) {
-        this.soundCloudSongLimit = soundCloudSongLimit;
-    }
-
-    public void setSoundCloudAlbumLimit(Integer soundCloudAlbumLimit) {
-        this.soundCloudAlbumLimit = soundCloudAlbumLimit;
-    }
-
-    public void setSoundCloudPlaylistLimit(Integer soundCloudPlaylistLimit) {
-        this.soundCloudPlaylistLimit = soundCloudPlaylistLimit;
     }
 
     public boolean isLibraryVerified() {
         return libraryVerified;
     }
 
-    public void setLibraryVerified(boolean libraryVerified) {
-        this.libraryVerified = libraryVerified;
-    }
-
-    public void setDownloadQuality(Integer downloadQuality) {
-        this.downloadQuality = downloadQuality;
-    }
-
-    public void setDownloadThreads(Integer downloadThreads) {
-        this.downloadThreads = downloadThreads;
-    }
-
     public String getDownloadCookiesFile() {
         return downloadCookiesFile;
-    }
-
-    public void setDownloadCookiesFile(String downloadCookiesFile) {
-        this.downloadCookiesFile = downloadCookiesFile;
     }
 
     public String getDownloadCookiesBrowser() {
         return downloadCookiesBrowser;
     }
 
-    public void setDownloadCookiesBrowser(String downloadCookiesBrowser) {
-        this.downloadCookiesBrowser = downloadCookiesBrowser;
+    /**
+     * @return the artistFile
+     */
+    public String getArtistFile() {
+        return artistFile;
+    }
+
+    /**
+     * @return the songFile
+     */
+    public String getSongFile() {
+        return songFile;
+    }
+
+    /**
+     * @return the libraryType
+     */
+    public int getLibraryType() {
+        return libraryType;
+    }
+
+    /**
+     * @return the downloadDelete
+     */
+    public boolean isDownloadDelete() {
+        return downloadDelete;
     }
 }
