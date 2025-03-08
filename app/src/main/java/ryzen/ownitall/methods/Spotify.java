@@ -731,7 +731,8 @@ public class Spotify {
             // doesnt trigger to make new one
             currentSongs = this.getPlaylistSongs(playlistId);
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
+        Playlist tmpPlaylist = new Playlist("");
+        tmpPlaylist.addSongs(playlist.getSongs());
         if (currentSongs.isEmpty()) {
             try {
                 GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
@@ -748,10 +749,10 @@ public class Spotify {
             }
         } else {
             // filter out the existing playlist songs
-            songs.removeAll(currentSongs);
+            tmpPlaylist.removeSongs(currentSongs);
         }
         ArrayList<String> songUris = new ArrayList<>();
-        for (Song song : songs) {
+        for (Song song : tmpPlaylist.getSongs()) {
             songUris.add("spotify:track:" + this.getTrackId(song));
         }
         if (songUris.isEmpty()) {

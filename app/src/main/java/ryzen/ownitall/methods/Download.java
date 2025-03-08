@@ -267,6 +267,8 @@ public class Download {
      * orchestrator of DownloadSong for all standalone liked songs
      * 
      */
+    // TODO: does not fully work yet?
+    // deleted a lot of files which were in liked but not all :shrug:
     public void downloadLikedSongs() throws InterruptedException {
         LinkedHashSet<Song> songs;
         File likedSongsFolder;
@@ -282,7 +284,7 @@ public class Download {
             logger.debug("Getting local liked songs collection version to remove mismatches");
             LikedSongs likedSongs = Upload.getLikedSongs(likedSongsFolder);
             if (likedSongs != null) {
-                likedSongs.removeSongs(songs);
+                likedSongs.removeSongs(collection.getLikedSongs().getSongs());
                 for (Song song : likedSongs.getSongs()) {
                     File songFile = new File(likedSongsFolder, song.getFileName());
                     if (songFile.delete()) {
@@ -309,6 +311,7 @@ public class Download {
      * orchestrator of downloadPlaylist
      */
     public void downloadPlaylists() throws InterruptedException {
+        // TODO: delete entire playlists when not in collection
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
         try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
@@ -351,7 +354,7 @@ public class Download {
                 }
             }
             if (localPlaylist != null) {
-                localPlaylist.removeSongs(songs);
+                localPlaylist.removeSongs(playlist.getSongs());
                 for (Song song : localPlaylist.getSongs()) {
                     File songFile = new File(playlistFolder, song.getFileName());
                     if (songFile.delete()) {
@@ -379,6 +382,7 @@ public class Download {
     }
 
     public void downloadAlbums() throws InterruptedException {
+        // TODO: delete entire albums when not in collection
         LinkedHashSet<Album> albums = collection.getAlbums();
         try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
@@ -420,7 +424,6 @@ public class Download {
                 for (Song song : localAlbum.getSongs()) {
                     File songFile = new File(albumFolder, song.getFileName());
                     if (songFile.delete()) {
-
                         logger.debug("Deleted album '" + album.getName() + "' song '" + songFile.getAbsolutePath()
                                 + "' as it was not in collection and downloaddelete is enabled");
                     } else {
