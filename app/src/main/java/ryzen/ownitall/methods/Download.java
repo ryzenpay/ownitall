@@ -28,6 +28,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
@@ -295,8 +296,10 @@ public class Download {
                 }
             }
         }
-        try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
+                interruptionHandler.throwInterruption();
                 pb.setExtraMessage(song.getName()).step();
                 this.threadDownload(song, likedSongsFolder);
             }
@@ -359,7 +362,7 @@ public class Download {
                     File songFile = new File(playlistFolder, song.getFileName());
                     if (songFile.delete()) {
                         logger.debug(
-                                "Deleted playlist '" + playlist.getName() + "' song '" + songFile.getAbsolutePath());
+                                "Deleted playlist '" + playlist.getName() + "' song: '" + songFile.getAbsolutePath());
                     } else {
                         logger.error("Failed to delete playlist '" + playlist.getName() + "' song: "
                                 + songFile.getAbsolutePath());
@@ -368,9 +371,11 @@ public class Download {
             }
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
-                playlist.size() + 1)) {
+                playlist.size() + 1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             this.writePlaylistData(playlist, playlistFolder);
             for (Song song : songs) {
+                interruptionHandler.throwInterruption();
                 pb.setExtraMessage(song.getName()).step();
                 this.threadDownload(song, playlistFolder);
             }
@@ -424,8 +429,7 @@ public class Download {
                 for (Song song : localAlbum.getSongs()) {
                     File songFile = new File(albumFolder, song.getFileName());
                     if (songFile.delete()) {
-                        logger.debug("Deleted album '" + album.getName() + "' song '" + songFile.getAbsolutePath()
-                                + "' as it was not in collection and downloaddelete is enabled");
+                        logger.debug("Deleted album '" + album.getName() + "' song: '" + songFile.getAbsolutePath());
                     } else {
                         logger.error(
                                 "Failed to delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
@@ -433,10 +437,12 @@ public class Download {
                 }
             }
         }
-        try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             albumFolder.mkdirs();
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
+                interruptionHandler.throwInterruption();
                 pb.setExtraMessage(song.getName()).step();
                 this.threadDownload(song, albumFolder);
             }

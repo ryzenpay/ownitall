@@ -322,6 +322,9 @@ public class Playlist {
             return false;
         }
         Playlist playlist = (Playlist) object;
+        if (this.hashCode() == playlist.hashCode()) {
+            return true;
+        }
         if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
             return true;
         }

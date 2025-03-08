@@ -81,7 +81,7 @@ public class Main {
             Credentials.load().save();
         }
         if (Library.checkInstance()) {
-            Library.load().cache();
+            Library.load(); // caches in the load
         }
     }
 

@@ -3,6 +3,7 @@ package ryzen.ownitall.classes;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -174,6 +175,9 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
+        if (this.hashCode() == album.hashCode()) {
+            return true;
+        }
         for (String id : this.getIds().keySet()) {
             if (this.getId(id).equals(album.getId(id))) {
                 return true;
@@ -191,5 +195,11 @@ public class Album extends Playlist {
             }
         }
         return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), this.artists);
     }
 }

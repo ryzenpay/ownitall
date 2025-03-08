@@ -299,6 +299,9 @@ public class Song {
             return false;
         }
         Song song = (Song) object;
+        if (this.hashCode() == song.hashCode()) {
+            return true;
+        }
         // only valid if library used
         for (String id : this.getIds().keySet()) {
             if (this.getId(id).equals(song.getId(id))) {

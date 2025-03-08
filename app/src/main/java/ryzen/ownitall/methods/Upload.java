@@ -17,6 +17,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
@@ -61,9 +62,11 @@ public class Upload {
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
             for (File folder : this.localLibrary.listFiles()) {
+                interruptionHandler.throwInterruption();
                 if (!folder.isDirectory()) {
                     continue;
                 }
@@ -86,8 +89,10 @@ public class Upload {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
+                interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                     Song song = getSong(file);
                     if (song != null) {
@@ -114,8 +119,10 @@ public class Upload {
 
     public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
         LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
-        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
+                interruptionHandler.throwInterruption();
                 if (settings.isDownloadHierachy()) {
                     if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())
                             && !isAlbum(file)) {
@@ -141,8 +148,10 @@ public class Upload {
 
     public LinkedHashSet<Album> getAlbums() throws InterruptedException {
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
-        try (ProgressBar pb = Progressbar.progressBar("Albums", -1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Albums", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
+                interruptionHandler.throwInterruption();
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName()) && isAlbum(
                         file)) {
                     Album album = getAlbum(file);
@@ -310,11 +319,14 @@ public class Upload {
             return null;
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                Song song = getSong(file);
-                if (song != null) {
-                    songs.add(song);
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            for (File file : folder.listFiles()) {
+                interruptionHandler.throwInterruption();
+                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                    Song song = getSong(file);
+                    if (song != null) {
+                        songs.add(song);
+                    }
                 }
             }
         }

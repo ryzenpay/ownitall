@@ -175,6 +175,9 @@ public class Artist {
             return false;
         }
         Artist artist = (Artist) object;
+        if (this.hashCode() == artist.hashCode()) {
+            return true;
+        }
         // only valid if library used
         for (String id : this.getIds().keySet()) {
             if (this.getId(id).equals(artist.getId(id))) {
