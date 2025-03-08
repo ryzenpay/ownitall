@@ -40,8 +40,8 @@ public class Menu {
      * 
      */
     public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException {
-        if (setOptions == null || setOptions.isEmpty()) {
-            logger.debug("null or empty optionset provided in optionMenu");
+        if (setOptions == null) {
+            logger.debug("null optionset provided in optionMenu");
             return null;
         }
         ArrayList<String> options = new ArrayList<>(setOptions);
@@ -71,8 +71,8 @@ public class Menu {
     }
 
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) throws InterruptedException {
-        if (setOptions == null || setOptions.isEmpty()) {
-            logger.debug("null or empty optionset provided in optionMenuWithValue");
+        if (setOptions == null) {
+            logger.debug("null optionset provided in optionMenuWithValue");
             return null;
         }
         ArrayList<String> options = new ArrayList<>(setOptions.keySet());

@@ -200,7 +200,7 @@ public class Spotify {
      */
     private String extractCodeFromRequest(String request) {
         if (request == null) {
-            logger.debug("Empty request passed in extractCodeFromRequest");
+            logger.debug("null request passed in extractCodeFromRequest");
             return null;
         }
         int codeIndex = request.indexOf("code=");

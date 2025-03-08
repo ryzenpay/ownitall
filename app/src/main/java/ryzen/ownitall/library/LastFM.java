@@ -40,7 +40,7 @@ public class LastFM extends Library {
     @Override
     public Album getAlbum(Album album) throws InterruptedException {
         if (album == null) {
-            logger.debug("Empty album passed in getAlbum");
+            logger.debug("null album passed in getAlbum");
             return null;
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
@@ -118,7 +118,7 @@ public class LastFM extends Library {
     @Override
     public Song getSong(Song song) throws InterruptedException {
         if (song == null) {
-            logger.debug("Empty song passed in getSong");
+            logger.debug("null song passed in getSong");
             return null;
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
@@ -183,7 +183,7 @@ public class LastFM extends Library {
     @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
-            logger.debug("Empty artist passed in getArtist");
+            logger.debug("null artist passed in getArtist");
             return null;
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
@@ -226,7 +226,7 @@ public class LastFM extends Library {
     @Override
     public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         if (artist == null) {
-            logger.debug("Empty artist passed to getArtistAlbums");
+            logger.debug("null artist passed to getArtistAlbums");
             return null;
         }
         LinkedHashSet<Album> albums = new LinkedHashSet<>();
@@ -288,11 +288,11 @@ public class LastFM extends Library {
 
     private JsonNode lastFMQuery(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
-            logger.debug("null or empty type provided in musicBeeQuery");
+            logger.debug("null or empty type provided in lastFMQuery");
             return null;
         }
         if (query == null || query.isEmpty()) {
-            logger.debug("null or empty query provided in musicBeeQuery");
+            logger.debug("null or empty query provided in lastFMQuery");
             return null;
         }
         try {

@@ -102,7 +102,7 @@ public class Playlist {
      */
     public void setCoverImage(String coverImage) {
         if (coverImage == null) {
-            logger.debug(this.toString() + ": empty String coverimage provided");
+            logger.debug(this.toString() + ": null String coverimage provided");
             return;
         }
         try {
@@ -114,7 +114,7 @@ public class Playlist {
 
     public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
-            logger.debug(this.toString() + ": empty URI coverimage provided");
+            logger.debug(this.toString() + ": null URI coverimage provided");
             return;
         }
         this.coverImage = coverImage;
@@ -136,7 +136,7 @@ public class Playlist {
      */
     public void addSongs(LinkedHashSet<Song> songs) {
         if (songs == null) {
-            logger.debug(this.toString() + ": empty songs array provided in addSongs");
+            logger.debug(this.toString() + ": null songs array provided in addSongs");
             return;
         }
         // dont use .addAll because of Album override

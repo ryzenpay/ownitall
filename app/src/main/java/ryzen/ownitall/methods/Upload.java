@@ -261,7 +261,7 @@ public class Upload {
      */
     public static boolean isAlbum(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
-            logger.debug("empty folder, non directory, non existant or directory with less than 1 files provided: "
+            logger.debug("null/empty folder, non directory, non existant or directory with less than 1 files provided: "
                     + folder);
             return false;
         }

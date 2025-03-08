@@ -62,7 +62,7 @@ public class Artist {
 
     public void setName(String name) {
         if (name == null) {
-            logger.debug(this.toString() + ": null or empty artist name passed to setName");
+            logger.debug(this.toString() + ": null artist name passed to setName");
         }
         this.name = name;
     }
@@ -127,7 +127,7 @@ public class Artist {
      */
     public void setCoverImage(String coverImage) {
         if (coverImage == null) {
-            logger.debug(this.toString() + ": empty String coverimage provided in setCoverImage");
+            logger.debug(this.toString() + ": null String coverimage provided in setCoverImage");
             return;
         }
         try {
@@ -144,7 +144,7 @@ public class Artist {
      */
     public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
-            logger.debug(this.toString() + ": empty URI coverImage provided in setCoverImage");
+            logger.debug(this.toString() + ": null URI coverImage provided in setCoverImage");
             return;
         }
         this.coverImage = coverImage;

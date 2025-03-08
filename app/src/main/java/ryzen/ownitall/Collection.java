@@ -170,7 +170,7 @@ public class Collection {
      */
     public void addLikedSongs(LinkedHashSet<Song> songs) {
         if (songs == null) {
-            logger.debug("Empty liked songs array passed in addLikedSongs");
+            logger.debug("null liked songs array passed in addLikedSongs");
             return;
         }
         this.likedSongs.addSongs(songs); // handled by playlist addSongs

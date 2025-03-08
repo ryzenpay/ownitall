@@ -83,7 +83,7 @@ public class Download {
 
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
-            logger.debug("Empty song or path provided in threadDownload");
+            logger.debug("null song or path provided in threadDownload");
             return;
         }
         if (this.executor == null || this.executor.isShutdown()) {
@@ -130,7 +130,7 @@ public class Download {
      */
     public void downloadSong(Song song, File path) {
         if (song == null || path == null) {
-            logger.debug("Empty song or Path provided in downloadSong");
+            logger.debug("null song or Path provided in downloadSong");
             return;
         }
         List<String> command = new ArrayList<>();
@@ -323,7 +323,7 @@ public class Download {
      */
     public void downloadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
-            logger.debug("Empty playlist provided in downloadPlaylist");
+            logger.debug("null playlist provided in downloadPlaylist");
             return;
         }
         LinkedHashSet<Song> songs;
@@ -389,7 +389,7 @@ public class Download {
 
     public void downloadAlbum(Album album) throws InterruptedException {
         if (album == null) {
-            logger.debug("Empty album provided in downloadAlbum");
+            logger.debug("null album provided in downloadAlbum");
             return;
         }
         // albums are always in a folder

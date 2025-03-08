@@ -89,7 +89,7 @@ public class Album extends Playlist {
      */
     public void addArtists(LinkedHashSet<Artist> artists) {
         if (artists == null) {
-            logger.debug(this.toString() + ": empty artists array provided in addArtists");
+            logger.debug(this.toString() + ": null artists array provided in addArtists");
             return;
         }
         for (Artist artist : artists) {

@@ -190,7 +190,7 @@ public class MusicTools {
 
     public static boolean isSongLiked(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
-            logger.debug("Empty file or non file provided in isSongLiked");
+            logger.debug("null or non file provided in isSongLiked");
             return false;
         }
         AudioFile audioFile = AudioFileIO.read(songFile);
@@ -206,7 +206,7 @@ public class MusicTools {
 
     public static Duration getSongDuration(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
-            logger.debug("Empty file or non file provided in isSongLiked");
+            logger.debug("null or non file provided in isSongLiked");
             return Duration.ZERO;
         }
         AudioFile audioFile = AudioFileIO.read(songFile);

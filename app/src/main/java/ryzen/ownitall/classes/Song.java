@@ -100,7 +100,7 @@ public class Song {
 
     public void setName(String name) {
         if (name == null) {
-            logger.debug(this.toString() + ": null or empty song name passed to setName");
+            logger.debug(this.toString() + ": null song name passed to setName");
         }
         this.name = name;
     }
@@ -112,7 +112,7 @@ public class Song {
      */
     public void setArtist(Artist artist) {
         if (artist == null) {
-            logger.debug(this.toString() + ": empty artist provided in setArtist");
+            logger.debug(this.toString() + ": null artist provided in setArtist");
             return;
         }
         this.artist = artist;
@@ -210,8 +210,8 @@ public class Song {
      * @param duration - Duration
      */
     public void setDuration(Duration duration) {
-        if (duration == null || duration.isZero()) {
-            logger.debug(this.toString() + ": empty or zero duration provided in setDuration");
+        if (duration == null) {
+            logger.debug(this.toString() + ": null duration provided in setDuration");
             return;
         }
         this.duration = duration;
@@ -219,7 +219,7 @@ public class Song {
 
     public void setAlbumName(String albumName) {
         if (albumName == null) {
-            logger.debug(this.toString() + ": empty or null albumName provided in setAlbumName");
+            logger.debug(this.toString() + ": null albumName provided in setAlbumName");
         }
         this.albumName = albumName;
     }
@@ -234,8 +234,8 @@ public class Song {
      * @param coverImage - string coverimage
      */
     public void setCoverImage(String coverImage) {
-        if (coverImage == null || coverImage.isEmpty()) {
-            logger.debug(this.toString() + ": empty String coverimage provided in setCoverImage");
+        if (coverImage == null) {
+            logger.debug(this.toString() + ": null String coverimage provided in setCoverImage");
             return;
         }
         try {
@@ -252,7 +252,7 @@ public class Song {
      */
     public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
-            logger.debug(this.toString() + ": empty URI coverImage provided in setCoverImage");
+            logger.debug(this.toString() + ": null URI coverImage provided in setCoverImage");
             return;
         }
         this.coverImage = coverImage;

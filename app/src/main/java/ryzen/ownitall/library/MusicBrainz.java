@@ -45,7 +45,7 @@ public class MusicBrainz extends Library {
 
     private String searchAlbum(Album album) throws InterruptedException {
         if (album == null) {
-            logger.debug("Empty album passed in searchAlbum");
+            logger.debug("null album passed in searchAlbum");
             return null;
         }
         if (album.getId("id") != null) {
@@ -157,7 +157,7 @@ public class MusicBrainz extends Library {
 
     private String searchSong(Song song) throws InterruptedException {
         if (song == null) {
-            logger.debug("Empty song passed in searchRecordingSong");
+            logger.debug("null song passed in searchRecordingSong");
             return null;
         }
         if (song.getId("id") != null) {
@@ -250,7 +250,7 @@ public class MusicBrainz extends Library {
 
     public String searchArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
-            logger.debug("Empty artist passed in searchArtist");
+            logger.debug("null artist passed in searchArtist");
             return null;
         }
         if (artist.getId("id") != null) {
