@@ -107,6 +107,10 @@ public class Album extends Playlist {
             logger.debug(this.toString() + ": empty artist provided in addArtist");
             return;
         }
+        // because of the playlist overwrite
+        if (this.artists == null) {
+            this.artists = new LinkedHashSet<>();
+        }
         Artist foundArtist = this.getArtist(artist);
         if (foundArtist != null) {
             foundArtist.merge(artist);

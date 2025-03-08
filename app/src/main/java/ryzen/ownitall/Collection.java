@@ -16,13 +16,11 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.Progressbar;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
