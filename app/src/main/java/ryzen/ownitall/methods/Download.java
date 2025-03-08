@@ -343,7 +343,7 @@ public class Download {
             playlistFolder = new File(this.downloadPath);
         }
         if (settings.isDownloadDelete()) {
-            logger.debug("Getting local playlist collection version to remove mismatches");
+            logger.debug("Getting local playlist '" + playlist.getName() + "' collection version to remove mismatches");
             Playlist localPlaylist = null;
             if (settings.isDownloadHierachy()) {
                 localPlaylist = Upload.getPlaylist(playlistFolder);
@@ -400,7 +400,7 @@ public class Download {
         }
         // albums are always in a folder
         File albumFolder = new File(this.downloadPath, album.getFolderName());
-        if (!settings.isDownloadHierachy()) {
+        if (!settings.isDownloadDelete()) {
             for (Song song : album.getSongs()) {
                 File songFile = new File(this.downloadPath, song.getFileName());
                 if (songFile.exists()) {
@@ -417,7 +417,7 @@ public class Download {
             }
         }
         if (settings.isDownloadDelete() && albumFolder.exists()) {
-            logger.debug("Getting local album collection version to remove mismatches");
+            logger.debug("Getting local album '" + album.getName() + "' collection version to remove mismatches");
             Album localAlbum = Upload.getAlbum(new File(this.downloadPath, album.getFolderName()));
             if (localAlbum != null) {
                 localAlbum.removeSongs(album.getSongs());
