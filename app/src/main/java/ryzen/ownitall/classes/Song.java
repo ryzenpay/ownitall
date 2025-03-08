@@ -332,6 +332,6 @@ public class Song {
     @JsonIgnore
     @Override
     public int hashCode() {
-        return Objects.hash(name, artist, duration, albumName, coverImage, ids);
+        return Objects.hash(name, artist, duration, albumName, ids);
     }
 }

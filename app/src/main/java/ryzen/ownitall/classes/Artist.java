@@ -193,6 +193,6 @@ public class Artist {
     @JsonIgnore
     @Override
     public int hashCode() {
-        return Objects.hash(name, coverImage, ids);
+        return Objects.hash(name, ids);
     }
 }

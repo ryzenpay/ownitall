@@ -337,6 +337,6 @@ public class Playlist {
     @JsonIgnore
     @Override
     public int hashCode() {
-        return Objects.hash(name, coverImage, songs, ids);
+        return Objects.hash(name, songs, ids);
     }
 }
