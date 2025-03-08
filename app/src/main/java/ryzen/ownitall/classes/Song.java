@@ -308,7 +308,7 @@ public class Song {
                 return true;
             }
         }
-        if (this.toString().equals(song.toString())) {
+        if (this.toString().equalsIgnoreCase(song.toString())) {
             return true;
         }
         // individual combinations
@@ -316,7 +316,7 @@ public class Song {
             // TODO: some songs have a diff artist set, missing vital data, fix?
             // ex: PAID - kanye west and PAID - (yuan)$
             if (this.getAlbumName() != null) {
-                if (this.getAlbumName().equals(song.getAlbumName())) {
+                if (this.getAlbumName().equalsIgnoreCase(song.getAlbumName())) {
                     return true;
                 }
             }

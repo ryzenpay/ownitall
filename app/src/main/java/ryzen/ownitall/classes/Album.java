@@ -183,10 +183,10 @@ public class Album extends Playlist {
                 return true;
             }
         }
-        if (this.toString().equals(album.toString())) {
+        if (this.toString().equalsIgnoreCase(album.toString())) {
             return true;
         }
-        if (this.getName().equals(album.getName())) {
+        if (this.getName().equalsIgnoreCase(album.getName())) {
             // album with matching name and atleast one artist
             for (Artist artist : this.getArtists()) {
                 if (artist.equals(album.getArtist(artist))) {

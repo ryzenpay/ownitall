@@ -328,7 +328,7 @@ public class Playlist {
         if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
             return true;
         }
-        if (this.toString().equals(playlist.toString())) {
+        if (this.toString().equalsIgnoreCase(playlist.toString())) {
             return true;
         }
         return false;

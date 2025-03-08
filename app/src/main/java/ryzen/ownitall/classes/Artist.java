@@ -184,7 +184,7 @@ public class Artist {
                 return true;
             }
         }
-        if (this.toString().equals(artist.toString())) {
+        if (this.toString().equalsIgnoreCase(artist.toString())) {
             return true;
         }
         return false;

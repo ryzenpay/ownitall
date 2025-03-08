@@ -43,6 +43,10 @@ public class Upload {
         }
     }
 
+    public Upload(File folder) {
+        this.localLibrary = folder;
+    }
+
     private void setLocalLibrary() throws InterruptedException {
         while (this.localLibrary == null || !this.localLibrary.exists()) {
             System.out.print("Provide absolute path to local music library (folder): ");
@@ -89,7 +93,7 @@ public class Upload {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+        try (
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
@@ -98,12 +102,10 @@ public class Upload {
                     if (song != null) {
                         if (settings.isDownloadHierachy()) {
                             likedSongs.addSong(song);
-                            pb.setExtraMessage(song.getName()).step();
                         } else {
                             try {
                                 if (MusicTools.isSongLiked(file)) {
                                     likedSongs.addSong(song);
-                                    pb.setExtraMessage(song.getName()).step();
                                 }
                             } catch (Exception e) {
                                 logger.error(

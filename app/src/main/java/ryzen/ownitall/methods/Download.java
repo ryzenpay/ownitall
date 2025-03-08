@@ -37,7 +37,7 @@ public class Download {
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private ExecutorService executor;
-    private String downloadPath;
+    private File downloadFolder;
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
@@ -56,8 +56,9 @@ public class Download {
         if (settings.getDownloadFolder().isEmpty()) {
             this.setDownloadPath();
         } else {
-            this.downloadPath = settings.getDownloadFolder();
+            this.downloadFolder = new File(settings.getDownloadFolder());
         }
+        this.downloadFolder.mkdirs();
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter y to continue: ");
         try {
@@ -67,8 +68,8 @@ public class Download {
         }
     }
 
-    public String getDownloadPath() {
-        return this.downloadPath;
+    public File getDownloadFolder() {
+        return this.downloadFolder;
     }
 
     /**
@@ -77,7 +78,7 @@ public class Download {
     private void setDownloadPath() {
         try {
             System.out.print("Please provide path to save music: ");
-            this.downloadPath = Input.request().getFile(false).getAbsolutePath();
+            this.downloadFolder = Input.request().getFile(false);
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting download path");
         }
@@ -264,37 +265,46 @@ public class Download {
         }
     }
 
+    // TODO: does not fully work yet?
+    // deleted a lot of files which were in liked but not all :shrug:
+    public void likedSongsSync() throws InterruptedException {
+        logger.debug("Getting local liked songs collection version to remove mismatches");
+        Upload upload = new Upload(this.downloadFolder);
+        LikedSongs likedSongs = upload.getLikedSongs();
+        if (likedSongs != null) {
+            likedSongs.removeSongs(collection.getLikedSongs().getSongs());
+            for (Song song : likedSongs.getSongs()) {
+                File songFolder = this.downloadFolder;
+                if (settings.isDownloadHierachy()) {
+                    songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
+                }
+                File songFile = new File(songFolder, song.getFileName());
+                if (songFolder.delete()) {
+                    logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
+                } else {
+                    logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                }
+            }
+        }
+    }
+
     /**
      * orchestrator of DownloadSong for all standalone liked songs
      * 
      */
-    // TODO: does not fully work yet?
-    // deleted a lot of files which were in liked but not all :shrug:
     public void downloadLikedSongs() throws InterruptedException {
         LinkedHashSet<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
             songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(this.downloadPath, settings.getLikedSongsName());
+            likedSongsFolder = new File(this.downloadFolder, settings.getLikedSongsName());
             likedSongsFolder.mkdirs();
         } else {
             songs = collection.getStandaloneLikedSongs();
-            likedSongsFolder = new File(this.downloadPath);
+            likedSongsFolder = this.downloadFolder;
         }
         if (settings.isDownloadDelete()) {
-            logger.debug("Getting local liked songs collection version to remove mismatches");
-            LikedSongs likedSongs = Upload.getLikedSongs(likedSongsFolder);
-            if (likedSongs != null) {
-                likedSongs.removeSongs(collection.getLikedSongs().getSongs());
-                for (Song song : likedSongs.getSongs()) {
-                    File songFile = new File(likedSongsFolder, song.getFileName());
-                    if (songFile.delete()) {
-                        logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
-                    } else {
-                        logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
-                    }
-                }
-            }
+            this.likedSongsSync();
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -310,11 +320,77 @@ public class Download {
         }
     }
 
+    // deletes entire playlists
+    public void playlistsSync() throws InterruptedException {
+        Upload upload = new Upload(this.getDownloadFolder());
+        LinkedHashSet<Playlist> playlists = upload.getPlaylists();
+        playlists.removeAll(collection.getPlaylists());
+        for (Playlist playlist : playlists) {
+            if (settings.isDownloadHierachy()) {
+                File playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
+                if (playlistFolder.delete()) {
+                    logger.debug("Deleted playlist '" + playlist.getName() + "' folder: "
+                            + playlistFolder.getAbsolutePath());
+                } else {
+                    logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
+                            + playlistFolder.getAbsolutePath());
+                }
+            } else {
+                // deletes all playlists songs
+                this.playlistSync(playlist);
+                File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
+                if (m3uFile.delete()) {
+                    logger.debug(
+                            "Cleaned up playlist '" + playlist.getName() + "' m3u file: " + m3uFile.getAbsolutePath());
+                } else {
+                    logger.error("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                            + m3uFile.getAbsolutePath());
+                }
+            }
+        }
+    }
+
+    // cleans up individual playlists
+    public void playlistSync(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided in playlistSync");
+            return;
+        }
+        File playlistFolder = this.downloadFolder;
+        if (settings.isDownloadHierachy()) {
+            playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
+        }
+        Playlist localPlaylist = Upload.getPlaylist(playlistFolder);
+        if (localPlaylist != null) {
+            localPlaylist.removeSongs(playlist.getSongs());
+            for (Song song : localPlaylist.getSongs()) {
+                if (!settings.isDownloadHierachy()) {
+                    if (collection.getSongAlbum(song) != null) {
+                        continue;
+                    }
+                    if (collection.isLiked(song)) {
+                        continue;
+                    }
+                }
+                File songFile = new File(playlistFolder, song.getFileName());
+                if (songFile.delete()) {
+                    logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
+                            + songFile.getAbsolutePath());
+                } else {
+                    logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                            + songFile.getAbsolutePath());
+                }
+            }
+        }
+    }
+
     /**
      * orchestrator of downloadPlaylist
      */
     public void downloadPlaylists() throws InterruptedException {
-        // TODO: delete entire playlists when not in collection
+        if (settings.isDownloadDelete()) {
+            this.playlistsSync();
+        }
         LinkedHashSet<Playlist> playlists = collection.getPlaylists();
         try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
@@ -339,36 +415,14 @@ public class Download {
         File playlistFolder;
         if (settings.isDownloadHierachy()) {
             songs = playlist.getSongs();
-            playlistFolder = new File(this.downloadPath, playlist.getFolderName());
+            playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
             songs = collection.getStandalonePlaylistSongs(playlist);
-            playlistFolder = new File(this.downloadPath);
+            playlistFolder = this.downloadFolder;
         }
         if (settings.isDownloadDelete()) {
-            logger.debug("Getting local playlist '" + playlist.getName() + "' collection version to remove mismatches");
-            Playlist localPlaylist = null;
-            if (settings.isDownloadHierachy()) {
-                localPlaylist = Upload.getPlaylist(playlistFolder);
-            } else {
-                File m3uFile = new File(this.downloadPath, playlist.getFolderName() + ".m3u");
-                if (m3uFile.exists()) {
-                    localPlaylist = Upload.getM3UPlaylist(m3uFile);
-                }
-            }
-            if (localPlaylist != null) {
-                localPlaylist.removeSongs(playlist.getSongs());
-                for (Song song : localPlaylist.getSongs()) {
-                    File songFile = new File(playlistFolder, song.getFileName());
-                    if (songFile.delete()) {
-                        logger.debug(
-                                "Deleted playlist '" + playlist.getName() + "' song: '" + songFile.getAbsolutePath());
-                    } else {
-                        logger.error("Failed to delete playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
-                    }
-                }
-            }
+            this.playlistSync(playlist);
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
@@ -386,8 +440,48 @@ public class Download {
         }
     }
 
+    // deletes entire albums
+    public void albumsSync() throws InterruptedException {
+        Upload upload = new Upload(this.getDownloadFolder());
+        LinkedHashSet<Album> albums = upload.getAlbums();
+        albums.removeAll(collection.getPlaylists());
+        for (Album album : albums) {
+            File albumFolder = new File(this.downloadFolder, album.getFolderName());
+            if (albumFolder.delete()) {
+                logger.debug("Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
+            } else {
+                logger.error(
+                        "Could not delete album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
+            }
+        }
+    }
+
+    // cleans up individual albums
+    public void albumSync(Album album) throws InterruptedException {
+        if (album == null) {
+            logger.debug("null album provided in albumSync");
+            return;
+        }
+        File albumFolder = new File(this.downloadFolder, album.getFolderName());
+        Album localAlbum = Upload.getAlbum(albumFolder);
+        if (localAlbum != null) {
+            localAlbum.removeSongs(album.getSongs());
+            for (Song song : localAlbum.getSongs()) {
+                File songFile = new File(albumFolder, song.getFileName());
+                if (songFile.delete()) {
+                    logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                } else {
+                    logger.error(
+                            "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                }
+            }
+        }
+    }
+
     public void downloadAlbums() throws InterruptedException {
-        // TODO: delete entire albums when not in collection
+        if (settings.isDownloadDelete()) {
+            this.albumsSync();
+        }
         LinkedHashSet<Album> albums = collection.getAlbums();
         try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
@@ -404,38 +498,9 @@ public class Download {
             return;
         }
         // albums are always in a folder
-        File albumFolder = new File(this.downloadPath, album.getFolderName());
-        if (!settings.isDownloadDelete()) {
-            for (Song song : album.getSongs()) {
-                File songFile = new File(this.downloadPath, song.getFileName());
-                if (songFile.exists()) {
-                    if (songFile.delete()) {
-                        logger.debug(
-                                "Deleted non-album '" + album.getFolderName() + "' song: "
-                                        + songFile.getAbsolutePath());
-                    } else {
-                        logger.error(
-                                "Failed to delete non-album '" + album.getName() + "' song: "
-                                        + songFile.getAbsolutePath());
-                    }
-                }
-            }
-        }
-        if (settings.isDownloadDelete() && albumFolder.exists()) {
-            logger.debug("Getting local album '" + album.getName() + "' collection version to remove mismatches");
-            Album localAlbum = Upload.getAlbum(new File(this.downloadPath, album.getFolderName()));
-            if (localAlbum != null) {
-                localAlbum.removeSongs(album.getSongs());
-                for (Song song : localAlbum.getSongs()) {
-                    File songFile = new File(albumFolder, song.getFileName());
-                    if (songFile.delete()) {
-                        logger.debug("Deleted album '" + album.getName() + "' song: '" + songFile.getAbsolutePath());
-                    } else {
-                        logger.error(
-                                "Failed to delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
-                    }
-                }
-            }
+        File albumFolder = new File(this.downloadFolder, album.getFolderName());
+        if (settings.isDownloadDelete()) {
+            this.albumSync(album);
         }
         try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {

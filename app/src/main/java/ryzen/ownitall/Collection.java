@@ -22,6 +22,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
+//TODO playlists and albums wrapper needed, for add, remove, addall and removeall
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
     private static Collection instance;
@@ -250,12 +251,25 @@ public class Collection {
      */
     public Album getSongAlbum(Song song) {
         if (song == null) {
-            logger.debug("null song provided in checkAlbumSongs");
+            logger.debug("null song provided in getSongAlbum");
             return null;
         }
         for (Album album : this.getAlbums()) {
             if (album.getSong(song) != null) {
                 return album;
+            }
+        }
+        return null;
+    }
+
+    public Playlist getSongPlaylist(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getSongPlaylist");
+            return null;
+        }
+        for (Playlist playlist : this.getPlaylists()) {
+            if (playlist.getSong(song) != null) {
+                return playlist;
             }
         }
         return null;

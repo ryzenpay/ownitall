@@ -131,10 +131,9 @@ public class DownloadMenu {
         try (ProgressBar pb = Progressbar.progressBar("Music Metadata",
                 collection.getAlbumCount() + collection.getPlaylistCount() + collection.getLikedSongs().size())) {
             pb.setExtraMessage("Albums");
-            String downloadPath = download.getDownloadPath();
             for (Album album : collection.getAlbums()) {
                 pb.setExtraMessage(album.getName()).step();
-                File albumFolder = new File(downloadPath, album.getFolderName());
+                File albumFolder = new File(download.getDownloadFolder(), album.getFolderName());
                 if (!albumFolder.exists()) {
                     continue;
                 }
@@ -153,11 +152,11 @@ public class DownloadMenu {
                 LinkedHashSet<Song> songs;
                 if (settings.isDownloadHierachy()) {
                     songs = playlist.getSongs();
-                    playlistFolder = new File(download.getDownloadPath(), playlist.getFolderName());
+                    playlistFolder = new File(download.getDownloadFolder(), playlist.getFolderName());
                     playlistFolder.mkdirs();
                 } else {
                     songs = collection.getStandalonePlaylistSongs(playlist);
-                    playlistFolder = new File(downloadPath);
+                    playlistFolder = download.getDownloadFolder();
                 }
                 if (!playlistFolder.exists()) {
                     continue;
@@ -175,10 +174,10 @@ public class DownloadMenu {
             File likedSongsFolder;
             if (settings.isDownloadHierachy()) {
                 songs = collection.getLikedSongs().getSongs();
-                likedSongsFolder = new File(download.getDownloadPath(), settings.getLikedSongsName());
+                likedSongsFolder = new File(download.getDownloadFolder(), settings.getLikedSongsName());
             } else {
                 songs = collection.getStandaloneLikedSongs();
-                likedSongsFolder = new File(download.getDownloadPath());
+                likedSongsFolder = download.getDownloadFolder();
             }
             for (Song song : songs) {
                 pb.setExtraMessage(song.getName()).step();
