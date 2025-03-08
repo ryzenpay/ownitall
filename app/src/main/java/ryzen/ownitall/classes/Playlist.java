@@ -38,12 +38,10 @@ public class Playlist {
     /**
      * full playlist contructor
      * 
-     * @param name              - playlist name
-     * @param songs             - linkedhashset of song
-     * @param ids               - linkedhashmap of id's
-     * @param youtubePageToken  - string youtube page token
-     * @param spotifyPageOffset - int spotify page token
-     * @param coverImage        - string playlist coverImage
+     * @param name       - playlist name
+     * @param songs      - linkedhashset of song
+     * @param ids        - linkedhashmap of id's
+     * @param coverImage - string playlist coverImage
      */
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
@@ -57,6 +55,9 @@ public class Playlist {
         }
         if (ids != null) {
             this.addIds(ids);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
         }
     }
 
@@ -72,6 +73,7 @@ public class Playlist {
             return;
         }
         this.addSongs(playlist.getSongs());
+        this.addIds(playlist.getIds());
         if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
             this.setCoverImage(playlist.getCoverImage());
         }
@@ -87,29 +89,10 @@ public class Playlist {
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty()) {
-            logger.debug(this.toString() + ": null or empty collection name passed to setName");
+        if (name == null) {
+            logger.debug(this.toString() + ": null playlist name passed to setName");
         }
         this.name = name;
-    }
-
-    /**
-     * get m3u data to write to m3u file for playlist
-     * 
-     * @return - string data
-     */
-    @JsonIgnore
-    public String getM3UHeader() {
-        // m3u header
-        StringBuilder output = new StringBuilder();
-        output.append("#EXTM3U").append("\n");
-        // m3u playlist information
-        output.append("#PLAYLIST:").append(this.toString()).append("\n");
-        // m3u playlist cover
-        if (this.coverImage != null) {
-            output.append("#EXTIMG:").append(this.getFolderName() + ".png").append("\n");
-        }
-        return output.toString();
     }
 
     /**
@@ -118,7 +101,7 @@ public class Playlist {
      * @param coverImage - String of coverImage URL
      */
     public void setCoverImage(String coverImage) {
-        if (coverImage == null || coverImage.isEmpty()) {
+        if (coverImage == null) {
             logger.debug(this.toString() + ": empty String coverimage provided");
             return;
         }
@@ -152,11 +135,10 @@ public class Playlist {
      * @param songs - arraylist of constructed Song
      */
     public void addSongs(LinkedHashSet<Song> songs) {
-        if (songs == null || songs.isEmpty()) {
+        if (songs == null) {
             logger.debug(this.toString() + ": empty songs array provided in addSongs");
             return;
         }
-        this.songs.addAll(songs);
         // dont use .addAll because of Album override
         for (Song song : songs) {
             this.addSong(song);
@@ -173,7 +155,12 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in addsong");
             return;
         }
-        this.songs.add(song);
+        Song foundSong = this.getSong(song);
+        if (foundSong != null) {
+            foundSong.merge(song);
+        } else {
+            this.songs.add(song);
+        }
     }
 
     /**
@@ -218,20 +205,6 @@ public class Playlist {
         return this.songs.size();
     }
 
-    @JsonIgnore
-    public boolean contains(Song song) {
-        if (song == null) {
-            logger.debug(this.toString() + ": null song provided in contains");
-            return false;
-        }
-        for (Song thisSong : this.songs) {
-            if (thisSong.equals(song)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * get all playlist songs
      * 
@@ -267,6 +240,21 @@ public class Playlist {
     }
 
     /**
+     * add multiple id's to playlist
+     * 
+     * @param ids - linkedhashmap of id's to add
+     */
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null) {
+            logger.debug(this.toString() + ": null ids array provided in addIds");
+            return;
+        }
+        for (String id : ids.keySet()) {
+            this.addId(id, ids.get(id));
+        }
+    }
+
+    /**
      * add id to playlist id's
      * 
      * @param key - key to add (spotify, youtube, ...)
@@ -278,19 +266,6 @@ public class Playlist {
             return;
         }
         this.ids.put(key, id);
-    }
-
-    /**
-     * add multiple id's to playlist
-     * 
-     * @param ids - linkedhashmap of id's to add
-     */
-    public void addIds(LinkedHashMap<String, String> ids) {
-        if (ids == null) {
-            logger.debug(this.toString() + ": null ids array provided in addIds");
-            return;
-        }
-        this.ids.putAll(ids);
     }
 
     /**

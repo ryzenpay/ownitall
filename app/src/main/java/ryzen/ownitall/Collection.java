@@ -1,13 +1,24 @@
 package ryzen.ownitall;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.LinkedHashSet;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -53,7 +64,7 @@ public class Collection {
      * clear current collection
      */
     public void clear() {
-        this.likedSongs.clear();
+        this.likedSongs.getSongs().clear();
         this.playlists.clear();
         this.albums.clear();
     }
@@ -64,8 +75,8 @@ public class Collection {
      * @param mergeAlbums - linkedhashset of albums to merge
      */
     public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
-        if (mergeAlbums == null || mergeAlbums.isEmpty()) {
-            logger.debug("empty album array in addAlbums");
+        if (mergeAlbums == null) {
+            logger.debug("null album array in addAlbums");
             return;
         }
         for (Album album : mergeAlbums) {
@@ -111,8 +122,8 @@ public class Collection {
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
     public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
-        if (mergePlaylists == null || mergePlaylists.isEmpty()) {
-            logger.debug("empty playlist array passed in addPlaylists");
+        if (mergePlaylists == null) {
+            logger.debug("null playlist array passed in addPlaylists");
             return;
         }
         for (Playlist playlist : mergePlaylists) {
@@ -158,7 +169,8 @@ public class Collection {
      * @param songs - array of constructed Song
      */
     public void addLikedSongs(LinkedHashSet<Song> songs) {
-        if (songs == null || songs.isEmpty()) {
+        if (songs == null) {
+            logger.debug("Empty liked songs array passed in addLikedSongs");
             return;
         }
         this.likedSongs.addSongs(songs); // handled by playlist addSongs
@@ -188,26 +200,6 @@ public class Collection {
             return;
         }
         this.likedSongs.removeSong(song);
-    }
-
-    /**
-     * merge a collection into the current collection
-     * orchestrates the merge albums, playlists and liked songs
-     * 
-     * @param collection - collection to get values to merge into this collection
-     */
-    public void mergeCollection(Collection collection) {
-        logger.debug("Updating Music Collection");
-        try (ProgressBar pb = Progressbar.progressBar("Update Collection", 3)) {
-            pb.setExtraMessage("Albums");
-            this.addAlbums(collection.getAlbums());
-            pb.setExtraMessage("Playlists").step();
-            this.addPlaylists(collection.getPlaylists());
-            pb.setExtraMessage("Liked Songs").step();
-            this.addLikedSongs(collection.getLikedSongs().getSongs());
-            pb.setExtraMessage("Done").step();
-            logger.debug("Successfully updated music collection");
-        }
     }
 
     /**
@@ -262,7 +254,7 @@ public class Collection {
             return null;
         }
         for (Album album : this.getAlbums()) {
-            if (album.contains(song)) {
+            if (album.getSong(song) != null) {
                 return album;
             }
         }
@@ -280,7 +272,10 @@ public class Collection {
             logger.debug("null song provided in isLiked");
             return false;
         }
-        return this.likedSongs.contains(song);
+        if (this.likedSongs.getSong(song) != null) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -293,28 +288,16 @@ public class Collection {
     }
 
     /**
-     * get specific album in passed array
-     * 
-     * @param albums - array to search from
-     * @param album  - album to find
-     * @return - found album or null
-     */
-    public static Album getAlbum(LinkedHashSet<Album> albums, Album album) {
-        for (Album thisAlbum : albums) {
-            if (thisAlbum.equals(album)) {
-                return thisAlbum;
-            }
-        }
-        return null;
-    }
-
-    /**
      * get album from collection
      * 
      * @param album - constructed album
      * @return - found constructed album or null
      */
     public Album getAlbum(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in getAlbum");
+            return null;
+        }
         for (Album thisAlbum : this.albums) {
             if (thisAlbum.equals(album)) {
                 return thisAlbum;
@@ -334,28 +317,16 @@ public class Collection {
     }
 
     /**
-     * get specific playlist in array of passed playlists
-     * 
-     * @param playlists - array of playlists
-     * @param playlist  - playlist to find in array of playlists
-     * @return - found playlist or null
-     */
-    public static Playlist getPlaylist(LinkedHashSet<Playlist> playlists, Playlist playlist) {
-        for (Playlist thisPlaylist : playlists) {
-            if (thisPlaylist.equals(playlist)) {
-                return thisPlaylist;
-            }
-        }
-        return null;
-    }
-
-    /**
      * get playlist from collection
      * 
      * @param playlist - constructed playlist to find
      * @return - found playlist or null
      */
     public Playlist getPlaylist(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in getPlaylist");
+            return null;
+        }
         for (Playlist thisPlaylist : this.playlists) {
             if (thisPlaylist.equals(playlist)) {
                 return thisPlaylist;
@@ -364,27 +335,20 @@ public class Collection {
         return null;
     }
 
-    /**
-     * get specific song from linkedhashset
-     * 
-     * @param songs - linkedhashset of all songs
-     * @param song  - specific constructed song to find
-     * @return - found constructed song
-     */
-    public static Song getSong(LinkedHashSet<Song> songs, Song song) {
-        for (Song thisSong : songs) {
-            if (thisSong.equals(song)) {
-                return thisSong;
-            }
-        }
-        return null;
-    }
-
-    // TODO: function does not work
     public String getPlaylistM3U(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in getPlaylistM3u");
+            return null;
+        }
         // all relational, doesnt use downloadpath
         StringBuilder output = new StringBuilder();
-        output.append(playlist.getM3UHeader());
+        output.append("#EXTM3U").append("\n");
+        // m3u playlist information
+        output.append("#PLAYLIST:").append(playlist.toString()).append("\n");
+        // m3u playlist cover
+        if (playlist.getCoverImage() != null) {
+            output.append("#EXTIMG:").append(playlist.getFolderName() + ".png").append("\n");
+        }
         for (Song song : playlist.getSongs()) {
             File songFile;
             Album foundAlbum = this.getSongAlbum(song);
@@ -398,6 +362,75 @@ public class Collection {
             output.append(songFile.getPath()).append("\n");
         }
         return output.toString();
+    }
+
+    public String getAlbumNFO(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in getAlbumNFO");
+            return null;
+        }
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root element
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("album");
+            doc.appendChild(rootElement);
+
+            // Title
+            Element title = doc.createElement("title");
+            title.appendChild(doc.createTextNode(album.getName()));
+            rootElement.appendChild(title);
+
+            // Artists
+            Element artistsElement = doc.createElement("artists");
+            rootElement.appendChild(artistsElement);
+            for (Artist artist : album.getArtists()) {
+                Element artistElement = doc.createElement("artist");
+                artistElement.appendChild(doc.createTextNode(artist.getName()));
+                artistsElement.appendChild(artistElement);
+            }
+
+            // Songs
+            Element tracksElement = doc.createElement("tracks");
+            rootElement.appendChild(tracksElement);
+            for (Song song : album.getSongs()) {
+                Element trackElement = doc.createElement("track");
+
+                Element trackTitle = doc.createElement("title");
+                trackTitle.appendChild(doc.createTextNode(song.getName()));
+                trackElement.appendChild(trackTitle);
+
+                Element trackDuration = doc.createElement("duration");
+                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
+                trackElement.appendChild(trackDuration);
+
+                tracksElement.appendChild(trackElement);
+            }
+
+            // Cover image
+            if (album.getCoverImage() != null) {
+                Element thumb = doc.createElement("thumb");
+                thumb.appendChild(doc.createTextNode("cover.png"));
+                rootElement.appendChild(thumb);
+            }
+
+            // Transform the DOM to XML string
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(source, result);
+
+            return writer.toString();
+
+        } catch (Exception e) {
+            logger.error("exception generating NFO content: " + e);
+            return null;
+        }
     }
 
     public int getPlaylistsTrackCount() {
@@ -419,7 +452,10 @@ public class Collection {
     public int getTotalTrackCount() {
         int trackCount = 0;
         trackCount += this.getStandaloneLikedSongs().size();
-        trackCount += this.getPlaylistsTrackCount();
+        for (Playlist playlist : this.playlists) {
+            LinkedHashSet<Song> songs = this.getStandalonePlaylistSongs(playlist);
+            trackCount += songs.size();
+        }
         trackCount += this.getAlbumsTrackCount();
         return trackCount;
     }

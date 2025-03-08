@@ -40,6 +40,17 @@ public class Artist {
         }
     }
 
+    public void merge(Artist artist) {
+        if (artist == null) {
+            logger.debug(this.toString() + ": null artist passed in merge");
+            return;
+        }
+        this.addIds(artist.getIds());
+        if (this.getCoverImage() == null && artist.getCoverImage() != null) {
+            this.setCoverImage(artist.getCoverImage());
+        }
+    }
+
     /**
      * get artist name
      * 
@@ -50,10 +61,25 @@ public class Artist {
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null) {
             logger.debug(this.toString() + ": null or empty artist name passed to setName");
         }
         this.name = name;
+    }
+
+    /**
+     * add multiple ids to artist
+     * 
+     * @param ids - linkedhashmap of id's
+     */
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null) {
+            logger.debug(this.toString() + ": null links provided in addId");
+            return;
+        }
+        for (String id : ids.keySet()) {
+            this.addId(id, ids.get(id));
+        }
     }
 
     /**
@@ -68,19 +94,6 @@ public class Artist {
             return;
         }
         this.ids.put(key, id);
-    }
-
-    /**
-     * add multiple ids to artist
-     * 
-     * @param ids - linkedhashmap of id's
-     */
-    public void addIds(LinkedHashMap<String, String> ids) {
-        if (ids == null) {
-            logger.debug(this.toString() + ": null links provided in addId");
-            return;
-        }
-        this.ids.putAll(ids);
     }
 
     /**
@@ -113,7 +126,7 @@ public class Artist {
      * @param coverImage - string coverimage
      */
     public void setCoverImage(String coverImage) {
-        if (coverImage == null || coverImage.isEmpty()) {
+        if (coverImage == null) {
             logger.debug(this.toString() + ": empty String coverimage provided in setCoverImage");
             return;
         }
@@ -171,10 +184,5 @@ public class Artist {
             return true;
         }
         return false;
-    }
-
-    @JsonIgnore
-    public boolean isEmpty() {
-        return this.name.isEmpty();
     }
 }

@@ -278,6 +278,7 @@ public class Download {
             likedSongsFolder = new File(this.downloadPath);
         }
         if (settings.isDownloadDelete()) {
+            logger.debug("Getting local liked songs collection version to remove mismatches");
             LinkedHashSet<Song> localSongs = Upload.getLikedSongs(likedSongsFolder);
             localSongs.removeAll(songs);
             for (Song song : localSongs) {
@@ -336,6 +337,7 @@ public class Download {
             playlistFolder = new File(this.downloadPath);
         }
         if (settings.isDownloadDelete()) {
+            logger.debug("Getting local playlist collection version to remove mismatches");
             Playlist localPlaylist = null;
             if (settings.isDownloadHierachy()) {
                 localPlaylist = Upload.getPlaylist(playlistFolder);
@@ -409,6 +411,7 @@ public class Download {
             }
         }
         if (settings.isDownloadDelete() && albumFolder.exists()) {
+            logger.debug("Getting local album collection version to remove mismatches");
             Album localAlbum = Upload.getAlbum(new File(this.downloadPath, album.getFolderName()));
             if (localAlbum != null) {
                 LinkedHashSet<Song> localSongs = localAlbum.getSongs();
@@ -474,7 +477,7 @@ public class Download {
             return;
         }
         try {
-            MusicTools.writeData("album", "nfo", album.getNFO(), folder);
+            MusicTools.writeData("album", "nfo", collection.getAlbumNFO(album), folder);
         } catch (Exception e) {
             logger.error("Exception writing album '" + album.toString() + "' nfo: " + e);
         }

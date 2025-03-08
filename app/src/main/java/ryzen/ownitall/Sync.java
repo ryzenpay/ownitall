@@ -164,7 +164,7 @@ public class Sync {
         }
         Collection collection = Collection.load();
         collection.clear();
-        collection.mergeCollection(this.importCollection());
+        this.importCollection();
         logger.info("Successfully unarchived music library");
     }
 
@@ -195,7 +195,7 @@ public class Sync {
      * 
      * @return - constructed collection
      */
-    public Collection importCollection() {
+    public void importCollection() {
         Collection collection = Collection.load();
         logger.debug("importing collection... ");
         try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
@@ -211,7 +211,6 @@ public class Sync {
             pb.setExtraMessage("Done").step();
             logger.debug("Successfully imported collection");
         }
-        return collection;
     }
 
     /**

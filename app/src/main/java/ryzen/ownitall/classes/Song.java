@@ -68,6 +68,27 @@ public class Song {
         }
     }
 
+    public void merge(Song song) {
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in merge");
+            return;
+        }
+        if (this.getArtist() == null && song.getArtist() != null) {
+            this.setArtist(song.getArtist());
+        } else if (song.getArtist() != null) {
+            this.getArtist().merge(artist);
+        }
+        if (this.getDuration().isZero() && !song.getDuration().isZero()) {
+            this.setDuration(song.getDuration());
+        }
+        if (this.getAlbumName() == null && song.getAlbumName() != null) {
+            this.setAlbumName(song.getAlbumName());
+        }
+        if (this.getCoverImage() == null && song.getCoverImage() != null) {
+            this.setCoverImage(song.getCoverImage());
+        }
+    }
+
     /**
      * get the name of the current song class
      * 
@@ -78,7 +99,7 @@ public class Song {
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null) {
             logger.debug(this.toString() + ": null or empty song name passed to setName");
         }
         this.name = name;
@@ -90,7 +111,7 @@ public class Song {
      * @param artist - artist to set
      */
     public void setArtist(Artist artist) {
-        if (artist == null || artist.isEmpty()) {
+        if (artist == null) {
             logger.debug(this.toString() + ": empty artist provided in setArtist");
             return;
         }
@@ -107,6 +128,19 @@ public class Song {
     }
 
     /**
+     * add multiple ids to song
+     * 
+     * @param ids - linkedhashmap of id's
+     */
+    public void addIds(LinkedHashMap<String, String> ids) {
+        if (ids == null) {
+            logger.debug(this.toString() + ": null links provided in addId");
+            return;
+        }
+        this.ids.putAll(ids);
+    }
+
+    /**
      * add id to song
      * 
      * @param key - id key
@@ -118,19 +152,6 @@ public class Song {
             return;
         }
         this.ids.put(key, id);
-    }
-
-    /**
-     * add multiple ids to song
-     * 
-     * @param ids - linkedhashmap of id's
-     */
-    public void addIds(LinkedHashMap<String, String> ids) {
-        if (ids == null) {
-            logger.debug(this.toString() + ": null links provided in addId");
-            return;
-        }
-        this.ids.putAll(ids);
     }
 
     /**
@@ -197,7 +218,7 @@ public class Song {
     }
 
     public void setAlbumName(String albumName) {
-        if (albumName == null || albumName.isEmpty()) {
+        if (albumName == null) {
             logger.debug(this.toString() + ": empty or null albumName provided in setAlbumName");
         }
         this.albumName = albumName;
@@ -263,7 +284,7 @@ public class Song {
     public String toString() {
         String output = this.getName().trim();
         if (this.artist != null) {
-            output += " - " + this.getArtist().getName().trim();
+            output += " - " + this.getArtist().toString();
         }
         return output;
     }

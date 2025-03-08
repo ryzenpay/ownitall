@@ -1,18 +1,8 @@
 package ryzen.ownitall.classes;
 
-import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,13 +28,11 @@ public class Album extends Playlist {
     /**
      * full album constructor
      * 
-     * @param name              - album name
-     * @param songs             - linkedhashset of songs
-     * @param youtubePageToken  - youtube page token
-     * @param spotifyPageOffset - spotify page token
-     * @param coverImage        - cover art
-     * @param artists           - linkedhashset of artists
-     * @param links             - linkedhasmap of links
+     * @param name       - album name
+     * @param songs      - linkedhashset of songs
+     * @param coverImage - cover art
+     * @param artists    - linkedhashset of artists
+     * @param links      - linkedhasmap of links
      */
     @JsonCreator
     public Album(@JsonProperty("name") String name,
@@ -53,7 +41,7 @@ public class Album extends Playlist {
             @JsonProperty("artists") LinkedHashSet<Artist> artists) {
         super(name, songs, links, coverImage);
         this.artists = new LinkedHashSet<>();
-        if (artists != null && !artists.isEmpty()) {
+        if (artists != null) {
             this.addArtists(artists);
         }
     }
@@ -69,10 +57,7 @@ public class Album extends Playlist {
             logger.debug("null album passed in merge");
             return;
         }
-        this.addSongs(album.getSongs());
-        if (this.getCoverImage() == null && album.getCoverImage() != null) {
-            this.setCoverImage(album.getCoverImage());
-        }
+        super.merge(album);
         this.addArtists(album.getArtists());
     }
 
@@ -87,11 +72,6 @@ public class Album extends Playlist {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in addSong");
             return;
-        }
-        // this is here because the super in the json constructor calls on addsongs
-        // before artists is initialized (its ugly, i know)
-        if (this.artists == null) {
-            this.artists = new LinkedHashSet<>();
         }
         song.setAlbumName(this.getName());
         // ensure every song in album has (default) coverimage
@@ -108,11 +88,13 @@ public class Album extends Playlist {
      * @param artists - linkedhashset of artist to add
      */
     public void addArtists(LinkedHashSet<Artist> artists) {
-        if (artists == null || artists.isEmpty()) {
+        if (artists == null) {
             logger.debug(this.toString() + ": empty artists array provided in addArtists");
             return;
         }
-        this.artists.addAll(artists);
+        for (Artist artist : artists) {
+            this.addArtist(artist);
+        }
     }
 
     /**
@@ -121,12 +103,16 @@ public class Album extends Playlist {
      * @param artist - constructed artist to add
      */
     public void addArtist(Artist artist) {
-        if (artist == null || artist.isEmpty()) {
+        if (artist == null) {
             logger.debug(this.toString() + ": empty artist provided in addArtist");
             return;
         }
-        // when artist becomes more complex, this will need a merge function
-        this.artists.add(artist);
+        Artist foundArtist = this.getArtist(artist);
+        if (foundArtist != null) {
+            foundArtist.merge(artist);
+        } else {
+            this.artists.add(artist);
+        }
     }
 
     /**
@@ -136,6 +122,19 @@ public class Album extends Playlist {
      */
     public LinkedHashSet<Artist> getArtists() {
         return this.artists;
+    }
+
+    public Artist getArtist(Artist artist) {
+        if (artist == null) {
+            logger.debug(this.toString() + ": null artist provided in getArtist");
+            return null;
+        }
+        for (Artist thisArtist : this.getArtists()) {
+            if (thisArtist.equals(artist)) {
+                return thisArtist;
+            }
+        }
+        return null;
     }
 
     /**
@@ -162,75 +161,6 @@ public class Album extends Playlist {
         return output;
     }
 
-    /**
-     * get .nfo data for album
-     */
-    @JsonIgnore
-    public String getNFO() {
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-            // Root element
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("album");
-            doc.appendChild(rootElement);
-
-            // Title
-            Element title = doc.createElement("title");
-            title.appendChild(doc.createTextNode(this.getName()));
-            rootElement.appendChild(title);
-
-            // Artists
-            Element artistsElement = doc.createElement("artists");
-            rootElement.appendChild(artistsElement);
-            for (Artist artist : this.artists) {
-                Element artistElement = doc.createElement("artist");
-                artistElement.appendChild(doc.createTextNode(artist.getName()));
-                artistsElement.appendChild(artistElement);
-            }
-
-            // Songs
-            Element tracksElement = doc.createElement("tracks");
-            rootElement.appendChild(tracksElement);
-            for (Song song : this.getSongs()) {
-                Element trackElement = doc.createElement("track");
-
-                Element trackTitle = doc.createElement("title");
-                trackTitle.appendChild(doc.createTextNode(song.getName()));
-                trackElement.appendChild(trackTitle);
-
-                Element trackDuration = doc.createElement("duration");
-                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
-                trackElement.appendChild(trackDuration);
-
-                tracksElement.appendChild(trackElement);
-            }
-
-            // Cover image
-            if (this.getCoverImage() != null) {
-                Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode("cover.png"));
-                rootElement.appendChild(thumb);
-            }
-
-            // Transform the DOM to XML string
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-            transformer.transform(source, result);
-
-            return writer.toString();
-
-        } catch (Exception e) {
-            logger.error(this.toString() + ": exception generating NFO content: " + e);
-            return null;
-        }
-    }
-
     @Override
     @JsonIgnore
     public boolean equals(Object object) {
@@ -248,15 +178,14 @@ public class Album extends Playlist {
         if (this.toString().equals(album.toString())) {
             return true;
         }
-        return false;
-    }
-
-    @JsonIgnore
-    public boolean contains(Song song) {
-        if (song == null) {
-            logger.debug(this.toString() + ": null song provided in contains");
-            return false;
+        if (this.getName().equals(album.getName())) {
+            // album with matching name and atleast one artist
+            for (Artist artist : this.getArtists()) {
+                if (artist.equals(album.getArtist(artist))) {
+                    return true;
+                }
+            }
         }
-        return super.contains(song);
+        return false;
     }
 }
