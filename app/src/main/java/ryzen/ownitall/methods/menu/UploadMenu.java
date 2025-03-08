@@ -119,7 +119,7 @@ public class UploadMenu {
         }
         logger.info("Uploading Liked Songs...");
         try {
-            collection.addLikedSongs(Upload.getSongs(folder));
+            collection.addLikedSongs(Upload.getLikedSongs(folder));
             logger.info("Done Uploading Liked Songs");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading liked songs");

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -311,12 +312,23 @@ public class Song {
         if (this.getName().equals(song.getName())) {
             // TODO: some songs have a diff artist set, missing vital data, fix?
             // ex: PAID - kanye west and PAID - (yuan)$
-            if (this.getAlbumName().equals(song.getAlbumName())) {
-                return true;
-            } else if (this.duration == song.getDuration()) {
-                return true;
+            if (this.getAlbumName() != null) {
+                if (this.getAlbumName().equals(song.getAlbumName())) {
+                    return true;
+                }
+            }
+            if (!this.duration.isZero()) {
+                if (this.duration.equals(song.getDuration())) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, artist, duration, albumName, coverImage, ids);
     }
 }

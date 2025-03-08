@@ -166,12 +166,12 @@ public class Collection {
      * 
      * @param songs - array of constructed Song
      */
-    public void addLikedSongs(LinkedHashSet<Song> songs) {
-        if (songs == null) {
-            logger.debug("null liked songs array passed in addLikedSongs");
+    public void addLikedSongs(LikedSongs likedSongs) {
+        if (likedSongs == null) {
+            logger.debug("null liked songs passed in addLikedSongs");
             return;
         }
-        this.likedSongs.addSongs(songs); // handled by playlist addSongs
+        this.likedSongs.addSongs(likedSongs.getSongs()); // handled by playlist addSongs
     }
 
     /**
@@ -218,14 +218,15 @@ public class Collection {
         if (this.likedSongs.size() == 0) {
             return new LinkedHashSet<>();
         }
-        LinkedHashSet<Song> likedSongs = new LinkedHashSet<>(this.likedSongs.getSongs());
+        LikedSongs likedSongs = new LikedSongs();
+        likedSongs.addSongs(this.likedSongs.getSongs());
         for (Playlist playlist : this.playlists) {
-            likedSongs.removeAll(playlist.getSongs());
+            likedSongs.removeSongs(playlist.getSongs());
         }
         for (Album album : this.albums) {
-            likedSongs.removeAll(album.getSongs());
+            likedSongs.removeSongs(album.getSongs());
         }
-        return likedSongs;
+        return likedSongs.getSongs();
     }
 
     public LinkedHashSet<Song> getStandalonePlaylistSongs(Playlist playlist) {
@@ -233,11 +234,12 @@ public class Collection {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
             return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>(playlist.getSongs());
+        Playlist tmpPlaylist = new Playlist("");
+        tmpPlaylist.addSongs(playlist.getSongs());
         for (Album album : this.albums) {
-            songs.removeAll(album.getSongs());
+            tmpPlaylist.removeSongs(album.getSongs());
         }
-        return songs;
+        return tmpPlaylist.getSongs();
     }
 
     /**

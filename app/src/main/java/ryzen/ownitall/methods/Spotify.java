@@ -48,6 +48,7 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
@@ -249,8 +250,8 @@ public class Spotify {
      * Get all liked songs from current spotify account and add them to collection
      * 
      */
-    public LinkedHashSet<Song> getLikedSongs() throws InterruptedException {
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+    public LikedSongs getLikedSongs() throws InterruptedException {
+        LikedSongs likedSongs = new LikedSongs();
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
@@ -286,7 +287,7 @@ public class Spotify {
                             }
                             if (song != null) {
                                 song.addId("spotify", track.getId());
-                                songs.add(song);
+                                likedSongs.addSong(song);
                             }
                             pb.step();
                         }
@@ -304,7 +305,7 @@ public class Spotify {
                 }
             }
         }
-        return songs;
+        return likedSongs;
     }
 
     /**

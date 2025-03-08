@@ -24,6 +24,7 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
@@ -105,11 +106,11 @@ public class Youtube {
     /**
      * save all youtube liked songs to collection
      */
-    public LinkedHashSet<Song> getLikedSongs() throws InterruptedException {
+    public LikedSongs getLikedSongs() throws InterruptedException {
         if (youtubeApi == null) {
-            return new LinkedHashSet<>();
+            return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
         try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -146,7 +147,7 @@ public class Youtube {
                             if (song != null) {
                                 pb.setExtraMessage(song.getName()).step();
                                 song.addId("youtube", video.getId());
-                                songs.add(song);
+                                likedSongs.addSong(song);
                             }
                         }
                     }
@@ -156,7 +157,7 @@ public class Youtube {
         } catch (IOException e) {
             logger.error("Exception obtaining liked songs: " + e);
         }
-        return songs;
+        return likedSongs;
     }
 
     /**

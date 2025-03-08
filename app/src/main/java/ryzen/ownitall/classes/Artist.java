@@ -3,6 +3,7 @@ package ryzen.ownitall.classes;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -184,5 +185,11 @@ public class Artist {
             return true;
         }
         return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, coverImage, ids);
     }
 }

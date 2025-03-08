@@ -26,6 +26,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
@@ -279,14 +280,16 @@ public class Download {
         }
         if (settings.isDownloadDelete()) {
             logger.debug("Getting local liked songs collection version to remove mismatches");
-            LinkedHashSet<Song> localSongs = Upload.getLikedSongs(likedSongsFolder);
-            localSongs.removeAll(songs);
-            for (Song song : localSongs) {
-                File songFile = new File(likedSongsFolder, song.getFileName());
-                if (songFile.delete()) {
-                    logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
-                } else {
-                    logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+            LikedSongs likedSongs = Upload.getLikedSongs(likedSongsFolder);
+            if (likedSongs != null) {
+                likedSongs.removeSongs(songs);
+                for (Song song : likedSongs.getSongs()) {
+                    File songFile = new File(likedSongsFolder, song.getFileName());
+                    if (songFile.delete()) {
+                        logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
+                    } else {
+                        logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -348,9 +351,8 @@ public class Download {
                 }
             }
             if (localPlaylist != null) {
-                LinkedHashSet<Song> localSongs = localPlaylist.getSongs();
-                localSongs.removeAll(songs);
-                for (Song song : localSongs) {
+                localPlaylist.removeSongs(songs);
+                for (Song song : localPlaylist.getSongs()) {
                     File songFile = new File(playlistFolder, song.getFileName());
                     if (songFile.delete()) {
                         logger.debug(
@@ -414,9 +416,8 @@ public class Download {
             logger.debug("Getting local album collection version to remove mismatches");
             Album localAlbum = Upload.getAlbum(new File(this.downloadPath, album.getFolderName()));
             if (localAlbum != null) {
-                LinkedHashSet<Song> localSongs = localAlbum.getSongs();
-                localSongs.removeAll(album.getSongs());
-                for (Song song : localSongs) {
+                localAlbum.removeSongs(album.getSongs());
+                for (Song song : localAlbum.getSongs()) {
                     File songFile = new File(albumFolder, song.getFileName());
                     if (songFile.delete()) {
 

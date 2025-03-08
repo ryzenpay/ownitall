@@ -3,14 +3,15 @@ package ryzen.ownitall.classes;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.MusicTools;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
-    protected static final double simularityPercentage = Settings.load().getSimilarityPercentage();
     private String name;
     private URI coverImage;
     private LinkedHashSet<Song> songs;
@@ -163,6 +163,16 @@ public class Playlist {
         }
     }
 
+    public void removeSongs(LinkedHashSet<Song> songs) {
+        if (songs == null) {
+            logger.debug(this.toString() + ": null songs provided in removesongs");
+            return;
+        }
+        for (Song song : songs) {
+            this.removeSong(song);
+        }
+    }
+
     /**
      * remove song from playlist
      * 
@@ -173,7 +183,12 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in removeSong");
             return;
         }
-        this.songs.remove(song);
+        Iterator<Song> iter = this.songs.iterator();
+        while (iter.hasNext()) {
+            if (iter.next().equals(song)) {
+                iter.remove();
+            }
+        }
     }
 
     /**
@@ -314,5 +329,11 @@ public class Playlist {
             return true;
         }
         return false;
+    }
+
+    @JsonIgnore
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, coverImage, songs, ids);
     }
 }

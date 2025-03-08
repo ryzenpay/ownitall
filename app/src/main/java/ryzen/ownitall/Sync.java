@@ -206,7 +206,7 @@ public class Sync {
             pb.setExtraMessage("Liked Songs").step();
             LikedSongs likedSongs = importLikedSongs();
             if (likedSongs != null) {
-                collection.addLikedSongs(likedSongs.getSongs());
+                collection.addLikedSongs(likedSongs);
             }
             pb.setExtraMessage("Done").step();
             logger.debug("Successfully imported collection");

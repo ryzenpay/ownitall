@@ -70,12 +70,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected Integer soundCloudPlaylistLimit = 20;
 
     /**
-     * similarity percentage used to check if artists, songs, albums or playlists
-     * are equals (to merge or not)
-     */
-    protected double similarityPercentage = 90.0;
-
-    /**
      * only put songs in collection if they are library verified
      */
     protected boolean libraryVerified = true;
@@ -235,10 +229,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public int getSoundCloudPlaylistLimit() {
         return soundCloudPlaylistLimit;
-    }
-
-    public double getSimilarityPercentage() {
-        return similarityPercentage;
     }
 
     public int getLibrayType() {

@@ -12,6 +12,7 @@ import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
@@ -58,50 +59,57 @@ public class Upload {
      * - folder named "liked songs" (changeable in settings)
      * 
      */
-    public LinkedHashSet<Song> getLikedSongs() throws InterruptedException {
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+    public LikedSongs getLikedSongs() throws InterruptedException {
+        LikedSongs likedSongs = new LikedSongs();
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
-            getLikedSongs(this.localLibrary);
+            likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
             for (File folder : this.localLibrary.listFiles()) {
                 if (!folder.isDirectory()) {
                     continue;
                 }
+                pb.setExtraMessage(folder.getName()).step();
                 if (settings.isDownloadHierachy()) {
                     if (folder.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        songs.addAll(getSongs(folder));
+                        likedSongs.addSongs(getSongs(folder));
                     }
                 } else {
-                    getLikedSongs(folder);
+                    likedSongs.addSongs(getLikedSongs(folder).getSongs());
                 }
             }
         }
-        return songs;
+        return likedSongs;
     }
 
-    public static LinkedHashSet<Song> getLikedSongs(File folder) throws InterruptedException {
+    public static LikedSongs getLikedSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null, non existant or non folder passed in getLikedSongs");
-            return new LinkedHashSet<>();
+            return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
-        for (File file : folder.listFiles()) {
-            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                Song song = getSong(file);
-                if (song != null) {
-                    if (settings.isDownloadHierachy()) {
-                        songs.add(song);
-                    } else {
-                        try {
-                            if (MusicTools.isSongLiked(file)) {
-                                songs.add(song);
+        LikedSongs likedSongs = new LikedSongs();
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1)) {
+            for (File file : folder.listFiles()) {
+                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                    Song song = getSong(file);
+                    if (song != null) {
+                        if (settings.isDownloadHierachy()) {
+                            likedSongs.addSong(song);
+                            pb.setExtraMessage(song.getName()).step();
+                        } else {
+                            try {
+                                if (MusicTools.isSongLiked(file)) {
+                                    likedSongs.addSong(song);
+                                    pb.setExtraMessage(song.getName()).step();
+                                }
+                            } catch (Exception e) {
+                                logger.error(
+                                        "Exception checking if song '" + file.getAbsolutePath() + "' is liked: " + e);
                             }
-                        } catch (Exception e) {
                         }
                     }
                 }
             }
         }
-        return songs;
+        return likedSongs;
     }
 
     public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
