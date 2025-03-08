@@ -4,18 +4,14 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 public class Input {
     private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
     private static Scanner scanner;
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
 
     private Input() {
         scanner = new Scanner(System.in);
@@ -29,31 +25,20 @@ public class Input {
     }
 
     public String getString() throws InterruptedException {
-        SignalHandler signalHandler = Signal.handle(new Signal("INT"), signal -> {
-            logger.debug("SIGINT received");
-            interrupted.set(true);
-        });
-        try {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (scanner.hasNextLine()) {
                 return scanner.nextLine().trim();
             } else {
-                interrupted.set(true);
-                throw new InterruptedException("Input Stream Ended");
+                interruptionHandler.triggerInterruption();
             }
+        } catch (InterruptedException e) {
+            scanner = new Scanner(System.in);
+            throw e;
         } catch (Exception e) {
-            if (interrupted.get()) {
-                throw new InterruptedException("SIGINT received");
-            } else {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            // reset signal handler
-            Signal.handle(new Signal("INT"), signalHandler);
-            if (interrupted.get()) {
-                scanner = new Scanner(System.in);
-            }
-            interrupted.set(false);
+            throw new RuntimeException(e);
         }
+        Thread.dumpStack();
+        throw new RuntimeException();
     }
 
     public String getString(int length) throws InterruptedException {

@@ -282,9 +282,11 @@ public class Download {
             localSongs.removeAll(songs);
             for (Song song : localSongs) {
                 File songFile = new File(likedSongsFolder, song.getFileName());
-                songFile.delete();
-                logger.debug("Deleted liked song '" + songFile.getAbsolutePath()
-                        + "' as it was not in collection and downloaddelete is enabled");
+                if (songFile.delete()) {
+                    logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
+                } else {
+                    logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                }
             }
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1)) {
@@ -348,9 +350,13 @@ public class Download {
                 localSongs.removeAll(songs);
                 for (Song song : localSongs) {
                     File songFile = new File(playlistFolder, song.getFileName());
-                    songFile.delete();
-                    logger.debug("Deleted playlist (" + playlist.getName() + ") song '" + songFile.getAbsolutePath()
-                            + "' as it was not in collection and downloaddelete is enabled");
+                    if (songFile.delete()) {
+                        logger.debug(
+                                "Deleted playlist '" + playlist.getName() + "' song '" + songFile.getAbsolutePath());
+                    } else {
+                        logger.error("Failed to delete playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -390,10 +396,15 @@ public class Download {
             for (Song song : album.getSongs()) {
                 File songFile = new File(this.downloadPath, song.getFileName());
                 if (songFile.exists()) {
-                    songFile.delete();
-                    logger.debug(
-                            "Deleted song not in album (to prevent duplicates) '" + album.getFolderName() + "' folder: "
-                                    + songFile.getAbsolutePath());
+                    if (songFile.delete()) {
+                        logger.debug(
+                                "Deleted non-album '" + album.getFolderName() + "' song: "
+                                        + songFile.getAbsolutePath());
+                    } else {
+                        logger.error(
+                                "Failed to delete non-album '" + album.getName() + "' song: "
+                                        + songFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -404,9 +415,14 @@ public class Download {
                 localSongs.removeAll(album.getSongs());
                 for (Song song : localSongs) {
                     File songFile = new File(albumFolder, song.getFileName());
-                    songFile.delete();
-                    logger.debug("Deleted album (" + album.getName() + ") song '" + songFile.getAbsolutePath()
-                            + "' as it was not in collection and downloaddelete is enabled");
+                    if (songFile.delete()) {
+
+                        logger.debug("Deleted album '" + album.getName() + "' song '" + songFile.getAbsolutePath()
+                                + "' as it was not in collection and downloaddelete is enabled");
+                    } else {
+                        logger.error(
+                                "Failed to delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    }
                 }
             }
         }

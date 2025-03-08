@@ -27,6 +27,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
 import java.io.IOException;
@@ -36,18 +37,17 @@ import java.util.Arrays;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.misc.Signal;
 
 public class Youtube {
+    // TODO: before adding song, meet criteria
+    // song duration, ...
     private static final Logger logger = LogManager.getLogger(Youtube.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
     private static Library library = Library.load();
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -59,10 +59,6 @@ public class Youtube {
         if (credentials.youtubeIsEmpty()) {
             credentials.setYoutubeCredentials();
         }
-        Signal.handle(new Signal("INT"), signal -> {
-            logger.debug("SIGINT received");
-            interrupted.set(true);
-        });
         this.youtubeApi = this.getService();
     }
 
@@ -106,13 +102,6 @@ public class Youtube {
         return credential;
     }
 
-    private void throwHandleInterruption() throws InterruptedException {
-        if (interrupted.get()) {
-            interrupted.set(false);
-            throw new InterruptedException();
-        }
-    }
-
     /**
      * save all youtube liked songs to collection
      */
@@ -122,9 +111,10 @@ public class Youtube {
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         String pageToken = null;
-        try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1)) {
+        try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                throwHandleInterruption();
+                interruptionHandler.throwInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
@@ -135,7 +125,7 @@ public class Youtube {
 
                 List<Video> items = response.getItems();
                 for (Video video : items) {
-                    throwHandleInterruption();
+                    interruptionHandler.throwInterruption();
                     VideoSnippet snippet = video.getSnippet();
                     VideoContentDetails contentDetails = video.getContentDetails();
                     if (snippet != null && contentDetails != null) {
@@ -193,9 +183,10 @@ public class Youtube {
             return new LinkedHashSet<>();
         }
         LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
-        try {
+        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                throwHandleInterruption();
+                interruptionHandler.throwInterruption();
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
@@ -205,10 +196,11 @@ public class Youtube {
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
-                    throwHandleInterruption();
+                    interruptionHandler.throwInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (!songs.isEmpty()) {
+                        pb.setExtraMessage(playlist.getName()).step();
                         playlist.addSongs(songs);
                         playlists.add(playlist);
                     }
@@ -235,9 +227,10 @@ public class Youtube {
         }
         LinkedHashSet<Song> songs = new LinkedHashSet<>();
         String pageToken = null;
-        try {
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                throwHandleInterruption();
+                interruptionHandler.throwInterruption();
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
@@ -245,7 +238,7 @@ public class Youtube {
                         .setPageToken(pageToken);
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
                 for (PlaylistItem item : itemResponse.getItems()) {
-                    throwHandleInterruption();
+                    interruptionHandler.throwInterruption();
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();

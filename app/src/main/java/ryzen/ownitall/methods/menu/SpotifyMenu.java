@@ -155,6 +155,8 @@ public class SpotifyMenu {
         }
     }
 
+    // TODO: the version on ownitall collection is the "up to date", delete any non
+    // found on spotify
     private void optionExportCollection() {
         logger.debug("Uploading Spotify music...");
         try (ProgressBar pb = Progressbar.progressBar("Spotify Upload", 3)) {
