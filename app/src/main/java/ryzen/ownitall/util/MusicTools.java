@@ -175,9 +175,6 @@ public class MusicTools {
             if (!tag.getFirst(FieldKey.ARTIST).isEmpty()) {
                 data.put(FieldKey.ARTIST, tag.getFirst(FieldKey.ARTIST));
             }
-            if (!tag.getFirst(FieldKey.COVER_ART).isEmpty()) {
-                data.put(FieldKey.COVER_ART, tag.getFirst(FieldKey.COVER_ART));
-            }
             if (!tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID).isEmpty()) {
                 data.put(FieldKey.MUSICBRAINZ_RELEASEID, tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID));
             }

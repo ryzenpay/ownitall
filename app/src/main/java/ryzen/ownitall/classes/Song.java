@@ -285,7 +285,7 @@ public class Song {
     public String toString() {
         String output = this.getName().trim();
         if (this.artist != null) {
-            output += " - " + this.getArtist().toString();
+            output += " - " + this.getArtist().toString().trim();
         }
         return output;
     }
@@ -299,9 +299,6 @@ public class Song {
             return false;
         }
         Song song = (Song) object;
-        if (this.hashCode() == song.hashCode()) {
-            return true;
-        }
         // only valid if library used
         for (String id : this.getIds().keySet()) {
             if (this.getId(id).equals(song.getId(id))) {
@@ -327,11 +324,5 @@ public class Song {
             }
         }
         return false;
-    }
-
-    @JsonIgnore
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, artist, duration, albumName, ids);
     }
 }

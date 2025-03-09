@@ -270,18 +270,25 @@ public class Download {
         logger.debug("Getting local liked songs collection version to remove mismatches");
         Upload upload = new Upload(this.downloadFolder);
         LikedSongs likedSongs = upload.getLikedSongs();
+        File songFolder = this.downloadFolder;
+        if (settings.isDownloadHierachy()) {
+            songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
+        }
         if (likedSongs != null) {
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
-                File songFolder = this.downloadFolder;
-                if (settings.isDownloadHierachy()) {
-                    songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
+                if (!settings.isDownloadHierachy()) {
+                    if (collection.getSongPlaylist(song) != null) {
+                        continue;
+                    }
                 }
                 File songFile = new File(songFolder, song.getFileName());
-                if (songFolder.delete()) {
-                    logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
-                } else {
-                    logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                if (songFile.exists()) {
+                    if (songFolder.delete()) {
+                        logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
+                    } else {
+                        logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -357,28 +364,33 @@ public class Download {
             return;
         }
         File playlistFolder = this.downloadFolder;
+        Playlist localPlaylist = null;
         if (settings.isDownloadHierachy()) {
             playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
+            localPlaylist = Upload.getPlaylist(playlistFolder);
+        } else {
+            File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
+            if (m3uFile.exists()) {
+                localPlaylist = Upload.getM3UPlaylist(m3uFile);
+            }
         }
-        Playlist localPlaylist = Upload.getPlaylist(playlistFolder);
         if (localPlaylist != null) {
             localPlaylist.removeSongs(playlist.getSongs());
             for (Song song : localPlaylist.getSongs()) {
                 if (!settings.isDownloadHierachy()) {
-                    if (collection.getSongAlbum(song) != null) {
-                        continue;
-                    }
                     if (collection.isLiked(song)) {
                         continue;
                     }
                 }
                 File songFile = new File(playlistFolder, song.getFileName());
-                if (songFile.delete()) {
-                    logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
-                            + songFile.getAbsolutePath());
-                } else {
-                    logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
-                            + songFile.getAbsolutePath());
+                if (songFile.exists()) {
+                    if (songFile.delete()) {
+                        logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    } else {
+                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -468,11 +480,13 @@ public class Download {
             localAlbum.removeSongs(album.getSongs());
             for (Song song : localAlbum.getSongs()) {
                 File songFile = new File(albumFolder, song.getFileName());
-                if (songFile.delete()) {
-                    logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
-                } else {
-                    logger.error(
-                            "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                if (songFile.exists()) {
+                    if (songFile.delete()) {
+                        logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    } else {
+                        logger.error(
+                                "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    }
                 }
             }
         }

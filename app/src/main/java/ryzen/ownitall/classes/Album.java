@@ -149,11 +149,7 @@ public class Album extends Playlist {
      */
     @JsonIgnore
     public Artist getMainArtist() {
-        Iterator<Artist> iterator = this.artists.iterator();
-        if (iterator.hasNext()) {
-            return iterator.next();
-        }
-        return null;
+        return this.artists.get(0);
     }
 
     @Override
@@ -175,9 +171,6 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        if (this.hashCode() == album.hashCode()) {
-            return true;
-        }
         for (String id : this.getIds().keySet()) {
             if (this.getId(id).equals(album.getId(id))) {
                 return true;
@@ -195,11 +188,5 @@ public class Album extends Playlist {
             }
         }
         return false;
-    }
-
-    @JsonIgnore
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), this.artists);
     }
 }

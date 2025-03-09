@@ -166,6 +166,7 @@ public class Library {
             JsonNode rootNode = objectMapper.readTree(response.toString());
 
             if (rootNode.has("error") || rootNode.has("failed")) {
+                logger.debug("Query error: " + rootNode.toString());
                 int errorCode = rootNode.path("error").asInt();
                 // to prevent it triggering on songs named "error" or "failed"
                 if (errorCode != 0) {

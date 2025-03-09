@@ -315,9 +315,6 @@ public class Playlist {
             return false;
         }
         Playlist playlist = (Playlist) object;
-        if (this.hashCode() == playlist.hashCode()) {
-            return true;
-        }
         if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
             return true;
         }
@@ -325,11 +322,5 @@ public class Playlist {
             return true;
         }
         return false;
-    }
-
-    @JsonIgnore
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, songs, ids);
     }
 }

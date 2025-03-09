@@ -68,6 +68,7 @@ public class Upload {
         LikedSongs likedSongs = new LikedSongs();
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            pb.setExtraMessage(this.localLibrary.getName()).step();
             likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
             for (File folder : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
@@ -359,9 +360,6 @@ public class Upload {
                 }
                 if (songData.get(FieldKey.ARTIST) != null) {
                     song.setArtist(new Artist(songData.get(FieldKey.ARTIST)));
-                }
-                if (songData.get(FieldKey.COVER_ART) != null) {
-                    song.setCoverImage(songData.get(FieldKey.COVER_ART));
                 }
                 if (songData.get(FieldKey.MUSICBRAINZ_RELEASEID) != null) {
                     song.addId("mbid", songData.get(FieldKey.MUSICBRAINZ_RELEASEID));
