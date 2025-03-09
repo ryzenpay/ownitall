@@ -337,7 +337,8 @@ public class Download {
                 }
             } else {
                 // deletes all playlists songs
-                this.playlistSync(playlist);
+                // TODO: needs debugging, for some reason always deletes m3u
+                this.playlistSync(new Playlist(playlist.getName()));
                 File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
                 if (m3uFile.delete()) {
                     logger.debug(

@@ -277,6 +277,10 @@ public class Spotify {
                             Song song = new Song(track.getName());
                             song.setArtist(new Artist(track.getArtists()[0].getName()));
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                            Image[] images = track.getAlbum().getImages();
+                            if (images != null && images.length > 0) {
+                                song.setCoverImage(images[images.length - 1].getUrl());
+                            }
                             if (library != null) {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
@@ -568,12 +572,20 @@ public class Spotify {
                                 song = new Song(track.getName());
                                 song.setArtist(new Artist(track.getArtists()[0].getName()));
                                 song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
+                                Image[] images = track.getAlbum().getImages();
+                                if (images != null && images.length > 0) {
+                                    song.setCoverImage(images[images.length - 1].getUrl());
+                                }
                                 id = track.getId();
                             } else if (playlistTrack.getTrack() instanceof Episode) {
                                 Episode episode = (Episode) playlistTrack.getTrack();
                                 pb.setExtraMessage(episode.getName()).step();
                                 song = new Song(episode.getName());
                                 song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
+                                Image[] images = episode.getImages();
+                                if (images != null && images.length > 0) {
+                                    song.setCoverImage(images[images.length - 1].getUrl());
+                                }
                                 id = episode.getId();
                             } else {
                                 logger.info("Skipping non-Track in playlist: " + playlistId);
