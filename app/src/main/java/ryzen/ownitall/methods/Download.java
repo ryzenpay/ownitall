@@ -377,13 +377,13 @@ public class Download {
         if (localPlaylist != null) {
             localPlaylist.removeSongs(playlist.getSongs());
             for (Song song : localPlaylist.getSongs()) {
-                if (!settings.isDownloadHierachy()) {
-                    if (collection.isLiked(song)) {
-                        continue;
-                    }
-                }
                 File songFile = new File(playlistFolder, song.getFileName());
                 if (songFile.exists()) {
+                    if (!settings.isDownloadHierachy()) {
+                        if (collection.isLiked(song)) {
+                            continue;
+                        }
+                    }
                     if (songFile.delete()) {
                         logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
                                 + songFile.getAbsolutePath());
@@ -456,19 +456,33 @@ public class Download {
     public void albumsSync() throws InterruptedException {
         Upload upload = new Upload(this.getDownloadFolder());
         ArrayList<Album> albums = upload.getAlbums();
-        albums.removeAll(collection.getPlaylists());
+        albums.removeAll(collection.getAlbums());
         for (Album album : albums) {
             File albumFolder = new File(this.downloadFolder, album.getFolderName());
-            if (albumFolder.delete()) {
-                logger.debug("Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
-            } else {
-                logger.error(
-                        "Could not delete album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
+            if (albumFolder.exists()) {
+                for (File songFile : albumFolder.listFiles()) {
+                    if (songFile.delete()) {
+                        logger.debug(
+                                "Deleted out of sync album '" + album.getName() + "' song: "
+                                        + songFile.getAbsolutePath());
+                    } else {
+                        logger.error("could not delete out of sync album '" + album.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    }
+                }
+                if (albumFolder.delete()) {
+                    logger.debug("Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
+                } else {
+                    logger.error(
+                            "Could not delete album '" + album.getName() + "' folder: "
+                                    + albumFolder.getAbsolutePath());
+                }
             }
         }
     }
 
     // cleans up individual albums
+    // TODO: tmp disable library to ensure it deletes non wanted?
     public void albumSync(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in albumSync");

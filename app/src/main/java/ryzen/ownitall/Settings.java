@@ -125,7 +125,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * Delete files found in library which are not in collection
      * this can be used to clean up local copy after mistakes
      */
-    protected boolean downloadDelete = false;
+    protected boolean downloadDelete = true;
 
     /**
      * download quality of music
