@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import org.apache.http.client.utils.Idn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,7 +68,7 @@ public class LastFM extends Library {
                 }
                 JsonNode idNode = albumNode.path("id");
                 if (!idNode.isMissingNode()) {
-                    album.addId("lastfm", String.valueOf(idNode.asInt()));
+                    album.addId("lastfm", idNode.asText());
                 }
                 JsonNode mbidNode = albumNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
@@ -138,7 +139,7 @@ public class LastFM extends Library {
                 song.setName(trackNode.path("name").asText());
                 JsonNode idNode = trackNode.path("id");
                 if (!idNode.isMissingNode()) {
-                    song.addId("lastfm", String.valueOf(idNode.asInt()));
+                    song.addId("lastfm", idNode.asText());
                 }
                 JsonNode mbidNode = trackNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
@@ -199,7 +200,7 @@ public class LastFM extends Library {
                 artist.setName(artistNode.path("name").asText());
                 JsonNode idNode = artistNode.path("id");
                 if (!idNode.isMissingNode()) {
-                    artist.addId("lastfm", String.valueOf(idNode.asInt()));
+                    artist.addId("lastfm", idNode.asText());
                 }
                 JsonNode mbidNode = artistNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
