@@ -253,7 +253,7 @@ public class Upload {
         }
         Album album = new Album(folder.getName());
         ArrayList<Song> songs = getSongs(folder);
-        if (songs != null) {
+        if (songs != null && !songs.isEmpty()) {
             album.addSongs(songs);
             File songFile = new File(folder, songs.get(0).getFileName());
             // get albumName from first song in album
