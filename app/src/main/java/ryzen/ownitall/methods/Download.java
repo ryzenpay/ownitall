@@ -527,12 +527,12 @@ public class Download {
         }
         // albums are always in a folder
         File albumFolder = new File(this.downloadFolder, album.getFolderName());
+        albumFolder.mkdirs();
         if (settings.isDownloadDelete()) {
             this.albumSync(album);
         }
         try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            albumFolder.mkdirs();
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
                 interruptionHandler.throwInterruption();

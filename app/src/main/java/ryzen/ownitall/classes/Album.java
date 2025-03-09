@@ -72,12 +72,12 @@ public class Album extends Playlist {
             logger.debug(this.toString() + ": null song provided in addSong");
             return;
         }
+        super.addSong(song);
         song.setAlbumName(this.getName());
         // ensure every song in album has (default) coverimage
         if (song.getCoverImage() == null && this.getCoverImage() != null) {
             song.setCoverImage(this.getCoverImage());
         }
-        super.addSong(song);
         this.addArtist(song.getArtist());
     }
 

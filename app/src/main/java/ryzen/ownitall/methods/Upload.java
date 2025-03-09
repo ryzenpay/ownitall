@@ -127,12 +127,13 @@ public class Upload {
             for (File file : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (settings.isDownloadHierachy()) {
-                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())
-                            && !isAlbum(file)) {
-                        Playlist playlist = getPlaylist(file);
-                        if (playlist != null) {
-                            pb.setExtraMessage(playlist.getName()).step();
-                            playlists.add(playlist);
+                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                        if (!isAlbum(file)) {
+                            Playlist playlist = getPlaylist(file);
+                            if (playlist != null) {
+                                pb.setExtraMessage(playlist.getName()).step();
+                                playlists.add(playlist);
+                            }
                         }
                     }
                 } else if (file.isFile()) {
@@ -147,25 +148,6 @@ public class Upload {
             }
         }
         return playlists;
-    }
-
-    public ArrayList<Album> getAlbums() throws InterruptedException {
-        ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Albums", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : this.localLibrary.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName()) && isAlbum(
-                        file)) {
-                    Album album = getAlbum(file);
-                    if (album != null) {
-                        pb.setExtraMessage(album.getName()).step();
-                        albums.add(album);
-                    }
-                }
-            }
-        }
-        return albums;
     }
 
     public static Playlist getM3UPlaylist(File file) throws InterruptedException {
@@ -235,6 +217,26 @@ public class Upload {
             playlist.setCoverImage(coverFile.toURI());
         }
         return playlist;
+    }
+
+    public ArrayList<Album> getAlbums() throws InterruptedException {
+        ArrayList<Album> albums = new ArrayList<>();
+        try (ProgressBar pb = Progressbar.progressBar("Albums", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            for (File file : this.localLibrary.listFiles()) {
+                interruptionHandler.throwInterruption();
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
+                    if (isAlbum(file)) {
+                        Album album = getAlbum(file);
+                        if (album != null) {
+                            pb.setExtraMessage(album.getName()).step();
+                            albums.add(album);
+                        }
+                    }
+                }
+            }
+        }
+        return albums;
     }
 
     /**
