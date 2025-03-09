@@ -1,9 +1,7 @@
 package ryzen.ownitall.classes;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -149,6 +147,9 @@ public class Album extends Playlist {
      */
     @JsonIgnore
     public Artist getMainArtist() {
+        if (this.artists.isEmpty()) {
+            return null;
+        }
         return this.artists.get(0);
     }
 
