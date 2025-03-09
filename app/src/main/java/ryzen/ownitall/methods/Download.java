@@ -264,7 +264,7 @@ public class Download {
         }
     }
 
-    public void likedSongsSync() throws InterruptedException {
+    public void likedSongsCleanUp() throws InterruptedException {
         logger.debug("Getting local liked songs collection version to remove mismatches");
         Upload upload = new Upload(this.downloadFolder);
         LikedSongs likedSongs = upload.getLikedSongs();
@@ -309,7 +309,7 @@ public class Download {
             likedSongsFolder = this.downloadFolder;
         }
         if (settings.isDownloadDelete()) {
-            this.likedSongsSync();
+            this.likedSongsCleanUp();
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -326,7 +326,7 @@ public class Download {
     }
 
     // deletes entire playlists
-    public void playlistsSync() throws InterruptedException {
+    public void playlistsCleanUp() throws InterruptedException {
         Upload upload = new Upload(this.getDownloadFolder());
         ArrayList<Playlist> playlists = upload.getPlaylists();
         playlists.removeAll(collection.getPlaylists());
@@ -342,8 +342,7 @@ public class Download {
                 }
             } else {
                 // deletes all playlists songs
-                // TODO: needs debugging, for some reason always deletes m3u
-                this.playlistSync(new Playlist(playlist.getName()));
+                this.playlistCleanUp(new Playlist(playlist.getName()));
                 File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
                 if (m3uFile.delete()) {
                     logger.debug(
@@ -357,7 +356,7 @@ public class Download {
     }
 
     // cleans up individual playlists
-    public void playlistSync(Playlist playlist) throws InterruptedException {
+    public void playlistCleanUp(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("null playlist provided in playlistSync");
             return;
@@ -400,7 +399,7 @@ public class Download {
      */
     public void downloadPlaylists() throws InterruptedException {
         if (settings.isDownloadDelete()) {
-            this.playlistsSync();
+            this.playlistsCleanUp();
         }
         ArrayList<Playlist> playlists = collection.getPlaylists();
         try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
@@ -433,7 +432,7 @@ public class Download {
             playlistFolder = this.downloadFolder;
         }
         if (settings.isDownloadDelete()) {
-            this.playlistSync(playlist);
+            this.playlistCleanUp(playlist);
         }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
@@ -452,7 +451,7 @@ public class Download {
     }
 
     // deletes entire albums
-    public void albumsSync() throws InterruptedException {
+    public void albumsCleanUp() throws InterruptedException {
         Upload upload = new Upload(this.getDownloadFolder());
         ArrayList<Album> albums = upload.getAlbums();
         albums.removeAll(collection.getAlbums());
@@ -482,7 +481,7 @@ public class Download {
 
     // cleans up individual albums
     // TODO: tmp disable library to ensure it deletes non wanted?
-    public void albumSync(Album album) throws InterruptedException {
+    public void albumCleanUp(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in albumSync");
             return;
@@ -507,7 +506,7 @@ public class Download {
 
     public void downloadAlbums() throws InterruptedException {
         if (settings.isDownloadDelete()) {
-            this.albumsSync();
+            this.albumsCleanUp();
         }
         ArrayList<Album> albums = collection.getAlbums();
         try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
@@ -528,7 +527,7 @@ public class Download {
         File albumFolder = new File(this.downloadFolder, album.getFolderName());
         albumFolder.mkdirs();
         if (settings.isDownloadDelete()) {
-            this.albumSync(album);
+            this.albumCleanUp(album);
         }
         try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {

@@ -22,7 +22,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
-//TODO playlists and albums wrapper needed, for add, remove, addall and removeall
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
     private static Collection instance;

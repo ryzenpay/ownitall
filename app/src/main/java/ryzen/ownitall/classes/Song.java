@@ -309,8 +309,6 @@ public class Song {
         }
         // individual combinations
         if (this.getName().equals(song.getName())) {
-            // TODO: some songs have a diff artist set, missing vital data, fix?
-            // ex: PAID - kanye west and PAID - (yuan)$
             if (this.getAlbumName() != null) {
                 if (this.getAlbumName().equalsIgnoreCase(song.getAlbumName())) {
                     return true;

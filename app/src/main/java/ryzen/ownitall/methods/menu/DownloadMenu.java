@@ -200,11 +200,11 @@ public class DownloadMenu {
         logger.debug("Cleaning up download folder... ");
         try (ProgressBar pb = Progressbar.progressBar("Clean Up", 4)) {
             pb.setExtraMessage("Liked Songs");
-            download.likedSongsSync();
+            download.likedSongsCleanUp();
             pb.setExtraMessage("Albums").step();
-            download.albumsSync();
+            download.albumsCleanUp();
             pb.setExtraMessage("Playlists").step();
-            download.playlistsSync();
+            download.playlistsCleanUp();
             pb.setExtraMessage("loose files").step();
             download.cleanFolder(download.getDownloadFolder());
             pb.setExtraMessage("Done").step();

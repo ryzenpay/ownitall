@@ -43,8 +43,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Youtube {
-    // TODO: before adding song, meet criteria
-    // song duration, ...
     private static final Logger logger = LogManager.getLogger(Youtube.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
