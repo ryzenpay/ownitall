@@ -31,6 +31,7 @@ public class DownloadMenu {
         options.put("Download Album", this::optionDownloadAlbum);
         options.put("Download Liked Songs", this::optionDownloadLikedSongs);
         options.put("Write Collection Data", this::optionCollectionData);
+        options.put("Clean Up", this::optionCleanUp);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "DOWNLOAD");
@@ -191,7 +192,25 @@ public class DownloadMenu {
         }
     }
 
-    // TODO: jellyfin api
-    // log in with get user id + api key
-    // mark each liked song as favorite
+    public void optionCleanUp() {
+        if (!settings.isDownloadDelete()) {
+            logger.info("You need to enable downloadDelete in settings to use this");
+            return;
+        }
+        logger.debug("Cleaning up download folder... ");
+        try (ProgressBar pb = Progressbar.progressBar("Clean Up", 4)) {
+            pb.setExtraMessage("Liked Songs");
+            download.likedSongsSync();
+            pb.setExtraMessage("Albums").step();
+            download.albumsSync();
+            pb.setExtraMessage("Playlists").step();
+            download.playlistsSync();
+            pb.setExtraMessage("loose files").step();
+            download.cleanFolder(download.getDownloadFolder());
+            pb.setExtraMessage("Done").step();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while performing cleanup");
+        }
+        logger.debug("Done cleanup up download folder");
+    }
 }

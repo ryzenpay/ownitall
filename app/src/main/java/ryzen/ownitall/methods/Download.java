@@ -264,8 +264,6 @@ public class Download {
         }
     }
 
-    // TODO: does not fully work yet?
-    // deleted a lot of files which were in liked but not all :shrug:
     public void likedSongsSync() throws InterruptedException {
         logger.debug("Getting local liked songs collection version to remove mismatches");
         Upload upload = new Upload(this.downloadFolder);
@@ -278,6 +276,7 @@ public class Download {
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
                 if (!settings.isDownloadHierachy()) {
+                    // skip if in a playlist
                     if (collection.getSongPlaylist(song) != null) {
                         continue;
                     }

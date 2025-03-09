@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.http.client.utils.Idn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
