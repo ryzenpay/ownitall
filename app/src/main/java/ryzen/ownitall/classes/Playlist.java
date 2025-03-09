@@ -3,9 +3,8 @@ package ryzen.ownitall.classes;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -21,7 +20,7 @@ public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
     private String name;
     private URI coverImage;
-    private LinkedHashSet<Song> songs;
+    private ArrayList<Song> songs;
     private LinkedHashMap<String, String> ids;
 
     /**
@@ -31,7 +30,7 @@ public class Playlist {
      */
     public Playlist(String name) {
         this.name = name;
-        this.songs = new LinkedHashSet<>();
+        this.songs = new ArrayList<>();
         this.ids = new LinkedHashMap<>();
     }
 
@@ -45,10 +44,10 @@ public class Playlist {
      */
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
-            @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("songs") ArrayList<Song> songs,
             @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        this.songs = new LinkedHashSet<>();
+        this.songs = new ArrayList<>();
         this.ids = new LinkedHashMap<>();
         if (songs != null) {
             this.addSongs(songs);
@@ -134,12 +133,11 @@ public class Playlist {
      * 
      * @param songs - arraylist of constructed Song
      */
-    public void addSongs(LinkedHashSet<Song> songs) {
+    public void addSongs(ArrayList<Song> songs) {
         if (songs == null) {
             logger.debug(this.toString() + ": null songs array provided in addSongs");
             return;
         }
-        // dont use .addAll because of Album override
         for (Song song : songs) {
             this.addSong(song);
         }
@@ -163,7 +161,7 @@ public class Playlist {
         }
     }
 
-    public void removeSongs(LinkedHashSet<Song> songs) {
+    public void removeSongs(ArrayList<Song> songs) {
         if (songs == null) {
             logger.debug(this.toString() + ": null songs provided in removesongs");
             return;
@@ -183,12 +181,7 @@ public class Playlist {
             logger.debug(this.toString() + ": null song provided in removeSong");
             return;
         }
-        Iterator<Song> iter = this.songs.iterator();
-        while (iter.hasNext()) {
-            if (iter.next().equals(song)) {
-                iter.remove();
-            }
-        }
+        this.songs.remove(song);
     }
 
     /**
@@ -225,7 +218,7 @@ public class Playlist {
      * 
      * @return - arraylist of constructed Song
      */
-    public LinkedHashSet<Song> getSongs() {
+    public ArrayList<Song> getSongs() {
         return this.songs;
     }
 

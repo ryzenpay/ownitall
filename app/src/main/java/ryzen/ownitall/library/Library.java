@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
@@ -132,7 +132,7 @@ public class Library {
         return null;
     }
 
-    public LinkedHashSet<Album> getArtistAlbums(Artist artist) throws InterruptedException {
+    public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         logger.warn("not supported for library type: " + settings.getLibrayType());
         return null;
     }

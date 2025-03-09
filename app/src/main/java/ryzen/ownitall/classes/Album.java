@@ -1,8 +1,8 @@
 package ryzen.ownitall.classes;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
-    private LinkedHashSet<Artist> artists;
+    private ArrayList<Artist> artists;
 
     /**
      * Default constructor of album without album cover
@@ -23,7 +23,7 @@ public class Album extends Playlist {
      */
     public Album(String name) {
         super(name);
-        this.artists = new LinkedHashSet<>();
+        this.artists = new ArrayList<>();
     }
 
     /**
@@ -37,11 +37,11 @@ public class Album extends Playlist {
      */
     @JsonCreator
     public Album(@JsonProperty("name") String name,
-            @JsonProperty("songs") LinkedHashSet<Song> songs,
+            @JsonProperty("songs") ArrayList<Song> songs,
             @JsonProperty("links") LinkedHashMap<String, String> links, @JsonProperty("coverImage") String coverImage,
-            @JsonProperty("artists") LinkedHashSet<Artist> artists) {
+            @JsonProperty("artists") ArrayList<Artist> artists) {
         super(name, songs, links, coverImage);
-        this.artists = new LinkedHashSet<>();
+        this.artists = new ArrayList<>();
         if (artists != null) {
             this.addArtists(artists);
         }
@@ -88,7 +88,7 @@ public class Album extends Playlist {
      * 
      * @param artists - linkedhashset of artist to add
      */
-    public void addArtists(LinkedHashSet<Artist> artists) {
+    public void addArtists(ArrayList<Artist> artists) {
         if (artists == null) {
             logger.debug(this.toString() + ": null artists array provided in addArtists");
             return;
@@ -110,7 +110,7 @@ public class Album extends Playlist {
         }
         // because of the playlist overwrite
         if (this.artists == null) {
-            this.artists = new LinkedHashSet<>();
+            this.artists = new ArrayList<>();
         }
         Artist foundArtist = this.getArtist(artist);
         if (foundArtist != null) {
@@ -125,7 +125,7 @@ public class Album extends Playlist {
      * 
      * @return - linkedhashset of artist
      */
-    public LinkedHashSet<Artist> getArtists() {
+    public ArrayList<Artist> getArtists() {
         return this.artists;
     }
 

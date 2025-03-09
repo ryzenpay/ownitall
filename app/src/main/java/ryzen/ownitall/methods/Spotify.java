@@ -3,7 +3,6 @@ package ryzen.ownitall.methods;
 import java.util.ArrayList;
 //https://developer.spotify.com/documentation/web-api
 //https://github.com/spotify-web-api-java/spotify-web-api-java
-import java.util.LinkedHashSet;
 import java.time.temporal.ChronoUnit;
 
 import se.michaelthelin.spotify.SpotifyApi;
@@ -315,8 +314,8 @@ public class Spotify {
     /**
      * get all current user saved albums and add them to collection
      */
-    public LinkedHashSet<Album> getAlbums() throws InterruptedException {
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+    public ArrayList<Album> getAlbums() throws InterruptedException {
+        ArrayList<Album> albums = new ArrayList<>();
         int limit = settings.getSpotifyAlbumLimit();
         int offset = 0;
         boolean hasMore = true;
@@ -378,7 +377,7 @@ public class Spotify {
         }
         if (album != null) {
             if (album.getSongs().isEmpty()) {
-                LinkedHashSet<Song> songs = this.getAlbumSongs(albumId);
+                ArrayList<Song> songs = this.getAlbumSongs(albumId);
                 if (songs != null && !songs.isEmpty()) {
                     album.addSongs(songs);
                 }
@@ -395,7 +394,7 @@ public class Spotify {
      * @param offset  - offset to start at (if saved in album)
      * @return - linkedhashset of songs
      */
-    public LinkedHashSet<Song> getAlbumSongs(String albumId) throws InterruptedException {
+    public ArrayList<Song> getAlbumSongs(String albumId) throws InterruptedException {
         if (albumId == null) {
             logger.debug("null albumID provided in getAlbumSongs");
             return null;
@@ -403,7 +402,7 @@ public class Spotify {
         int offset = 0;
         try (ProgressBar pb = Progressbar.progressBar(albumId, -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            LinkedHashSet<Song> songs = new LinkedHashSet<>();
+            ArrayList<Song> songs = new ArrayList<>();
             int limit = settings.getSpotifyAlbumLimit();
             boolean hasMore = true;
             while (hasMore) {
@@ -459,8 +458,8 @@ public class Spotify {
      * collection
      * 
      */
-    public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+    public ArrayList<Playlist> getPlaylists() throws InterruptedException {
+        ArrayList<Playlist> playlists = new ArrayList<>();
         int limit = settings.getSpotifyPlaylistLimit();
         int offset = 0;
         boolean hasMore = true;
@@ -520,7 +519,7 @@ public class Spotify {
             return null;
         }
         Playlist playlist = new Playlist(playlistName);
-        LinkedHashSet<Song> songs = this.getPlaylistSongs(playlistId);
+        ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
         if (songs != null && !songs.isEmpty()) {
             playlist.addSongs(songs);
             if (playlistImageUrl != null) {
@@ -539,12 +538,12 @@ public class Spotify {
      * @param offset     - offset to update from (default to 0)
      * @return - constructed array of Songs
      */
-    public LinkedHashSet<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
+    public ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("null playlistID provided in getPlaylistSongs");
             return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        ArrayList<Song> songs = new ArrayList<>();
         int limit = settings.getSpotifySongLimit();
         int offset = 0;
         boolean hasMore = true;
@@ -683,7 +682,7 @@ public class Spotify {
         }
     }
 
-    public void uploadLikedSongs(LinkedHashSet<Song> songs) throws InterruptedException {
+    public void uploadLikedSongs(ArrayList<Song> songs) throws InterruptedException {
         ArrayList<String> likedSongIds = new ArrayList<>();
         for (Song likedSong : songs) {
             likedSongIds.add(this.getTrackId(likedSong));
@@ -721,7 +720,7 @@ public class Spotify {
         }
     }
 
-    public void uploadPlaylists(LinkedHashSet<Playlist> playlists) throws InterruptedException {
+    public void uploadPlaylists(ArrayList<Playlist> playlists) throws InterruptedException {
         try (ProgressBar pb = Progressbar.progressBar("Uploading Playlists", playlists.size())) {
             for (Playlist playlist : playlists) {
                 pb.setExtraMessage(playlist.getName()).step();
@@ -737,7 +736,7 @@ public class Spotify {
             return;
         }
         String playlistId = playlist.getId("spotify");
-        LinkedHashSet<Song> currentSongs = new LinkedHashSet<>();
+        ArrayList<Song> currentSongs = new ArrayList<>();
         if (playlistId != null) {
             // TODO: this still references to a deleted / archived playlist and therefore
             // doesnt trigger to make new one
@@ -798,7 +797,7 @@ public class Spotify {
         }
     }
 
-    public void uploadAlbums(LinkedHashSet<Album> albums) throws InterruptedException {
+    public void uploadAlbums(ArrayList<Album> albums) throws InterruptedException {
         ArrayList<String> albumIds = new ArrayList<>();
         for (Album album : albums) {
             albumIds.add(this.getAlbumId(album));

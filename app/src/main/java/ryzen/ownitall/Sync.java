@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -238,7 +238,7 @@ public class Sync {
      * 
      * @param albums - linkedhashset of constructed Album
      */
-    public void exportAlbums(LinkedHashSet<Album> albums) {
+    public void exportAlbums(ArrayList<Album> albums) {
         if (albums == null || albums.isEmpty()) {
             return;
         }
@@ -257,7 +257,7 @@ public class Sync {
      * 
      * @return - linkedhashset of constructed Album
      */
-    public LinkedHashSet<Album> importAlbums() {
+    public ArrayList<Album> importAlbums() {
         this.setDataFolder();
         File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
         if (!albumFile.exists()) {
@@ -265,7 +265,7 @@ public class Sync {
         }
         try {
             return this.objectMapper.readValue(albumFile,
-                    new TypeReference<LinkedHashSet<Album>>() {
+                    new TypeReference<ArrayList<Album>>() {
                     });
         } catch (IOException e) {
             logger.error("exception importing albums: " + e);
@@ -279,7 +279,7 @@ public class Sync {
      * 
      * @param playlists - linkedhashset of constructed Playlist
      */
-    public void exportPlaylists(LinkedHashSet<Playlist> playlists) {
+    public void exportPlaylists(ArrayList<Playlist> playlists) {
         if (playlists == null || playlists.isEmpty()) {
             return;
         }
@@ -298,7 +298,7 @@ public class Sync {
      * 
      * @return - linkedhashset of constructed Playlist
      */
-    public LinkedHashSet<Playlist> importPlaylists() {
+    public ArrayList<Playlist> importPlaylists() {
         this.setDataFolder();
         File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
         if (!playlistFile.exists()) {
@@ -306,7 +306,7 @@ public class Sync {
         }
         try {
             return this.objectMapper.readValue(playlistFile,
-                    new TypeReference<LinkedHashSet<Playlist>>() {
+                    new TypeReference<ArrayList<Playlist>>() {
                     });
 
         } catch (IOException e) {

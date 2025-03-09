@@ -1,8 +1,8 @@
 package ryzen.ownitall.methods.menu;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -149,7 +149,7 @@ public class DownloadMenu {
             for (Playlist playlist : collection.getPlaylists()) {
                 pb.setExtraMessage(playlist.getName()).step();
                 File playlistFolder;
-                LinkedHashSet<Song> songs;
+                ArrayList<Song> songs;
                 if (settings.isDownloadHierachy()) {
                     songs = playlist.getSongs();
                     playlistFolder = new File(download.getDownloadFolder(), playlist.getFolderName());
@@ -170,7 +170,7 @@ public class DownloadMenu {
                 }
             }
             pb.setExtraMessage("Liked Songs").step();
-            LinkedHashSet<Song> songs;
+            ArrayList<Song> songs;
             File likedSongsFolder;
             if (settings.isDownloadHierachy()) {
                 songs = collection.getLikedSongs().getSongs();

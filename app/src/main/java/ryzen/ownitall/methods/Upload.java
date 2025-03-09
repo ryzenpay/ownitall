@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Settings;
@@ -30,7 +30,7 @@ import org.jaudiotagger.tag.FieldKey;
 public class Upload {
     private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
-    private static final LinkedHashSet<String> extensions = new LinkedHashSet<>(Arrays.asList("mp3", "flac", "wav"));
+    private static final ArrayList<String> extensions = new ArrayList<>(Arrays.asList("mp3", "flac", "wav"));
     private static Library library = Library.load();
     private File localLibrary;
 
@@ -119,8 +119,8 @@ public class Upload {
         return likedSongs;
     }
 
-    public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+    public ArrayList<Playlist> getPlaylists() throws InterruptedException {
+        ArrayList<Playlist> playlists = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
@@ -148,8 +148,8 @@ public class Upload {
         return playlists;
     }
 
-    public LinkedHashSet<Album> getAlbums() throws InterruptedException {
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+    public ArrayList<Album> getAlbums() throws InterruptedException {
+        ArrayList<Album> albums = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Albums", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
@@ -223,7 +223,7 @@ public class Upload {
             return null;
         }
         Playlist playlist = new Playlist(folder.getName());
-        LinkedHashSet<Song> songs = getSongs(folder);
+        ArrayList<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
             logger.debug("no songs found in playlist: '" + folder.getAbsolutePath() + "'");
             return null;
@@ -249,7 +249,7 @@ public class Upload {
             return null;
         }
         Album album = new Album(folder.getName());
-        LinkedHashSet<Song> songs = getSongs(folder);
+        ArrayList<Song> songs = getSongs(folder);
         for (Song song : songs) {
             if (song.getAlbumName() != null) {
                 album.setName(song.getAlbumName());
@@ -288,7 +288,7 @@ public class Upload {
         if (nfoFile.exists()) {
             return true;
         }
-        LinkedHashSet<Song> songs = getSongs(folder);
+        ArrayList<Song> songs = getSongs(folder);
         if (songs == null) {
             return false;
         }
@@ -315,12 +315,12 @@ public class Upload {
      * @param folder - folder to get all songs from
      * @return - linkedhashset of constructed songs
      */
-    public static LinkedHashSet<Song> getSongs(File folder) throws InterruptedException {
+    public static ArrayList<Song> getSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null or non directory or non existant folder passed in getSongs");
             return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        ArrayList<Song> songs = new ArrayList<>();
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();

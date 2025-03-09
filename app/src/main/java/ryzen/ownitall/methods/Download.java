@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -293,7 +292,7 @@ public class Download {
      * 
      */
     public void downloadLikedSongs() throws InterruptedException {
-        LinkedHashSet<Song> songs;
+        ArrayList<Song> songs;
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
             songs = collection.getLikedSongs().getSongs();
@@ -323,7 +322,7 @@ public class Download {
     // deletes entire playlists
     public void playlistsSync() throws InterruptedException {
         Upload upload = new Upload(this.getDownloadFolder());
-        LinkedHashSet<Playlist> playlists = upload.getPlaylists();
+        ArrayList<Playlist> playlists = upload.getPlaylists();
         playlists.removeAll(collection.getPlaylists());
         for (Playlist playlist : playlists) {
             if (settings.isDownloadHierachy()) {
@@ -392,7 +391,7 @@ public class Download {
         if (settings.isDownloadDelete()) {
             this.playlistsSync();
         }
-        LinkedHashSet<Playlist> playlists = collection.getPlaylists();
+        ArrayList<Playlist> playlists = collection.getPlaylists();
         try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
                 this.downloadPlaylist(playlist);
@@ -412,7 +411,7 @@ public class Download {
             logger.debug("null playlist provided in downloadPlaylist");
             return;
         }
-        LinkedHashSet<Song> songs;
+        ArrayList<Song> songs;
         File playlistFolder;
         if (settings.isDownloadHierachy()) {
             songs = playlist.getSongs();
@@ -444,7 +443,7 @@ public class Download {
     // deletes entire albums
     public void albumsSync() throws InterruptedException {
         Upload upload = new Upload(this.getDownloadFolder());
-        LinkedHashSet<Album> albums = upload.getAlbums();
+        ArrayList<Album> albums = upload.getAlbums();
         albums.removeAll(collection.getPlaylists());
         for (Album album : albums) {
             File albumFolder = new File(this.downloadFolder, album.getFolderName());
@@ -483,7 +482,7 @@ public class Download {
         if (settings.isDownloadDelete()) {
             this.albumsSync();
         }
-        LinkedHashSet<Album> albums = collection.getAlbums();
+        ArrayList<Album> albums = collection.getAlbums();
         try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
                 this.downloadAlbum(album);

@@ -1,7 +1,7 @@
 package ryzen.ownitall.methods;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +24,7 @@ public class Jellyfin {
     }
 
     // https://api.jellyfin.org/#tag/ItemLookup/operation/GetMusicVideoRemoteSearchResults
-    public void uploadLikedSongs(LinkedHashSet<Song> songs) {
+    public void uploadLikedSongs(ArrayList<Song> songs) {
         if (songs == null) {
             logger.debug("null songs provided in uploadLikedSongs");
             return;

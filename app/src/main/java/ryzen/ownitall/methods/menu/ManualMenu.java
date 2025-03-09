@@ -1,7 +1,7 @@
 package ryzen.ownitall.methods.menu;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -191,7 +191,7 @@ public class ManualMenu {
             if (artist == null) {
                 return;
             }
-            LinkedHashSet<Album> albums = library.getArtistAlbums(artist);
+            ArrayList<Album> albums = library.getArtistAlbums(artist);
             if (albums != null) {
                 collection.addAlbums(albums);
                 logger.info("Successfully added " + albums.size() + " albums from '" + artist.toString()

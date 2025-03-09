@@ -2,7 +2,7 @@ package ryzen.ownitall;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,16 +27,16 @@ public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
     private static Collection instance;
     private LikedSongs likedSongs;
-    private LinkedHashSet<Playlist> playlists;
-    private LinkedHashSet<Album> albums;
+    private ArrayList<Playlist> playlists;
+    private ArrayList<Album> albums;
 
     /**
      * default constructor initializing arrays
      */
     public Collection() {
         this.likedSongs = new LikedSongs();
-        this.playlists = new LinkedHashSet<>();
-        this.albums = new LinkedHashSet<>();
+        this.playlists = new ArrayList<>();
+        this.albums = new ArrayList<>();
     }
 
     /**
@@ -73,12 +73,12 @@ public class Collection {
      * 
      * @param mergeAlbums - linkedhashset of albums to merge
      */
-    public void addAlbums(LinkedHashSet<Album> mergeAlbums) {
-        if (mergeAlbums == null) {
+    public void addAlbums(ArrayList<Album> albums) {
+        if (albums == null) {
             logger.debug("null album array in addAlbums");
             return;
         }
-        for (Album album : mergeAlbums) {
+        for (Album album : albums) {
             this.addAlbum(album);
         }
     }
@@ -120,12 +120,12 @@ public class Collection {
      * 
      * @param mergePlaylists - linkedhashset of playlists to merge
      */
-    public void addPlaylists(LinkedHashSet<Playlist> mergePlaylists) {
-        if (mergePlaylists == null) {
+    public void addPlaylists(ArrayList<Playlist> playlists) {
+        if (playlists == null) {
             logger.debug("null playlist array passed in addPlaylists");
             return;
         }
-        for (Playlist playlist : mergePlaylists) {
+        for (Playlist playlist : playlists) {
             this.addPlaylist(playlist);
         }
     }
@@ -215,9 +215,9 @@ public class Collection {
      * 
      * @return - linkedhashset of standalone liked songs
      */
-    public LinkedHashSet<Song> getStandaloneLikedSongs() {
+    public ArrayList<Song> getStandaloneLikedSongs() {
         if (this.likedSongs.size() == 0) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
         LikedSongs likedSongs = new LikedSongs();
         likedSongs.addSongs(this.likedSongs.getSongs());
@@ -230,7 +230,7 @@ public class Collection {
         return likedSongs.getSongs();
     }
 
-    public LinkedHashSet<Song> getStandalonePlaylistSongs(Playlist playlist) {
+    public ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
             return null;
@@ -297,8 +297,8 @@ public class Collection {
      * 
      * @return - linkedhashset of albums
      */
-    public LinkedHashSet<Album> getAlbums() {
-        return new LinkedHashSet<>(this.albums);
+    public ArrayList<Album> getAlbums() {
+        return this.albums;
     }
 
     /**
@@ -326,8 +326,8 @@ public class Collection {
      * 
      * @return - linkedhashset of playlists
      */
-    public LinkedHashSet<Playlist> getPlaylists() {
-        return new LinkedHashSet<>(this.playlists);
+    public ArrayList<Playlist> getPlaylists() {
+        return this.playlists;
     }
 
     /**
@@ -467,7 +467,7 @@ public class Collection {
         int trackCount = 0;
         trackCount += this.getStandaloneLikedSongs().size();
         for (Playlist playlist : this.playlists) {
-            LinkedHashSet<Song> songs = this.getStandalonePlaylistSongs(playlist);
+            ArrayList<Song> songs = this.getStandalonePlaylistSongs(playlist);
             trackCount += songs.size();
         }
         trackCount += this.getAlbumsTrackCount();

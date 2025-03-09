@@ -33,7 +33,7 @@ import ryzen.ownitall.util.Progressbar;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -164,11 +164,11 @@ public class Youtube {
      * save all youtube albums to collection
      * 
      */
-    public LinkedHashSet<Album> getAlbums() { // currently not supported (no youtube music API)
+    public ArrayList<Album> getAlbums() { // currently not supported (no youtube music API)
         if (youtubeApi == null) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
-        LinkedHashSet<Album> albums = new LinkedHashSet<>();
+        ArrayList<Album> albums = new ArrayList<>();
         return albums;
     }
 
@@ -178,12 +178,12 @@ public class Youtube {
      * - gets all videos from any playlist with category id 10
      * 
      */
-    public LinkedHashSet<Playlist> getPlaylists() throws InterruptedException {
+    public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
         if (youtubeApi == null) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
-        LinkedHashSet<Playlist> playlists = new LinkedHashSet<>();
+        ArrayList<Playlist> playlists = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
@@ -199,7 +199,7 @@ public class Youtube {
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
                     interruptionHandler.throwInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
-                    LinkedHashSet<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
+                    ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (!songs.isEmpty()) {
                         pb.setExtraMessage(playlist.getName()).step();
                         playlist.addSongs(songs);
@@ -221,12 +221,12 @@ public class Youtube {
      * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
      */
-    private LinkedHashSet<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
+    private ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("null playlistID provided in getPlaylistSongs");
             return null;
         }
-        LinkedHashSet<Song> songs = new LinkedHashSet<>();
+        ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
