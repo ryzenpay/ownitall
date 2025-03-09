@@ -255,20 +255,18 @@ public class Upload {
         ArrayList<Song> songs = getSongs(folder);
         if (songs != null) {
             album.addSongs(songs);
-            LinkedHashMap<String, Integer> albumNames = new LinkedHashMap<>();
-            String albumName = null;
-            int albumNameCount = 0;
-            for (Song song : songs) {
-                albumNames.put(song.getAlbumName(), albumNames.getOrDefault(song.getAlbumName(), 0) + 1);
-                if (albumNames.get(song.getAlbumName()) > albumNameCount) {
-                    albumName = song.getAlbumName();
+            File songFile = new File(folder, songs.get(0).getFileName());
+            // get albumName from first song in album
+            try {
+                LinkedHashMap<FieldKey, String> songData = MusicTools
+                        .readMetaData(new File(folder, songs.get(0).getFileName()));
+                if (songData.get(FieldKey.ALBUM) != null) {
+                    album.setName(songData.get(FieldKey.ALBUM));
                 }
-            }
-            if (albumName != null) {
-                album.setName(albumName);
+            } catch (Exception e) {
+                logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath());
             }
         }
-        // TODO: get album name by using the most "common" song.getAlbumName
         File albumCover = new File(folder, "cover.png");
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
