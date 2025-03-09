@@ -59,7 +59,8 @@ public class LastFM extends Library {
         if (response != null) {
             JsonNode albumNode = response.path("album");
             if (!albumNode.isMissingNode()) {
-                album.setName(albumNode.path("name").asText());
+                // new album here so the songs are the correction version + complete
+                album = new Album(albumNode.path("name").asText());
                 Artist artist = this.getArtist(new Artist(albumNode.path("artist").asText()));
                 if (artist != null) {
                     album.addArtist(artist);

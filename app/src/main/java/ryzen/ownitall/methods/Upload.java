@@ -253,12 +253,22 @@ public class Upload {
         }
         Album album = new Album(folder.getName());
         ArrayList<Song> songs = getSongs(folder);
-        for (Song song : songs) {
-            if (song.getAlbumName() != null) {
-                album.setName(song.getAlbumName());
+        if (songs != null) {
+            album.addSongs(songs);
+            LinkedHashMap<String, Integer> albumNames = new LinkedHashMap<>();
+            String albumName = null;
+            int albumNameCount = 0;
+            for (Song song : songs) {
+                albumNames.put(song.getAlbumName(), albumNames.getOrDefault(song.getAlbumName(), 0) + 1);
+                if (albumNames.get(song.getAlbumName()) > albumNameCount) {
+                    albumName = song.getAlbumName();
+                }
             }
-            album.addSong(song);
+            if (albumName != null) {
+                album.setName(albumName);
+            }
         }
+        // TODO: get album name by using the most "common" song.getAlbumName
         File albumCover = new File(folder, "cover.png");
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
