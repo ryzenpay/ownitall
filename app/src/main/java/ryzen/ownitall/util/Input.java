@@ -159,10 +159,7 @@ public class Input {
         }
     }
 
-    public void getEnter() {
-        try {
-            this.getString();
-        } catch (InterruptedException e) {
-        }
+    public void getEnter() throws InterruptedException {
+        this.getString();
     }
 }

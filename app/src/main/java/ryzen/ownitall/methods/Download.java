@@ -59,9 +59,9 @@ public class Download {
         }
         this.downloadFolder.mkdirs();
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
-        System.out.print("Enter y to continue: ");
+        System.out.print("Enter enter to continue: ");
         try {
-            Input.request().getAgreement();
+            Input.request().getEnter();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting vpn agreement");
         }
@@ -265,14 +265,14 @@ public class Download {
     }
 
     public void likedSongsCleanUp() throws InterruptedException {
-        logger.debug("Getting local liked songs collection version to remove mismatches");
+        logger.debug("Getting local liked songs to remove mismatches");
         Upload upload = new Upload(this.downloadFolder);
         LikedSongs likedSongs = upload.getLikedSongs();
         File songFolder = this.downloadFolder;
         if (settings.isDownloadHierachy()) {
             songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
         }
-        if (likedSongs != null) {
+        if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
                 if (!settings.isDownloadHierachy()) {
@@ -327,67 +327,32 @@ public class Download {
 
     // deletes entire playlists
     public void playlistsCleanUp() throws InterruptedException {
+        logger.debug("Getting local playlists to remove mismatches");
         Upload upload = new Upload(this.getDownloadFolder());
         ArrayList<Playlist> playlists = upload.getPlaylists();
-        playlists.removeAll(collection.getPlaylists());
-        for (Playlist playlist : playlists) {
-            if (settings.isDownloadHierachy()) {
-                File playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
-                if (playlistFolder.delete()) {
-                    logger.debug("Deleted playlist '" + playlist.getName() + "' folder: "
-                            + playlistFolder.getAbsolutePath());
-                } else {
-                    logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
-                            + playlistFolder.getAbsolutePath());
-                }
-            } else {
-                // deletes all playlists songs
-                this.playlistCleanUp(new Playlist(playlist.getName()));
-                File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
-                if (m3uFile.delete()) {
-                    logger.debug(
-                            "Cleaned up playlist '" + playlist.getName() + "' m3u file: " + m3uFile.getAbsolutePath());
-                } else {
-                    logger.error("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                            + m3uFile.getAbsolutePath());
-                }
-            }
-        }
-    }
-
-    // cleans up individual playlists
-    public void playlistCleanUp(Playlist playlist) throws InterruptedException {
-        if (playlist == null) {
-            logger.debug("null playlist provided in playlistSync");
-            return;
-        }
-        File playlistFolder = this.downloadFolder;
-        Playlist localPlaylist = null;
-        if (settings.isDownloadHierachy()) {
-            playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
-            localPlaylist = Upload.getPlaylist(playlistFolder);
-        } else {
-            File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
-            if (m3uFile.exists()) {
-                localPlaylist = Upload.getM3UPlaylist(m3uFile);
-            }
-        }
-        if (localPlaylist != null) {
-            localPlaylist.removeSongs(playlist.getSongs());
-            for (Song song : localPlaylist.getSongs()) {
-                File songFile = new File(playlistFolder, song.getFileName());
-                if (songFile.exists()) {
-                    if (!settings.isDownloadHierachy()) {
-                        if (collection.isLiked(song)) {
-                            continue;
-                        }
-                    }
-                    if (songFile.delete()) {
-                        logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
+        if (playlists != null && !playlists.isEmpty()) {
+            playlists.removeAll(collection.getPlaylists());
+            for (Playlist playlist : playlists) {
+                if (settings.isDownloadHierachy()) {
+                    File playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
+                    if (playlistFolder.delete()) {
+                        logger.debug("Deleted playlist '" + playlist.getName() + "' folder: "
+                                + playlistFolder.getAbsolutePath());
                     } else {
-                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
+                        logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
+                                + playlistFolder.getAbsolutePath());
+                    }
+                } else {
+                    // deletes all playlists songs
+                    this.playlistCleanUp(new Playlist(playlist.getName()));
+                    File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
+                    if (m3uFile.delete()) {
+                        logger.debug(
+                                "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
+                                        + m3uFile.getAbsolutePath());
+                    } else {
+                        logger.error("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                                + m3uFile.getAbsolutePath());
                     }
                 }
             }
@@ -408,6 +373,46 @@ public class Download {
                 pb.setExtraMessage(playlist.getName()).step();
             }
             pb.setExtraMessage("Done").step();
+        }
+    }
+
+    // cleans up individual playlists
+    public void playlistCleanUp(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided in playlistSync");
+            return;
+        }
+        logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
+        File playlistFolder = this.downloadFolder;
+        Playlist localPlaylist = null;
+        if (settings.isDownloadHierachy()) {
+            playlistFolder = new File(this.downloadFolder, playlist.getFolderName());
+            localPlaylist = Upload.getPlaylist(playlistFolder);
+        } else {
+            File m3uFile = new File(this.downloadFolder, playlist.getFolderName() + ".m3u");
+            if (m3uFile.exists()) {
+                localPlaylist = Upload.getM3UPlaylist(m3uFile);
+            }
+        }
+        if (localPlaylist != null && !localPlaylist.isEmpty()) {
+            localPlaylist.removeSongs(playlist.getSongs());
+            for (Song song : localPlaylist.getSongs()) {
+                File songFile = new File(playlistFolder, song.getFileName());
+                if (songFile.exists()) {
+                    if (!settings.isDownloadHierachy()) {
+                        if (collection.isLiked(song)) {
+                            continue;
+                        }
+                    }
+                    if (songFile.delete()) {
+                        logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    } else {
+                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    }
+                }
+            }
         }
     }
 
@@ -452,52 +457,31 @@ public class Download {
 
     // deletes entire albums
     public void albumsCleanUp() throws InterruptedException {
+        logger.debug("Getting local albums to remove mismatches");
         Upload upload = new Upload(this.getDownloadFolder());
         ArrayList<Album> albums = upload.getAlbums();
-        albums.removeAll(collection.getAlbums());
-        for (Album album : albums) {
-            File albumFolder = new File(this.downloadFolder, album.getFolderName());
-            if (albumFolder.exists()) {
-                for (File songFile : albumFolder.listFiles()) {
-                    if (songFile.delete()) {
-                        logger.debug(
-                                "Deleted out of sync album '" + album.getName() + "' song: "
-                                        + songFile.getAbsolutePath());
-                    } else {
-                        logger.error("could not delete out of sync album '" + album.getName() + "' song: "
-                                + songFile.getAbsolutePath());
+        if (albums != null && !albums.isEmpty()) {
+            albums.removeAll(collection.getAlbums());
+            for (Album album : albums) {
+                File albumFolder = new File(this.downloadFolder, album.getFolderName());
+                if (albumFolder.exists()) {
+                    for (File songFile : albumFolder.listFiles()) {
+                        if (songFile.delete()) {
+                            logger.debug(
+                                    "Deleted out of sync album '" + album.getName() + "' song: "
+                                            + songFile.getAbsolutePath());
+                        } else {
+                            logger.error("could not delete out of sync album '" + album.getName() + "' song: "
+                                    + songFile.getAbsolutePath());
+                        }
                     }
-                }
-                if (albumFolder.delete()) {
-                    logger.debug("Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
-                } else {
-                    logger.error(
-                            "Could not delete album '" + album.getName() + "' folder: "
-                                    + albumFolder.getAbsolutePath());
-                }
-            }
-        }
-    }
-
-    // cleans up individual albums
-    // TODO: tmp disable library to ensure it deletes non wanted?
-    public void albumCleanUp(Album album) throws InterruptedException {
-        if (album == null) {
-            logger.debug("null album provided in albumSync");
-            return;
-        }
-        File albumFolder = new File(this.downloadFolder, album.getFolderName());
-        Album localAlbum = Upload.getAlbum(albumFolder);
-        if (localAlbum != null) {
-            localAlbum.removeSongs(album.getSongs());
-            for (Song song : localAlbum.getSongs()) {
-                File songFile = new File(albumFolder, song.getFileName());
-                if (songFile.exists()) {
-                    if (songFile.delete()) {
-                        logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    if (albumFolder.delete()) {
+                        logger.debug(
+                                "Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
                     } else {
                         logger.error(
-                                "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                                "Could not delete album '" + album.getName() + "' folder: "
+                                        + albumFolder.getAbsolutePath());
                     }
                 }
             }
@@ -515,6 +499,32 @@ public class Download {
                 pb.setExtraMessage(album.getName()).step();
             }
             pb.setExtraMessage("Done").step();
+        }
+    }
+
+    // cleans up individual albums
+    // TODO: tmp disable library to ensure it deletes non wanted?
+    public void albumCleanUp(Album album) throws InterruptedException {
+        if (album == null) {
+            logger.debug("null album provided in albumSync");
+            return;
+        }
+        logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
+        File albumFolder = new File(this.downloadFolder, album.getFolderName());
+        Album localAlbum = Upload.getAlbum(albumFolder);
+        if (localAlbum != null && !album.isEmpty()) {
+            localAlbum.removeSongs(album.getSongs());
+            for (Song song : localAlbum.getSongs()) {
+                File songFile = new File(albumFolder, song.getFileName());
+                if (songFile.exists()) {
+                    if (songFile.delete()) {
+                        logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    } else {
+                        logger.error(
+                                "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
+                    }
+                }
+            }
         }
     }
 

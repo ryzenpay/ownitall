@@ -56,18 +56,26 @@ public class Tools {
      * trigger sync archive
      */
     private void optionArchive() {
-        Sync.load().archive(true);
-        System.out.print("Press Enter to continue...");
-        Input.request().getEnter();
+        try {
+            Sync.load().archive(true);
+            System.out.print("Press Enter to continue...");
+            Input.request().getEnter();
+        } catch (InterruptedException e) {
+
+        }
     }
 
     /**
      * trigger sync unarchive
      */
     private void optionUnArchive() {
-        Sync.load().unArchive();
-        System.out.print("Press Enter to continue...");
-        Input.request().getEnter();
+        try {
+            Sync.load().unArchive();
+            System.out.print("Press Enter to continue...");
+            Input.request().getEnter();
+        } catch (InterruptedException e) {
+
+        }
     }
 
     /**

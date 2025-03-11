@@ -254,7 +254,7 @@ public class Collection {
             return null;
         }
         for (Album album : this.getAlbums()) {
-            if (album.getSong(song) != null) {
+            if (album.contains(song)) {
                 return album;
             }
         }
@@ -267,7 +267,7 @@ public class Collection {
             return null;
         }
         for (Playlist playlist : this.getPlaylists()) {
-            if (playlist.getSong(song) != null) {
+            if (playlist.contains(song)) {
                 return playlist;
             }
         }
@@ -285,7 +285,7 @@ public class Collection {
             logger.debug("null song provided in isLiked");
             return false;
         }
-        if (this.likedSongs.getSong(song) != null) {
+        if (this.likedSongs.contains(song)) {
             return true;
         }
         return false;

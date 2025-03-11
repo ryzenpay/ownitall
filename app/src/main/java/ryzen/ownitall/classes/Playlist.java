@@ -212,6 +212,20 @@ public class Playlist {
         return this.songs.size();
     }
 
+    @JsonIgnore
+    public boolean isEmpty() {
+        return this.songs.isEmpty();
+    }
+
+    @JsonIgnore
+    public boolean contains(Song song) {
+        if (song == null) {
+            logger.debug(this.toString() + ": null song provided in contains");
+            return false;
+        }
+        return this.songs.contains(song);
+    }
+
     /**
      * get all playlist songs
      * 
@@ -314,9 +328,6 @@ public class Playlist {
             return false;
         }
         Playlist playlist = (Playlist) object;
-        if (this.getFolderName().equalsIgnoreCase(playlist.getFolderName())) {
-            return true;
-        }
         if (this.toString().equalsIgnoreCase(playlist.toString())) {
             return true;
         }

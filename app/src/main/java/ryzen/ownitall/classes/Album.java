@@ -187,6 +187,9 @@ public class Album extends Playlist {
                     return true;
                 }
             }
+            if (this.size() == album.size()) {
+                return true;
+            }
         }
         return false;
     }

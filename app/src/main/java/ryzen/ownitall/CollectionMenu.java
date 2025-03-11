@@ -284,8 +284,11 @@ public class CollectionMenu {
                 System.err.println("Invalid recursion option.");
                 break;
         }
-        System.out.print("Press enter to continue: ");
-        Input.request().getEnter();
+        try {
+            System.out.print("Press enter to continue: ");
+            Input.request().getEnter();
+        } catch (InterruptedException e) {
+        }
     }
 
     public void printInventoryR1() {
