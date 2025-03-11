@@ -273,7 +273,6 @@ public class Download {
             songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
-            // TODO: needs to be on a clone, cant fuck the collection version up
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
                 if (!settings.isDownloadHierachy()) {
@@ -305,13 +304,14 @@ public class Download {
             songs = collection.getLikedSongs().getSongs();
             likedSongsFolder = new File(this.downloadFolder, settings.getLikedSongsName());
             likedSongsFolder.mkdirs();
-        } else if (settings.isDownloadLikedSongsPlaylist()) {
-            songs = collection.getStandaloneLikedSongs();
-            likedSongsFolder = new File(this.downloadFolder, settings.getLikedSongsName());
-            likedSongsFolder.mkdirs();
         } else {
             songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = this.downloadFolder;
+            if (settings.isDownloadLikedSongsPlaylist()) {
+                Playlist likedSongsPlaylist = new Playlist(settings.getLikedSongsName());
+                likedSongsPlaylist.addSongs(collection.getLikedSongs().getSongs());
+                this.writePlaylistData(likedSongsPlaylist, this.downloadFolder);
+            }
         }
         if (settings.isDownloadDelete()) {
             this.likedSongsCleanUp();
@@ -440,6 +440,7 @@ public class Download {
         } else {
             songs = collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = this.downloadFolder;
+            this.writePlaylistData(playlist, playlistFolder);
         }
         if (settings.isDownloadDelete()) {
             this.playlistCleanUp(playlist);
@@ -447,7 +448,6 @@ public class Download {
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            this.writePlaylistData(playlist, playlistFolder);
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
                 pb.setExtraMessage(song.getName()).step();

@@ -70,12 +70,21 @@ public class Upload {
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             pb.setExtraMessage(this.localLibrary.getName()).step();
             likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
-            File likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
-            if (likedSongsFolder.exists()) {
-                pb.setExtraMessage(likedSongsFolder.getName()).step();
-                likedSongs.addSongs(getSongs(likedSongsFolder));
-            }
-            if (!settings.isDownloadHierachy()) {
+            if (settings.isDownloadHierachy()) {
+                File likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
+                if (likedSongsFolder.exists()) {
+                    pb.setExtraMessage(likedSongsFolder.getName()).step();
+                    likedSongs.addSongs(getSongs(likedSongsFolder));
+                }
+            } else if (settings.isDownloadLikedSongsPlaylist()) {
+                File likedSongsPlaylistFile = new File(this.localLibrary, settings.getLikedSongsName() + ".m3u");
+                if (likedSongsPlaylistFile.exists()) {
+                    Playlist likedSongsPlaylist = getM3UPlaylist(likedSongsPlaylistFile);
+                    if (likedSongsPlaylist != null) {
+                        likedSongs.addSongs(likedSongsPlaylist.getSongs());
+                    }
+                }
+            } else {
                 for (File folder : this.localLibrary.listFiles()) {
                     interruptionHandler.throwInterruption();
                     if (folder.isDirectory()) {

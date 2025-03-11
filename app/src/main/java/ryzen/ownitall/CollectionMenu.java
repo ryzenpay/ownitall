@@ -215,12 +215,7 @@ public class CollectionMenu {
             for (Song song : collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
-                    song.setName(foundSong.getName());
-                    song.setArtist(foundSong.getArtist());
-                    if (foundSong.getCoverImage() != null) {
-                        song.setCoverImage(foundSong.getCoverImage());
-                    }
-                    song.addIds(foundSong.getIds());
+                    song.merge(foundSong);
                 }
                 pb.setExtraMessage(song.getName()).step();
             }
@@ -228,12 +223,7 @@ public class CollectionMenu {
                 for (Song song : playlist.getSongs()) {
                     Song foundSong = library.getSong(song);
                     if (foundSong != null) {
-                        song.setName(foundSong.getName());
-                        song.setArtist(foundSong.getArtist());
-                        if (foundSong.getCoverImage() != null) {
-                            song.setCoverImage(foundSong.getCoverImage());
-                        }
-                        song.addIds(foundSong.getIds());
+                        song.merge(foundSong);
                     }
                     pb.setExtraMessage(song.getName()).step();
                 }
@@ -241,12 +231,7 @@ public class CollectionMenu {
             for (Album album : collection.getAlbums()) {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
-                    album.setName(foundAlbum.getName());
-                    album.addArtists(foundAlbum.getArtists());
-                    if (foundAlbum.getCoverImage() != null) {
-                        album.setCoverImage(foundAlbum.getCoverImage());
-                    }
-                    album.addIds(foundAlbum.getIds());
+                    album.merge(foundAlbum);
                 }
                 pb.setExtraMessage(album.getName()).stepBy(album.size());
             }
