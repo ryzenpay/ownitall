@@ -273,6 +273,7 @@ public class Download {
             songFolder = new File(this.downloadFolder, settings.getLikedSongsName());
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
+            // TODO: needs to be on a clone, cant fuck the collection version up
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
                 if (!settings.isDownloadHierachy()) {
@@ -302,6 +303,10 @@ public class Download {
         File likedSongsFolder;
         if (settings.isDownloadHierachy()) {
             songs = collection.getLikedSongs().getSongs();
+            likedSongsFolder = new File(this.downloadFolder, settings.getLikedSongsName());
+            likedSongsFolder.mkdirs();
+        } else if (settings.isDownloadLikedSongsPlaylist()) {
+            songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = new File(this.downloadFolder, settings.getLikedSongsName());
             likedSongsFolder.mkdirs();
         } else {
