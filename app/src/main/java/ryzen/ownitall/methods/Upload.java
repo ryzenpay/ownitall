@@ -70,18 +70,18 @@ public class Upload {
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             pb.setExtraMessage(this.localLibrary.getName()).step();
             likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
-            for (File folder : this.localLibrary.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (!folder.isDirectory()) {
-                    continue;
-                }
-                pb.setExtraMessage(folder.getName()).step();
-                if (settings.isDownloadHierachy()) {
-                    if (folder.getName().equalsIgnoreCase(settings.getLikedSongsName())) {
-                        likedSongs.addSongs(getSongs(folder));
+            File likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
+            if (likedSongsFolder.exists()) {
+                pb.setExtraMessage(likedSongsFolder.getName()).step();
+                likedSongs.addSongs(getSongs(likedSongsFolder));
+            }
+            if (!settings.isDownloadHierachy()) {
+                for (File folder : this.localLibrary.listFiles()) {
+                    interruptionHandler.throwInterruption();
+                    if (folder.isDirectory()) {
+                        pb.setExtraMessage(folder.getName()).step();
+                        likedSongs.addSongs(getLikedSongs(folder).getSongs());
                     }
-                } else {
-                    likedSongs.addSongs(getLikedSongs(folder).getSongs());
                 }
             }
         }
