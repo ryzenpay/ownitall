@@ -193,7 +193,6 @@ public class Sync {
      * import collection from files
      * orchestrates import albums, playlists and liked songs
      * 
-     * @return - constructed collection
      */
     public void importCollection() {
         Collection collection = Collection.load();

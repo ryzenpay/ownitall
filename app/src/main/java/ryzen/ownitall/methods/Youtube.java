@@ -46,6 +46,8 @@ public class Youtube {
 
     /**
      * default youtube constructor asking for user input
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public Youtube() throws InterruptedException {
         if (credentials.youtubeIsEmpty()) {
@@ -98,6 +100,7 @@ public class Youtube {
     /**
      * save all youtube liked songs to collection
      * 
+     * @return - constructed likedsongs
      * @throws InterruptedException - when user interrupts
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
@@ -156,7 +159,9 @@ public class Youtube {
 
     /**
      * save all youtube albums to collection
+     * currently not supported as there is no youtube music api
      * 
+     * @return - arraylist of albums
      */
     public ArrayList<Album> getAlbums() { // currently not supported (no youtube music API)
         if (youtubeApi == null) {
@@ -171,6 +176,7 @@ public class Youtube {
      * current criteria:
      * - gets all videos from any playlist with category id 10
      * 
+     * @return - arraylist of playlists
      * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {

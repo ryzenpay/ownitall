@@ -157,7 +157,7 @@ extends java.lang.Object</pre>
  "Settings"
  } catch (Exception e) {
  logger.error(e);
- logger.info("If this persists, delete the file: " +
+ logger.warn("If this persists, delete the file: " +
  instance.getSettingsFilePath());
  }
  }
@@ -296,7 +296,7 @@ extends java.lang.Object</pre>
 <h4>importSettings</h4>
 <pre>protected&nbsp;&lt;T extends <a href="../../../ryzen/ownitall/util/Settings.html" title="class in ryzen.ownitall.util">Settings</a>&gt;&nbsp;void&nbsp;importSettings&#8203;(java.lang.Class&lt;T&gt;&nbsp;settingsClass,
                                                    java.lang.String&nbsp;filePath)
-                                            throws java.lang.Exception</pre>
+                                            throws java.io.IOException</pre>
 <div class="block">load settings from saved file</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -305,7 +305,7 @@ extends java.lang.Object</pre>
 <dd><code>settingsClass</code> - - settings class</dd>
 <dd><code>filePath</code> - - filepath to save to</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code> - - incase of running into error while saving</dd>
+<dd><code>java.io.IOException</code> - - incase of running into error while saving</dd>
 </dl>
 </li>
 </ul>
@@ -315,14 +315,11 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>save</h4>
-<pre>protected&nbsp;void&nbsp;save&#8203;(java.lang.String&nbsp;filePath)
-             throws java.lang.Exception</pre>
+<pre>protected&nbsp;void&nbsp;save&#8203;(java.lang.String&nbsp;filePath)</pre>
 <div class="block">save settings to predefined file</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>filePath</code> - - filepath of settings file</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code> - - if unable to save to file</dd>
 </dl>
 </li>
 </ul>
@@ -346,15 +343,11 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAllSettings</h4>
-<pre>public&nbsp;java.util.ArrayList&lt;java.lang.reflect.Field&gt;&nbsp;getAllSettings&#8203;()
-                                                            throws java.lang.Exception</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;java.lang.reflect.Field&gt;&nbsp;getAllSettings&#8203;()</pre>
 <div class="block">flexibly get all settings</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- ArrayList of all setting varialbes as Object</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code> - - if get into error obtaining and setting settings
-                   accessibility</dd>
 </dl>
 </li>
 </ul>
@@ -364,13 +357,8 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>changeSettings</h4>
-<pre>public&nbsp;void&nbsp;changeSettings&#8203;()
-                    throws java.lang.Exception</pre>
+<pre>public&nbsp;void&nbsp;changeSettings&#8203;()</pre>
 <div class="block">print menu of settings and values, prompt user for which to change</div>
-<dl>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code> - - exception if unable to modify setting</dd>
-</dl>
 </li>
 </ul>
 <a name="isEmpty--">

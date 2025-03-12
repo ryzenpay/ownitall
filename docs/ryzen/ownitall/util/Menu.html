@@ -58,7 +58,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../ryzen/ownitall/util/Levenshtein.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/util/InterruptionHandler.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -176,7 +176,9 @@ extends java.lang.Object</pre>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Menu.html#clearScreen--">clearScreen</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">clears screen contents when not in debug mode</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
@@ -190,7 +192,9 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code>static java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Menu.html#optionMenuWithValue-java.util.Map-java.lang.String-">optionMenuWithValue</a></span>&#8203;(java.util.Map&lt;java.lang.String,?&gt;&nbsp;setOptions,
                    java.lang.String&nbsp;menuName)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">print menu with options and set values</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
@@ -243,6 +247,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>clearScreen</h4>
 <pre>public static&nbsp;void&nbsp;clearScreen&#8203;()</pre>
+<div class="block">clears screen contents when not in debug mode</div>
 </li>
 </ul>
 <a name="printLogo--">
@@ -261,7 +266,8 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>optionMenu</h4>
 <pre>public static&nbsp;java.lang.String&nbsp;optionMenu&#8203;(java.util.Set&lt;java.lang.String&gt;&nbsp;setOptions,
-                                          java.lang.String&nbsp;menuName)</pre>
+                                          java.lang.String&nbsp;menuName)
+                                   throws java.lang.InterruptedException</pre>
 <div class="block">standard option menu with little to no customizability</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -271,6 +277,8 @@ extends java.lang.Object</pre>
                    linkedhashmap</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- string choice</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -281,7 +289,18 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>optionMenuWithValue</h4>
 <pre>public static&nbsp;java.lang.String&nbsp;optionMenuWithValue&#8203;(java.util.Map&lt;java.lang.String,?&gt;&nbsp;setOptions,
-                                                   java.lang.String&nbsp;menuName)</pre>
+                                                   java.lang.String&nbsp;menuName)
+                                            throws java.lang.InterruptedException</pre>
+<div class="block">print menu with options and set values</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>setOptions</code> - - (linkedhash)map of options with name:value</dd>
+<dd><code>menuName</code> - - desired menu name</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- name of selected option</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -312,7 +331,7 @@ extends java.lang.Object</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../ryzen/ownitall/util/Levenshtein.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/util/InterruptionHandler.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../ryzen/ownitall/util/MusicTools.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">

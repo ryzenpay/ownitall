@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":9,"i13":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":9,"i18":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -59,7 +59,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/methods/Jellyfin.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/methods/Download.html" target="_top">Frames</a></li>
@@ -178,41 +178,66 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#cleanFolder-java.io.File-">cleanFolder</a></span>&#8203;(java.io.File&nbsp;folder)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#albumCleanUp-ryzen.ownitall.classes.Album-">albumCleanUp</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
+<td class="colLast">
+<div class="block">cleans up individual album songs for odd ones</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadAlbum-ryzen.ownitall.classes.Album-">downloadAlbum</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#albumsCleanUp--">albumsCleanUp</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">deletes entire albums which are not in collection</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadAlbums--">downloadAlbums</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#cleanFolder-java.io.File-">cleanFolder</a></span>&#8203;(java.io.File&nbsp;folder)</code></th>
+<td class="colLast">
+<div class="block">clean folder with unwanted files not ending in:
+ - m3u
+ - png
+ - nfo
+ these are specified in "whitelist"</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadAlbum-ryzen.ownitall.classes.Album-">downloadAlbum</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
+<td class="colLast">
+<div class="block">download an album
+ has its own folder</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadAlbums--">downloadAlbums</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">orchestrator for downloadAlbum</div>
+</td>
+</tr>
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadLikedSongs--">downloadLikedSongs</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">orchestrator of DownloadSong for all standalone liked songs</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadPlaylist-ryzen.ownitall.classes.Playlist-">downloadPlaylist</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
 <td class="colLast">
 <div class="block">orchestrator for downloading a playlist</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadPlaylists--">downloadPlaylists</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">orchestrator of downloadPlaylist</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#downloadSong-ryzen.ownitall.classes.Song-java.io.File-">downloadSong</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
             java.io.File&nbsp;path)</code></th>
@@ -220,44 +245,81 @@ extends java.lang.Object</pre>
 <div class="block">download a specified song</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#getDownloadPath--">getDownloadPath</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i8" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadDownload-ryzen.ownitall.classes.Song-java.io.File-">threadDownload</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
-              java.io.File&nbsp;path)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i9" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadInit--">threadInit</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>java.io.File</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#getDownloadFolder--">getDownloadFolder</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get the set download folder</div>
+</td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadShutdown--">threadShutdown</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#likedSongsCleanUp--">likedSongsCleanUp</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">clean up local liked songs before downloading</div>
+</td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#writeAlbumData-ryzen.ownitall.classes.Album-java.io.File-">writeAlbumData</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album,
-              java.io.File&nbsp;folder)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#playlistCleanUp-ryzen.ownitall.classes.Playlist-">playlistCleanUp</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)</code></th>
+<td class="colLast">
+<div class="block">cleans up individual songs in a playlist</div>
+</td>
 </tr>
 <tr id="i12" class="altColor">
-<td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">writeMetaData</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
-             java.io.File&nbsp;songFile)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#playlistsCleanUp--">playlistsCleanUp</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">deletes entire playlists which are not in collection</div>
+</td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadDownload-ryzen.ownitall.classes.Song-java.io.File-">threadDownload</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
+              java.io.File&nbsp;path)</code></th>
+<td class="colLast">
+<div class="block">threading for downloadSong
+ uses the threading option set in settings for how many threads</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadInit--">threadInit</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">setup threading</div>
+</td>
+</tr>
+<tr id="i15" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#threadShutdown--">threadShutdown</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">shut down all threads</div>
+</td>
+</tr>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#writeAlbumData-ryzen.ownitall.classes.Album-java.io.File-">writeAlbumData</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album,
+              java.io.File&nbsp;folder)</code></th>
+<td class="colLast">
+<div class="block">write album nfo data including coverimage</div>
+</td>
+</tr>
+<tr id="i17" class="rowColor">
+<td class="colFirst"><code>static void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">writeMetaData</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
+             java.io.File&nbsp;songFile)</code></th>
+<td class="colLast">
+<div class="block">write song metadata
+ wrapper for MusicTools metadata writer</div>
+</td>
+</tr>
+<tr id="i18" class="altColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Download.html#writePlaylistData-ryzen.ownitall.classes.Playlist-java.io.File-">writePlaylistData</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist,
                  java.io.File&nbsp;folder)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">write playlist m3u data including coverimage</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -287,9 +349,14 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Download</h4>
-<pre>public&nbsp;Download&#8203;()</pre>
+<pre>public&nbsp;Download&#8203;()
+         throws java.lang.InterruptedException</pre>
 <div class="block">default download constructor
  setting all settings / credentials</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -300,13 +367,18 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getDownloadPath--">
+<a name="getDownloadFolder--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getDownloadPath</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getDownloadPath&#8203;()</pre>
+<h4>getDownloadFolder</h4>
+<pre>public&nbsp;java.io.File&nbsp;getDownloadFolder&#8203;()</pre>
+<div class="block">get the set download folder</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed File of download folder</dd>
+</dl>
 </li>
 </ul>
 <a name="threadDownload-ryzen.ownitall.classes.Song-java.io.File-">
@@ -318,9 +390,14 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;void&nbsp;threadDownload&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
                            java.io.File&nbsp;path)
                     throws java.lang.InterruptedException</pre>
+<div class="block">threading for downloadSong
+ uses the threading option set in settings for how many threads</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - song to download</dd>
+<dd><code>path</code> - - path of where to download</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -331,6 +408,7 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>threadInit</h4>
 <pre>public&nbsp;void&nbsp;threadInit&#8203;()</pre>
+<div class="block">setup threading</div>
 </li>
 </ul>
 <a name="threadShutdown--">
@@ -341,9 +419,10 @@ extends java.lang.Object</pre>
 <h4>threadShutdown</h4>
 <pre>public&nbsp;void&nbsp;threadShutdown&#8203;()
                     throws java.lang.InterruptedException</pre>
+<div class="block">shut down all threads</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - if user interrupts while waiting</dd>
 </dl>
 </li>
 </ul>
@@ -363,14 +442,19 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">
+<a name="likedSongsCleanUp--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>writeMetaData</h4>
-<pre>public static&nbsp;void&nbsp;writeMetaData&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
-                                 java.io.File&nbsp;songFile)</pre>
+<h4>likedSongsCleanUp</h4>
+<pre>public&nbsp;void&nbsp;likedSongsCleanUp&#8203;()
+                       throws java.lang.InterruptedException</pre>
+<div class="block">clean up local liked songs before downloading</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 <a name="downloadLikedSongs--">
@@ -384,7 +468,22 @@ extends java.lang.Object</pre>
 <div class="block">orchestrator of DownloadSong for all standalone liked songs</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="playlistsCleanUp--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>playlistsCleanUp</h4>
+<pre>public&nbsp;void&nbsp;playlistsCleanUp&#8203;()
+                      throws java.lang.InterruptedException</pre>
+<div class="block">deletes entire playlists which are not in collection</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -399,7 +498,24 @@ extends java.lang.Object</pre>
 <div class="block">orchestrator of downloadPlaylist</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="playlistCleanUp-ryzen.ownitall.classes.Playlist-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>playlistCleanUp</h4>
+<pre>public&nbsp;void&nbsp;playlistCleanUp&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist)
+                     throws java.lang.InterruptedException</pre>
+<div class="block">cleans up individual songs in a playlist</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>playlist</code> - - playlist to clean up</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -416,7 +532,22 @@ extends java.lang.Object</pre>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>playlist</code> - - constructed playlist to download</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="albumsCleanUp--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>albumsCleanUp</h4>
+<pre>public&nbsp;void&nbsp;albumsCleanUp&#8203;()
+                   throws java.lang.InterruptedException</pre>
+<div class="block">deletes entire albums which are not in collection</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -428,9 +559,27 @@ extends java.lang.Object</pre>
 <h4>downloadAlbums</h4>
 <pre>public&nbsp;void&nbsp;downloadAlbums&#8203;()
                     throws java.lang.InterruptedException</pre>
+<div class="block">orchestrator for downloadAlbum</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="albumCleanUp-ryzen.ownitall.classes.Album-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>albumCleanUp</h4>
+<pre>public&nbsp;void&nbsp;albumCleanUp&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)
+                  throws java.lang.InterruptedException</pre>
+<div class="block">cleans up individual album songs for odd ones</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - album to clean up</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -442,9 +591,30 @@ extends java.lang.Object</pre>
 <h4>downloadAlbum</h4>
 <pre>public&nbsp;void&nbsp;downloadAlbum&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)
                    throws java.lang.InterruptedException</pre>
+<div class="block">download an album
+ has its own folder</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - album to download</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when the user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="writeMetaData-ryzen.ownitall.classes.Song-java.io.File-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeMetaData</h4>
+<pre>public static&nbsp;void&nbsp;writeMetaData&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song,
+                                 java.io.File&nbsp;songFile)</pre>
+<div class="block">write song metadata
+ wrapper for MusicTools metadata writer</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - song to get metadata details from</dd>
+<dd><code>songFile</code> - - song file to write metadata to</dd>
 </dl>
 </li>
 </ul>
@@ -456,6 +626,12 @@ extends java.lang.Object</pre>
 <h4>writePlaylistData</h4>
 <pre>public&nbsp;void&nbsp;writePlaylistData&#8203;(<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&nbsp;playlist,
                               java.io.File&nbsp;folder)</pre>
+<div class="block">write playlist m3u data including coverimage</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>playlist</code> - - playlist to get data from</dd>
+<dd><code>folder</code> - - folder to place m3u file in</dd>
+</dl>
 </li>
 </ul>
 <a name="writeAlbumData-ryzen.ownitall.classes.Album-java.io.File-">
@@ -466,6 +642,12 @@ extends java.lang.Object</pre>
 <h4>writeAlbumData</h4>
 <pre>public&nbsp;void&nbsp;writeAlbumData&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album,
                            java.io.File&nbsp;folder)</pre>
+<div class="block">write album nfo data including coverimage</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - album to get data from</dd>
+<dd><code>folder</code> - - folder to place nfo file in</dd>
+</dl>
 </li>
 </ul>
 <a name="cleanFolder-java.io.File-">
@@ -475,6 +657,15 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>cleanFolder</h4>
 <pre>public&nbsp;void&nbsp;cleanFolder&#8203;(java.io.File&nbsp;folder)</pre>
+<div class="block">clean folder with unwanted files not ending in:
+ - m3u
+ - png
+ - nfo
+ these are specified in "whitelist"</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>folder</code> - - folder to clean up files from</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -506,7 +697,7 @@ extends java.lang.Object</pre>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/methods/Spotify.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/methods/Jellyfin.html" title="class in ryzen.ownitall.methods"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/methods/Download.html" target="_top">Frames</a></li>

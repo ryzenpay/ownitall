@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -177,7 +177,9 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#downloadImage-java.net.URI-java.io.File-">downloadImage</a></span>&#8203;(java.net.URI&nbsp;url,
              java.io.File&nbsp;file)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">download an image from the web</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
@@ -187,35 +189,58 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i2" class="altColor">
+<td class="colFirst"><code>static java.time.Duration</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#getSongDuration-java.io.File-">getSongDuration</a></span>&#8203;(java.io.File&nbsp;songFile)</code></th>
+<td class="colLast">
+<div class="block">get duration of local song file</div>
+</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>static boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#isSongLiked-java.io.File-">isSongLiked</a></span>&#8203;(java.io.File&nbsp;songFile)</code></th>
+<td class="colLast">
+<div class="block">check if local song is liked using metadata
+ - requires 5 stars</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#musicTime-java.time.Duration-">musicTime</a></span>&#8203;(java.time.Duration&nbsp;duration)</code></th>
 <td class="colLast">
 <div class="block">convert duration into music time (mm:ss)</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>static java.util.LinkedHashMap&lt;org.jaudiotagger.tag.FieldKey,java.lang.String&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#readMetaData-java.io.File-">readMetaData</a></span>&#8203;(java.io.File&nbsp;songFile)</code></th>
+<td class="colLast">
+<div class="block">read metadata from song file</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#sanitizeFileName-java.lang.String-">sanitizeFileName</a></span>&#8203;(java.lang.String&nbsp;fileName)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">sanitize a fileName to be universally acceptable</div>
+</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeData-java.lang.String-java.lang.String-java.lang.String-java.io.File-">writeData</a></span>&#8203;(java.lang.String&nbsp;fileName,
-         java.lang.String&nbsp;extension,
-         java.lang.String&nbsp;data,
-         java.io.File&nbsp;folder)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeData-java.io.File-java.lang.String-">writeData</a></span>&#8203;(java.io.File&nbsp;file,
+         java.lang.String&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">write "text" data to a file</div>
+</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.lang.String-java.io.File-">writeMetaData</a></span>&#8203;(java.lang.String&nbsp;songName,
-             java.lang.String&nbsp;artistName,
-             java.net.URI&nbsp;coverImage,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/MusicTools.html#writeMetaData-java.util.LinkedHashMap-boolean-java.net.URI-java.io.File-">writeMetaData</a></span>&#8203;(java.util.LinkedHashMap&lt;org.jaudiotagger.tag.FieldKey,java.lang.String&gt;&nbsp;id3Data,
              boolean&nbsp;liked,
-             java.lang.String&nbsp;albumName,
-             java.lang.String&nbsp;mbid,
+             java.net.URI&nbsp;coverImage,
              java.io.File&nbsp;songFile)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">write song metadata</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -288,40 +313,103 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="writeData-java.lang.String-java.lang.String-java.lang.String-java.io.File-">
+<a name="writeData-java.io.File-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>writeData</h4>
-<pre>public static&nbsp;void&nbsp;writeData&#8203;(java.lang.String&nbsp;fileName,
-                             java.lang.String&nbsp;extension,
-                             java.lang.String&nbsp;data,
-                             java.io.File&nbsp;folder)
-                      throws java.lang.Exception</pre>
+<pre>public static&nbsp;void&nbsp;writeData&#8203;(java.io.File&nbsp;file,
+                             java.lang.String&nbsp;data)
+                      throws java.io.IOException</pre>
+<div class="block">write "text" data to a file</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>file</code> - - file to write data to</dd>
+<dd><code>data</code> - - data to write to file</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.io.IOException</code> - - when exception in file writing</dd>
 </dl>
 </li>
 </ul>
-<a name="writeMetaData-java.lang.String-java.lang.String-java.net.URI-boolean-java.lang.String-java.lang.String-java.io.File-">
+<a name="writeMetaData-java.util.LinkedHashMap-boolean-java.net.URI-java.io.File-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>writeMetaData</h4>
-<pre>public static&nbsp;void&nbsp;writeMetaData&#8203;(java.lang.String&nbsp;songName,
-                                 java.lang.String&nbsp;artistName,
-                                 java.net.URI&nbsp;coverImage,
+<pre>public static&nbsp;void&nbsp;writeMetaData&#8203;(java.util.LinkedHashMap&lt;org.jaudiotagger.tag.FieldKey,java.lang.String&gt;&nbsp;id3Data,
                                  boolean&nbsp;liked,
-                                 java.lang.String&nbsp;albumName,
-                                 java.lang.String&nbsp;mbid,
+                                 java.net.URI&nbsp;coverImage,
                                  java.io.File&nbsp;songFile)
                           throws java.lang.Exception</pre>
+<div class="block">write song metadata</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>id3Data</code> - - linkedhashmap with FieldKey:String mapping</dd>
+<dd><code>liked</code> - - if song is liked</dd>
+<dd><code>coverImage</code> - - uri of song coverimage</dd>
+<dd><code>songFile</code> - - file to write metadata to</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.lang.Exception</code> - - exception when writing metadata</dd>
+</dl>
+</li>
+</ul>
+<a name="readMetaData-java.io.File-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>readMetaData</h4>
+<pre>public static&nbsp;java.util.LinkedHashMap&lt;org.jaudiotagger.tag.FieldKey,java.lang.String&gt;&nbsp;readMetaData&#8203;(java.io.File&nbsp;songFile)
+                                                                                            throws java.lang.Exception</pre>
+<div class="block">read metadata from song file</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songFile</code> - - song file to read metadata from</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- linkedhashmap of FieldKey:String with file metadata</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - - exception reading metadata</dd>
+</dl>
+</li>
+</ul>
+<a name="isSongLiked-java.io.File-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isSongLiked</h4>
+<pre>public static&nbsp;boolean&nbsp;isSongLiked&#8203;(java.io.File&nbsp;songFile)
+                           throws java.lang.Exception</pre>
+<div class="block">check if local song is liked using metadata
+ - requires 5 stars</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songFile</code> - - file to read metadata from</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- true if liked, false if not</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - - exception when reading metadata</dd>
+</dl>
+</li>
+</ul>
+<a name="getSongDuration-java.io.File-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSongDuration</h4>
+<pre>public static&nbsp;java.time.Duration&nbsp;getSongDuration&#8203;(java.io.File&nbsp;songFile)
+                                          throws java.lang.Exception</pre>
+<div class="block">get duration of local song file</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>songFile</code> - - songfile to check</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed Duration of songs duration</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - - exception reading song metadata</dd>
 </dl>
 </li>
 </ul>
@@ -333,10 +421,14 @@ extends java.lang.Object</pre>
 <h4>downloadImage</h4>
 <pre>public static&nbsp;void&nbsp;downloadImage&#8203;(java.net.URI&nbsp;url,
                                  java.io.File&nbsp;file)
-                          throws java.lang.Exception</pre>
+                          throws java.io.IOException</pre>
+<div class="block">download an image from the web</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>url</code> - - URI to fetch image from</dd>
+<dd><code>file</code> - - file to download the image to (will make a new one)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.Exception</code></dd>
+<dd><code>java.io.IOException</code> - - IOException while downloading</dd>
 </dl>
 </li>
 </ul>
@@ -347,6 +439,13 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>sanitizeFileName</h4>
 <pre>public static&nbsp;java.lang.String&nbsp;sanitizeFileName&#8203;(java.lang.String&nbsp;fileName)</pre>
+<div class="block">sanitize a fileName to be universally acceptable</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>fileName</code> - - String filename to sanitize</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- sanitized String</dd>
+</dl>
 </li>
 </ul>
 </li>

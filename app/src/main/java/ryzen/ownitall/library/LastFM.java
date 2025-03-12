@@ -42,7 +42,7 @@ public class LastFM extends Library {
      * get album from lastfm
      * https://www.last.fm/api/show/album.getInfo
      * 
-     * @param - constructed album with atleast a name, optionally artist
+     * @param album - constructed album with atleast a name, optionally artist
      * 
      * @return - constructed album with lastfm's data
      * 
@@ -130,7 +130,7 @@ public class LastFM extends Library {
     /**
      * get song from lastfm
      * 
-     * @param - constructed song with name, optionally artist
+     * @param song - constructed song with name, optionally artist
      * @return - constructed song with lastFM data
      * @throws InterruptedException - thrown when user interrupts
      */
@@ -202,8 +202,8 @@ public class LastFM extends Library {
     /**
      * get artist from LastFM
      * 
-     * @param - artist with name
-     * @param - constructed artist with lastFM data
+     * @param artist - artist with name
+     * @return artist - constructed artist with lastFM data
      * @throws InterruptedException - thrown when user interrupts
      */
     @Override
@@ -252,7 +252,7 @@ public class LastFM extends Library {
     /**
      * get all albums from artist
      * 
-     * @param - artist with atleast a name
+     * @param artist - artist with atleast a name
      * @return - arraylist of constructed albums with lastfm data
      * @throws InterruptedException - thrown when user interrupts
      */

@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -93,7 +93,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.ryzen.ownitall.classes.Playlist">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
@@ -146,21 +146,6 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 <div class="summary">
 <ul class="blockList">
 <li class="blockList">
-<!-- =========== FIELD SUMMARY =========== -->
-<ul class="blockList">
-<li class="blockList"><a name="field.summary">
-<!--   -->
-</a>
-<h3>Field Summary</h3>
-<ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.ryzen.ownitall.classes.Playlist">
-<!--   -->
-</a>
-<h3>Fields inherited from class&nbsp;ryzen.ownitall.classes.<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></h3>
-<code><a href="../../../ryzen/ownitall/classes/Playlist.html#simularityPercentage">simularityPercentage</a></code></li>
-</ul>
-</li>
-</ul>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <ul class="blockList">
 <li class="blockList"><a name="constructor.summary">
@@ -180,13 +165,11 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#Album-java.lang.String-java.util.LinkedHashSet-java.util.LinkedHashMap-java.lang.String-int-java.lang.String-java.util.LinkedHashSet-">Album</a></span>&#8203;(java.lang.String&nbsp;name,
-     java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#Album-java.lang.String-java.util.ArrayList-java.util.LinkedHashMap-java.lang.String-java.util.ArrayList-">Album</a></span>&#8203;(java.lang.String&nbsp;name,
+     java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
      java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;links,
-     java.lang.String&nbsp;youtubePageToken,
-     int&nbsp;spotifyPageOffset,
      java.lang.String&nbsp;coverImage,
-     java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</code></th>
+     java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</code></th>
 <td class="colLast">
 <div class="block">full album constructor</div>
 </td>
@@ -216,7 +199,7 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#addArtists-java.util.LinkedHashSet-">addArtists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#addArtists-java.util.ArrayList-">addArtists</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</code></th>
 <td class="colLast">
 <div class="block">add artists to album artists</div>
 </td>
@@ -231,16 +214,16 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#contains-ryzen.ownitall.classes.Song-">contains</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i4" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#equals-java.lang.Object-">equals</a></span>&#8203;(java.lang.Object&nbsp;object)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#getArtists--">getArtists</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get all album artists</div>
@@ -254,18 +237,6 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#getNFO--">getNFO</a></span>&#8203;()</code></th>
-<td class="colLast">
-<div class="block">get .nfo data for album</div>
-</td>
-</tr>
-<tr id="i8" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#hashCode--">hashCode</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#merge-ryzen.ownitall.classes.Album-">merge</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
 <td class="colLast">
@@ -273,7 +244,7 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
  used when adding to linkedhashset and one already exists</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/classes/Album.html#toString--">toString</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -284,14 +255,14 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
-<code>clone, finalize, getClass, notify, notifyAll, wait, wait, wait</code></li>
+<code>clone, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.ryzen.ownitall.classes.Playlist">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ryzen.ownitall.classes.<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></h3>
-<code><a href="../../../ryzen/ownitall/classes/Playlist.html#addId-java.lang.String-java.lang.String-">addId</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#addIds-java.util.LinkedHashMap-">addIds</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#addSongs-java.util.LinkedHashSet-">addSongs</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getCoverImage--">getCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getFolderName--">getFolderName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getId-java.lang.String-">getId</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getIds--">getIds</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getM3UHeader--">getM3UHeader</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getName--">getName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getSong-ryzen.ownitall.classes.Song-">getSong</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getSongs--">getSongs</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getSpotifyPageOffset--">getSpotifyPageOffset</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getTotalDuration--">getTotalDuration</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getYoutubePageToken--">getYoutubePageToken</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#merge-ryzen.ownitall.classes.Playlist-">merge</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#removeSong-ryzen.ownitall.classes.Song-">removeSong</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.lang.String-">setCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.net.URI-">setCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setName-java.lang.String-">setName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setSpotifyPageOffset-int-">setSpotifyPageOffset</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setYoutubePageToken-java.lang.String-">setYoutubePageToken</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#size--">size</a></code></li>
+<code><a href="../../../ryzen/ownitall/classes/Playlist.html#addId-java.lang.String-java.lang.String-">addId</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#addIds-java.util.LinkedHashMap-">addIds</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#addSongs-java.util.ArrayList-">addSongs</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#contains-ryzen.ownitall.classes.Song-">contains</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getCoverImage--">getCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getFolderName--">getFolderName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getId-java.lang.String-">getId</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getIds--">getIds</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getName--">getName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getSong-ryzen.ownitall.classes.Song-">getSong</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getSongs--">getSongs</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#getTotalDuration--">getTotalDuration</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#isEmpty--">isEmpty</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#merge-ryzen.ownitall.classes.Playlist-">merge</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#removeSong-ryzen.ownitall.classes.Song-">removeSong</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#removeSongs-java.util.ArrayList-">removeSongs</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.lang.String-">setCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setCoverImage-java.net.URI-">setCoverImage</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#setName-java.lang.String-">setName</a>, <a href="../../../ryzen/ownitall/classes/Playlist.html#size--">size</a></code></li>
 </ul>
 </li>
 </ul>
@@ -321,26 +292,22 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </dl>
 </li>
 </ul>
-<a name="Album-java.lang.String-java.util.LinkedHashSet-java.util.LinkedHashMap-java.lang.String-int-java.lang.String-java.util.LinkedHashSet-">
+<a name="Album-java.lang.String-java.util.ArrayList-java.util.LinkedHashMap-java.lang.String-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Album</h4>
 <pre>public&nbsp;Album&#8203;(java.lang.String&nbsp;name,
-             java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
+             java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&gt;&nbsp;songs,
              java.util.LinkedHashMap&lt;java.lang.String,java.lang.String&gt;&nbsp;links,
-             java.lang.String&nbsp;youtubePageToken,
-             int&nbsp;spotifyPageOffset,
              java.lang.String&nbsp;coverImage,
-             java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</pre>
+             java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</pre>
 <div class="block">full album constructor</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>name</code> - - album name</dd>
 <dd><code>songs</code> - - linkedhashset of songs</dd>
-<dd><code>youtubePageToken</code> - - youtube page token</dd>
-<dd><code>spotifyPageOffset</code> - - spotify page token</dd>
 <dd><code>coverImage</code> - - cover art</dd>
 <dd><code>artists</code> - - linkedhashset of artists</dd>
 <dd><code>links</code> - - linkedhasmap of links</dd>
@@ -387,13 +354,13 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </dl>
 </li>
 </ul>
-<a name="addArtists-java.util.LinkedHashSet-">
+<a name="addArtists-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>addArtists</h4>
-<pre>public&nbsp;void&nbsp;addArtists&#8203;(java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</pre>
+<pre>public&nbsp;void&nbsp;addArtists&#8203;(java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;artists)</pre>
 <div class="block">add artists to album artists</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -421,12 +388,21 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 <ul class="blockList">
 <li class="blockList">
 <h4>getArtists</h4>
-<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;getArtists&#8203;()</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&gt;&nbsp;getArtists&#8203;()</pre>
 <div class="block">get all album artists</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>- linkedhashset of artist</dd>
 </dl>
+</li>
+</ul>
+<a name="getArtist-ryzen.ownitall.classes.Artist-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getArtist</h4>
+<pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;getArtist&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)</pre>
 </li>
 </ul>
 <a name="getMainArtist--">
@@ -456,52 +432,16 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 </dl>
 </li>
 </ul>
-<a name="getNFO--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getNFO</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getNFO&#8203;()</pre>
-<div class="block">get .nfo data for album</div>
-</li>
-</ul>
 <a name="equals-java.lang.Object-">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>equals</h4>
 <pre>public&nbsp;boolean&nbsp;equals&#8203;(java.lang.Object&nbsp;object)</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../ryzen/ownitall/classes/Playlist.html#equals-java.lang.Object-">equals</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></dd>
-</dl>
-</li>
-</ul>
-<a name="contains-ryzen.ownitall.classes.Song-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>contains</h4>
-<pre>public&nbsp;boolean&nbsp;contains&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</pre>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/classes/Playlist.html#contains-ryzen.ownitall.classes.Song-">contains</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></dd>
-</dl>
-</li>
-</ul>
-<a name="hashCode--">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>hashCode</h4>
-<pre>public&nbsp;int&nbsp;hashCode&#8203;()</pre>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/classes/Playlist.html#hashCode--">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -562,7 +502,7 @@ extends <a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in 
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.ryzen.ownitall.classes.Playlist">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>

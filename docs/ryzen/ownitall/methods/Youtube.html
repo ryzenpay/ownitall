@@ -176,21 +176,22 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Youtube.html#getAlbums--">getAlbums</a></span>&#8203;()</code></th>
 <td class="colLast">
-<div class="block">save all youtube albums to collection</div>
+<div class="block">save all youtube albums to collection
+ currently not supported as there is no youtube music api</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Youtube.html#getLikedSongs--">getLikedSongs</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">save all youtube liked songs to collection</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/methods/Youtube.html#getPlaylists--">getPlaylists</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">get saved youtube playlists
@@ -226,8 +227,13 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Youtube</h4>
-<pre>public&nbsp;Youtube&#8203;()</pre>
+<pre>public&nbsp;Youtube&#8203;()
+        throws java.lang.InterruptedException</pre>
 <div class="block">default youtube constructor asking for user input</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -244,8 +250,15 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getLikedSongs</h4>
-<pre>public&nbsp;void&nbsp;getLikedSongs&#8203;()</pre>
+<pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/LikedSongs.html" title="class in ryzen.ownitall.classes">LikedSongs</a>&nbsp;getLikedSongs&#8203;()
+                         throws java.lang.InterruptedException</pre>
 <div class="block">save all youtube liked songs to collection</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed likedsongs</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 <a name="getAlbums--">
@@ -254,8 +267,13 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAlbums</h4>
-<pre>public&nbsp;void&nbsp;getAlbums&#8203;()</pre>
-<div class="block">save all youtube albums to collection</div>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;getAlbums&#8203;()</pre>
+<div class="block">save all youtube albums to collection
+ currently not supported as there is no youtube music api</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- arraylist of albums</dd>
+</dl>
 </li>
 </ul>
 <a name="getPlaylists--">
@@ -264,10 +282,17 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getPlaylists</h4>
-<pre>public&nbsp;void&nbsp;getPlaylists&#8203;()</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;getPlaylists&#8203;()
+                                           throws java.lang.InterruptedException</pre>
 <div class="block">get saved youtube playlists
  current criteria:
  - gets all videos from any playlist with category id 10</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- arraylist of playlists</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>

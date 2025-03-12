@@ -39,12 +39,14 @@ public class Song {
 
     /**
      * full song constructor
+     * also used for importing
      * 
-     * @param name       - song name
-     * @param artist     - constructed song artist
-     * @param ids        - linkedhashmap song ids
-     * @param duration   - Duration duration
-     * @param coverImage - string coverimage
+     * @param name       - name of song
+     * @param artist     - constructed artist
+     * @param ids        - linkedhashmap of ids
+     * @param duration   - double duration in seconds
+     * @param albumName  - album name of song
+     * @param coverImage - string of coverimage URI
      */
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,

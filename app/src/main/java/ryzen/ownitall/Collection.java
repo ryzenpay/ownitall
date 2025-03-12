@@ -71,7 +71,7 @@ public class Collection {
     /**
      * merge array of albums into current collection
      * 
-     * @param mergeAlbums - linkedhashset of albums to merge
+     * @param albums - linkedhashset of albums to merge
      */
     public void addAlbums(ArrayList<Album> albums) {
         if (albums == null) {
@@ -118,7 +118,7 @@ public class Collection {
     /**
      * merge array of playlists into current collection
      * 
-     * @param mergePlaylists - linkedhashset of playlists to merge
+     * @param playlists - linkedhashset of playlists to merge
      */
     public void addPlaylists(ArrayList<Playlist> playlists) {
         if (playlists == null) {
@@ -165,7 +165,7 @@ public class Collection {
     /**
      * merge liked songs into current collection
      * 
-     * @param songs - array of constructed Song
+     * @param likedSongs - array of constructed Song
      */
     public void addLikedSongs(LikedSongs likedSongs) {
         if (likedSongs == null) {

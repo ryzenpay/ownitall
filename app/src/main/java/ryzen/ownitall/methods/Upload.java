@@ -41,6 +41,8 @@ public class Upload {
 
     /**
      * default local constructor asking for library path
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public Upload() throws InterruptedException {
         if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
@@ -68,6 +70,8 @@ public class Upload {
      * - songs in root folder (library path)
      * - folder named "liked songs" (changeable in settings)
      * 
+     * @return - constructed likedsongs
+     * @throws InterruptedException - when user interrupts
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
@@ -253,6 +257,7 @@ public class Upload {
      * 
      * @param folder - folder to get files from
      * @return - constructed Album without songs
+     * @throws InterruptedException - when user interrupts
      */
     public static Album getAlbum(File folder) throws InterruptedException {
         // parse nfo file?
@@ -297,6 +302,7 @@ public class Upload {
      * 
      * @param folder - folder of the playlist/album
      * @return - true if album, false if playlist
+     * @throws InterruptedException - when user interrupts
      */
     public static boolean isAlbum(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
@@ -334,6 +340,7 @@ public class Upload {
      * 
      * @param folder - folder to get all songs from
      * @return - linkedhashset of constructed songs
+     * @throws InterruptedException - when user interrupts
      */
     public static ArrayList<Song> getSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
@@ -360,6 +367,7 @@ public class Upload {
      * 
      * @param file - file to get metadata from
      * @return - constructed Song
+     * @throws InterruptedException - when user interrupts
      */
     public static Song getSong(File file) throws InterruptedException {
         if (file == null || !file.exists()) {

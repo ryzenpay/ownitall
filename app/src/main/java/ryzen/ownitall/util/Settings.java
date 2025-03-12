@@ -68,7 +68,7 @@ public class Settings {
      * @param <T>           - settings class
      * @param settingsClass - settings class
      * @param filePath      - filepath to save to
-     * @throws Exception - incase of running into error while saving
+     * @throws IOException - incase of running into error while saving
      */
     protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws IOException {
         setSettingsFolder();
@@ -91,7 +91,6 @@ public class Settings {
      * save settings to predefined file
      * 
      * @param filePath - filepath of settings file
-     * @throws Exception - if unable to save to file
      */
     protected void save(String filePath) {
         this.setSettingsFolder();

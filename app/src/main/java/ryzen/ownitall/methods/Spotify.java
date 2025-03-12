@@ -237,6 +237,7 @@ public class Spotify {
     /**
      * Get all liked songs from current spotify account and add them to collection
      * 
+     * @return - constructed likedsongs
      * @throws InterruptedException - when user interrupts
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
@@ -304,6 +305,7 @@ public class Spotify {
     /**
      * get all current user saved albums and add them to collection
      * 
+     * @return - arraylist of albums
      * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Album> getAlbums() throws InterruptedException {
@@ -383,8 +385,8 @@ public class Spotify {
      * get all songs in an album
      * 
      * @param albumId - spotify album id
-     * @param offset  - offset to start at (if saved in album)
      * @return - linkedhashset of songs
+     * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Song> getAlbumSongs(String albumId) throws InterruptedException {
         if (albumId == null) {
@@ -449,6 +451,8 @@ public class Spotify {
      * get all playlists contributed by current spotify user and add them to
      * collection
      * 
+     * @return - arraylist of playlists
+     * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
@@ -527,8 +531,8 @@ public class Spotify {
      * get all songs from a playlist
      * 
      * @param playlistId - spotify ID for a playlist
-     * @param offset     - offset to update from (default to 0)
      * @return - constructed array of Songs
+     * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {

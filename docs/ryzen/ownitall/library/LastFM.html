@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -59,7 +59,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/library/LastFM.html" target="_top">Frames</a></li>
@@ -93,7 +93,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.ryzen.ownitall.Library">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.ryzen.ownitall.library.Library">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
@@ -124,7 +124,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li><a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">ryzen.ownitall.Library</a></li>
+<li><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">ryzen.ownitall.library.Library</a></li>
 <li>
 <ul class="inheritance">
 <li>ryzen.ownitall.library.LastFM</li>
@@ -139,7 +139,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">LastFM</span>
-extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></pre>
+extends <a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></pre>
 </li>
 </ul>
 </div>
@@ -153,11 +153,11 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 </a>
 <h3>Field Summary</h3>
 <ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.ryzen.ownitall.Library">
+<li class="blockList"><a name="fields.inherited.from.class.ryzen.ownitall.library.Library">
 <!--   -->
 </a>
-<h3>Fields inherited from class&nbsp;ryzen.ownitall.<a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></h3>
-<code><a href="../../../ryzen/ownitall/Library.html#albums">albums</a>, <a href="../../../ryzen/ownitall/Library.html#artists">artists</a>, <a href="../../../ryzen/ownitall/Library.html#ids">ids</a>, <a href="../../../ryzen/ownitall/Library.html#queryDiff">queryDiff</a>, <a href="../../../ryzen/ownitall/Library.html#songs">songs</a></code></li>
+<h3>Fields inherited from class&nbsp;ryzen.ownitall.library.<a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></h3>
+<code><a href="../../../ryzen/ownitall/library/Library.html#albums">albums</a>, <a href="../../../ryzen/ownitall/library/Library.html#artists">artists</a>, <a href="../../../ryzen/ownitall/library/Library.html#ids">ids</a>, <a href="../../../ryzen/ownitall/library/Library.html#queryDiff">queryDiff</a>, <a href="../../../ryzen/ownitall/library/Library.html#songs">songs</a></code></li>
 </ul>
 </li>
 </ul>
@@ -199,30 +199,47 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/LastFM.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get album from lastfm
+ https://www.last.fm/api/show/album.getInfo</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/LastFM.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get artist from LastFM</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/LastFM.html#getArtistAlbums-ryzen.ownitall.classes.Artist-">getArtistAlbums</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get all albums from artist</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/LastFM.html#getSong-ryzen.ownitall.classes.Song-">getSong</a></span>&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get song from lastfm</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/library/LastFM.html#queryErrorHandle-int-java.lang.String-">queryErrorHandle</a></span>&#8203;(int&nbsp;code,
+                java.lang.String&nbsp;message)</code></th>
+<td class="colLast">
+<div class="block">barebones method of handling library query response errors</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.ryzen.ownitall.Library">
+<li class="blockList"><a name="methods.inherited.from.class.ryzen.ownitall.library.Library">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;ryzen.ownitall.<a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></h3>
-<code><a href="../../../ryzen/ownitall/Library.html#cache--">cache</a>, <a href="../../../ryzen/ownitall/Library.html#checkInstance--">checkInstance</a>, <a href="../../../ryzen/ownitall/Library.html#clear--">clear</a>, <a href="../../../ryzen/ownitall/Library.html#load--">load</a>, <a href="../../../ryzen/ownitall/Library.html#query-java.net.URI-">query</a></code></li>
+<h3>Methods inherited from class&nbsp;ryzen.ownitall.library.<a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></h3>
+<code><a href="../../../ryzen/ownitall/library/Library.html#cache--">cache</a>, <a href="../../../ryzen/ownitall/library/Library.html#checkInstance--">checkInstance</a>, <a href="../../../ryzen/ownitall/library/Library.html#clear--">clear</a>, <a href="../../../ryzen/ownitall/library/Library.html#load--">load</a>, <a href="../../../ryzen/ownitall/library/Library.html#query-java.net.URI-">query</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -251,9 +268,14 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <ul class="blockListLast">
 <li class="blockList">
 <h4>LastFM</h4>
-<pre>public&nbsp;LastFM&#8203;()</pre>
+<pre>public&nbsp;LastFM&#8203;()
+       throws java.lang.InterruptedException</pre>
 <div class="block">default LastFM constructor
  initializes all values and loads from cache</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - thrown when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -272,11 +294,17 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <h4>getAlbum</h4>
 <pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;getAlbum&#8203;(<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&nbsp;album)
                throws java.lang.InterruptedException</pre>
+<div class="block">get album from lastfm
+ https://www.last.fm/api/show/album.getInfo</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/Library.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></code></dd>
+<dd><code><a href="../../../ryzen/ownitall/library/Library.html#getAlbum-ryzen.ownitall.classes.Album-">getAlbum</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>album</code> - - constructed album with atleast a name, optionally artist</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed album with lastfm's data</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - thrown when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -288,11 +316,16 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <h4>getSong</h4>
 <pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;getSong&#8203;(<a href="../../../ryzen/ownitall/classes/Song.html" title="class in ryzen.ownitall.classes">Song</a>&nbsp;song)
              throws java.lang.InterruptedException</pre>
+<div class="block">get song from lastfm</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/Library.html#getSong-ryzen.ownitall.classes.Song-">getSong</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></code></dd>
+<dd><code><a href="../../../ryzen/ownitall/library/Library.html#getSong-ryzen.ownitall.classes.Song-">getSong</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>song</code> - - constructed song with name, optionally artist</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed song with lastFM data</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - thrown when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -304,27 +337,55 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <h4>getArtist</h4>
 <pre>public&nbsp;<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;getArtist&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)
                  throws java.lang.InterruptedException</pre>
+<div class="block">get artist from LastFM</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/Library.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></code></dd>
+<dd><code><a href="../../../ryzen/ownitall/library/Library.html#getArtist-ryzen.ownitall.classes.Artist-">getArtist</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>artist</code> - - artist with name</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>artist - constructed artist with lastFM data</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - thrown when user interrupts</dd>
 </dl>
 </li>
 </ul>
 <a name="getArtistAlbums-ryzen.ownitall.classes.Artist-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getArtistAlbums</h4>
-<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;getArtistAlbums&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)
-                                               throws java.lang.InterruptedException</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;getArtistAlbums&#8203;(<a href="../../../ryzen/ownitall/classes/Artist.html" title="class in ryzen.ownitall.classes">Artist</a>&nbsp;artist)
+                                           throws java.lang.InterruptedException</pre>
+<div class="block">get all albums from artist</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../ryzen/ownitall/Library.html#getArtistAlbums-ryzen.ownitall.classes.Artist-">getArtistAlbums</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.ownitall">Library</a></code></dd>
+<dd><code><a href="../../../ryzen/ownitall/library/Library.html#getArtistAlbums-ryzen.ownitall.classes.Artist-">getArtistAlbums</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>artist</code> - - artist with atleast a name</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- arraylist of constructed albums with lastfm data</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - thrown when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="queryErrorHandle-int-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>queryErrorHandle</h4>
+<pre>protected&nbsp;void&nbsp;queryErrorHandle&#8203;(int&nbsp;code,
+                                java.lang.String&nbsp;message)</pre>
+<div class="block">barebones method of handling library query response errors</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../ryzen/ownitall/library/Library.html#queryErrorHandle-int-java.lang.String-">queryErrorHandle</a></code>&nbsp;in class&nbsp;<code><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library">Library</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>code</code> - - error code thrown</dd>
+<dd><code>message</code> - - additional message</dd>
 </dl>
 </li>
 </ul>
@@ -357,7 +418,7 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/library/MusicBrainz.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/library/Library.html" title="class in ryzen.ownitall.library"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/library/LastFM.html" target="_top">Frames</a></li>
@@ -385,7 +446,7 @@ extends <a href="../../../ryzen/ownitall/Library.html" title="class in ryzen.own
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#fields.inherited.from.class.ryzen.ownitall.Library">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.ryzen.ownitall.library.Library">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>

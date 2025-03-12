@@ -45,6 +45,8 @@ public class Download {
     /**
      * default download constructor
      * setting all settings / credentials
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public Download() throws InterruptedException {
         if (settings.getYoutubedlPath().isEmpty()) {

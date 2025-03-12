@@ -217,7 +217,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#exportAlbums-java.util.LinkedHashSet-">exportAlbums</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#exportAlbums-java.util.ArrayList-">exportAlbums</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</code></th>
 <td class="colLast">
 <div class="block">save all albums</div>
 </td>
@@ -239,20 +239,20 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#exportPlaylists-java.util.LinkedHashSet-">exportPlaylists</a></span>&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#exportPlaylists-java.util.ArrayList-">exportPlaylists</a></span>&#8203;(java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</code></th>
 <td class="colLast">
 <div class="block">save all playlists</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#importAlbums--">importAlbums</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">import saved albums</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
-<td class="colFirst"><code><a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a></code></td>
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#importCollection--">importCollection</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">import collection from files
@@ -267,7 +267,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i14" class="altColor">
-<td class="colFirst"><code>java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Sync.html#importPlaylists--">importPlaylists</a></span>&#8203;()</code></th>
 <td class="colLast">
 <div class="block">import all saved playlists</div>
@@ -395,13 +395,9 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importCollection</h4>
-<pre>public&nbsp;<a href="../../ryzen/ownitall/Collection.html" title="class in ryzen.ownitall">Collection</a>&nbsp;importCollection&#8203;()</pre>
+<pre>public&nbsp;void&nbsp;importCollection&#8203;()</pre>
 <div class="block">import collection from files
  orchestrates import albums, playlists and liked songs</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>- constructed collection</dd>
-</dl>
 </li>
 </ul>
 <a name="exportCollection--">
@@ -415,13 +411,13 @@ extends java.lang.Object</pre>
  orchestrates export albums, playlists and liked songs</div>
 </li>
 </ul>
-<a name="exportAlbums-java.util.LinkedHashSet-">
+<a name="exportAlbums-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>exportAlbums</h4>
-<pre>public&nbsp;void&nbsp;exportAlbums&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</pre>
+<pre>public&nbsp;void&nbsp;exportAlbums&#8203;(java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;albums)</pre>
 <div class="block">save all albums</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -435,7 +431,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importAlbums</h4>
-<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;importAlbums&#8203;()</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Album.html" title="class in ryzen.ownitall.classes">Album</a>&gt;&nbsp;importAlbums&#8203;()</pre>
 <div class="block">import saved albums</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -443,13 +439,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="exportPlaylists-java.util.LinkedHashSet-">
+<a name="exportPlaylists-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>exportPlaylists</h4>
-<pre>public&nbsp;void&nbsp;exportPlaylists&#8203;(java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</pre>
+<pre>public&nbsp;void&nbsp;exportPlaylists&#8203;(java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;playlists)</pre>
 <div class="block">save all playlists</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -463,7 +459,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>importPlaylists</h4>
-<pre>public&nbsp;java.util.LinkedHashSet&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;importPlaylists&#8203;()</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../ryzen/ownitall/classes/Playlist.html" title="class in ryzen.ownitall.classes">Playlist</a>&gt;&nbsp;importPlaylists&#8203;()</pre>
 <div class="block">import all saved playlists</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

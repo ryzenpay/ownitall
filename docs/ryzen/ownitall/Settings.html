@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":9,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10,"i39":10,"i40":10,"i41":10,"i42":10,"i43":10,"i44":10,"i45":10,"i46":10,"i47":10,"i48":10,"i49":10,"i50":10,"i51":10,"i52":10,"i53":10,"i54":10,"i55":10,"i56":10,"i57":10,"i58":10,"i59":10,"i60":10,"i61":10,"i62":10,"i63":10,"i64":10,"i65":10,"i66":10,"i67":10,"i68":10,"i69":10,"i70":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":9,"i36":10,"i37":10,"i38":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -197,13 +197,21 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#downloadDelete">downloadDelete</a></span></code></th>
+<td class="colLast">
+<div class="block">Delete files found in library which are not in collection
+ this can be used to clean up local copy after mistakes</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#downloadFolder">downloadFolder</a></span></code></th>
 <td class="colLast">
 <div class="block">optional to hardcode local download path</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#downloadFormat">downloadFormat</a></span></code></th>
 <td class="colLast">
@@ -211,7 +219,7 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
  current supported: "mp3", "flac", "wav"</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#downloadHierachy">downloadHierachy</a></span></code></th>
 <td class="colLast">
@@ -219,6 +227,11 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
  playlists get their own folders
  most applications such as jellyfin use false</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#downloadLikedSongsPlaylist">downloadLikedSongsPlaylist</a></span></code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
@@ -284,39 +297,38 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#similarityPercentage">similarityPercentage</a></span></code></th>
-<td class="colLast">
-<div class="block">similarity percentage used to check if artists, songs, albums or playlists
- are equals (to merge or not)</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#songFile">songFile</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#soundCloudAlbumLimit">soundCloudAlbumLimit</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#soundCloudPlaylistLimit">soundCloudPlaylistLimit</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#soundCloudSongLimit">soundCloudSongLimit</a></span></code></th>
 <td class="colLast">
 <div class="block">to limit number of songs in each soundcloud API batch query</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#spotifyAlbumLimit">spotifyAlbumLimit</a></span></code></th>
 <td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#spotifyDelete">spotifyDelete</a></span></code></th>
+<td class="colLast">
+<div class="block">delete any tracks in playlists and liked songs which are not in collection</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected java.lang.Integer</code></td>
@@ -412,347 +424,187 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getCacheFolderPath--">getCacheFolderPath</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getArtistFile--">getArtistFile</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDataFolderPath--">getDataFolderPath</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getCacheFolderPath--">getCacheFolderPath</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadCookiesBrowser--">getDownloadCookiesBrowser</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDataFolderPath--">getDataFolderPath</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadCookiesFile--">getDownloadCookiesFile</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadCookiesBrowser--">getDownloadCookiesBrowser</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadFolder--">getDownloadFolder</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadCookiesFile--">getDownloadCookiesFile</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadFormat--">getDownloadFormat</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadFolder--">getDownloadFolder</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadQuality--">getDownloadQuality</a></span>&#8203;()</code></th>
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadFormat--">getDownloadFormat</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadThreads--">getDownloadThreads</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadQuality--">getDownloadQuality</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getDownloadThreads--">getDownloadThreads</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getFfmpegPath--">getFfmpegPath</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getLibraryType--">getLibraryType</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getLibrayType--">getLibrayType</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getLikedSongFile--">getLikedSongFile</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getLikedSongsName--">getLikedSongsName</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getPlaylistFile--">getPlaylistFile</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i15" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSimilarityPercentage--">getSimilarityPercentage</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i16" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudAlbumLimit--">getSoundCloudAlbumLimit</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i17" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudPlaylistLimit--">getSoundCloudPlaylistLimit</a></span>&#8203;()</code></th>
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSongFile--">getSongFile</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudSongLimit--">getSoundCloudSongLimit</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudAlbumLimit--">getSoundCloudAlbumLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifyAlbumLimit--">getSpotifyAlbumLimit</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudPlaylistLimit--">getSoundCloudPlaylistLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i20" class="altColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifyPlaylistLimit--">getSpotifyPlaylistLimit</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSoundCloudSongLimit--">getSoundCloudSongLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i21" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifySongLimit--">getSpotifySongLimit</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifyAlbumLimit--">getSpotifyAlbumLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i22" class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifyPlaylistLimit--">getSpotifyPlaylistLimit</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i23" class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getSpotifySongLimit--">getSpotifySongLimit</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getUploadFolder--">getUploadFolder</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getYoutubedlPath--">getYoutubedlPath</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getYoutubePlaylistLimit--">getYoutubePlaylistLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>java.lang.Long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#getYoutubeSongLimit--">getYoutubeSongLimit</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i26" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isDownloadHierachy--">isDownloadHierachy</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i27" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isLibraryVerified--">isLibraryVerified</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i28" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isSaveCredentials--">isSaveCredentials</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isDownloadDelete--">isDownloadDelete</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i29" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isSpotifyShowDialog--">isSpotifyShowDialog</a></span>&#8203;()</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isDownloadHierachy--">isDownloadHierachy</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i30" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isDownloadLikedSongsPlaylist--">isDownloadLikedSongsPlaylist</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i31" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isLibraryVerified--">isLibraryVerified</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i32" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isSaveCredentials--">isSaveCredentials</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i33" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isSpotifyDelete--">isSpotifyDelete</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i34" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#isSpotifyShowDialog--">isSpotifyShowDialog</a></span>&#8203;()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code>static <a href="../../ryzen/ownitall/Settings.html" title="class in ryzen.ownitall">Settings</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#load--">load</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#save--">save</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i32" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setAlbumFile-java.lang.String-">setAlbumFile</a></span>&#8203;(java.lang.String&nbsp;albumFile)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i33" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setCacheFolderPath-java.lang.String-">setCacheFolderPath</a></span>&#8203;(java.lang.String&nbsp;cacheFolderPath)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i34" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDataFolderPath-java.lang.String-">setDataFolderPath</a></span>&#8203;(java.lang.String&nbsp;dataFolderPath)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i35" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadCookiesBrowser-java.lang.String-">setDownloadCookiesBrowser</a></span>&#8203;(java.lang.String&nbsp;downloadCookiesBrowser)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i36" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadCookiesFile-java.lang.String-">setDownloadCookiesFile</a></span>&#8203;(java.lang.String&nbsp;downloadCookiesFile)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 <tr id="i37" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadFolder-java.lang.String-">setDownloadFolder</a></span>&#8203;(java.lang.String&nbsp;downloadFolder)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i38" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadFormat-java.lang.String-">setDownloadFormat</a></span>&#8203;(java.lang.String&nbsp;downloadFormat)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i39" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadHierachy-boolean-">setDownloadHierachy</a></span>&#8203;(boolean&nbsp;downloadHierachy)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i40" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadQuality-int-">setDownloadQuality</a></span>&#8203;(int&nbsp;downloadQuality)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i41" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadQuality-java.lang.Integer-">setDownloadQuality</a></span>&#8203;(java.lang.Integer&nbsp;downloadQuality)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i42" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadThreads-int-">setDownloadThreads</a></span>&#8203;(int&nbsp;downloadThreads)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i43" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setDownloadThreads-java.lang.Integer-">setDownloadThreads</a></span>&#8203;(java.lang.Integer&nbsp;downloadThreads)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i44" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setFfmpegPath--">setFfmpegPath</a></span>&#8203;()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i45" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setFfmpegPath-java.lang.String-">setFfmpegPath</a></span>&#8203;(java.lang.String&nbsp;ffmpegPath)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i46" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setLibraryType-int-">setLibraryType</a></span>&#8203;(int&nbsp;libraryType)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i47" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setLibraryVerified-boolean-">setLibraryVerified</a></span>&#8203;(boolean&nbsp;libraryVerified)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i48" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setLikedSongFile-java.lang.String-">setLikedSongFile</a></span>&#8203;(java.lang.String&nbsp;likedSongFile)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i49" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setLikedSongName-java.lang.String-">setLikedSongName</a></span>&#8203;(java.lang.String&nbsp;likedSongName)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i50" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setPlaylistFile-java.lang.String-">setPlaylistFile</a></span>&#8203;(java.lang.String&nbsp;playlistFile)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i51" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSaveCredentials-boolean-">setSaveCredentials</a></span>&#8203;(boolean&nbsp;saveCredentials)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i52" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSimilarityPercentage-double-">setSimilarityPercentage</a></span>&#8203;(double&nbsp;similarityPercentage)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i53" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudAlbumLimit-int-">setSoundCloudAlbumLimit</a></span>&#8203;(int&nbsp;soundCloudAlbumLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i54" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudAlbumLimit-java.lang.Integer-">setSoundCloudAlbumLimit</a></span>&#8203;(java.lang.Integer&nbsp;soundCloudAlbumLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i55" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudPlaylistLimit-int-">setSoundCloudPlaylistLimit</a></span>&#8203;(int&nbsp;soundCloudPlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i56" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudPlaylistLimit-java.lang.Integer-">setSoundCloudPlaylistLimit</a></span>&#8203;(java.lang.Integer&nbsp;soundCloudPlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i57" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudSongLimit-int-">setSoundCloudSongLimit</a></span>&#8203;(int&nbsp;soundCloudSongLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i58" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSoundCloudSongLimit-java.lang.Integer-">setSoundCloudSongLimit</a></span>&#8203;(java.lang.Integer&nbsp;soundCloudSongLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i59" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifyAlbumLimit-int-">setSpotifyAlbumLimit</a></span>&#8203;(int&nbsp;spotifyAlbumLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i60" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifyAlbumLimit-java.lang.Integer-">setSpotifyAlbumLimit</a></span>&#8203;(java.lang.Integer&nbsp;spotifyAlbumLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i61" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifyPlaylistLimit-int-">setSpotifyPlaylistLimit</a></span>&#8203;(int&nbsp;spotifyPlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i62" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifyPlaylistLimit-java.lang.Integer-">setSpotifyPlaylistLimit</a></span>&#8203;(java.lang.Integer&nbsp;spotifyPlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i63" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifyShowDialog-boolean-">setSpotifyShowDialog</a></span>&#8203;(boolean&nbsp;spotifyShowDialog)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i64" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifySongLimit-int-">setSpotifySongLimit</a></span>&#8203;(int&nbsp;spotifySongLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i65" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setSpotifySongLimit-java.lang.Integer-">setSpotifySongLimit</a></span>&#8203;(java.lang.Integer&nbsp;spotifySongLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i66" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setUploadFolder-java.lang.String-">setUploadFolder</a></span>&#8203;(java.lang.String&nbsp;uploadFolder)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i67" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setYoutubedlPath--">setYoutubedlPath</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i68" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setYoutubedlPath-java.lang.String-">setYoutubedlPath</a></span>&#8203;(java.lang.String&nbsp;youtubedlPath)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i69" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setYoutubePlaylistLimit-java.lang.Long-">setYoutubePlaylistLimit</a></span>&#8203;(java.lang.Long&nbsp;youtubePlaylistLimit)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr id="i70" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ryzen/ownitall/Settings.html#setYoutubeSongLimit-java.lang.Long-">setYoutubeSongLimit</a></span>&#8203;(java.lang.Long&nbsp;youtubeSongLimit)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </table>
@@ -908,6 +760,16 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>protected&nbsp;java.lang.Integer spotifyPlaylistLimit</pre>
 </li>
 </ul>
+<a name="spotifyDelete">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>spotifyDelete</h4>
+<pre>public&nbsp;boolean spotifyDelete</pre>
+<div class="block">delete any tracks in playlists and liked songs which are not in collection</div>
+</li>
+</ul>
 <a name="youtubeSongLimit">
 <!--   -->
 </a>
@@ -953,17 +815,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>soundCloudPlaylistLimit</h4>
 <pre>protected&nbsp;java.lang.Integer soundCloudPlaylistLimit</pre>
-</li>
-</ul>
-<a name="similarityPercentage">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>similarityPercentage</h4>
-<pre>protected&nbsp;double similarityPercentage</pre>
-<div class="block">similarity percentage used to check if artists, songs, albums or playlists
- are equals (to merge or not)</div>
 </li>
 </ul>
 <a name="libraryVerified">
@@ -1063,6 +914,26 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
  most applications such as jellyfin use false</div>
 </li>
 </ul>
+<a name="downloadLikedSongsPlaylist">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>downloadLikedSongsPlaylist</h4>
+<pre>protected&nbsp;boolean downloadLikedSongsPlaylist</pre>
+</li>
+</ul>
+<a name="downloadDelete">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>downloadDelete</h4>
+<pre>protected&nbsp;boolean downloadDelete</pre>
+<div class="block">Delete files found in library which are not in collection
+ this can be used to clean up local copy after mistakes</div>
+</li>
+</ul>
 <a name="downloadQuality">
 <!--   -->
 </a>
@@ -1156,15 +1027,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getDataFolderPath&#8203;()</pre>
 </li>
 </ul>
-<a name="setDataFolderPath-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDataFolderPath</h4>
-<pre>public&nbsp;void&nbsp;setDataFolderPath&#8203;(java.lang.String&nbsp;dataFolderPath)</pre>
-</li>
-</ul>
 <a name="getLikedSongsName--">
 <!--   -->
 </a>
@@ -1172,15 +1034,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getLikedSongsName</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getLikedSongsName&#8203;()</pre>
-</li>
-</ul>
-<a name="setLikedSongName-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setLikedSongName</h4>
-<pre>public&nbsp;void&nbsp;setLikedSongName&#8203;(java.lang.String&nbsp;likedSongName)</pre>
 </li>
 </ul>
 <a name="getAlbumFile--">
@@ -1192,15 +1045,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getAlbumFile&#8203;()</pre>
 </li>
 </ul>
-<a name="setAlbumFile-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setAlbumFile</h4>
-<pre>public&nbsp;void&nbsp;setAlbumFile&#8203;(java.lang.String&nbsp;albumFile)</pre>
-</li>
-</ul>
 <a name="getLikedSongFile--">
 <!--   -->
 </a>
@@ -1208,15 +1052,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getLikedSongFile</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getLikedSongFile&#8203;()</pre>
-</li>
-</ul>
-<a name="setLikedSongFile-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setLikedSongFile</h4>
-<pre>public&nbsp;void&nbsp;setLikedSongFile&#8203;(java.lang.String&nbsp;likedSongFile)</pre>
 </li>
 </ul>
 <a name="getPlaylistFile--">
@@ -1228,15 +1063,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getPlaylistFile&#8203;()</pre>
 </li>
 </ul>
-<a name="setPlaylistFile-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setPlaylistFile</h4>
-<pre>public&nbsp;void&nbsp;setPlaylistFile&#8203;(java.lang.String&nbsp;playlistFile)</pre>
-</li>
-</ul>
 <a name="getCacheFolderPath--">
 <!--   -->
 </a>
@@ -1244,15 +1070,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getCacheFolderPath</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getCacheFolderPath&#8203;()</pre>
-</li>
-</ul>
-<a name="setCacheFolderPath-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setCacheFolderPath</h4>
-<pre>public&nbsp;void&nbsp;setCacheFolderPath&#8203;(java.lang.String&nbsp;cacheFolderPath)</pre>
 </li>
 </ul>
 <a name="isSaveCredentials--">
@@ -1264,15 +1081,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;boolean&nbsp;isSaveCredentials&#8203;()</pre>
 </li>
 </ul>
-<a name="setSaveCredentials-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSaveCredentials</h4>
-<pre>public&nbsp;void&nbsp;setSaveCredentials&#8203;(boolean&nbsp;saveCredentials)</pre>
-</li>
-</ul>
 <a name="isSpotifyShowDialog--">
 <!--   -->
 </a>
@@ -1280,15 +1088,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>isSpotifyShowDialog</h4>
 <pre>public&nbsp;boolean&nbsp;isSpotifyShowDialog&#8203;()</pre>
-</li>
-</ul>
-<a name="setSpotifyShowDialog-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifyShowDialog</h4>
-<pre>public&nbsp;void&nbsp;setSpotifyShowDialog&#8203;(boolean&nbsp;spotifyShowDialog)</pre>
 </li>
 </ul>
 <a name="getSpotifySongLimit--">
@@ -1300,15 +1099,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;int&nbsp;getSpotifySongLimit&#8203;()</pre>
 </li>
 </ul>
-<a name="setSpotifySongLimit-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifySongLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifySongLimit&#8203;(int&nbsp;spotifySongLimit)</pre>
-</li>
-</ul>
 <a name="getSpotifyAlbumLimit--">
 <!--   -->
 </a>
@@ -1316,15 +1106,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getSpotifyAlbumLimit</h4>
 <pre>public&nbsp;int&nbsp;getSpotifyAlbumLimit&#8203;()</pre>
-</li>
-</ul>
-<a name="setSpotifyAlbumLimit-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifyAlbumLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifyAlbumLimit&#8203;(int&nbsp;spotifyAlbumLimit)</pre>
 </li>
 </ul>
 <a name="getSpotifyPlaylistLimit--">
@@ -1336,13 +1117,13 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;int&nbsp;getSpotifyPlaylistLimit&#8203;()</pre>
 </li>
 </ul>
-<a name="setSpotifyPlaylistLimit-int-">
+<a name="isSpotifyDelete--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setSpotifyPlaylistLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifyPlaylistLimit&#8203;(int&nbsp;spotifyPlaylistLimit)</pre>
+<h4>isSpotifyDelete</h4>
+<pre>public&nbsp;boolean&nbsp;isSpotifyDelete&#8203;()</pre>
 </li>
 </ul>
 <a name="getYoutubeSongLimit--">
@@ -1354,15 +1135,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.Long&nbsp;getYoutubeSongLimit&#8203;()</pre>
 </li>
 </ul>
-<a name="setYoutubeSongLimit-java.lang.Long-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setYoutubeSongLimit</h4>
-<pre>public&nbsp;void&nbsp;setYoutubeSongLimit&#8203;(java.lang.Long&nbsp;youtubeSongLimit)</pre>
-</li>
-</ul>
 <a name="getYoutubePlaylistLimit--">
 <!--   -->
 </a>
@@ -1370,15 +1142,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getYoutubePlaylistLimit</h4>
 <pre>public&nbsp;java.lang.Long&nbsp;getYoutubePlaylistLimit&#8203;()</pre>
-</li>
-</ul>
-<a name="setYoutubePlaylistLimit-java.lang.Long-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setYoutubePlaylistLimit</h4>
-<pre>public&nbsp;void&nbsp;setYoutubePlaylistLimit&#8203;(java.lang.Long&nbsp;youtubePlaylistLimit)</pre>
 </li>
 </ul>
 <a name="getSoundCloudSongLimit--">
@@ -1390,15 +1153,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;int&nbsp;getSoundCloudSongLimit&#8203;()</pre>
 </li>
 </ul>
-<a name="setSoundCloudSongLimit-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudSongLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudSongLimit&#8203;(int&nbsp;soundCloudSongLimit)</pre>
-</li>
-</ul>
 <a name="getSoundCloudAlbumLimit--">
 <!--   -->
 </a>
@@ -1406,15 +1160,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getSoundCloudAlbumLimit</h4>
 <pre>public&nbsp;int&nbsp;getSoundCloudAlbumLimit&#8203;()</pre>
-</li>
-</ul>
-<a name="setSoundCloudAlbumLimit-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudAlbumLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudAlbumLimit&#8203;(int&nbsp;soundCloudAlbumLimit)</pre>
 </li>
 </ul>
 <a name="getSoundCloudPlaylistLimit--">
@@ -1426,33 +1171,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;int&nbsp;getSoundCloudPlaylistLimit&#8203;()</pre>
 </li>
 </ul>
-<a name="setSoundCloudPlaylistLimit-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudPlaylistLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudPlaylistLimit&#8203;(int&nbsp;soundCloudPlaylistLimit)</pre>
-</li>
-</ul>
-<a name="getSimilarityPercentage--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSimilarityPercentage</h4>
-<pre>public&nbsp;double&nbsp;getSimilarityPercentage&#8203;()</pre>
-</li>
-</ul>
-<a name="setSimilarityPercentage-double-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSimilarityPercentage</h4>
-<pre>public&nbsp;void&nbsp;setSimilarityPercentage&#8203;(double&nbsp;similarityPercentage)</pre>
-</li>
-</ul>
 <a name="getLibrayType--">
 <!--   -->
 </a>
@@ -1460,15 +1178,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getLibrayType</h4>
 <pre>public&nbsp;int&nbsp;getLibrayType&#8203;()</pre>
-</li>
-</ul>
-<a name="setLibraryType-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setLibraryType</h4>
-<pre>public&nbsp;void&nbsp;setLibraryType&#8203;(int&nbsp;libraryType)</pre>
 </li>
 </ul>
 <a name="getYoutubedlPath--">
@@ -1480,22 +1189,18 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getYoutubedlPath&#8203;()</pre>
 </li>
 </ul>
-<a name="setYoutubedlPath-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setYoutubedlPath</h4>
-<pre>public&nbsp;void&nbsp;setYoutubedlPath&#8203;(java.lang.String&nbsp;youtubedlPath)</pre>
-</li>
-</ul>
 <a name="setYoutubedlPath--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setYoutubedlPath</h4>
-<pre>public&nbsp;void&nbsp;setYoutubedlPath&#8203;()</pre>
+<pre>public&nbsp;void&nbsp;setYoutubedlPath&#8203;()
+                      throws java.lang.InterruptedException</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code></dd>
+</dl>
 </li>
 </ul>
 <a name="getDownloadFormat--">
@@ -1507,15 +1212,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getDownloadFormat&#8203;()</pre>
 </li>
 </ul>
-<a name="setDownloadFormat-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadFormat</h4>
-<pre>public&nbsp;void&nbsp;setDownloadFormat&#8203;(java.lang.String&nbsp;downloadFormat)</pre>
-</li>
-</ul>
 <a name="getDownloadQuality--">
 <!--   -->
 </a>
@@ -1523,15 +1219,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getDownloadQuality</h4>
 <pre>public&nbsp;int&nbsp;getDownloadQuality&#8203;()</pre>
-</li>
-</ul>
-<a name="setDownloadQuality-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadQuality</h4>
-<pre>public&nbsp;void&nbsp;setDownloadQuality&#8203;(int&nbsp;downloadQuality)</pre>
 </li>
 </ul>
 <a name="getFfmpegPath--">
@@ -1543,22 +1230,18 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getFfmpegPath&#8203;()</pre>
 </li>
 </ul>
-<a name="setFfmpegPath-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setFfmpegPath</h4>
-<pre>public&nbsp;void&nbsp;setFfmpegPath&#8203;(java.lang.String&nbsp;ffmpegPath)</pre>
-</li>
-</ul>
 <a name="setFfmpegPath--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setFfmpegPath</h4>
-<pre>public&nbsp;void&nbsp;setFfmpegPath&#8203;()</pre>
+<pre>public&nbsp;void&nbsp;setFfmpegPath&#8203;()
+                   throws java.lang.InterruptedException</pre>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code></dd>
+</dl>
 </li>
 </ul>
 <a name="getDownloadFolder--">
@@ -1570,15 +1253,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getDownloadFolder&#8203;()</pre>
 </li>
 </ul>
-<a name="setDownloadFolder-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadFolder</h4>
-<pre>public&nbsp;void&nbsp;setDownloadFolder&#8203;(java.lang.String&nbsp;downloadFolder)</pre>
-</li>
-</ul>
 <a name="isDownloadHierachy--">
 <!--   -->
 </a>
@@ -1586,15 +1260,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>isDownloadHierachy</h4>
 <pre>public&nbsp;boolean&nbsp;isDownloadHierachy&#8203;()</pre>
-</li>
-</ul>
-<a name="setDownloadHierachy-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadHierachy</h4>
-<pre>public&nbsp;void&nbsp;setDownloadHierachy&#8203;(boolean&nbsp;downloadHierachy)</pre>
 </li>
 </ul>
 <a name="getUploadFolder--">
@@ -1606,15 +1271,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getUploadFolder&#8203;()</pre>
 </li>
 </ul>
-<a name="setUploadFolder-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setUploadFolder</h4>
-<pre>public&nbsp;void&nbsp;setUploadFolder&#8203;(java.lang.String&nbsp;uploadFolder)</pre>
-</li>
-</ul>
 <a name="getDownloadThreads--">
 <!--   -->
 </a>
@@ -1622,69 +1278,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getDownloadThreads</h4>
 <pre>public&nbsp;int&nbsp;getDownloadThreads&#8203;()</pre>
-</li>
-</ul>
-<a name="setDownloadThreads-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadThreads</h4>
-<pre>public&nbsp;void&nbsp;setDownloadThreads&#8203;(int&nbsp;downloadThreads)</pre>
-</li>
-</ul>
-<a name="setSpotifySongLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifySongLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifySongLimit&#8203;(java.lang.Integer&nbsp;spotifySongLimit)</pre>
-</li>
-</ul>
-<a name="setSpotifyAlbumLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifyAlbumLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifyAlbumLimit&#8203;(java.lang.Integer&nbsp;spotifyAlbumLimit)</pre>
-</li>
-</ul>
-<a name="setSpotifyPlaylistLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSpotifyPlaylistLimit</h4>
-<pre>public&nbsp;void&nbsp;setSpotifyPlaylistLimit&#8203;(java.lang.Integer&nbsp;spotifyPlaylistLimit)</pre>
-</li>
-</ul>
-<a name="setSoundCloudSongLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudSongLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudSongLimit&#8203;(java.lang.Integer&nbsp;soundCloudSongLimit)</pre>
-</li>
-</ul>
-<a name="setSoundCloudAlbumLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudAlbumLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudAlbumLimit&#8203;(java.lang.Integer&nbsp;soundCloudAlbumLimit)</pre>
-</li>
-</ul>
-<a name="setSoundCloudPlaylistLimit-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setSoundCloudPlaylistLimit</h4>
-<pre>public&nbsp;void&nbsp;setSoundCloudPlaylistLimit&#8203;(java.lang.Integer&nbsp;soundCloudPlaylistLimit)</pre>
 </li>
 </ul>
 <a name="isLibraryVerified--">
@@ -1696,33 +1289,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;boolean&nbsp;isLibraryVerified&#8203;()</pre>
 </li>
 </ul>
-<a name="setLibraryVerified-boolean-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setLibraryVerified</h4>
-<pre>public&nbsp;void&nbsp;setLibraryVerified&#8203;(boolean&nbsp;libraryVerified)</pre>
-</li>
-</ul>
-<a name="setDownloadQuality-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadQuality</h4>
-<pre>public&nbsp;void&nbsp;setDownloadQuality&#8203;(java.lang.Integer&nbsp;downloadQuality)</pre>
-</li>
-</ul>
-<a name="setDownloadThreads-java.lang.Integer-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadThreads</h4>
-<pre>public&nbsp;void&nbsp;setDownloadThreads&#8203;(java.lang.Integer&nbsp;downloadThreads)</pre>
-</li>
-</ul>
 <a name="getDownloadCookiesFile--">
 <!--   -->
 </a>
@@ -1730,15 +1296,6 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <li class="blockList">
 <h4>getDownloadCookiesFile</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getDownloadCookiesFile&#8203;()</pre>
-</li>
-</ul>
-<a name="setDownloadCookiesFile-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setDownloadCookiesFile</h4>
-<pre>public&nbsp;void&nbsp;setDownloadCookiesFile&#8203;(java.lang.String&nbsp;downloadCookiesFile)</pre>
 </li>
 </ul>
 <a name="getDownloadCookiesBrowser--">
@@ -1750,13 +1307,65 @@ extends <a href="../../ryzen/ownitall/util/Settings.html" title="class in ryzen.
 <pre>public&nbsp;java.lang.String&nbsp;getDownloadCookiesBrowser&#8203;()</pre>
 </li>
 </ul>
-<a name="setDownloadCookiesBrowser-java.lang.String-">
+<a name="getArtistFile--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getArtistFile</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getArtistFile&#8203;()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the artistFile</dd>
+</dl>
+</li>
+</ul>
+<a name="getSongFile--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSongFile</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getSongFile&#8203;()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the songFile</dd>
+</dl>
+</li>
+</ul>
+<a name="getLibraryType--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLibraryType</h4>
+<pre>public&nbsp;int&nbsp;getLibraryType&#8203;()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the libraryType</dd>
+</dl>
+</li>
+</ul>
+<a name="isDownloadDelete--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isDownloadDelete</h4>
+<pre>public&nbsp;boolean&nbsp;isDownloadDelete&#8203;()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the downloadDelete</dd>
+</dl>
+</li>
+</ul>
+<a name="isDownloadLikedSongsPlaylist--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>setDownloadCookiesBrowser</h4>
-<pre>public&nbsp;void&nbsp;setDownloadCookiesBrowser&#8203;(java.lang.String&nbsp;downloadCookiesBrowser)</pre>
+<h4>isDownloadLikedSongsPlaylist</h4>
+<pre>public&nbsp;boolean&nbsp;isDownloadLikedSongsPlaylist&#8203;()</pre>
 </li>
 </ul>
 </li>

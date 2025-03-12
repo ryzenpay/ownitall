@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":9};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -59,7 +59,7 @@ var pathtoroot = "../../../";loadScripts(document, 'script');</script>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/util/Levenshtein.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/util/InterruptionHandler.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/util/Input.html" target="_top">Frames</a></li>
@@ -157,58 +157,87 @@ extends java.lang.Object</pre>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getAgreement--">getAgreement</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get user agreement (y or n)</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getBool--">getBool</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get bool from user input</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>char</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getChar--">getChar</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get char from user</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getEnter--">getEnter</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get user to press enter or interrupt</div>
+</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>java.io.File</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getFile-boolean-">getFile</a></span>&#8203;(boolean&nbsp;exists)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get file from user input</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getInt--">getInt</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get int from user</div>
+</td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getInt-int-int-">getInt</a></span>&#8203;(int&nbsp;lowerBound,
       int&nbsp;upperBound)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get int from user between two boundaries</div>
+</td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getLong--">getLong</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get long from user input</div>
+</td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getString--">getString</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">get string from user input</div>
+</td>
 </tr>
 <tr id="i9" class="rowColor">
-<td class="colFirst"><code>java.net.URI</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getURL--">getURL</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getString-int-">getString</a></span>&#8203;(int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">get string from user input with enforced length</div>
+</td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code>java.net.URI</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#getURL--">getURL</a></span>&#8203;()</code></th>
+<td class="colLast">
+<div class="block">get url from user input</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../ryzen/ownitall/util/Input.html#request--">request</a></span>&#8203;()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">instance loader for input</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -239,6 +268,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>request</h4>
 <pre>public static&nbsp;<a href="../../../ryzen/ownitall/util/Input.html" title="class in ryzen.ownitall.util">Input</a>&nbsp;request&#8203;()</pre>
+<div class="block">instance loader for input</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- new or existing instance of input</dd>
+</dl>
 </li>
 </ul>
 <a name="getString--">
@@ -249,9 +283,31 @@ extends java.lang.Object</pre>
 <h4>getString</h4>
 <pre>public&nbsp;java.lang.String&nbsp;getString&#8203;()
                            throws java.lang.InterruptedException</pre>
+<div class="block">get string from user input</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- string of user input</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
+</li>
+</ul>
+<a name="getString-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getString</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getString&#8203;(int&nbsp;length)
+                           throws java.lang.InterruptedException</pre>
+<div class="block">get string from user input with enforced length</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>length</code> - - length the user input has to meet</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- string of length</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -263,9 +319,12 @@ extends java.lang.Object</pre>
 <h4>getChar</h4>
 <pre>public&nbsp;char&nbsp;getChar&#8203;()
              throws java.lang.InterruptedException</pre>
+<div class="block">get char from user</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- char of user input</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -277,9 +336,12 @@ extends java.lang.Object</pre>
 <h4>getInt</h4>
 <pre>public&nbsp;int&nbsp;getInt&#8203;()
            throws java.lang.InterruptedException</pre>
+<div class="block">get int from user</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- int of user input</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -292,9 +354,15 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;int&nbsp;getInt&#8203;(int&nbsp;lowerBound,
                   int&nbsp;upperBound)
            throws java.lang.InterruptedException</pre>
+<div class="block">get int from user between two boundaries</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>lowerBound</code> - - lowest int boundary</dd>
+<dd><code>upperBound</code> - - upper int boundary</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- int between boundaries</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -306,9 +374,12 @@ extends java.lang.Object</pre>
 <h4>getLong</h4>
 <pre>public&nbsp;long&nbsp;getLong&#8203;()
              throws java.lang.InterruptedException</pre>
+<div class="block">get long from user input</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- long from user input</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -320,9 +391,14 @@ extends java.lang.Object</pre>
 <h4>getFile</h4>
 <pre>public&nbsp;java.io.File&nbsp;getFile&#8203;(boolean&nbsp;exists)
                      throws java.lang.InterruptedException</pre>
+<div class="block">get file from user input</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>exists</code> - - boolean if the file should exist</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed file from user input</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -334,9 +410,12 @@ extends java.lang.Object</pre>
 <h4>getAgreement</h4>
 <pre>public&nbsp;boolean&nbsp;getAgreement&#8203;()
                      throws java.lang.InterruptedException</pre>
+<div class="block">get user agreement (y or n)</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- y = true, n = false</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -348,9 +427,12 @@ extends java.lang.Object</pre>
 <h4>getBool</h4>
 <pre>public&nbsp;boolean&nbsp;getBool&#8203;()
                 throws java.lang.InterruptedException</pre>
+<div class="block">get bool from user input</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- true = true, false = false</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -362,9 +444,12 @@ extends java.lang.Object</pre>
 <h4>getURL</h4>
 <pre>public&nbsp;java.net.URI&nbsp;getURL&#8203;()
                     throws java.lang.InterruptedException</pre>
+<div class="block">get url from user input</div>
 <dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>- constructed URI of input url</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.InterruptedException</code></dd>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
 </dl>
 </li>
 </ul>
@@ -374,7 +459,13 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getEnter</h4>
-<pre>public&nbsp;void&nbsp;getEnter&#8203;()</pre>
+<pre>public&nbsp;void&nbsp;getEnter&#8203;()
+              throws java.lang.InterruptedException</pre>
+<div class="block">get user to press enter or interrupt</div>
+<dl>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.InterruptedException</code> - - when user interrupts</dd>
+</dl>
 </li>
 </ul>
 </li>
@@ -406,7 +497,7 @@ extends java.lang.Object</pre>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../ryzen/ownitall/util/Levenshtein.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../ryzen/ownitall/util/InterruptionHandler.html" title="class in ryzen.ownitall.util"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?ryzen/ownitall/util/Input.html" target="_top">Frames</a></li>
