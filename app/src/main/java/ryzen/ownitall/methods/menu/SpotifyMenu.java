@@ -44,7 +44,6 @@ public class SpotifyMenu {
     }
 
     public void spotifyExportMenu() {
-        // TODO: syncronization (delete what is not in collection)
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);

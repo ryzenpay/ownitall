@@ -529,37 +529,6 @@ public class Download {
     }
 
     /**
-     * cleans up individual album songs for odd ones
-     * 
-     * @param album - album to clean up
-     * @throws InterruptedException - when user interrupts
-     */
-    // TODO: tmp disable library to ensure it deletes non wanted?
-    public void albumCleanUp(Album album) throws InterruptedException {
-        if (album == null) {
-            logger.debug("null album provided in albumSync");
-            return;
-        }
-        logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(this.downloadFolder, album.getFolderName());
-        Album localAlbum = Upload.getAlbum(albumFolder);
-        if (localAlbum != null && !album.isEmpty()) {
-            localAlbum.removeSongs(album.getSongs());
-            for (Song song : localAlbum.getSongs()) {
-                File songFile = new File(albumFolder, song.getFileName());
-                if (songFile.exists()) {
-                    if (songFile.delete()) {
-                        logger.debug("Deleted album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
-                    } else {
-                        logger.error(
-                                "could not delete album '" + album.getName() + "' song: " + songFile.getAbsolutePath());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * download an album
      * has its own folder
      * 
@@ -574,9 +543,6 @@ public class Download {
         // albums are always in a folder
         File albumFolder = new File(this.downloadFolder, album.getFolderName());
         albumFolder.mkdirs();
-        if (settings.isDownloadDelete()) {
-            this.albumCleanUp(album);
-        }
         try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             this.writeAlbumData(album, albumFolder);

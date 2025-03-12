@@ -182,7 +182,7 @@ public class Settings {
                 String input = Input.request().getString();
                 setting.set(this, input);
                 return true;
-            } else if (setting.getType() == Integer.class) {
+            } else if (setting.getType() == int.class) {
                 int input = Input.request().getInt();
                 setting.set(this, input);
                 return true;
