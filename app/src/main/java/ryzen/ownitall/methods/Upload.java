@@ -80,14 +80,6 @@ public class Upload {
                     pb.setExtraMessage(likedSongsFolder.getName()).step();
                     likedSongs.addSongs(getSongs(likedSongsFolder));
                 }
-            } else if (settings.isDownloadLikedSongsPlaylist()) {
-                File likedSongsPlaylistFile = new File(this.localLibrary, settings.getLikedSongsName() + ".m3u");
-                if (likedSongsPlaylistFile.exists()) {
-                    Playlist likedSongsPlaylist = getM3UPlaylist(likedSongsPlaylistFile);
-                    if (likedSongsPlaylist != null) {
-                        likedSongs.addSongs(likedSongsPlaylist.getSongs());
-                    }
-                }
             } else {
                 likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
                 for (File folder : this.localLibrary.listFiles()) {
