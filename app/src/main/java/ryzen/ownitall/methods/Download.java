@@ -46,7 +46,7 @@ public class Download {
      * default download constructor
      * setting all settings / credentials
      */
-    public Download() {
+    public Download() throws InterruptedException {
         if (settings.getYoutubedlPath().isEmpty()) {
             settings.setYoutubedlPath();
         }
@@ -61,13 +61,14 @@ public class Download {
         this.downloadFolder.mkdirs();
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter enter to continue: ");
-        try {
-            Input.request().getEnter();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting vpn agreement");
-        }
+        Input.request().getEnter();
     }
 
+    /**
+     * get the set download folder
+     * 
+     * @return - constructed File of download folder
+     */
     public File getDownloadFolder() {
         return this.downloadFolder;
     }
@@ -77,13 +78,21 @@ public class Download {
      */
     private void setDownloadPath() {
         try {
-            System.out.print("Please provide path to save music: ");
+            System.out.print("Path to save music: ");
             this.downloadFolder = Input.request().getFile(false);
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting download path");
         }
     }
 
+    /**
+     * threading for downloadSong
+     * uses the threading option set in settings for how many threads
+     * 
+     * @param song - song to download
+     * @param path - path of where to download
+     * @throws InterruptedException - when user interrupts
+     */
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or path provided in threadDownload");
@@ -105,6 +114,9 @@ public class Download {
         }
     }
 
+    /**
+     * setup threading
+     */
     public void threadInit() {
         this.executor = new ThreadPoolExecutor(
                 settings.getDownloadThreads(),
@@ -114,15 +126,24 @@ public class Download {
                 new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
     }
 
+    /**
+     * shut down all threads
+     * 
+     * @throws InterruptedException - if user interrupts while waiting
+     */
     public void threadShutdown() throws InterruptedException {
         if (this.executor == null || this.executor.isShutdown()) {
             return;
         }
         executor.shutdown();
         logger.debug("Awaiting current threads to shutdown (max 10 min)");
-        executor.awaitTermination(10, TimeUnit.MINUTES);
-        logger.debug("All threads shut down");
-
+        try {
+            executor.awaitTermination(10, TimeUnit.MINUTES);
+            logger.debug("All threads shut down");
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            throw e;
+        }
     }
 
     /**
@@ -188,13 +209,14 @@ public class Download {
             searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         }
         command.add(searchQuery);
-        try {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
             File songFile = new File(path, song.getFileName());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
+                interruptionHandler.throwInterruption();
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
@@ -234,36 +256,11 @@ public class Download {
         }
     }
 
-    public static void writeMetaData(Song song, File songFile) {
-        if (song == null) {
-            logger.debug("null song provided in writeMetaData");
-            return;
-        }
-        if (songFile == null || !songFile.exists()) {
-            logger.debug("null or non existant songFile provided in writeMetaData");
-            return;
-        }
-        LinkedHashMap<FieldKey, String> id3Data = new LinkedHashMap<>();
-        id3Data.put(FieldKey.TITLE, song.getName());
-        Artist artist = song.getArtist();
-        if (artist != null) {
-            id3Data.put(FieldKey.ARTIST, artist.getName());
-        }
-        String albumName = song.getAlbumName();
-        if (albumName != null) {
-            id3Data.put(FieldKey.ALBUM, albumName);
-        }
-        String mbid = song.getId("mbid");
-        if (mbid != null) {
-            id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
-        }
-        try {
-            MusicTools.writeMetaData(id3Data, collection.isLiked(song), song.getCoverImage(), songFile);
-        } catch (Exception e) {
-            logger.error("writing song metadata for '" + song.toString() + "': " + e);
-        }
-    }
-
+    /**
+     * clean up local liked songs before downloading
+     * 
+     * @throws InterruptedException - when user interrupts
+     */
     public void likedSongsCleanUp() throws InterruptedException {
         logger.debug("Getting local liked songs to remove mismatches");
         Upload upload = new Upload(this.downloadFolder);
@@ -296,6 +293,7 @@ public class Download {
     /**
      * orchestrator of DownloadSong for all standalone liked songs
      * 
+     * @throws InterruptedException - when user interrupts
      */
     public void downloadLikedSongs() throws InterruptedException {
         ArrayList<Song> songs;
@@ -330,7 +328,11 @@ public class Download {
         }
     }
 
-    // deletes entire playlists
+    /**
+     * deletes entire playlists which are not in collection
+     * 
+     * @throws InterruptedException - when user interrupts
+     */
     public void playlistsCleanUp() throws InterruptedException {
         logger.debug("Getting local playlists to remove mismatches");
         Upload upload = new Upload(this.getDownloadFolder());
@@ -366,6 +368,8 @@ public class Download {
 
     /**
      * orchestrator of downloadPlaylist
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public void downloadPlaylists() throws InterruptedException {
         if (settings.isDownloadDelete()) {
@@ -381,7 +385,12 @@ public class Download {
         }
     }
 
-    // cleans up individual playlists
+    /**
+     * cleans up individual songs in a playlist
+     * 
+     * @param playlist - playlist to clean up
+     * @throws InterruptedException - when user interrupts
+     */
     public void playlistCleanUp(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("null playlist provided in playlistSync");
@@ -425,6 +434,7 @@ public class Download {
      * orchestrator for downloading a playlist
      * 
      * @param playlist - constructed playlist to download
+     * @throws InterruptedException - when user interrupts
      */
     public void downloadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
@@ -460,7 +470,11 @@ public class Download {
         }
     }
 
-    // deletes entire albums
+    /**
+     * deletes entire albums which are not in collection
+     * 
+     * @throws InterruptedException - when user interrupts
+     */
     public void albumsCleanUp() throws InterruptedException {
         logger.debug("Getting local albums to remove mismatches");
         Upload upload = new Upload(this.getDownloadFolder());
@@ -493,6 +507,11 @@ public class Download {
         }
     }
 
+    /**
+     * orchestrator for downloadAlbum
+     * 
+     * @throws InterruptedException - when user interrupts
+     */
     public void downloadAlbums() throws InterruptedException {
         if (settings.isDownloadDelete()) {
             this.albumsCleanUp();
@@ -507,7 +526,12 @@ public class Download {
         }
     }
 
-    // cleans up individual albums
+    /**
+     * cleans up individual album songs for odd ones
+     * 
+     * @param album - album to clean up
+     * @throws InterruptedException - when user interrupts
+     */
     // TODO: tmp disable library to ensure it deletes non wanted?
     public void albumCleanUp(Album album) throws InterruptedException {
         if (album == null) {
@@ -533,6 +557,13 @@ public class Download {
         }
     }
 
+    /**
+     * download an album
+     * has its own folder
+     * 
+     * @param album - album to download
+     * @throws InterruptedException - when the user interrupts
+     */
     public void downloadAlbum(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in downloadAlbum");
@@ -559,6 +590,49 @@ public class Download {
         }
     }
 
+    /**
+     * write song metadata
+     * wrapper for MusicTools metadata writer
+     * 
+     * @param song     - song to get metadata details from
+     * @param songFile - song file to write metadata to
+     */
+    public static void writeMetaData(Song song, File songFile) {
+        if (song == null) {
+            logger.debug("null song provided in writeMetaData");
+            return;
+        }
+        if (songFile == null || !songFile.exists()) {
+            logger.debug("null or non existant songFile provided in writeMetaData");
+            return;
+        }
+        LinkedHashMap<FieldKey, String> id3Data = new LinkedHashMap<>();
+        id3Data.put(FieldKey.TITLE, song.getName());
+        Artist artist = song.getArtist();
+        if (artist != null) {
+            id3Data.put(FieldKey.ARTIST, artist.getName());
+        }
+        String albumName = song.getAlbumName();
+        if (albumName != null) {
+            id3Data.put(FieldKey.ALBUM, albumName);
+        }
+        String mbid = song.getId("mbid");
+        if (mbid != null) {
+            id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
+        }
+        try {
+            MusicTools.writeMetaData(id3Data, collection.isLiked(song), song.getCoverImage(), songFile);
+        } catch (Exception e) {
+            logger.error("writing song metadata for '" + song.toString() + "': " + e);
+        }
+    }
+
+    /**
+     * write playlist m3u data including coverimage
+     * 
+     * @param playlist - playlist to get data from
+     * @param folder   - folder to place m3u file in
+     */
     public void writePlaylistData(Playlist playlist, File folder) {
         if (playlist == null) {
             logger.debug("null playlist provided in writePlaylistData");
@@ -569,7 +643,8 @@ public class Download {
             return;
         }
         try {
-            MusicTools.writeData(playlist.getFolderName(), "m3u", collection.getPlaylistM3U(playlist), folder);
+            File m3uFile = new File(folder, playlist.getFolderName() + ".m3u");
+            MusicTools.writeData(m3uFile, collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' m3u: " + e);
         }
@@ -583,6 +658,12 @@ public class Download {
         }
     }
 
+    /**
+     * write album nfo data including coverimage
+     * 
+     * @param album  - album to get data from
+     * @param folder - folder to place nfo file in
+     */
     public void writeAlbumData(Album album, File folder) {
         if (album == null) {
             logger.debug("null Album provided in writeAlbumData");
@@ -593,20 +674,30 @@ public class Download {
             return;
         }
         try {
-            MusicTools.writeData("album", "nfo", collection.getAlbumNFO(album), folder);
+            File nfoFile = new File(folder, "album.nfo");
+            MusicTools.writeData(nfoFile, collection.getAlbumNFO(album));
         } catch (Exception e) {
             logger.error("Exception writing album '" + album.toString() + "' nfo: " + e);
         }
         try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(),
-                        new File(folder, "cover.png"));
+                        new File(folder, album.getFolderName() + ".png"));
             }
         } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage: " + e);
         }
     }
 
+    /**
+     * clean folder with unwanted files not ending in:
+     * - m3u
+     * - png
+     * - nfo
+     * these are specified in "whitelist"
+     * 
+     * @param folder - folder to clean up files from
+     */
     public void cleanFolder(File folder) {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("Folder is null, does not exist or is not a directorty in cleanFolder");

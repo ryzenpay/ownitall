@@ -60,6 +60,8 @@ public class Spotify {
 
     /**
      * Default spotify constructor asking for user input
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public Spotify() throws InterruptedException {
         if (credentials.spotifyIsEmpty()) {
@@ -78,6 +80,7 @@ public class Spotify {
      * obtaining the oauth code to set the token
      * 
      * @return - the oauth code with permissions
+     * @throws InterruptedException - when user interrupts
      */
     private void requestCode() throws InterruptedException {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
@@ -95,7 +98,7 @@ public class Spotify {
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
-            System.out.print("Please provide the code it presents (in url): ");
+            System.out.print("Code it presents (in url): ");
             this.code = Input.request().getString();
         }
     }
@@ -136,6 +139,8 @@ public class Spotify {
 
     /**
      * start temporary local server to "intercept" spotify api code
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public void startLocalServer() throws InterruptedException {
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
@@ -161,7 +166,7 @@ public class Spotify {
                 logger.error("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
                 try {
-                    System.out.println("Please provide the code it provides (in url)");
+                    System.out.println("Code it provides (in url)");
                     this.code = Input.request().getString();
                 } catch (InterruptedException e) {
                     logger.debug("Interrupted while getting code (failed getting from browser)");
@@ -170,7 +175,7 @@ public class Spotify {
 
             clientSocket.close();
         } catch (IOException e) {
-            System.out.println("Please provide the code it provides (in url)");
+            System.out.println("Code it provides (in url)");
             this.code = Input.request().getString();
         }
     }
@@ -221,6 +226,7 @@ public class Spotify {
      * sleep function for when API limit is hit
      * 
      * @param seconds - long amount of seconds to sleep for
+     * @throws InterruptedException - when user interrupts
      */
     private void sleep(long seconds) throws InterruptedException {
         logger.debug("Spotify timeout sleeping for: " + seconds + "s");
@@ -231,6 +237,7 @@ public class Spotify {
     /**
      * Get all liked songs from current spotify account and add them to collection
      * 
+     * @throws InterruptedException - when user interrupts
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
@@ -296,6 +303,8 @@ public class Spotify {
 
     /**
      * get all current user saved albums and add them to collection
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();

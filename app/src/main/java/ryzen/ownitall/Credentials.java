@@ -126,36 +126,56 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public void setYoutubeCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Enter youtube application name: ");
-        youtubeApplicationName = Input.request().getString();
-        System.out.print("Enter youtube client id: ");
-        youtubeClientId = Input.request().getString(72);
-        System.out.print("Enter youtube client secret: ");
-        youtubeClientSecret = Input.request().getString(35);
+        try {
+            System.out.print("Enter youtube application name: ");
+            youtubeApplicationName = Input.request().getString();
+            System.out.print("Enter youtube client id: ");
+            youtubeClientId = Input.request().getString(72);
+            System.out.print("Enter youtube client secret: ");
+            youtubeClientSecret = Input.request().getString(35);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting youtube credentials");
+            throw e;
+        }
     }
 
     public void setSpotifyCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please provide your client id: ");
-        spotifyClientId = Input.request().getString(32);
-        System.out.print("Please provide your client secret: ");
-        spotifyClientSecret = Input.request().getString(32);
-        System.out.print("Please provide redirect url:");
-        spotifyRedirectUrl = Input.request().getURL().toString();
+        try {
+            System.out.print("Client id: ");
+            spotifyClientId = Input.request().getString(32);
+            System.out.print("Client secret: ");
+            spotifyClientSecret = Input.request().getString(32);
+            System.out.print("Redirect url:");
+            spotifyRedirectUrl = Input.request().getURL().toString();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting spotify credentials");
+            throw e;
+        }
     }
 
     public void setLastFMCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("Please enter LastFM API key: ");
-        lastFMApiKey = Input.request().getString(32);
+        try {
+            System.out.print("LastFM API key: ");
+            lastFMApiKey = Input.request().getString(32);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting lastfm credentials");
+            throw e;
+        }
     }
 
     public void setJellyfinCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
-        System.out.print("instance url: ");
-        jellyfinUrl = Input.request().getURL().toString();
-        System.out.print("api key: ");
-        jellyfinApiKey = Input.request().getString(32);
+        try {
+            System.out.print("instance url: ");
+            jellyfinUrl = Input.request().getURL().toString();
+            System.out.print("api key: ");
+            jellyfinApiKey = Input.request().getString(32);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting jellyfin credentials");
+            throw e;
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ public class DownloadMenu {
     private static Collection collection = Collection.load();
     private Download download;
 
-    public DownloadMenu() {
+    public DownloadMenu() throws InterruptedException {
         this.download = new Download();
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download Library", this::optionDownloadCollection);

@@ -27,6 +27,8 @@ public class LastFM extends Library {
     /**
      * default LastFM constructor
      * initializes all values and loads from cache
+     * 
+     * @throws InterruptedException - thrown when user interrupts
      */
     public LastFM() throws InterruptedException {
         super();
@@ -36,7 +38,16 @@ public class LastFM extends Library {
         this.queryDiff = 10;
     }
 
-    // https://www.last.fm/api/show/album.getInfo
+    /**
+     * get album from lastfm
+     * https://www.last.fm/api/show/album.getInfo
+     * 
+     * @param - constructed album with atleast a name, optionally artist
+     * 
+     * @return - constructed album with lastfm's data
+     * 
+     * @throws InterruptedException - thrown when user interrupts
+     */
     @Override
     public Album getAlbum(Album album) throws InterruptedException {
         if (album == null) {
@@ -116,6 +127,13 @@ public class LastFM extends Library {
         return null;
     }
 
+    /**
+     * get song from lastfm
+     * 
+     * @param - constructed song with name, optionally artist
+     * @return - constructed song with lastFM data
+     * @throws InterruptedException - thrown when user interrupts
+     */
     @Override
     public Song getSong(Song song) throws InterruptedException {
         if (song == null) {
@@ -181,6 +199,13 @@ public class LastFM extends Library {
         return null;
     }
 
+    /**
+     * get artist from LastFM
+     * 
+     * @param - artist with name
+     * @param - constructed artist with lastFM data
+     * @throws InterruptedException - thrown when user interrupts
+     */
     @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
@@ -224,6 +249,13 @@ public class LastFM extends Library {
         return null;
     }
 
+    /**
+     * get all albums from artist
+     * 
+     * @param - artist with atleast a name
+     * @return - arraylist of constructed albums with lastfm data
+     * @throws InterruptedException - thrown when user interrupts
+     */
     @Override
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         if (artist == null) {
@@ -273,6 +305,12 @@ public class LastFM extends Library {
         return albums;
     }
 
+    /**
+     * build lastfm query in their format
+     * 
+     * @param params - linkedhashmap with param:value
+     * @return - string of url to query
+     */
     private String queryBuilder(LinkedHashMap<String, String> params) {
         try {
             StringBuilder builder = new StringBuilder();
@@ -287,6 +325,14 @@ public class LastFM extends Library {
         }
     }
 
+    /**
+     * query lastfm with the build query and the request type
+     * 
+     * @param type  - ex: getTrack
+     * @param query - built string query using queryBuilder
+     * @return - JsonNode of lastfm response
+     * @throws InterruptedException - thrown when user interrupts
+     */
     private JsonNode lastFMQuery(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in lastFMQuery");

@@ -58,6 +58,7 @@ public class Youtube {
      * Build and return an authorized API client service.
      *
      * @return an authorized API client service
+     * @throws InterruptedException - when user interrupts
      */
     private com.google.api.services.youtube.YouTube getService() throws InterruptedException {
         try {
@@ -96,6 +97,8 @@ public class Youtube {
 
     /**
      * save all youtube liked songs to collection
+     * 
+     * @throws InterruptedException - when user interrupts
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
         if (youtubeApi == null) {
@@ -168,6 +171,7 @@ public class Youtube {
      * current criteria:
      * - gets all videos from any playlist with category id 10
      * 
+     * @throws InterruptedException - when user interrupts
      */
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
@@ -211,6 +215,7 @@ public class Youtube {
      * @param playlistId - youtube id of playlist
      * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
+     * @throws InterruptedException - when user interrupts
      */
     private ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {

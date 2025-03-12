@@ -65,7 +65,7 @@ public class UploadMenu {
         File folder = null;
         try {
             while (folder == null) {
-                System.out.print("*Please provide playlist path / m3u file: ");
+                System.out.print("*Local playlist path / m3u file: ");
                 folder = Input.request().getFile(true);
             }
         } catch (InterruptedException e) {
@@ -89,7 +89,7 @@ public class UploadMenu {
         File folder = null;
         try {
             while (folder == null) {
-                System.out.print("*Please provide album path: ");
+                System.out.print("*Local album path: ");
                 folder = Input.request().getFile(true);
             }
         } catch (InterruptedException e) {
@@ -110,7 +110,7 @@ public class UploadMenu {
         File folder = null;
         try {
             while (folder == null) {
-                System.out.print("*Please provide folder path: ");
+                System.out.print("*Local folder path: ");
                 folder = Input.request().getFile(true);
             }
         } catch (InterruptedException e) {

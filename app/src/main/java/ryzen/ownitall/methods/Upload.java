@@ -276,7 +276,7 @@ public class Upload {
                 logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath());
             }
         }
-        File albumCover = new File(folder, "cover.png");
+        File albumCover = new File(folder, album.getFolderName() + ".png");
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
         }

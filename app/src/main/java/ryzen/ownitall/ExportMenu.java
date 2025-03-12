@@ -38,7 +38,11 @@ public class ExportMenu {
      * download music locally
      */
     private void optionDownload() {
-        new DownloadMenu();
+        try {
+            new DownloadMenu();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting download menu");
+        }
     }
 
     private void optionSpotify() {

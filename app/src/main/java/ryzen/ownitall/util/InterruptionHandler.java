@@ -12,6 +12,10 @@ public class InterruptionHandler implements AutoCloseable {
     private SignalHandler signalHandler;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
 
+    /**
+     * initialize interruption handler
+     * which is thread save
+     */
     public InterruptionHandler() {
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
@@ -19,14 +23,24 @@ public class InterruptionHandler implements AutoCloseable {
         });
     }
 
-    public boolean throwInterruption() throws InterruptedException {
+    /**
+     * throw if interruption was caught
+     * needs to be triggered for interruption to be thrown
+     * 
+     * @throws InterruptedException - when interruption caught
+     */
+    public void throwInterruption() throws InterruptedException {
         if (interrupted.get()) {
             interrupted.set(false);
             throw new InterruptedException();
         }
-        return false;
     }
 
+    /**
+     * force trigger an interruption and reset interruption
+     * 
+     * @throws InterruptedException - forced interruption
+     */
     public void triggerInterruption() throws InterruptedException {
         interrupted.set(false);
         throw new InterruptedException();

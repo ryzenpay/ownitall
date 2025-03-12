@@ -68,6 +68,11 @@ public class Song {
         }
     }
 
+    /**
+     * merge a song into this song
+     * 
+     * @param song - song to get details from
+     */
     public void merge(Song song) {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in merge");
@@ -98,9 +103,15 @@ public class Song {
         return this.name;
     }
 
+    /**
+     * set song name
+     * 
+     * @param name - string to set song name
+     */
     public void setName(String name) {
         if (name == null) {
             logger.debug(this.toString() + ": null song name passed to setName");
+            return;
         }
         this.name = name;
     }
@@ -217,13 +228,24 @@ public class Song {
         this.duration = duration;
     }
 
+    /**
+     * set songs album name
+     * 
+     * @param albumName - string album name
+     */
     public void setAlbumName(String albumName) {
         if (albumName == null) {
             logger.debug(this.toString() + ": null albumName provided in setAlbumName");
+            return;
         }
         this.albumName = albumName;
     }
 
+    /**
+     * get songs album name
+     * 
+     * @return - String song albumname
+     */
     public String getAlbumName() {
         return this.albumName;
     }

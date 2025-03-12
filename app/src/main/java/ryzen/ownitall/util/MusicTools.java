@@ -70,25 +70,40 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    public static void writeData(String fileName, String extension, String data, File folder) throws IOException {
-        if (folder == null || fileName == null) {
-            logger.debug("null folder or filename provided in writeData");
+    /**
+     * write "text" data to a file
+     * 
+     * @param file - file to write data to
+     * @param data - data to write to file
+     * @throws IOException - when exception in file writing
+     */
+    public static void writeData(File file, String data) throws IOException {
+        if (file == null) {
+            logger.debug("null file provided in writeData");
+            return;
+        }
+        if (!file.getParentFile().exists()) {
+            logger.debug("file's parent folder does not exist provided in writeData");
             return;
         }
         if (data == null || data.isEmpty()) {
             logger.debug("null or empty data provided in writeData");
             return;
         }
-        if (!folder.exists()) {
-            logger.debug("folder '" + folder.getAbsolutePath() + "' does not exist in writeData");
-            return;
-        }
-        File dataFile = new File(folder, fileName + "." + extension);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(data);
         }
     }
 
+    /**
+     * write song metadata
+     * 
+     * @param id3Data    - linkedhashmap with FieldKey:String mapping
+     * @param liked      - if song is liked
+     * @param coverImage - uri of song coverimage
+     * @param songFile   - file to write metadata to
+     * @throws Exception - exception when writing metadata
+     */
     public static void writeMetaData(LinkedHashMap<FieldKey, String> id3Data, boolean liked, URI coverImage,
             File songFile) throws Exception {
         if (songFile == null) {
@@ -160,6 +175,13 @@ public class MusicTools {
         AudioFileIO.write(audioFile);
     }
 
+    /**
+     * read metadata from song file
+     * 
+     * @param songFile - song file to read metadata from
+     * @return - linkedhashmap of FieldKey:String with file metadata
+     * @throws Exception - exception reading metadata
+     */
     public static LinkedHashMap<FieldKey, String> readMetaData(File songFile) throws Exception {
         if (songFile == null || !songFile.exists()) {
             logger.debug("Invalid or non existant file provided in readMetaData");
@@ -185,6 +207,14 @@ public class MusicTools {
         return data;
     }
 
+    /**
+     * check if local song is liked using metadata
+     * - requires 5 stars
+     * 
+     * @param songFile - file to read metadata from
+     * @return - true if liked, false if not
+     * @throws Exception - exception when reading metadata
+     */
     public static boolean isSongLiked(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
             logger.debug("null or non file provided in isSongLiked");
@@ -201,6 +231,13 @@ public class MusicTools {
         return false;
     }
 
+    /**
+     * get duration of local song file
+     * 
+     * @param songFile - songfile to check
+     * @return - constructed Duration of songs duration
+     * @throws Exception - exception reading song metadata
+     */
     public static Duration getSongDuration(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
             logger.debug("null or non file provided in isSongLiked");
@@ -211,6 +248,13 @@ public class MusicTools {
         return Duration.ofSeconds(audioHeader.getTrackLength());
     }
 
+    /**
+     * download an image from the web
+     * 
+     * @param url  - URI to fetch image from
+     * @param file - file to download the image to (will make a new one)
+     * @throws IOException - IOException while downloading
+     */
     public static void downloadImage(URI url, File file) throws IOException {
         if (url == null || file == null) {
             logger.debug("null url or file passed in downloadImage");
@@ -225,6 +269,12 @@ public class MusicTools {
         }
     }
 
+    /**
+     * sanitize a fileName to be universally acceptable
+     * 
+     * @param fileName - String filename to sanitize
+     * @return - sanitized String
+     */
     public static String sanitizeFileName(String fileName) {
         if (fileName == null) {
             logger.debug("null filename passed in SanitizeFileName");
@@ -246,5 +296,4 @@ public class MusicTools {
         }
         return sanitized;
     }
-
 }

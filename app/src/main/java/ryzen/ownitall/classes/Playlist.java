@@ -89,6 +89,7 @@ public class Playlist {
     public void setName(String name) {
         if (name == null) {
             logger.debug(this.toString() + ": null playlist name passed to setName");
+            return;
         }
         this.name = name;
     }
@@ -110,6 +111,11 @@ public class Playlist {
         }
     }
 
+    /**
+     * set playlist coverimage (URI)
+     * 
+     * @param coverImage - constructed URI to set as coverimage
+     */
     public void setCoverImage(URI coverImage) {
         if (coverImage == null) {
             logger.debug(this.toString() + ": null URI coverimage provided");
@@ -160,6 +166,12 @@ public class Playlist {
         }
     }
 
+    /**
+     * remove arraylist of songs
+     * orchestrator for removeSong(Song song)
+     * 
+     * @param songs - arraylist of songs to remove
+     */
     public void removeSongs(ArrayList<Song> songs) {
         if (songs == null) {
             logger.debug(this.toString() + ": null songs provided in removesongs");
@@ -212,11 +224,22 @@ public class Playlist {
         return this.songs.size();
     }
 
+    /**
+     * check if playlist has no songs
+     * 
+     * @return - true if empty
+     */
     @JsonIgnore
     public boolean isEmpty() {
         return this.songs.isEmpty();
     }
 
+    /**
+     * check if playlist contains a song
+     * 
+     * @param song - song to check
+     * @return - true if song is contained
+     */
     @JsonIgnore
     public boolean contains(Song song) {
         if (song == null) {

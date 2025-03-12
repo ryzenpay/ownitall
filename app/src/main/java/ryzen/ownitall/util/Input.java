@@ -13,10 +13,18 @@ public class Input {
     private static Input instance;
     private static Scanner scanner;
 
+    /**
+     * default input constructor creating system scanner
+     */
     private Input() {
         scanner = new Scanner(System.in);
     }
 
+    /**
+     * instance loader for input
+     * 
+     * @return - new or existing instance of input
+     */
     public static Input request() {
         if (instance == null) {
             instance = new Input();
@@ -24,6 +32,12 @@ public class Input {
         return instance;
     }
 
+    /**
+     * get string from user input
+     * 
+     * @return - string of user input
+     * @throws InterruptedException - when user interrupts
+     */
     public String getString() throws InterruptedException {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (scanner.hasNextLine()) {
@@ -41,6 +55,13 @@ public class Input {
         throw new RuntimeException();
     }
 
+    /**
+     * get string from user input with enforced length
+     * 
+     * @param length - length the user input has to meet
+     * @return - string of length
+     * @throws InterruptedException - when user interrupts
+     */
     public String getString(int length) throws InterruptedException {
         while (true) {
             String input = getString();
@@ -53,6 +74,12 @@ public class Input {
         }
     }
 
+    /**
+     * get char from user
+     * 
+     * @return - char of user input
+     * @throws InterruptedException - when user interrupts
+     */
     public char getChar() throws InterruptedException {
         while (true) {
             try {
@@ -65,6 +92,12 @@ public class Input {
 
     }
 
+    /**
+     * get int from user
+     * 
+     * @return - int of user input
+     * @throws InterruptedException - when user interrupts
+     */
     public int getInt() throws InterruptedException {
         while (true) {
             try {
@@ -76,6 +109,14 @@ public class Input {
         }
     }
 
+    /**
+     * get int from user between two boundaries
+     * 
+     * @param lowerBound - lowest int boundary
+     * @param upperBound - upper int boundary
+     * @return - int between boundaries
+     * @throws InterruptedException - when user interrupts
+     */
     public int getInt(int lowerBound, int upperBound) throws InterruptedException {
         while (true) {
             try {
@@ -86,12 +127,18 @@ public class Input {
                     System.err.println("Invalid input. outside of bounds: (" + lowerBound + "," + upperBound + ")");
                 }
             } catch (NumberFormatException e) {
-                System.err.print("Invalid input. Please enter a valid integer: ");
+                System.err.print("Invalid input. Enter a valid integer: ");
             }
         }
 
     }
 
+    /**
+     * get long from user input
+     * 
+     * @return - long from user input
+     * @throws InterruptedException - when user interrupts
+     */
     public long getLong() throws InterruptedException {
         while (true) {
             try {
@@ -101,11 +148,18 @@ public class Input {
                 }
                 return Long.parseLong(inputLong);
             } catch (NumberFormatException e) {
-                System.err.print("Invalid input. Please enter a valid long: ");
+                System.err.print("Invalid input. Enter a valid long: ");
             }
         }
     }
 
+    /**
+     * get file from user input
+     * 
+     * @param exists - boolean if the file should exist
+     * @return - constructed file from user input
+     * @throws InterruptedException - when user interrupts
+     */
     public File getFile(boolean exists) throws InterruptedException {
         while (true) {
             String path = getString();
@@ -122,6 +176,12 @@ public class Input {
         }
     }
 
+    /**
+     * get user agreement (y or n)
+     * 
+     * @return - y = true, n = false
+     * @throws InterruptedException - when user interrupts
+     */
     public boolean getAgreement() throws InterruptedException {
         while (true) {
             char choice = getChar();
@@ -135,6 +195,12 @@ public class Input {
         }
     }
 
+    /**
+     * get bool from user input
+     * 
+     * @return - true = true, false = false
+     * @throws InterruptedException - when user interrupts
+     */
     public boolean getBool() throws InterruptedException {
         while (true) {
             String choice = getString();
@@ -148,6 +214,12 @@ public class Input {
         }
     }
 
+    /**
+     * get url from user input
+     * 
+     * @return - constructed URI of input url
+     * @throws InterruptedException - when user interrupts
+     */
     public URI getURL() throws InterruptedException {
         while (true) {
             String link = getString();
@@ -159,6 +231,11 @@ public class Input {
         }
     }
 
+    /**
+     * get user to press enter or interrupt
+     * 
+     * @throws InterruptedException - when user interrupts
+     */
     public void getEnter() throws InterruptedException {
         this.getString();
     }

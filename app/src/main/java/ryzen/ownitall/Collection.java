@@ -24,6 +24,7 @@ import ryzen.ownitall.classes.Song;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
+    private static final Settings settings = Settings.load();
     private static Collection instance;
     private LikedSongs likedSongs;
     private ArrayList<Playlist> playlists;
@@ -229,6 +230,12 @@ public class Collection {
         return likedSongs.getSongs();
     }
 
+    /**
+     * get arraylist of playlists songs which are not in albums
+     * 
+     * @param playlist - playlist to get songs from
+     * @return - arraylist of songs only in that playlist
+     */
     public ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
@@ -243,10 +250,10 @@ public class Collection {
     }
 
     /**
-     * check if song is already in an album, and if so return the album folder
+     * get the album a song is part of
      * 
      * @param song - song to check
-     * @return - album folder
+     * @return - constructed album
      */
     public Album getSongAlbum(Song song) {
         if (song == null) {
@@ -261,6 +268,12 @@ public class Collection {
         return null;
     }
 
+    /**
+     * get the first playlist the song is part of
+     * 
+     * @param song - song to check
+     * @return - constructed playlist
+     */
     public Playlist getSongPlaylist(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongPlaylist");
@@ -348,6 +361,13 @@ public class Collection {
         return null;
     }
 
+    /**
+     * get a playlists m3u String to write to a file
+     * this gets all the paths for songs in albums
+     * 
+     * @param playlist - playlist to get songs from
+     * @return - string in m3u format
+     */
     public String getPlaylistM3U(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in getPlaylistM3u");
@@ -363,12 +383,12 @@ public class Collection {
             output.append("#EXTIMG:").append(playlist.getFolderName() + ".png").append("\n");
         }
         for (Song song : playlist.getSongs()) {
-            File songFile;
-            Album foundAlbum = this.getSongAlbum(song);
-            if (foundAlbum == null) {
-                songFile = new File(song.getFileName());
-            } else {
-                songFile = new File(foundAlbum.getFolderName(), song.getFileName());
+            File songFile = new File(song.getFileName());
+            if (!settings.isDownloadHierachy()) {
+                Album foundAlbum = this.getSongAlbum(song);
+                if (foundAlbum != null) {
+                    songFile = new File(foundAlbum.getFolderName(), song.getFileName());
+                }
             }
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
@@ -377,6 +397,12 @@ public class Collection {
         return output.toString();
     }
 
+    /**
+     * get an albums nfo String to write to a file
+     * 
+     * @param album - album to get songs from
+     * @return - string of an xml nfo file to write to a file
+     */
     public String getAlbumNFO(Album album) {
         if (album == null) {
             logger.debug("null album provided in getAlbumNFO");
@@ -425,7 +451,7 @@ public class Collection {
             // Cover image
             if (album.getCoverImage() != null) {
                 Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode("cover.png"));
+                thumb.appendChild(doc.createTextNode(album.getFolderName() + ".png"));
                 rootElement.appendChild(thumb);
             }
 
@@ -446,6 +472,11 @@ public class Collection {
         }
     }
 
+    /**
+     * get total track count in playlists
+     * 
+     * @return - int of playlist track count
+     */
     public int getPlaylistsTrackCount() {
         int trackCount = 0;
         for (Playlist playlist : this.playlists) {
@@ -454,6 +485,11 @@ public class Collection {
         return trackCount;
     }
 
+    /**
+     * get total track count in albums
+     * 
+     * @return - int of album track count
+     */
     public int getAlbumsTrackCount() {
         int trackCount = 0;
         for (Album album : this.albums) {
@@ -462,6 +498,11 @@ public class Collection {
         return trackCount;
     }
 
+    /**
+     * get total track count with no duplicates
+     * 
+     * @return - int of total track count
+     */
     public int getTotalTrackCount() {
         int trackCount = 0;
         trackCount += this.getStandaloneLikedSongs().size();
@@ -473,10 +514,20 @@ public class Collection {
         return trackCount;
     }
 
+    /**
+     * get count of playlists in collection
+     * 
+     * @return - int of playlists in collection
+     */
     public int getPlaylistCount() {
         return this.playlists.size();
     }
 
+    /**
+     * get count of albums in collection
+     * 
+     * @return - int of playlists in collection
+     */
     public int getAlbumCount() {
         return this.albums.size();
     }

@@ -11,6 +11,9 @@ import org.apache.logging.log4j.Level;
 public class Menu {
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
+    /**
+     * clears screen contents when not in debug mode
+     */
     public static void clearScreen() {
         if (logger.getLevel() != Level.DEBUG) {
             System.out.print("\033[H\033[2J");
@@ -37,7 +40,7 @@ public class Menu {
      *                   remember where they are
      *                   linkedhashmap
      * @return - string choice
-     * 
+     * @throws InterruptedException - when user interrupts
      */
     public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null) {
@@ -70,6 +73,14 @@ public class Menu {
         }
     }
 
+    /**
+     * print menu with options and set values
+     * 
+     * @param setOptions - (linkedhash)map of options with name:value
+     * @param menuName   - desired menu name
+     * @return - name of selected option
+     * @throws InterruptedException - when user interrupts
+     */
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null) {
             logger.debug("null optionset provided in optionMenuWithValue");

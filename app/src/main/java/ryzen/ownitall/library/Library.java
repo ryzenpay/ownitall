@@ -39,6 +39,8 @@ public class Library {
 
     /**
      * instance call method
+     * sets library type with the integer set in settings
+     * automates caching
      * 
      * @return - new or existing Library
      */
@@ -137,6 +139,11 @@ public class Library {
         return null;
     }
 
+    /**
+     * ensure querys are only executed at an interval to prevent api limits
+     * 
+     * @throws InterruptedException - when the user interrupts
+     */
     private void timeoutManager() throws InterruptedException {
         long currentTime = System.currentTimeMillis();
         long elapsedTime = currentTime - lastQueryTime;
@@ -146,6 +153,13 @@ public class Library {
         lastQueryTime = System.currentTimeMillis();
     }
 
+    /**
+     * query the specified url, catch errors or return response
+     * 
+     * @param url - url to query
+     * @return - JsonNode response or null if error
+     * @throws InterruptedException - if user interrupts timeout
+     */
     protected JsonNode query(URI url) throws InterruptedException {
         if (url == null) {
             logger.debug("null url provided to query");

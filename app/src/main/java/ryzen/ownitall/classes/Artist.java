@@ -40,6 +40,11 @@ public class Artist {
         }
     }
 
+    /**
+     * merge content from one artist into this artist
+     * 
+     * @param artist - artist to get info from
+     */
     public void merge(Artist artist) {
         if (artist == null) {
             logger.debug(this.toString() + ": null artist passed in merge");
@@ -60,9 +65,15 @@ public class Artist {
         return this.name;
     }
 
+    /**
+     * set artist name
+     * 
+     * @param name - string name to set
+     */
     public void setName(String name) {
         if (name == null) {
             logger.debug(this.toString() + ": null artist name passed to setName");
+            return;
         }
         this.name = name;
     }

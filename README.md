@@ -28,7 +28,7 @@ to get a last FM api key follow their documentation: https://www.last.fm/api/aut
 
 
 ## YoutubeDL  
-download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp 
+download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp  
 save the absolute executable path and provide it when needed  
 ### requirements  
 - ffmpeg: https://www.ffmpeg.org/   
@@ -72,11 +72,10 @@ Youtube will provide you with all by doing the following:  (can also be done fol
 When doing this, read every TOS as you are using them at the risk of your own youtube account  
 ## Local
 the current format to importing your local music library is currently strict  
-    - if you have a "liked songs" folder, name it "liked songs"  
+    - if you have a "liked songs" folder, name it "liked songs"  (can be changed in settings)
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
         - default is playlist  
-    - cover image of an album needs to be a file called "<ALBUM NAME>.png" in the folder  
-    - "loose" songs in the music library folder (root of folder) are added to "liked songs"  
+    - cover image of an and playlist album needs to be a file called "`<playlist/album name>`.png" in the folder  
 
 
 # Gradle and compiling
