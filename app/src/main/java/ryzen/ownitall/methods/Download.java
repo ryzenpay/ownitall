@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -37,6 +36,8 @@ public class Download {
     private static Collection collection = Collection.load();
     private ExecutorService executor;
     private File downloadFolder;
+    private static final ArrayList<String> whiteList = new ArrayList<>(
+            Arrays.asList("m3u", "png", "nfo", settings.getDownloadFormat()));
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
@@ -135,7 +136,7 @@ public class Download {
             logger.debug("null song or Path provided in downloadSong");
             return;
         }
-        List<String> command = new ArrayList<>();
+        ArrayList<String> command = new ArrayList<>();
         // executables
         command.add(settings.getYoutubedlPath());
         command.add("--ffmpeg-location");
@@ -608,7 +609,6 @@ public class Download {
     }
 
     public void cleanFolder(File folder) {
-        ArrayList<String> whiteList = new ArrayList<>(Arrays.asList("m3u", "png", "nfo", settings.getDownloadFormat()));
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("Folder is null, does not exist or is not a directorty in cleanFolder");
             return;

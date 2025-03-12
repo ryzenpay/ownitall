@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import me.tongfei.progressbar.ProgressBar;
@@ -30,9 +29,15 @@ import org.jaudiotagger.tag.FieldKey;
 public class Upload {
     private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
-    private static final ArrayList<String> extensions = new ArrayList<>(Arrays.asList("mp3", "flac", "wav"));
     private static Library library = Library.load();
     private File localLibrary;
+    private static final ArrayList<String> extensions = new ArrayList<>() {
+        {
+            add("mp3");
+            add("flac");
+            add("wav");
+        }
+    };
 
     /**
      * default local constructor asking for library path
@@ -69,7 +74,6 @@ public class Upload {
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             pb.setExtraMessage(this.localLibrary.getName()).step();
-            likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
             if (settings.isDownloadHierachy()) {
                 File likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
                 if (likedSongsFolder.exists()) {
@@ -85,6 +89,7 @@ public class Upload {
                     }
                 }
             } else {
+                likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
                 for (File folder : this.localLibrary.listFiles()) {
                     interruptionHandler.throwInterruption();
                     if (folder.isDirectory()) {

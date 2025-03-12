@@ -5,10 +5,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.methods.menu.ManualMenu;
-import ryzen.ownitall.methods.menu.SpotifyMenu;
-import ryzen.ownitall.methods.menu.UploadMenu;
-import ryzen.ownitall.methods.menu.YoutubeMenu;
+import ryzen.ownitall.methods.menu.*;
 import ryzen.ownitall.util.Menu;
 
 public class ImportMenu {
