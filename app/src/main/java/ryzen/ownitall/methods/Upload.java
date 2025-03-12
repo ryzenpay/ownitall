@@ -144,6 +144,9 @@ public class Upload {
                     }
                 } else if (file.isFile()) {
                     if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+                        if (file.getName().equalsIgnoreCase(settings.getLikedSongsName() + ".m3u")) {
+                            continue;
+                        }
                         Playlist playlist = getM3UPlaylist(file);
                         if (playlist != null) {
                             pb.setExtraMessage(playlist.getName()).step();

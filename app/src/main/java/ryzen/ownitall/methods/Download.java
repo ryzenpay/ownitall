@@ -149,7 +149,6 @@ public class Download {
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
-        // TODO: max video length?
         command.add("duration>=45"); // exclude shorts
         if (!settings.getDownloadCookiesFile().isEmpty()) {
             command.add("--cookies");
