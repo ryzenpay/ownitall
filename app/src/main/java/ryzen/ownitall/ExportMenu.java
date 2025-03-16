@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.methods.Jellyfin;
 import ryzen.ownitall.methods.menu.*;
 import ryzen.ownitall.util.Menu;
 
@@ -19,6 +20,7 @@ public class ExportMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Download", this::optionDownload);
         options.put("Spotify", this::optionSpotify);
+        options.put("Jellyfin", this::optionJellyfin);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "EXPORT");
@@ -47,9 +49,17 @@ public class ExportMenu {
 
     private void optionSpotify() {
         try {
-            new SpotifyMenu().spotifyExportMenu();
+            new SpotifyMenu().exportMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting spotify export menu");
+        }
+    }
+
+    private void optionJellyfin() {
+        try {
+            new JellyfinMenu().exportMenu();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting up jellyfin");
         }
     }
 }

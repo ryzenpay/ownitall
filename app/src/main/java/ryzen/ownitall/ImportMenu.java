@@ -41,7 +41,7 @@ public class ImportMenu {
      */
     private void optionYoutube() {
         try {
-            new YoutubeMenu().youtubeImportMenu();
+            new YoutubeMenu().importMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up youtube import menu");
         }
@@ -52,7 +52,7 @@ public class ImportMenu {
      */
     private void optionSpotify() {
         try {
-            new SpotifyMenu().spotifyImportMenu();
+            new SpotifyMenu().importMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up spotify import menu");
         }

@@ -20,7 +20,7 @@ public class YoutubeMenu {
         this.youtube = new Youtube();
     }
 
-    public void youtubeImportMenu() {
+    public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import Liked Songs", this::optionImportLikedSongs);

@@ -23,7 +23,7 @@ public class SpotifyMenu {
         this.spotify = new Spotify();
     }
 
-    public void spotifyImportMenu() {
+    public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
@@ -43,7 +43,7 @@ public class SpotifyMenu {
         }
     }
 
-    public void spotifyExportMenu() {
+    public void exportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);

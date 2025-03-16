@@ -55,8 +55,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * Jellyfin Credentials
      * 
      */
-    protected String jellyfinApiKey = "";
     protected String jellyfinUrl = "";
+    protected String jellyfinUsername = "";
+    protected String jellyfinPassword = "";
 
     @JsonIgnore
     public static Credentials load() {
@@ -124,6 +125,18 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return lastFMApiKey;
     }
 
+    public String getJellyfinUrl() {
+        return jellyfinUrl;
+    }
+
+    public String getJellyfinUsername() {
+        return jellyfinUsername;
+    }
+
+    public String getJellyfinPassword() {
+        return jellyfinPassword;
+    }
+
     public void setYoutubeCredentials() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
@@ -170,8 +183,10 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         try {
             System.out.print("instance url: ");
             jellyfinUrl = Input.request().getURL().toString();
-            System.out.print("api key: ");
-            jellyfinApiKey = Input.request().getString(32);
+            System.out.print("username: ");
+            jellyfinUsername = Input.request().getString();
+            System.out.print("password: ");
+            jellyfinPassword = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting jellyfin credentials");
             throw e;
@@ -242,7 +257,10 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     @JsonIgnore
     public boolean jellyfinIsEmpty() {
-        if (this.jellyfinApiKey.isEmpty()) {
+        if (this.jellyfinUsername.isEmpty()) {
+            return true;
+        }
+        if (this.jellyfinPassword.isEmpty()) {
             return true;
         }
         if (this.jellyfinUrl.isEmpty()) {
