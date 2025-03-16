@@ -55,7 +55,11 @@ public class JellyfinMenu {
 
     private void optionExportLikedSongs() {
         logger.debug("Marking all liked songs as favorites...");
-        this.jellyfin.uploadLikedSongs(collection.getLikedSongs().getSongs());
-        logger.debug("successfully marked all liked songs as favorites");
+        try {
+            this.jellyfin.uploadLikedSongs(collection.getLikedSongs().getSongs());
+            logger.debug("successfully marked all liked songs as favorites");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while marking all liked songs as favorites");
+        }
     }
 }

@@ -21,8 +21,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.Progressbar;
 
 public class Jellyfin {
     // TODO: jellyfin integration
@@ -50,7 +53,7 @@ public class Jellyfin {
         ObjectNode credsNode = objectMapper.createObjectNode();
         credsNode.put("Username", credentials.getJellyfinUsername());
         credsNode.put("Pw", credentials.getJellyfinPassword());
-        JsonNode response = this.postQuery("/Users/AuthenticateByName", credsNode);
+        JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
         } else {
@@ -61,18 +64,28 @@ public class Jellyfin {
     }
 
     // https://api.jellyfin.org/#tag/UserLibrary/operation/MarkFavoriteItem
-    public void uploadLikedSongs(ArrayList<Song> songs) {
+    public void uploadLikedSongs(ArrayList<Song> songs) throws InterruptedException {
         if (songs == null) {
             logger.debug("null songs provided in uploadLikedSongs");
             return;
         }
         LinkedHashSet<String> songIds = new LinkedHashSet<>();
-        for (Song song : songs) {
-            songIds.add(this.getSongId(song));
-        }
-        if (!songIds.isEmpty()) {
-            for (String songId : songIds) {
-                this.postQuery("/UserFavoriteItems/" + songId, null);
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", songs.size() * 2);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            for (Song song : songs) {
+                interruptionHandler.throwInterruption();
+                String songId = this.getSongId(song);
+                if (songId != null) {
+                    songIds.add(songId);
+                }
+                pb.setExtraMessage("id: " + song.getName()).step();
+            }
+            if (!songIds.isEmpty()) {
+                for (String songId : songIds) {
+                    interruptionHandler.throwInterruption();
+                    this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                    pb.setExtraMessage("added: " + songId).step();
+                }
             }
         }
     }
@@ -94,7 +107,7 @@ public class Jellyfin {
         params.put("mediaTypes", "Audio");
         params.put("recursive", "true");
         params.put("limit", "1");
-        JsonNode response = this.getQuery("/Items", params);
+        JsonNode response = this.paramQuery("get", "/Items", params);
         if (response != null) {
             JsonNode responseNode = response.get("Items").get(0);
             if (responseNode != null) {
@@ -105,13 +118,17 @@ public class Jellyfin {
         return null;
     }
 
-    private JsonNode getQuery(String type, LinkedHashMap<String, String> params) {
-        if (type == null || type.isEmpty()) {
-            logger.debug("null or invalid type provided in getQuery");
+    private JsonNode paramQuery(String method, String type, LinkedHashMap<String, String> params) {
+        if (method == null || method.isEmpty()) {
+            logger.debug("null or invalid method provided in paramQuery");
             return null;
         }
-        if (params == null || params.isEmpty()) {
-            logger.debug("null or invalid parameters provided in getQuery");
+        if (type == null || type.isEmpty()) {
+            logger.debug("null or invalid type provided in paramQuery");
+            return null;
+        }
+        if (params == null) {
+            logger.debug("null or invalid parameters provided in paramQuery");
             return null;
         }
         StringBuilder builder = new StringBuilder();
@@ -128,7 +145,7 @@ public class Jellyfin {
         try {
             URI url = new URI(credentials.getJellyfinUrl() + type + builder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
             // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
@@ -154,54 +171,46 @@ public class Jellyfin {
             }
             return rootNode;
         } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin query: " + e);
+            logger.error("Exception while constructing jellyfin paramQuery: " + e);
             return null;
         } catch (IOException e) {
-            logger.error("Exception while querying jellyfin: " + e);
+            logger.error("Exception while paramQuery jellyfin: " + e);
             return null;
         }
     }
 
-    private JsonNode postQuery(String type, JsonNode params) {
-        if (type == null || type.isEmpty()) {
-            logger.debug("null or invalid type provided in postQuery");
+    private JsonNode payloadQuery(String method, String type, JsonNode payload) {
+        if (method == null || method.isEmpty()) {
+            logger.debug("null or invalid method provided in payloadQuery");
             return null;
         }
-        if (params == null || params.isEmpty()) {
-            logger.debug("null or invalid parameters provided in postQuery");
+        if (type == null || type.isEmpty()) {
+            logger.debug("null or invalid type provided in payloadQuery");
+            return null;
+        }
+        if (payload == null || payload.isEmpty()) {
+            logger.debug("null or invalid parameters provided in payloadQuery");
             return null;
         }
         try {
             URI url = new URI(credentials.getJellyfinUrl() + type);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
-            if (this.accessToken != null && !this.accessToken.isEmpty()) {
-                // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
-                String authHeader = String.format(
-                        "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
-                        "ownitall",
-                        "Java",
-                        credentials.getJellyfinUsername() + "ownitall",
-                        "10.10.6",
-                        this.accessToken);
-                connection.setRequestProperty("Authorization", authHeader);
-            } else {
-                String authHeader = String.format(
-                        "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\"",
-                        "ownitall",
-                        "Java",
-                        credentials.getJellyfinUsername() + "ownitall",
-                        "10.10.6");
-                connection.setRequestProperty("Authorization", authHeader);
-            }
-            if (params != null) {
-                connection.setDoOutput(true);
-                try (OutputStream os = connection.getOutputStream()) {
-                    byte[] input = params.toString().getBytes("utf-8");
-                    os.write(input, 0, input.length);
-                }
+            // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
+            String authHeader = String.format(
+                    "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
+                    "ownitall",
+                    "Java",
+                    credentials.getJellyfinUsername() + "ownitall",
+                    "10.10.6",
+                    this.accessToken);
+            connection.setRequestProperty("Authorization", authHeader);
+            connection.setDoOutput(true);
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = payload.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -217,10 +226,10 @@ public class Jellyfin {
             }
             return rootNode;
         } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin query: " + e);
+            logger.error("Exception while constructing jellyfin payloadQuery: " + e);
             return null;
         } catch (IOException e) {
-            logger.error("Exception while querying jellyfin: " + e);
+            logger.error("Exception while payloadQuery jellyfin: " + e);
             return null;
         }
     }
