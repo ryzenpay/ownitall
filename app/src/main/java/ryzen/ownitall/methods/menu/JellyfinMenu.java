@@ -70,4 +70,13 @@ public class JellyfinMenu {
             logger.debug("Interrupted while getting all liked songs");
         }
     }
+
+    public void sync() {
+        try {
+            jellyfin.likedSongsCleanUp();
+            jellyfin.uploadLikedSongs(collection.getLikedSongs().getSongs());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncing jellyfin");
+        }
+    }
 }

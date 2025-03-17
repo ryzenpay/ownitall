@@ -27,6 +27,7 @@ public class Main {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         sync.importCollection();
         // main menu
+        options.put("Sync", Main::optionSync);
         options.put("Import", Main::optionImport);
         options.put("Export", Main::optionExport);
         options.put("Inventory", Main::optionInventory);
@@ -48,6 +49,13 @@ public class Main {
             logger.info("Interruption caught in main menu, gracefully closing program");
             optionSave();
         }
+    }
+
+    /**
+     * sync menu
+     */
+    private static void optionSync() {
+        new SyncMenu();
     }
 
     /**

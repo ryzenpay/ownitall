@@ -19,6 +19,7 @@ public class SyncMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Spotify", this::optionSpotify);
         options.put("Local", this::optionLocal);
+        options.put("Jellyfin", this::optionJellyfin);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "IMPORT");
@@ -34,9 +35,6 @@ public class SyncMenu {
         }
     }
 
-    /**
-     * import music from spotify, getting or setting credentials as needed
-     */
     private void optionSpotify() {
         try {
             new SpotifyMenu().sync();
@@ -45,14 +43,19 @@ public class SyncMenu {
         }
     }
 
-    /**
-     * import music from local library
-     */
     private void optionLocal() {
         try {
             new DownloadMenu().sync();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up download sync");
+        }
+    }
+
+    private void optionJellyfin() {
+        try {
+            new JellyfinMenu().sync();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting up jellyfin sync");
         }
     }
 }
