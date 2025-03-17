@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.methods.Jellyfin;
 import ryzen.ownitall.methods.menu.*;
 import ryzen.ownitall.util.Menu;
 

@@ -6,13 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.methods.Jellyfin;
 import ryzen.ownitall.util.Menu;
 
 public class JellyfinMenu {
     private static final Logger logger = LogManager.getLogger(JellyfinMenu.class);
-    private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     Jellyfin jellyfin;
 
@@ -22,6 +20,7 @@ public class JellyfinMenu {
 
     public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
+        options.put("Import Favorites (liked songs)", this::optionImportLikedSongs);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "IMPORT JELLYFIN");
@@ -60,6 +59,15 @@ public class JellyfinMenu {
             logger.debug("successfully marked all liked songs as favorites");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while marking all liked songs as favorites");
+        }
+    }
+
+    private void optionImportLikedSongs() {
+        logger.debug("Getting all jellyfin favorites...");
+        try {
+            collection.addLikedSongs(this.jellyfin.getLikedSongs());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting all liked songs");
         }
     }
 }

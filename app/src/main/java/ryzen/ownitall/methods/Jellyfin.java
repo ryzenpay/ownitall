@@ -23,7 +23,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
@@ -34,6 +38,8 @@ public class Jellyfin {
     // sync liked songs
     private static final Logger logger = LogManager.getLogger(Jellyfin.class);
     private static final Credentials credentials = Credentials.load();
+    private static final Settings settings = Settings.load();
+    private static Library library = Library.load();
     private ObjectMapper objectMapper;
     private String userId;
     private String accessToken;
@@ -87,6 +93,65 @@ public class Jellyfin {
                     pb.setExtraMessage("added: " + songId).step();
                 }
             }
+        }
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    // https://api.jellyfin.org/#tag/UserLibrary/operation/GetItem
+    public LikedSongs getLikedSongs() throws InterruptedException {
+        LikedSongs likedSongs = new LikedSongs();
+        ArrayList<String> songIds = new ArrayList<>();
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            params.put("mediaTypes", "Audio");
+            params.put("recursive", "true");
+            params.put("isFavorite", "true");
+            JsonNode response = this.paramQuery("get", "/Items", params);
+            if (response != null) {
+                JsonNode itemsNode = response.get("Items");
+                if (itemsNode != null && itemsNode.isArray()) {
+                    for (JsonNode itemNode : itemsNode) {
+                        interruptionHandler.throwInterruption();
+                        String id = itemNode.get("Id").asText();
+                        if (id != null && !id.isEmpty()) {
+                            songIds.add(itemNode.get("Id").asText());
+                            pb.setExtraMessage(id).step();
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Unable to get ids of favorite items");
+                return null;
+            }
+            for (String songId : songIds) {
+                interruptionHandler.throwInterruption();
+                JsonNode idResponse = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>());
+                if (idResponse != null) {
+                    Song song = new Song(idResponse.get("Name").asText());
+                    JsonNode artistNode = idResponse.get("Artists").get(0);
+                    if (artistNode != null) {
+                        song.setArtist(new Artist(artistNode.asText()));
+                    }
+                    String albumName = idResponse.get("Album").asText();
+                    if (albumName != null && !albumName.isEmpty()) {
+                        song.setAlbumName(albumName);
+                    }
+                    if (library != null) {
+                        Song foundSong = library.getSong(song);
+                        if (foundSong != null) {
+                            song = foundSong;
+                        } else if (settings.isLibraryVerified()) {
+                            song = null;
+                        }
+                    }
+                    if (song != null) {
+                        likedSongs.addSong(song);
+                        pb.setExtraMessage(song.getName()).step();
+                    }
+                }
+            }
+            return likedSongs;
         }
     }
 
