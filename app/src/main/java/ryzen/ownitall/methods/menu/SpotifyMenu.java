@@ -200,4 +200,21 @@ public class SpotifyMenu {
             logger.debug("Interrupted while uploading spotify albums");
         }
     }
+
+    public void sync() {
+        try {
+            Spotify spotify = new Spotify();
+            spotify.likedSongsCleanUp();
+            spotify.uploadLikedSongs(collection.getLikedSongs().getSongs());
+            spotify.playlistsCleanUp();
+            for (Playlist playlist : collection.getPlaylists()) {
+                spotify.playlistCleanUp(playlist);
+                spotify.uploadPlaylist(playlist);
+            }
+            spotify.albumsCleanUp();
+            spotify.uploadAlbums(collection.getAlbums());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncing spotify");
+        }
+    }
 }

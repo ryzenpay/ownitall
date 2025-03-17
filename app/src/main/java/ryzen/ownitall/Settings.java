@@ -129,12 +129,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected boolean downloadLikedSongsPlaylist = true;
 
     /**
-     * Delete files found in library which are not in collection
-     * this can be used to clean up local copy after mistakes
-     */
-    protected boolean downloadDelete = true;
-
-    /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
@@ -331,13 +325,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public int getLibraryType() {
         return libraryType;
-    }
-
-    /**
-     * @return the downloadDelete
-     */
-    public boolean isDownloadDelete() {
-        return downloadDelete;
     }
 
     public boolean isDownloadLikedSongsPlaylist() {

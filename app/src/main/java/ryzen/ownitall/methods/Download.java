@@ -313,9 +313,6 @@ public class Download {
                 this.writePlaylistData(likedSongsPlaylist, this.downloadFolder);
             }
         }
-        if (settings.isDownloadDelete()) {
-            this.likedSongsCleanUp();
-        }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
@@ -365,25 +362,6 @@ public class Download {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * orchestrator of downloadPlaylist
-     * 
-     * @throws InterruptedException - when user interrupts
-     */
-    public void downloadPlaylists() throws InterruptedException {
-        if (settings.isDownloadDelete()) {
-            this.playlistsCleanUp();
-        }
-        ArrayList<Playlist> playlists = collection.getPlaylists();
-        try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
-            for (Playlist playlist : playlists) {
-                this.downloadPlaylist(playlist);
-                pb.setExtraMessage(playlist.getName()).step();
-            }
-            pb.setExtraMessage("Done").step();
         }
     }
 
@@ -454,9 +432,6 @@ public class Download {
             playlistFolder = this.downloadFolder;
             this.writePlaylistData(playlist, playlistFolder);
         }
-        if (settings.isDownloadDelete()) {
-            this.playlistCleanUp(playlist);
-        }
         try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -506,25 +481,6 @@ public class Download {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * orchestrator for downloadAlbum
-     * 
-     * @throws InterruptedException - when user interrupts
-     */
-    public void downloadAlbums() throws InterruptedException {
-        if (settings.isDownloadDelete()) {
-            this.albumsCleanUp();
-        }
-        ArrayList<Album> albums = collection.getAlbums();
-        try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
-            for (Album album : albums) {
-                this.downloadAlbum(album);
-                pb.setExtraMessage(album.getName()).step();
-            }
-            pb.setExtraMessage("Done").step();
         }
     }
 

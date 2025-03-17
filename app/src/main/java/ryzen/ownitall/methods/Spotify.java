@@ -656,9 +656,6 @@ public class Spotify {
     }
 
     public void uploadLikedSongs(ArrayList<Song> songs) throws InterruptedException {
-        if (settings.isDownloadDelete()) {
-            this.likedSongsCleanUp();
-        }
         ArrayList<String> songIds = new ArrayList<>();
         for (Song song : songs) {
             songIds.add(this.getTrackId(song));

@@ -55,9 +55,13 @@ public class DownloadMenu {
             pb.setExtraMessage("Liked songs");
             download.downloadLikedSongs();
             pb.setExtraMessage("Playlists").step();
-            download.downloadPlaylists();
+            for (Playlist playlist : collection.getPlaylists()) {
+                download.downloadPlaylist(playlist);
+            }
             pb.setExtraMessage("Albums").step();
-            download.downloadAlbums();
+            for (Album album : collection.getAlbums()) {
+                download.downloadAlbum(album);
+            }
             pb.setExtraMessage("Done").step();
             logger.debug("Done downloading music");
         } catch (InterruptedException e) {
@@ -78,7 +82,9 @@ public class DownloadMenu {
                     break;
                 } else if (choice.equals("All")) {
                     logger.debug("Downloading all playlists...");
-                    download.downloadPlaylists();
+                    for (Playlist playlist : collection.getPlaylists()) {
+                        download.downloadPlaylist(playlist);
+                    }
                 } else {
                     logger.debug("Downloading playlist " + choice + "...");
                     download.downloadPlaylist(options.get(choice));
@@ -104,7 +110,9 @@ public class DownloadMenu {
                     break;
                 } else if (choice.equals("All")) {
                     logger.debug("Downloading all albums");
-                    download.downloadAlbums();
+                    for (Album album : collection.getAlbums()) {
+                        download.downloadAlbum(album);
+                    }
                 } else {
                     logger.debug("Downloading album " + choice + "...");
                     download.downloadAlbum(options.get(choice));
@@ -121,10 +129,10 @@ public class DownloadMenu {
         logger.info("Downloading liked songs...");
         try {
             download.downloadLikedSongs();
+            logger.info("Done downloading liked songs");
         } catch (InterruptedException e) {
             logger.debug("Interruption caught downloading liked songs");
         }
-        logger.info("Done downloading liked songs");
     }
 
     private void optionCollectionData() {
@@ -192,11 +200,7 @@ public class DownloadMenu {
         }
     }
 
-    public void optionCleanUp() {
-        if (!settings.isDownloadDelete()) {
-            logger.info("You need to enable downloadDelete in settings to use this");
-            return;
-        }
+    private void optionCleanUp() {
         logger.debug("Cleaning up download folder... ");
         try (ProgressBar pb = Progressbar.progressBar("Clean Up", 4)) {
             pb.setExtraMessage("Liked Songs");
@@ -208,9 +212,27 @@ public class DownloadMenu {
             pb.setExtraMessage("loose files").step();
             download.cleanFolder(download.getDownloadFolder());
             pb.setExtraMessage("Done").step();
+            logger.debug("Done cleanup up download folder");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while performing cleanup");
         }
-        logger.debug("Done cleanup up download folder");
+    }
+
+    public void sync() {
+        try {
+            download.likedSongsCleanUp();
+            download.downloadLikedSongs();
+            download.playlistsCleanUp();
+            for (Playlist playlist : collection.getPlaylists()) {
+                download.playlistCleanUp(playlist);
+                download.downloadPlaylist(playlist);
+            }
+            download.albumsCleanUp();
+            for (Album album : collection.getAlbums()) {
+                download.downloadAlbum(album);
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncing download");
+        }
     }
 }
