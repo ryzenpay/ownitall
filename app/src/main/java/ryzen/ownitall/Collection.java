@@ -56,7 +56,7 @@ public class Collection {
      * save all data from collection
      */
     public void save() {
-        Sync.load().exportCollection();
+        Storage.load().exportCollection();
     }
 
     /**

@@ -57,7 +57,7 @@ public class Tools {
      */
     private void optionArchive() {
         try {
-            Sync.load().archive(true);
+            Storage.load().archive(true);
             System.out.print("Press Enter to continue...");
             Input.request().getEnter();
         } catch (InterruptedException e) {
@@ -70,7 +70,7 @@ public class Tools {
      */
     private void optionUnArchive() {
         try {
-            Sync.load().unArchive();
+            Storage.load().unArchive();
             System.out.print("Press Enter to continue...");
             Input.request().getEnter();
         } catch (InterruptedException e) {

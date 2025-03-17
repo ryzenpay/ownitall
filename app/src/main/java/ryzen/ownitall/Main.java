@@ -13,7 +13,7 @@ import sun.misc.SignalHandler;
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static final Settings settings = Settings.load();
-    private static final Sync sync = Sync.load();
+    private static final Storage sync = Storage.load();
 
     /**
      * main function launching the main ownitall menu

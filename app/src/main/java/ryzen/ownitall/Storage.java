@@ -23,10 +23,10 @@ import ryzen.ownitall.util.Progressbar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Sync {
-    private static final Logger logger = LogManager.getLogger(Sync.class);
+public class Storage {
+    private static final Logger logger = LogManager.getLogger(Storage.class);
     private static final Settings settings = Settings.load();
-    private static Sync instance;
+    private static Storage instance;
     private File dataFolder;
     private File cacheFolder;
     ObjectMapper objectMapper;
@@ -35,7 +35,7 @@ public class Sync {
      * initialize all files for syncronization
      * 
      */
-    public Sync() {
+    public Storage() {
         this.dataFolder = new File(settings.dataFolderPath);
         this.cacheFolder = new File(settings.cacheFolderPath);
         this.setDataFolder();
@@ -48,9 +48,9 @@ public class Sync {
      * 
      * @return - new or existing instance
      */
-    public static Sync load() {
+    public static Storage load() {
         if (instance == null) {
-            instance = new Sync();
+            instance = new Storage();
             logger.debug("New instance created");
         }
         return instance;

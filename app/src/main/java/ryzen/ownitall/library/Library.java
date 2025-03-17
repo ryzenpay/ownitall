@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.Sync;
+import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
@@ -24,7 +24,7 @@ import ryzen.ownitall.classes.Song;
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Settings settings = Settings.load();
-    private static final Sync sync = Sync.load();
+    private static final Storage sync = Storage.load();
     private static Library instance;
     private ObjectMapper objectMapper;
     private long lastQueryTime = 0;
@@ -115,7 +115,7 @@ public class Library {
         this.albums.clear();
         this.songs.clear();
         this.ids.clear();
-        Sync.load().clearCache();
+        Storage.load().clearCache();
         instance = null;
     }
 
