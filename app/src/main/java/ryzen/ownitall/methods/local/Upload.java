@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.methods.local;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +15,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
@@ -30,7 +29,6 @@ public class Upload {
     private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Settings settings = Settings.load();
     private static Library library = Library.load();
-    private File localLibrary;
     private static final ArrayList<String> extensions = new ArrayList<>() {
         {
             add("mp3");
@@ -38,28 +36,10 @@ public class Upload {
             add("wav");
         }
     };
+    private File localLibrary;
 
-    /**
-     * default local constructor asking for library path
-     * 
-     * @throws InterruptedException - when user interrupts
-     */
-    public Upload() throws InterruptedException {
-        if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
-            this.setLocalLibrary();
-        }
-    }
-
-    public Upload(File folder) {
-        this.localLibrary = folder;
-    }
-
-    private void setLocalLibrary() throws InterruptedException {
-        while (this.localLibrary == null || !this.localLibrary.exists()) {
-            System.out.print("Provide absolute path to local music library (folder): ");
-            this.localLibrary = Input.request().getFile(true);
-
-        }
+    public Upload(File localLibrary) {
+        this.localLibrary = localLibrary;
     }
 
     /**

@@ -27,10 +27,7 @@ public class Main {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         sync.importCollection();
         // main menu
-        options.put("Sync", Main::optionSync);
-        options.put("Import", Main::optionImport);
-        options.put("Export", Main::optionExport);
-        options.put("Inventory", Main::optionInventory);
+        options.put("Collection", Main::optionCollection);
         options.put("Save", Main::optionSave);
         options.put("Tools", Main::optionTools);
         options.put("Settings", Main::optionSettings);
@@ -52,30 +49,9 @@ public class Main {
     }
 
     /**
-     * sync menu
+     * collection menu
      */
-    private static void optionSync() {
-        new SyncMenu();
-    }
-
-    /**
-     * import menu
-     */
-    private static void optionImport() {
-        new ImportMenu();
-    }
-
-    /**
-     * export menu
-     */
-    private static void optionExport() {
-        new ExportMenu();
-    }
-
-    /**
-     * edit current library
-     */
-    private static void optionInventory() {
+    private static void optionCollection() {
         new CollectionMenu();
     }
 

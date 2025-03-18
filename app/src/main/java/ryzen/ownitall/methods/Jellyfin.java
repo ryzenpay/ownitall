@@ -33,11 +33,7 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
-public class Jellyfin {
-    // TODO: jellyfin integration
-    // sync playlists
-    // sync albums
-    // sync liked songs
+public class Jellyfin extends Method {
     private static final Logger logger = LogManager.getLogger(Jellyfin.class);
     private static final Credentials credentials = Credentials.load();
     private static final Settings settings = Settings.load();
@@ -73,6 +69,7 @@ public class Jellyfin {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
@@ -105,7 +102,44 @@ public class Jellyfin {
         }
     }
 
+    @Override
+    public void syncLikedSongs() throws InterruptedException {
+        logger.debug("Getting jellyfin liked songs to remove mismatches");
+        LikedSongs likedSongs = this.getLikedSongs();
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            if (likedSongs != null && !likedSongs.isEmpty()) {
+                likedSongs.removeSongs(collection.getLikedSongs().getSongs());
+                for (Song song : likedSongs.getSongs()) {
+                    interruptionHandler.throwInterruption();
+                    String songId = this.getSongId(song);
+                    if (songId != null) {
+                        this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                        logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
+                    }
+                }
+            }
+        }
+    }
+
+    // https://api.jellyfin.org/#tag/UserLibrary/operation/MarkFavoriteItem
+    @Override
+    public void uploadLikedSongs() throws InterruptedException {
+        LikedSongs likedSongs = collection.getLikedSongs();
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", likedSongs.size() * 2);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            for (Song song : likedSongs.getSongs()) {
+                String songId = this.getSongId(song);
+                if (songId != null) {
+                    interruptionHandler.throwInterruption();
+                    this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                    pb.setExtraMessage(song.getName()).step();
+                }
+            }
+        }
+    }
+
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
@@ -119,8 +153,8 @@ public class Jellyfin {
                 if (itemsNode != null && itemsNode.isArray()) {
                     for (JsonNode itemNode : itemsNode) {
                         interruptionHandler.throwInterruption();
-                        Playlist playlist = this.getPlaylist(itemNode.get("Name").asText(),
-                                itemNode.get("Id").asText());
+                        Playlist playlist = this.getPlaylist(itemNode.get("Id").asText(),
+                                itemNode.get("Name").asText());
                         if (playlist != null && !playlist.isEmpty()) {
                             playlists.add(playlist);
                             pb.setExtraMessage(playlist.getName()).step();
@@ -135,11 +169,8 @@ public class Jellyfin {
         }
     }
 
-    public Playlist getPlaylist(String playlistName, String playlistId) throws InterruptedException {
-        if (playlistName == null) {
-            logger.debug("null playlist name provided in getPlaylist");
-            return null;
-        }
+    @Override
+    public Playlist getPlaylist(String playlistId, String playlistName) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("Null playlist id provided in getPlaylist");
             return null;
@@ -177,6 +208,7 @@ public class Jellyfin {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
@@ -190,7 +222,13 @@ public class Jellyfin {
                 if (itemsNode != null && itemsNode.isArray()) {
                     for (JsonNode itemNode : itemsNode) {
                         interruptionHandler.throwInterruption();
-                        Album album = this.getAlbum(itemNode.get("Name").asText(), itemNode.get("Id").asText());
+                        String artistName = null;
+                        JsonNode artistNode = response.get("Artists").get(0);
+                        if (artistNode != null) {
+                            artistName = artistNode.asText();
+                        }
+                        Album album = this.getAlbum(itemNode.get("Id").asText(), itemNode.get("Name").asText(),
+                                artistName);
                         if (album != null && !album.isEmpty()) {
                             albums.add(album);
                             pb.setExtraMessage(album.getName()).step();
@@ -205,16 +243,16 @@ public class Jellyfin {
         }
     }
 
-    public Album getAlbum(String albumName, String albumId) throws InterruptedException {
-        if (albumName == null) {
-            logger.debug("null albumname provided in getAlbum");
-            return null;
-        }
+    @Override
+    public Album getAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException {
         if (albumId == null) {
             logger.debug("null album id provided in getAlbum");
             return null;
         }
         Album album = new Album(albumName);
+        if (albumArtistName != null) {
+            album.addArtist(new Artist(albumArtistName));
+        }
         ArrayList<Song> songs = this.getAlbumSongs(albumId);
         if (songs != null) {
             album.addSongs(songs);
@@ -259,43 +297,6 @@ public class Jellyfin {
         } else {
             logger.debug("Unable to get ids of album songs: " + albumId);
             return null;
-        }
-    }
-
-    public void likedSongsCleanUp() throws InterruptedException {
-        logger.debug("Getting jellyfin liked songs to remove mismatches");
-        LikedSongs likedSongs = this.getLikedSongs();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            if (likedSongs != null && !likedSongs.isEmpty()) {
-                likedSongs.removeSongs(collection.getLikedSongs().getSongs());
-                for (Song song : likedSongs.getSongs()) {
-                    interruptionHandler.throwInterruption();
-                    String songId = this.getSongId(song);
-                    if (songId != null) {
-                        this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
-                        logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
-                    }
-                }
-            }
-        }
-    }
-
-    // https://api.jellyfin.org/#tag/UserLibrary/operation/MarkFavoriteItem
-    public void uploadLikedSongs(ArrayList<Song> songs) throws InterruptedException {
-        if (songs == null) {
-            logger.debug("null songs provided in uploadLikedSongs");
-            return;
-        }
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", songs.size() * 2);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (Song song : songs) {
-                String songId = this.getSongId(song);
-                if (songId != null) {
-                    interruptionHandler.throwInterruption();
-                    this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
-                    pb.setExtraMessage(song.getName()).step();
-                }
-            }
         }
     }
 

@@ -57,11 +57,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     protected Integer spotifyPlaylistLimit = 20;
 
     /**
-     * delete any tracks in playlists and liked songs which are not in collection
-     */
-    public boolean spotifyDelete = true;
-
-    /**
      * to limit number of songs in each youtube API batch query
      */
     protected Long youtubeSongLimit = 50L;
@@ -210,10 +205,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public int getSpotifyPlaylistLimit() {
         return spotifyPlaylistLimit;
-    }
-
-    public boolean isSpotifyDelete() {
-        return this.spotifyDelete;
     }
 
     public Long getYoutubeSongLimit() {

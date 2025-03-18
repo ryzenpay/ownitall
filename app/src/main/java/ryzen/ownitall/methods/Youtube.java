@@ -15,7 +15,6 @@ import com.google.api.services.youtube.model.*;
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -35,7 +34,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Youtube {
+public class Youtube extends Method {
     private static final Logger logger = LogManager.getLogger(Youtube.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
@@ -50,6 +49,7 @@ public class Youtube {
      * @throws InterruptedException - when user interrupts
      */
     public Youtube() throws InterruptedException {
+        super();
         if (credentials.youtubeIsEmpty()) {
             credentials.setYoutubeCredentials();
         }
@@ -103,6 +103,7 @@ public class Youtube {
      * @return - constructed likedsongs
      * @throws InterruptedException - when user interrupts
      */
+    @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         if (youtubeApi == null) {
             return null;
@@ -158,20 +159,6 @@ public class Youtube {
     }
 
     /**
-     * save all youtube albums to collection
-     * currently not supported as there is no youtube music api
-     * 
-     * @return - arraylist of albums
-     */
-    public ArrayList<Album> getAlbums() { // currently not supported (no youtube music API)
-        if (youtubeApi == null) {
-            return null;
-        }
-        ArrayList<Album> albums = new ArrayList<>();
-        return albums;
-    }
-
-    /**
      * get saved youtube playlists
      * current criteria:
      * - gets all videos from any playlist with category id 10
@@ -179,6 +166,7 @@ public class Youtube {
      * @return - arraylist of playlists
      * @throws InterruptedException - when user interrupts
      */
+    @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
         if (youtubeApi == null) {
