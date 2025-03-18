@@ -624,7 +624,10 @@ public class Spotify {
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             ArrayList<String> songIds = new ArrayList<>();
             for (Song song : likedSongs.getSongs()) {
-                songIds.add(this.getTrackId(song));
+                String id = this.getTrackId(song);
+                if (id != null) {
+                    songIds.add(id);
+                }
             }
             if (songIds.isEmpty()) {
                 return;
@@ -658,7 +661,10 @@ public class Spotify {
     public void uploadLikedSongs(ArrayList<Song> songs) throws InterruptedException {
         ArrayList<String> songIds = new ArrayList<>();
         for (Song song : songs) {
-            songIds.add(this.getTrackId(song));
+            String id = this.getTrackId(song);
+            if (id != null) {
+                songIds.add(id);
+            }
         }
         if (songIds.isEmpty()) {
             logger.debug("No liked songs in collection");
@@ -740,7 +746,10 @@ public class Spotify {
                 // songs.removeAll(playlist.getSongs());
                 ArrayList<String> songIds = new ArrayList<>();
                 for (Song song : songs) {
-                    songIds.add(this.getTrackId(song));
+                    String id = this.getTrackId(song);
+                    if (id != null) {
+                        songIds.add(id);
+                    }
                 }
                 if (songIds.isEmpty()) {
                     return;
@@ -856,7 +865,10 @@ public class Spotify {
             albums.removeAll(collection.getAlbums());
             ArrayList<String> albumIds = new ArrayList<>();
             for (Album album : albums) {
-                albumIds.add(this.getAlbumId(album));
+                String id = this.getAlbumId(album);
+                if (id != null) {
+                    albumIds.add(id);
+                }
             }
             if (albumIds.isEmpty()) {
                 return;
@@ -896,7 +908,10 @@ public class Spotify {
         }
         ArrayList<String> albumIds = new ArrayList<>();
         for (Album album : albums) {
-            albumIds.add(this.getAlbumId(album));
+            String id = this.getAlbumId(album);
+            if (id != null) {
+                albumIds.add(id);
+            }
         }
         if (albumIds.isEmpty()) {
             logger.debug("No Saved albums in collection");

@@ -82,15 +82,24 @@ public class Upload {
                 File likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
                 if (likedSongsFolder.exists()) {
                     pb.setExtraMessage(likedSongsFolder.getName()).step();
-                    likedSongs.addSongs(getSongs(likedSongsFolder));
+                    ArrayList<Song> songs = getSongs(likedSongsFolder);
+                    if (songs != null) {
+                        likedSongs.addSongs(songs);
+                    }
                 }
             } else {
-                likedSongs.addSongs(getLikedSongs(this.localLibrary).getSongs());
+                LikedSongs rootLikedSongs = getLikedSongs(this.localLibrary);
+                if (rootLikedSongs != null) {
+                    likedSongs.addSongs(rootLikedSongs.getSongs());
+                }
                 for (File folder : this.localLibrary.listFiles()) {
                     interruptionHandler.throwInterruption();
                     if (folder.isDirectory()) {
                         pb.setExtraMessage(folder.getName()).step();
-                        likedSongs.addSongs(getLikedSongs(folder).getSongs());
+                        LikedSongs folderLikedSongs = getLikedSongs(folder);
+                        if (folderLikedSongs != null) {
+                            likedSongs.addSongs(folderLikedSongs.getSongs());
+                        }
                     }
                 }
             }

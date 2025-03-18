@@ -165,7 +165,7 @@ public class Youtube {
      */
     public ArrayList<Album> getAlbums() { // currently not supported (no youtube music API)
         if (youtubeApi == null) {
-            return new ArrayList<>();
+            return null;
         }
         ArrayList<Album> albums = new ArrayList<>();
         return albums;
@@ -182,7 +182,7 @@ public class Youtube {
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
         if (youtubeApi == null) {
-            return new ArrayList<>();
+            return null;
         }
         ArrayList<Playlist> playlists = new ArrayList<>();
         try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
@@ -201,7 +201,7 @@ public class Youtube {
                     interruptionHandler.throwInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
-                    if (!songs.isEmpty()) {
+                    if (songs != null) {
                         pb.setExtraMessage(playlist.getName()).step();
                         playlist.addSongs(songs);
                         playlists.add(playlist);

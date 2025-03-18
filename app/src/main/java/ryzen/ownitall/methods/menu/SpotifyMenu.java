@@ -203,7 +203,6 @@ public class SpotifyMenu {
 
     public void sync() {
         try {
-            Spotify spotify = new Spotify();
             spotify.likedSongsCleanUp();
             spotify.uploadLikedSongs(collection.getLikedSongs().getSongs());
             spotify.playlistsCleanUp();

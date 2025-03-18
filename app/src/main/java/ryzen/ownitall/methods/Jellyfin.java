@@ -24,8 +24,10 @@ import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
@@ -70,6 +72,196 @@ public class Jellyfin {
         }
     }
 
+    // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    public LikedSongs getLikedSongs() throws InterruptedException {
+        LikedSongs likedSongs = new LikedSongs();
+        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            LinkedHashMap<String, String> params = new LinkedHashMap<>();
+            params.put("mediaTypes", "Audio");
+            params.put("recursive", "true");
+            params.put("isFavorite", "true");
+            JsonNode response = this.paramQuery("get", "/Items", params);
+            if (response != null) {
+                JsonNode itemsNode = response.get("Items");
+                if (itemsNode != null && itemsNode.isArray()) {
+                    for (JsonNode itemNode : itemsNode) {
+                        interruptionHandler.throwInterruption();
+                        String id = itemNode.get("Id").asText();
+                        if (id != null && !id.isEmpty()) {
+                            Song song = this.getSong(id);
+                            if (song != null) {
+                                likedSongs.addSong(song);
+                                pb.setExtraMessage(song.getName()).step();
+                            }
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Unable to get ids of favorite items");
+                return null;
+            }
+            return likedSongs;
+        }
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    public ArrayList<Playlist> getPlaylists() throws InterruptedException {
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            LinkedHashMap<String, String> params = new LinkedHashMap<>();
+            params.put("IncludeItemTypes", "Playlist");
+            params.put("recursive", "true");
+            JsonNode response = this.paramQuery("get", "/Items", params);
+            if (response != null) {
+                JsonNode itemsNode = response.get("Items");
+                if (itemsNode != null && itemsNode.isArray()) {
+                    for (JsonNode itemNode : itemsNode) {
+                        interruptionHandler.throwInterruption();
+                        Playlist playlist = this.getPlaylist(itemNode.get("Name").asText(),
+                                itemNode.get("Id").asText());
+                        if (playlist != null && !playlist.isEmpty()) {
+                            playlists.add(playlist);
+                            pb.setExtraMessage(playlist.getName()).step();
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Unable to get ids of playlists");
+                return null;
+            }
+            return playlists;
+        }
+    }
+
+    public Playlist getPlaylist(String playlistName, String playlistId) throws InterruptedException {
+        if (playlistName == null) {
+            logger.debug("null playlist name provided in getPlaylist");
+            return null;
+        }
+        if (playlistId == null) {
+            logger.debug("Null playlist id provided in getPlaylist");
+            return null;
+        }
+        Playlist playlist = new Playlist(playlistName);
+        ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
+        if (songs != null) {
+            playlist.addSongs(songs);
+        }
+        return playlist;
+    }
+
+    // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist
+    public ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
+        if (playlistId == null) {
+            logger.debug("Null or empty playlist id provided in getPlaylistSongs");
+            return null;
+        }
+        ArrayList<Song> songs = new ArrayList<>();
+        JsonNode response = this.paramQuery("get", "/Playlists/" + playlistId, new LinkedHashMap<>());
+        if (response != null) {
+            JsonNode itemIdsNode = response.get("ItemIds");
+            if (itemIdsNode != null && itemIdsNode.isArray()) {
+                for (JsonNode itemIdNode : itemIdsNode) {
+                    Song song = this.getSong(itemIdNode.asText());
+                    if (song != null) {
+                        songs.add(song);
+                    }
+                }
+            }
+            return songs;
+        }
+        logger.debug("Unable to find playlist songs '" + playlistId + "' in jellyfin");
+        return null;
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    public ArrayList<Album> getAlbums() throws InterruptedException {
+        ArrayList<Album> albums = new ArrayList<>();
+        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            LinkedHashMap<String, String> params = new LinkedHashMap<>();
+            params.put("IncludeItemTypes", "MusicAlbum");
+            params.put("recursive", "true");
+            JsonNode response = this.paramQuery("get", "/Items", params);
+            if (response != null) {
+                JsonNode itemsNode = response.get("Items");
+                if (itemsNode != null && itemsNode.isArray()) {
+                    for (JsonNode itemNode : itemsNode) {
+                        interruptionHandler.throwInterruption();
+                        Album album = this.getAlbum(itemNode.get("Name").asText(), itemNode.get("Id").asText());
+                        if (album != null && !album.isEmpty()) {
+                            albums.add(album);
+                            pb.setExtraMessage(album.getName()).step();
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Unable to get ids of albums");
+                return null;
+            }
+            return albums;
+        }
+    }
+
+    public Album getAlbum(String albumName, String albumId) throws InterruptedException {
+        if (albumName == null) {
+            logger.debug("null albumname provided in getAlbum");
+            return null;
+        }
+        if (albumId == null) {
+            logger.debug("null album id provided in getAlbum");
+            return null;
+        }
+        Album album = new Album(albumName);
+        ArrayList<Song> songs = this.getAlbumSongs(albumId);
+        if (songs != null) {
+            album.addSongs(songs);
+        }
+        if (library != null) {
+            Album foundAlbum = library.getAlbum(album);
+            if (foundAlbum != null) {
+                album = foundAlbum;
+            } else if (settings.isLibraryVerified()) {
+                album = null;
+            }
+        }
+        return album;
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    public ArrayList<Song> getAlbumSongs(String albumId) throws InterruptedException {
+        if (albumId == null) {
+            logger.debug("empty or null albumId provided in getAlbumSongs");
+            return null;
+        }
+        ArrayList<Song> songs = new ArrayList<>();
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("IncludeItemTypes", "Audio");
+        params.put("albumIds", albumId);
+        params.put("recursive", "true");
+        JsonNode response = this.paramQuery("get", "/Items", params);
+        if (response != null) {
+            JsonNode itemsNode = response.get("Items");
+            if (itemsNode != null && itemsNode.isArray()) {
+                for (JsonNode itemNode : itemsNode) {
+                    String id = itemNode.get("Id").asText();
+                    if (id != null && !id.isEmpty()) {
+                        Song song = this.getSong(id);
+                        if (song != null) {
+                            songs.add(song);
+                        }
+                    }
+                }
+            }
+            return songs;
+        } else {
+            logger.debug("Unable to get ids of album songs: " + albumId);
+            return null;
+        }
+    }
+
     public void likedSongsCleanUp() throws InterruptedException {
         logger.debug("Getting jellyfin liked songs to remove mismatches");
         LikedSongs likedSongs = this.getLikedSongs();
@@ -107,53 +299,20 @@ public class Jellyfin {
         }
     }
 
-    // https://api.jellyfin.org/#tag/Items/operation/GetItems
-    public LikedSongs getLikedSongs() throws InterruptedException {
-        LikedSongs likedSongs = new LikedSongs();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            params.put("mediaTypes", "Audio");
-            params.put("recursive", "true");
-            params.put("isFavorite", "true");
-            JsonNode response = this.paramQuery("get", "/Items", params);
-            if (response != null) {
-                JsonNode itemsNode = response.get("Items");
-                if (itemsNode != null && itemsNode.isArray()) {
-                    for (JsonNode itemNode : itemsNode) {
-                        interruptionHandler.throwInterruption();
-                        String id = itemNode.get("Id").asText();
-                        if (id != null && !id.isEmpty()) {
-                            Song song = this.getSong(id);
-                            if (song != null) {
-                                likedSongs.addSong(song);
-                                pb.setExtraMessage(song.getName()).step();
-                            }
-                        }
-                    }
-                }
-            } else {
-                logger.debug("Unable to get ids of favorite items");
-                return null;
-            }
-            return likedSongs;
-        }
-    }
-
     // https://api.jellyfin.org/#tag/UserLibrary/operation/GetItem
     public Song getSong(String songId) throws InterruptedException {
-        if (songId == null || songId.isEmpty()) {
+        if (songId == null) {
             logger.debug("empty or null songId provided in getSong");
             return null;
         }
-        JsonNode idResponse = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>());
-        if (idResponse != null) {
-            Song song = new Song(idResponse.get("Name").asText());
-            JsonNode artistNode = idResponse.get("Artists").get(0);
+        JsonNode response = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>());
+        if (response != null) {
+            Song song = new Song(response.get("Name").asText());
+            JsonNode artistNode = response.get("Artists").get(0);
             if (artistNode != null) {
                 song.setArtist(new Artist(artistNode.asText()));
             }
-            String albumName = idResponse.get("Album").asText();
+            String albumName = response.get("Album").asText();
             if (albumName != null && !albumName.isEmpty()) {
                 song.setAlbumName(albumName);
             }
@@ -200,11 +359,11 @@ public class Jellyfin {
     }
 
     private JsonNode paramQuery(String method, String type, LinkedHashMap<String, String> params) {
-        if (method == null || method.isEmpty()) {
+        if (method == null) {
             logger.debug("null or invalid method provided in paramQuery");
             return null;
         }
-        if (type == null || type.isEmpty()) {
+        if (type == null) {
             logger.debug("null or invalid type provided in paramQuery");
             return null;
         }
@@ -261,15 +420,15 @@ public class Jellyfin {
     }
 
     private JsonNode payloadQuery(String method, String type, JsonNode payload) {
-        if (method == null || method.isEmpty()) {
+        if (method == null) {
             logger.debug("null or invalid method provided in payloadQuery");
             return null;
         }
-        if (type == null || type.isEmpty()) {
+        if (type == null) {
             logger.debug("null or invalid type provided in payloadQuery");
             return null;
         }
-        if (payload == null || payload.isEmpty()) {
+        if (payload == null) {
             logger.debug("null or invalid parameters provided in payloadQuery");
             return null;
         }
