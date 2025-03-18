@@ -3,6 +3,8 @@ package ryzen.ownitall.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +14,7 @@ public class Input {
     private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
     private static Scanner scanner;
+    private static Queue<String> nonInteractive = new LinkedList<>();
 
     /**
      * default input constructor creating system scanner
@@ -33,12 +36,35 @@ public class Input {
     }
 
     /**
+     * instance loader for input with predefined input
+     * 
+     * @return - new or existing instance of input
+     */
+    public static Input request(String params) {
+        if (params == null) {
+            logger.error("null params provided in input request");
+            return null;
+        }
+        if (instance == null) {
+            instance = new Input();
+        }
+        String[] inputParams = params.split(",");
+        for (String param : inputParams) {
+            nonInteractive.add(param);
+        }
+        return instance;
+    }
+
+    /**
      * get string from user input
      * 
      * @return - string of user input
      * @throws InterruptedException - when user interrupts
      */
     public String getString() throws InterruptedException {
+        if (!nonInteractive.isEmpty()) {
+            return nonInteractive.poll();
+        }
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (scanner.hasNextLine()) {
                 return scanner.nextLine().trim();

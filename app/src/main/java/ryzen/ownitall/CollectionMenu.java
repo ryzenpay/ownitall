@@ -59,6 +59,7 @@ public class CollectionMenu {
     }
 
     private void optionSync() {
+        // TODO: sync from to
         try {
             new MethodMenu().sync();
         } catch (InterruptedException e) {

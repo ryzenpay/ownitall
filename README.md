@@ -14,6 +14,11 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
+## Flags
+
+- -i : non interactive mode which requires a string parameter in the format of: `1,1,4,1,Vultures,0,0,0,0,0`  
+
+
 ## Library  
 A library can be used to get the best metadata and coverart for your tracks, there are several options and they each have their benefits and drawbacks
 ### MusicBrainz

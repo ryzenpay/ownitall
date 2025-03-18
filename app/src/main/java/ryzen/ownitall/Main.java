@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -21,6 +22,7 @@ public class Main {
      * @param args - possible arguments to pass (not defined)
      */
     public static void main(String[] args) {
+        handleFlags(args);
         Menu.clearScreen();
         // do nothing with SIGINT as menu should catch it
         Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
@@ -45,6 +47,26 @@ public class Main {
         } catch (InterruptedException e) {
             logger.info("Interruption caught in main menu, gracefully closing program");
             optionSave();
+        }
+    }
+
+    private static void handleFlags(String[] args) {
+        if (args == null || args.length == 0) {
+            logger.debug("no flags provided");
+            return;
+        }
+        for (int i = 0; i < args.length - 1; i++) {
+            String arg = args[i];
+            if (arg != null) {
+                if (arg.startsWith("-")) {
+                    i++;
+                    String param = args[i];
+                    if (arg.startsWith("-i")) {
+                        logger.debug("non interactive parameter provided");
+                        Input.request(param);
+                    }
+                }
+            }
         }
     }
 
