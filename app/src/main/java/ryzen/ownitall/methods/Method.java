@@ -26,8 +26,10 @@ public class Method {
                 break;
             case "Local":
                 method = new Local();
+                break;
             case "Manual":
                 method = new Manual();
+                break;
             default:
                 logger.error("Unsupported method '" + choice + "' provided in method constructor");
                 method = null;
