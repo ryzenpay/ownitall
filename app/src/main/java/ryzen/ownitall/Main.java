@@ -40,9 +40,8 @@ public class Main {
                     logger.info("Exiting program...");
                     optionSave();
                     System.exit(0);
-                } else {
-                    options.get(choice).run();
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.info("Interruption caught in main menu, gracefully closing program");
@@ -61,7 +60,7 @@ public class Main {
                 if (arg.startsWith("-")) {
                     i++;
                     String param = args[i];
-                    if (arg.startsWith("-i")) {
+                    if (arg.toLowerCase().contains("-i")) {
                         logger.debug("non interactive parameter provided");
                         Input.request(param);
                     }

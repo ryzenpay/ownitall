@@ -35,13 +35,10 @@ public class Manual extends Method {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "MANUAL MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting manual menu choice");
@@ -57,13 +54,10 @@ public class Manual extends Method {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "ADD MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting manual add menu choice");
@@ -137,16 +131,13 @@ public class Manual extends Method {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        return;
-                    } else {
-                        Song song = interactiveCreateSong();
-                        if (song != null) {
-                            options.get(choice).addSong(song);
-                            logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
-                        }
-                    }
+                if (choice.equals("Exit")) {
+                    return;
+                }
+                Song song = interactiveCreateSong();
+                if (song != null) {
+                    options.get(choice).addSong(song);
+                    logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
                 }
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting manual add song playlist option");
@@ -237,13 +228,10 @@ public class Manual extends Method {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting collection edit menu choice");
@@ -262,19 +250,17 @@ public class Manual extends Method {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        return;
-                    } else {
-                        collection.removePlaylist(options.get(choice));
-                        logger.info("Successfully removed playlist: '" + choice + "'");
-                    }
+                if (choice.equals("Exit")) {
+                    return;
                 }
+                collection.removePlaylist(options.get(choice));
+                logger.info("Successfully removed playlist: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete playlist choice");
                 return;
             }
         }
+
     }
 
     /**
@@ -288,14 +274,11 @@ public class Manual extends Method {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        return;
-                    } else {
-                        collection.removeAlbum(options.get(choice));
-                        logger.info("Successfully removed album: '" + choice + "'");
-                    }
+                if (choice.equals("Exit")) {
+                    return;
                 }
+                collection.removeAlbum(options.get(choice));
+                logger.info("Successfully removed album: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete album option");
                 return;
@@ -314,14 +297,11 @@ public class Manual extends Method {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        return;
-                    } else {
-                        collection.removeLikedSong(options.get(choice));
-                        logger.info("Successfully removed liked song: '" + choice + "'");
-                    }
+                if (choice.equals("Exit")) {
+                    return;
                 }
+                collection.removeLikedSong(options.get(choice));
+                logger.info("Successfully removed liked song: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete liked song choice");
                 return;
@@ -352,12 +332,8 @@ public class Manual extends Method {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "MERGE MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
             }
         } catch (InterruptedException e) {
@@ -374,28 +350,19 @@ public class Manual extends Method {
             options.put(playlist.toString(), playlist);
         }
         try {
-            while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        return;
-                    } else {
-                        Playlist playlist = options.get(choice);
-                        options.remove(choice);
-                        String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
-                        if (choice2 != null) {
-                            if (choice2.equals("Exit")) {
-                                return;
-                            } else {
-                                playlist.merge(options.get(choice2));
-                                collection.removePlaylist(options.get(choice2));
-                                logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
-                                break;
-                            }
-                        }
-                    }
-                }
+            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
+            if (choice.equals("Exit")) {
+                return;
             }
+            Playlist playlist = options.get(choice);
+            options.remove(choice);
+            String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
+            if (choice2.equals("Exit")) {
+                return;
+            }
+            playlist.merge(options.get(choice2));
+            collection.removePlaylist(options.get(choice2));
+            logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting collection merge playlist choice");
         }

@@ -27,15 +27,12 @@ public class MethodMenu {
         options.add("Local");
         options.add("Manual");
         options.add("Jellyfin");
-        while (true) {
-            String choice = Menu.optionMenu(options, "METHODS");
-            if (choice.equals("Exit")) {
-                throw new InterruptedException();
-            } else {
-                this.choice = choice;
-                break;
-            }
+
+        String choice = Menu.optionMenu(options, "METHODS");
+        if (choice.equals("Exit")) {
+            throw new InterruptedException();
         }
+        this.choice = choice;
         this.method = Method.load(choice);
     }
 
@@ -50,9 +47,8 @@ public class MethodMenu {
                 String choice = Menu.optionMenu(options.keySet(), "IMPORT " + this.choice.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
-                } else {
-                    options.get(choice).run();
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting " + choice + " import menu choice");
@@ -163,9 +159,8 @@ public class MethodMenu {
                 String choice = Menu.optionMenu(options.keySet(), "EXPORT " + this.choice.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
-                } else {
-                    options.get(choice).run();
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting " + this.choice + " export menu choice");

@@ -26,14 +26,10 @@ public class Tools {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
-
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting tools menu response");

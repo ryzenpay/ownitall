@@ -1,6 +1,9 @@
 package ryzen.ownitall.methods;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,31 +14,24 @@ import ryzen.ownitall.classes.Playlist;
 
 public class Method {
     private static final Logger logger = LogManager.getLogger(Method.class);
+    public static final LinkedHashMap<String, Class<? extends Method>> methods = new LinkedHashMap<>(
+            Map.of("Jellyfin", Jellyfin.class, "Spotify", Spotify.class,
+                    "Youtube", Youtube.class, "Local", Local.class, "Manual", Manual.class));
 
     public static Method load(String choice) throws InterruptedException {
-        Method method;
-        switch (choice) {
-            case "Jellyfin":
-                method = new Jellyfin();
-                break;
-            case "Spotify":
-                method = new Spotify();
-                break;
-            case "Youtube":
-                method = new Youtube();
-                break;
-            case "Local":
-                method = new Local();
-                break;
-            case "Manual":
-                method = new Manual();
-                break;
-            default:
-                logger.error("Unsupported method '" + choice + "' provided in method constructor");
-                method = null;
-                break;
+        Class<? extends Method> methodClass = methods.get(choice);
+        if (methodClass != null) {
+            try {
+                return methodClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                    | InvocationTargetException e) {
+                logger.error("Error instantiating method '" + choice + "': " + e);
+                return null;
+            }
+        } else {
+            logger.error("Unsupported method '" + choice + "' provided in method constructor");
+            return null;
         }
-        return method;
     }
 
     public LikedSongs getLikedSongs() throws InterruptedException {

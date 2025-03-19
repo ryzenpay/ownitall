@@ -29,13 +29,10 @@ public class CollectionMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
-                if (choice != null) {
-                    if (choice.equals("Exit")) {
-                        break;
-                    } else {
-                        options.get(choice).run();
-                    }
+                if (choice.equals("Exit")) {
+                    break;
                 }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught while getting collection menu choice");
@@ -59,7 +56,6 @@ public class CollectionMenu {
     }
 
     private void optionSync() {
-        // TODO: sync from to
         try {
             new MethodMenu().sync();
         } catch (InterruptedException e) {

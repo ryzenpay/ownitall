@@ -135,33 +135,33 @@ public class Storage {
         }
         if (choice.equals("Exit")) {
             return;
-        } else {
-            archive(false);
-            File unarchiveFolder = archiveFolders.get(choice);
-            for (File file : unarchiveFolder.listFiles()) {
-                if (file.isFile()) {
-                    File destFile = new File(this.dataFolder, file.getName());
-                    if (destFile.exists()) {
-                        System.out
-                                .print("This will delete file '" + destFile.getAbsolutePath() + "' are you sure y/N: ");
-                        try {
-                            if (Input.request().getAgreement()) {
-                                destFile.delete();
-                                logger.debug("deleted old file: '" + destFile.getAbsolutePath() + "'");
-                            } else {
-                                continue;
-                            }
-                        } catch (InterruptedException e) {
-                            logger.debug("Interrupted while getting unarchive overwrite agreement");
+        }
+        archive(false);
+        File unarchiveFolder = archiveFolders.get(choice);
+        for (File file : unarchiveFolder.listFiles()) {
+            if (file.isFile()) {
+                File destFile = new File(this.dataFolder, file.getName());
+                if (destFile.exists()) {
+                    System.out
+                            .print("This will delete file '" + destFile.getAbsolutePath() + "' are you sure y/N: ");
+                    try {
+                        if (Input.request().getAgreement()) {
+                            destFile.delete();
+                            logger.debug("deleted old file: '" + destFile.getAbsolutePath() + "'");
+                        } else {
                             continue;
                         }
+                    } catch (InterruptedException e) {
+                        logger.debug("Interrupted while getting unarchive overwrite agreement");
+                        continue;
                     }
-                    file.renameTo(destFile);
                 }
+                file.renameTo(destFile);
             }
-            unarchiveFolder.delete();
-            logger.info("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
         }
+        unarchiveFolder.delete();
+        logger.info("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
+
         Collection collection = Collection.load();
         collection.clear();
         this.importCollection();

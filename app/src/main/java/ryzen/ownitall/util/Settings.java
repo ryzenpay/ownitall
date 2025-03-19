@@ -147,12 +147,11 @@ public class Settings {
                 String choice = Menu.optionMenuWithValue(options, "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
+                }
+                if (this.changeSetting(choice)) {
+                    logger.info("Successfully changed setting '" + choice + "'");
                 } else {
-                    if (this.changeSetting(choice)) {
-                        logger.info("Successfully changed setting '" + choice + "'");
-                    } else {
-                        logger.error("Unsuccessfully changed setting");
-                    }
+                    logger.error("Unsuccessfully changed setting");
                 }
             }
         } catch (InterruptedException e) {
