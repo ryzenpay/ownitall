@@ -63,8 +63,20 @@ public class Collection {
      * clear current collection
      */
     public void clear() {
+        this.clearLikedSongs();
+        this.clearPlaylists();
+        this.clearAlbums();
+    }
+
+    public void clearLikedSongs() {
         this.likedSongs.getSongs().clear();
+    }
+
+    public void clearPlaylists() {
         this.playlists.clear();
+    }
+
+    public void clearAlbums() {
         this.albums.clear();
     }
 

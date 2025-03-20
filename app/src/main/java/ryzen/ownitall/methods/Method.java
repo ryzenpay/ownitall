@@ -16,7 +16,7 @@ public class Method {
     private static final Logger logger = LogManager.getLogger(Method.class);
     public static final LinkedHashMap<String, Class<? extends Method>> methods = new LinkedHashMap<>(
             Map.of("Jellyfin", Jellyfin.class, "Spotify", Spotify.class,
-                    "Youtube", Youtube.class, "Local", Local.class, "Manual", Manual.class));
+                    "Youtube", Youtube.class, "Local", Local.class));
 
     public static Method load(String choice) throws InterruptedException {
         Class<? extends Method> methodClass = methods.get(choice);

@@ -315,7 +315,7 @@ public class Download {
             for (Playlist playlist : playlists) {
                 if (settings.isDownloadHierachy()) {
                     File playlistFolder = new File(this.localLibrary, playlist.getFolderName());
-                    if (playlistFolder.delete()) {
+                    if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.debug("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
                     } else {
@@ -451,23 +451,12 @@ public class Download {
             for (Album album : albums) {
                 File albumFolder = new File(this.localLibrary, album.getFolderName());
                 if (albumFolder.exists()) {
-                    for (File songFile : albumFolder.listFiles()) {
-                        if (songFile.delete()) {
-                            logger.debug(
-                                    "Deleted out of sync album '" + album.getName() + "' file: "
-                                            + songFile.getAbsolutePath());
-                        } else {
-                            logger.error("could not delete out of sync album '" + album.getName() + "' file: "
-                                    + songFile.getAbsolutePath());
-                        }
-                    }
-                    if (albumFolder.delete()) {
+                    if (MusicTools.deleteFolder(albumFolder)) {
                         logger.debug(
-                                "Deleted album '" + album.getName() + "' folder: " + albumFolder.getAbsolutePath());
+                                "Deleted album '" + album.getName() + "'' folder: " + albumFolder.getAbsolutePath());
                     } else {
-                        logger.error(
-                                "Could not delete album '" + album.getName() + "' folder: "
-                                        + albumFolder.getAbsolutePath());
+                        logger.error("Failed to delete album '" + album.getName() + "' folder: "
+                                + albumFolder.getAbsolutePath());
                     }
                 }
             }

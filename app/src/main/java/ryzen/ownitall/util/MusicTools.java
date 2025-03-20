@@ -296,4 +296,30 @@ public class MusicTools {
         }
         return sanitized;
     }
+
+    public static boolean deleteFolder(File folder) {
+        if (folder == null) {
+            logger.debug("null folder provided in deleteFolder");
+            return false;
+        }
+        if (!folder.exists()) {
+            return true;
+        }
+        for (File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                if (deleteFolder(file)) {
+                    logger.debug("Successfully deleted folder: " + file.getAbsolutePath());
+                } else {
+                    logger.error("Failed to delete folder: " + file.getAbsolutePath());
+                }
+            } else {
+                if (file.delete()) {
+                    logger.debug("Successfully deleted file: " + file.getAbsolutePath());
+                } else {
+                    logger.error("Failed to delete file: " + file.getAbsolutePath());
+                }
+            }
+        }
+        return folder.delete();
+    }
 }

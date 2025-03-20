@@ -19,14 +19,13 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
-public class Manual extends Method {
+public class Manual {
     private static final Logger logger = LogManager.getLogger(Manual.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private static Library library = Library.load();
 
     public Manual() {
-        super();
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add", this::addMenu);
         options.put("Merge", this::mergeMenu);
@@ -221,9 +220,9 @@ public class Manual extends Method {
 
     private void deleteMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Delete Playlist", this::optionDeletePlaylist);
-        options.put("Delete Album", this::optionDeleteAlbum);
-        options.put("Delete Liked Song", this::optionDeleteLikedSong);
+        options.put("Delete Playlist(s)", this::optionDeletePlaylist);
+        options.put("Delete Album(s)", this::optionDeleteAlbum);
+        options.put("Delete Liked Song(s)", this::optionDeleteLikedSong);
         options.put("Clear Collection", this::optionClearInventory);
         try {
             while (true) {
@@ -245,6 +244,7 @@ public class Manual extends Method {
     private void optionDeletePlaylist() {
         while (true) {
             LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+            options.put("All", null);
             for (Playlist playlist : collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
@@ -253,14 +253,17 @@ public class Manual extends Method {
                 if (choice.equals("Exit")) {
                     return;
                 }
-                collection.removePlaylist(options.get(choice));
+                if (choice.equals("All")) {
+                    collection.clearPlaylists();
+                } else {
+                    collection.removePlaylist(options.get(choice));
+                }
                 logger.info("Successfully removed playlist: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete playlist choice");
                 return;
             }
         }
-
     }
 
     /**
@@ -269,6 +272,7 @@ public class Manual extends Method {
     private void optionDeleteAlbum() {
         while (true) {
             LinkedHashMap<String, Album> options = new LinkedHashMap<>();
+            options.put("All", null);
             for (Album album : collection.getAlbums()) {
                 options.put(album.toString(), album);
             }
@@ -277,7 +281,11 @@ public class Manual extends Method {
                 if (choice.equals("Exit")) {
                     return;
                 }
-                collection.removeAlbum(options.get(choice));
+                if (choice.equals("All")) {
+                    collection.clearAlbums();
+                } else {
+                    collection.removeAlbum(options.get(choice));
+                }
                 logger.info("Successfully removed album: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete album option");
@@ -292,6 +300,7 @@ public class Manual extends Method {
     private void optionDeleteLikedSong() {
         while (true) {
             LinkedHashMap<String, Song> options = new LinkedHashMap<>();
+            options.put("All", null);
             for (Song song : collection.getLikedSongs().getSongs()) {
                 options.put(song.toString(), song);
             }
@@ -300,7 +309,11 @@ public class Manual extends Method {
                 if (choice.equals("Exit")) {
                     return;
                 }
-                collection.removeLikedSong(options.get(choice));
+                if (choice.equals("All")) {
+                    collection.clearLikedSongs();
+                } else {
+                    collection.removeLikedSong(options.get(choice));
+                }
                 logger.info("Successfully removed liked song: '" + choice + "'");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete liked song choice");

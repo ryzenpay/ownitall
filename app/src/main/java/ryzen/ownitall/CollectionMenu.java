@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.methods.Manual;
 import ryzen.ownitall.methods.MethodMenu;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
@@ -25,6 +26,7 @@ public class CollectionMenu {
         options.put("Import", this::optionImport);
         options.put("Export", this::optionExport);
         options.put("Sync", this::optionSync);
+        options.put("Modify", this::optionModify);
         options.put("Print Inventory", this::printInventory);
         try {
             while (true) {
@@ -61,6 +63,10 @@ public class CollectionMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting up sync menu");
         }
+    }
+
+    private void optionModify() {
+        new Manual();
     }
 
     /**
