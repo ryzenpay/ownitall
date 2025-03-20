@@ -1,7 +1,7 @@
 package ryzen.ownitall.methods;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,22 +21,23 @@ public class MethodMenu {
     private String choice;
 
     public MethodMenu() throws InterruptedException {
-        LinkedHashSet<String> options = new LinkedHashSet<>();
-        options.add("Spotify");
-        options.add("Youtube");
-        options.add("Local");
-        options.add("Manual");
-        options.add("Jellyfin");
-
-        String choice = Menu.optionMenu(options, "METHODS");
+        String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException();
         }
+        Class<? extends Method> methodClass = Method.methods.get(choice);
+        try {
+            this.method = methodClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                | InvocationTargetException e) {
+            logger.error("Error instantiating method '" + choice + "': " + e);
+            throw new InterruptedException();
+        }
         this.choice = choice;
-        this.method = Method.load(choice);
     }
 
     public void importMenu() {
+        // TODO: import all albums and playlists
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
@@ -149,6 +150,7 @@ public class MethodMenu {
     }
 
     public void exportMenu() {
+        // TODO: export individual album or playlist
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);
@@ -231,5 +233,4 @@ public class MethodMenu {
             logger.debug("Interrupted while syncing '" + this.choice + "'");
         }
     }
-
 }

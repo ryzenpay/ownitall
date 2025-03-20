@@ -18,22 +18,6 @@ public class Method {
             Map.of("Jellyfin", Jellyfin.class, "Spotify", Spotify.class,
                     "Youtube", Youtube.class, "Local", Local.class));
 
-    public static Method load(String choice) throws InterruptedException {
-        Class<? extends Method> methodClass = methods.get(choice);
-        if (methodClass != null) {
-            try {
-                return methodClass.getDeclaredConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                    | InvocationTargetException e) {
-                logger.error("Error instantiating method '" + choice + "': " + e);
-                return null;
-            }
-        } else {
-            logger.error("Unsupported method '" + choice + "' provided in method constructor");
-            return null;
-        }
-    }
-
     public LikedSongs getLikedSongs() throws InterruptedException {
         logger.debug("Unsupported method to get liked songs");
         return null;
