@@ -209,6 +209,9 @@ public class Input {
      * @throws InterruptedException - when user interrupts
      */
     public boolean getAgreement() throws InterruptedException {
+        if (!nonInteractive.isEmpty()) {
+            return true;
+        }
         while (true) {
             char choice = getChar();
             if (Character.toLowerCase(choice) == 'y') {
@@ -263,6 +266,9 @@ public class Input {
      * @throws InterruptedException - when user interrupts
      */
     public void getEnter() throws InterruptedException {
+        if (!nonInteractive.isEmpty()) {
+            return;
+        }
         this.getString();
     }
 }

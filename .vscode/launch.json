@@ -3,19 +3,14 @@
     "configurations": [
         {
             "type": "java",
-            "name": "testing",
-            "request": "launch",
-            "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_info.xml"
-        },
-        {
-            "type": "java",
             "name": "production",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_off.xml"
+            "args": [
+                "-l",
+                "info"
+            ]
         },
         {
             "type": "java",
@@ -23,7 +18,32 @@
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
-            "vmArgs": "-Dlog4j.configurationFile=app/src/main/resources/log_debug.xml"
+            "args": [
+                "-l",
+                "debug"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "no logs",
+            "request": "launch",
+            "mainClass": "ryzen.ownitall.Main",
+            "projectName": "app",
+            "args": [
+                "-l",
+                "off"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "spotify to local sync",
+            "request": "launch",
+            "mainClass": "ryzen.ownitall.Main",
+            "projectName": "app",
+            "args": [
+                "-i",
+                "1,1,4,1,0,3,2,C:\\Users\\ryzen\\Music,0,0"
+            ]
         }
     ]
 }

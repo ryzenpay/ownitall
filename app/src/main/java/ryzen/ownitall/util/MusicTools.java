@@ -308,13 +308,13 @@ public class MusicTools {
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
                 if (deleteFolder(file)) {
-                    logger.debug("Successfully deleted folder: " + file.getAbsolutePath());
+                    logger.info("Successfully deleted folder: " + file.getAbsolutePath());
                 } else {
                     logger.error("Failed to delete folder: " + file.getAbsolutePath());
                 }
             } else {
                 if (file.delete()) {
-                    logger.debug("Successfully deleted file: " + file.getAbsolutePath());
+                    logger.info("Successfully deleted file: " + file.getAbsolutePath());
                 } else {
                     logger.error("Failed to delete file: " + file.getAbsolutePath());
                 }

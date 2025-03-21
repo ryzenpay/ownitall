@@ -257,7 +257,7 @@ public class Download {
                 File songFile = new File(songFolder, song.getFileName());
                 if (songFile.exists()) {
                     if (songFolder.delete()) {
-                        logger.debug("Deleted liked song '" + songFile.getAbsolutePath());
+                        logger.info("Deleted liked song '" + songFile.getAbsolutePath());
                     } else {
                         logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
                     }
@@ -316,7 +316,7 @@ public class Download {
                 if (settings.isDownloadHierachy()) {
                     File playlistFolder = new File(this.localLibrary, playlist.getFolderName());
                     if (MusicTools.deleteFolder(playlistFolder)) {
-                        logger.debug("Deleted playlist '" + playlist.getName() + "' folder: "
+                        logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
                     } else {
                         logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
@@ -327,7 +327,7 @@ public class Download {
                     this.syncPlaylist(new Playlist(playlist.getName()));
                     File m3uFile = new File(this.localLibrary, playlist.getFolderName() + ".m3u");
                     if (m3uFile.delete()) {
-                        logger.debug(
+                        logger.info(
                                 "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
                                         + m3uFile.getAbsolutePath());
                     } else {
@@ -389,7 +389,7 @@ public class Download {
                         }
                     }
                     if (songFile.delete()) {
-                        logger.debug("Deleted playlist '" + playlist.getName() + "' song: "
+                        logger.info("Deleted playlist '" + playlist.getName() + "' song: "
                                 + songFile.getAbsolutePath());
                     } else {
                         logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
@@ -452,7 +452,7 @@ public class Download {
                 File albumFolder = new File(this.localLibrary, album.getFolderName());
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
-                        logger.debug(
+                        logger.info(
                                 "Deleted album '" + album.getName() + "'' folder: " + albumFolder.getAbsolutePath());
                     } else {
                         logger.error("Failed to delete album '" + album.getName() + "' folder: "
@@ -493,7 +493,7 @@ public class Download {
                 File songFile = new File(albumFolder, song.getFileName());
                 if (songFile.exists()) {
                     if (songFile.delete()) {
-                        logger.debug("Deleted album '" + album.getName() + "' song: "
+                        logger.info("Deleted album '" + album.getName() + "' song: "
                                 + songFile.getAbsolutePath());
                     } else {
                         logger.debug("could not delete album '" + album.getName() + "' song: "

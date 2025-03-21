@@ -2,11 +2,14 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logs;
 import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -64,8 +67,14 @@ public class Main {
                     i++;
                     String param = args[i];
                     if (arg.toLowerCase().contains("-i")) {
-                        logger.debug("non interactive parameter provided");
+                        logger.debug("non interactive parameter provided: " + param);
                         Input.request(param);
+                        continue;
+                    }
+                    if (arg.toLowerCase().contains("-l")) {
+                        logger.debug("log level provided: " + param);
+                        Logs.setLogLevel(param);
+                        continue;
                     }
                 }
             }
