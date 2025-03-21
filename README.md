@@ -16,7 +16,7 @@ all there currently is, is the automated javadoc documentation: https://ryzenpay
 
 ## Flags
 
-- -i : non interactive mode which requires a string parameter in the format of ex: `1,1,4,1,Vultures,0,0,0,0,0`  
+- -i : non interactive mode which requires a string parameter in the format of ex: `1,1,4,1,0,3,2,C:\\Users\\ryzen\\Music,0,0`  
         - agreements are accepted, enter is automatically passed and if windows filenames need to have `\\`  
 - -l : log level, supports: debug, info, off  
 
