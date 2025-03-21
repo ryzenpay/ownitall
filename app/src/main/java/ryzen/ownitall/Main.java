@@ -49,6 +49,9 @@ public class Main {
         }
     }
 
+    // TODO: log level flags
+    // this includes putting all log types back into 1
+    // modify the vscode config to attach the flag
     private static void handleFlags(String[] args) {
         if (args == null || args.length == 0) {
             logger.debug("no flags provided");

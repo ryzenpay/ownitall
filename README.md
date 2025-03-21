@@ -7,9 +7,9 @@ own your music library no matter the platform (whichever is currently supported)
 OwnItAll hopes to ease the movement of your music library between playforms including local
 
 # Current goals  
-- non-interactive mode (for automation)  
-- syncronization between libraries (put them all into ownitall and then have the same library everywhere)  
--  JFrame GUI  
+-[x] non-interactive mode (for automation)  
+-[x] syncronization between libraries (put them all into ownitall and then have the same library everywhere)  
+-[ ]  JFrame GUI  
 
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
