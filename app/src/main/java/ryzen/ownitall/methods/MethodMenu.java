@@ -37,12 +37,11 @@ public class MethodMenu {
     }
 
     public void importMenu() {
-        // TODO: import all albums and playlists
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
-        options.put("Import Album(s)", this::optionImportAlbum);
-        options.put("Import Playlist(s)", this::optionImportPlaylist);
+        options.put("Import Album(s)", this::optionImportAlbumsMenu);
+        options.put("Import Playlist(s)", this::optionImportPlaylistsMenu);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
@@ -81,6 +80,32 @@ public class MethodMenu {
         }
     }
 
+    private void optionImportAlbumsMenu() {
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
+        options.put("All usersaved albums", this::optionImportAlbums);
+        options.put("Individual album", this::optionImportAlbum);
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(),
+                        "IMPORT ALBUM" + this.method.getClass().getName().toUpperCase());
+                if (choice.equals("Exit")) {
+                    break;
+                }
+                options.get(choice).run();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting " + method.getClass().getName() + " import album menu choice");
+        }
+    }
+
+    private void optionImportAlbums() {
+        try {
+            this.importAlbums();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing albums");
+        }
+    }
+
     private void optionImportAlbum() {
         String albumId = null;
         try {
@@ -110,6 +135,32 @@ public class MethodMenu {
             this.importAlbum(albumId, albumName, albumArtistName);
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting '" + this.method.getClass().getName() + "' album");
+        }
+    }
+
+    private void optionImportPlaylistsMenu() {
+        LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
+        options.put("All usersaved playlists", this::optionImportPlaylists);
+        options.put("Individual playlist", this::optionImportPlaylist);
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(),
+                        "IMPORT PlAYLIST" + this.method.getClass().getName().toUpperCase());
+                if (choice.equals("Exit")) {
+                    break;
+                }
+                options.get(choice).run();
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting " + method.getClass().getName() + " import playlist menu choice");
+        }
+    }
+
+    private void optionImportPlaylists() {
+        try {
+            this.importPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing playlists");
         }
     }
 
@@ -194,12 +245,11 @@ public class MethodMenu {
     }
 
     public void exportMenu() {
-        // TODO: export individual album or playlist
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);
-        options.put("Export Albums", this::optionExportAlbums);
-        options.put("Export Playlists", this::optionExportPlaylists);
+        options.put("Export Album(s)", this::optionExportAlbums);
+        options.put("Export Playlist(s)", this::optionExportPlaylists);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
@@ -241,6 +291,24 @@ public class MethodMenu {
 
     private void optionExportPlaylists() {
         try {
+            LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
+            options.put("All", null);
+            for (Playlist playlist : collection.getPlaylists()) {
+                options.put(playlist.toString(), playlist);
+            }
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST EXPORT MENU");
+                if (choice.equals("Exit")) {
+                    return;
+                }
+                if (choice.equals("All")) {
+                    this.exportPlaylists();
+                } else {
+                    this.exportPlaylist(options.get(choice));
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting export playlist choice");
+            }
             this.exportPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading '" + this.method.getClass().getName() + "' playlists");
@@ -249,9 +317,27 @@ public class MethodMenu {
 
     private void optionExportAlbums() {
         try {
-            this.exportAlbums();
+            LinkedHashMap<String, Album> options = new LinkedHashMap<>();
+            options.put("All", null);
+            for (Album album : collection.getAlbums()) {
+                options.put(album.toString(), album);
+            }
+            try {
+                String choice = Menu.optionMenu(options.keySet(), "ALBUM EXPORT MENU");
+                if (choice.equals("Exit")) {
+                    return;
+                }
+                if (choice.equals("All")) {
+                    this.exportPlaylists();
+                } else {
+                    this.exportAlbum(options.get(choice));
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting export playlist choice");
+            }
+            this.exportPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + this.method.getClass().getName() + "' albums");
+            logger.debug("Interrupted while uploading '" + this.method.getClass().getName() + "' playlists");
         }
     }
 
