@@ -48,6 +48,7 @@ import java.awt.Desktop;
 public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
+    // TODO: remove library requirement
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
@@ -278,19 +279,17 @@ public class Spotify extends Method {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
                                     song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
                                 }
+                                if (song != null) {
+                                    likedSongs.addSong(song);
+                                }
+                                pb.step();
                             }
-                            if (song != null) {
-                                likedSongs.addSong(song);
-                            }
-                            pb.step();
+                            offset += limit;
                         }
-                        offset += limit;
-                    }
-                    if (offset >= savedTrackPaging.getTotal()) {
-                        hasMore = false;
+                        if (offset >= savedTrackPaging.getTotal()) {
+                            hasMore = false;
+                        }
                     }
                 } catch (TooManyRequestsException e) {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -459,15 +458,13 @@ public class Spotify extends Method {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album = foundAlbum;
-            } else if (settings.isLibraryVerified()) {
-                album = null;
             }
-        }
-        if (album != null) {
-            if (library == null) {
-                ArrayList<Song> songs = this.getAlbumSongs(albumId);
-                if (songs != null && !songs.isEmpty()) {
-                    album.addSongs(songs);
+            if (album != null) {
+                if (library == null) {
+                    ArrayList<Song> songs = this.getAlbumSongs(albumId);
+                    if (songs != null && !songs.isEmpty()) {
+                        album.addSongs(songs);
+                    }
                 }
             }
             album.addId("spotify", albumId);
@@ -516,8 +513,6 @@ public class Spotify extends Method {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
                                     song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
                                 }
                             }
                             if (song != null) {
@@ -769,8 +764,6 @@ public class Spotify extends Method {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
                                     song = foundSong;
-                                } else if (settings.isLibraryVerified()) {
-                                    song = null;
                                 }
                             }
                             if (song != null) {

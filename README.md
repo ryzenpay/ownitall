@@ -93,8 +93,14 @@ please fix any of the errors it throws as they show incomplete documentation
 to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
 a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  
 
+### Compiling Dependencies
+#### Vaadin
+requires node.js to be installed: https://nodejs.org/en  
+
+
 ## JRE Requirements
-current java version is 9, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
+current java version is 17, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
+
 
 ## Useful commands for debugging  
 start in info mode: `java -jar .\ownitall.jar -Dlog4j.configurationFile=app\src\main\resources\log_info.xml`  
