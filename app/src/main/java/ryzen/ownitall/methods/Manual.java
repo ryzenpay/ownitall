@@ -22,8 +22,6 @@ import ryzen.ownitall.util.Progressbar;
 public class Manual {
     // TODO: search needs capitalization?
     // lastfm for some reason is triggered by it
-    // TODO: when interrupted, fully stop
-    // people need to leave it empty if they dont want it, cntrl c is to stop it
     private static final Logger logger = LogManager.getLogger(Manual.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
@@ -75,15 +73,11 @@ public class Manual {
                 System.out.print("*Enter Album Name: ");
                 albumName = Input.request().getString();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting Album Name");
-            return;
-        }
-        try {
             System.out.print("Enter Album Main Artist: ");
             artistName = Input.request().getString();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting Album Artist Name");
+            logger.debug("Interrupted while getting Album details");
+            return;
         }
         Album album = new Album(albumName);
         if (artistName != null) {
@@ -158,17 +152,12 @@ public class Manual {
                 System.out.print("*Enter Song Name (without artists): ");
                 songName = Input.request().getString();
             }
+            System.out.print("Enter main artist name: ");
+            artistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting songname");
             return null;
         }
-        try {
-            System.out.print("Enter main artist name: ");
-            artistName = Input.request().getString();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting song's artist");
-        }
-
         Song song = new Song(songName);
         if (artistName != null) {
             song.setArtist(new Artist(artistName));
@@ -425,5 +414,4 @@ public class Manual {
         }
         logger.debug("done updating collection content");
     }
-
 }

@@ -48,7 +48,6 @@ import java.awt.Desktop;
 public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
-    // TODO: remove library requirement
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
@@ -350,7 +349,11 @@ public class Spotify extends Method {
 
     @Override
     public void uploadLikedSongs() throws InterruptedException {
-        LikedSongs likedSongs = collection.getLikedSongs();
+        LikedSongs likedSongs = this.getLikedSongs();
+        if (likedSongs == null) {
+            return;
+        }
+        likedSongs.removeSongs(collection.getLikedSongs().getSongs());
         ArrayList<String> songIds = new ArrayList<>();
         for (Song song : likedSongs.getSongs()) {
             String id = this.getTrackId(song);
@@ -460,7 +463,7 @@ public class Spotify extends Method {
                 album = foundAlbum;
             }
             if (album != null) {
-                if (library == null) {
+                if (album.size() == 0) {
                     ArrayList<Song> songs = this.getAlbumSongs(albumId);
                     if (songs != null && !songs.isEmpty()) {
                         album.addSongs(songs);

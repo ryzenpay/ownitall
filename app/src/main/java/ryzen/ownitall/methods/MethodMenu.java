@@ -108,28 +108,20 @@ public class MethodMenu {
 
     private void optionImportAlbum() {
         String albumId = null;
+        String albumName = null;
+        String albumArtistName = null;
         try {
             while (albumId == null || albumId.isEmpty()) {
                 System.out.print("*Enter '" + this.method.getClass().getName() + "' Album ID: ");
                 albumId = Input.request().getString();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting album id");
-            return;
-        }
-        String albumName = null;
-        try {
             System.out.print("Enter '" + this.method.getClass().getName() + "' Album name: ");
             albumName = Input.request().getString();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting album name");
-        }
-        String albumArtistName = null;
-        try {
             System.out.print("Enter '" + this.method.getClass().getName() + "' Album artist name: ");
             albumArtistName = Input.request().getString();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting album artist name");
+            logger.debug("Interrupted while getting album details");
+            return;
         }
         try {
             this.importAlbum(albumId, albumName, albumArtistName);
@@ -166,21 +158,17 @@ public class MethodMenu {
 
     private void optionImportPlaylist() {
         String playlistId = null;
+        String playlistName = null;
         try {
             while (playlistId == null || playlistId.isEmpty()) {
                 System.out.print("*Enter '" + this.method.getClass().getName() + "' Playlist ID: ");
                 playlistId = Input.request().getString();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting playlist id");
-            return;
-        }
-        String playlistName = null;
-        try {
             System.out.print("Enter '" + this.method.getClass().getName() + "' Playlist Name: ");
             playlistName = Input.request().getString();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting playlist name");
+            logger.debug("Interrupted while getting playlist details");
+            return;
         }
         try {
             this.importPlaylist(playlistId, playlistName);

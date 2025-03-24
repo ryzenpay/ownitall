@@ -15,6 +15,8 @@ public class Menu {
      * clears screen contents when not in debug mode
      */
     public static void clearScreen() {
+        // TODO: print last log?
+        // to prevent it being lost and not knowing if it happened or not
         if (logger.getLevel() != Level.DEBUG) {
             System.out.print("\033[H\033[2J");
         }
