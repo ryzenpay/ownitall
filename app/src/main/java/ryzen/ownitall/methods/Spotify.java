@@ -283,9 +283,9 @@ public class Spotify extends Method {
                                 likedSongs.addSong(song);
                                 pb.setExtraMessage(song.getName()).step();
                             }
-                            offset += limit;
                         }
-                        if (offset >= savedTrackPaging.getTotal()) {
+                        offset += limit;
+                        if (limit > items.length) {
                             hasMore = false;
                         }
                     }
@@ -332,7 +332,7 @@ public class Spotify extends Method {
                         removeUsersSavedTracksRequest.execute();
                         logger.debug("deleted liked songs (" + currentIds.length + "): " + currentIds.toString());
                         offset += limit;
-                        if (offset >= songIds.size()) {
+                        if (offset >= currentIds.length) {
                             hasMore = false;
                         }
                     } catch (TooManyRequestsException e) {
@@ -382,7 +382,7 @@ public class Spotify extends Method {
                     saveTracksForUserRequest.execute();
                     logger.debug("added liked songs (" + currentIds.length + "): " + currentIds.toString());
                     offset += limit;
-                    if (offset >= songIds.size()) {
+                    if (offset > currentIds.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -433,6 +433,9 @@ public class Spotify extends Method {
                             }
                         }
                         offset += limit;
+                        if (limit > items.length) {
+                            hasMore = false;
+                        }
                     }
                 } catch (TooManyRequestsException e) {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
@@ -521,9 +524,9 @@ public class Spotify extends Method {
                                 songs.add(song);
                             }
                         }
-                        offset += limit;
                     }
-                    if (offset >= trackSimplifiedPaging.getTotal()) {
+                    offset += limit;
+                    if (limit > items.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -568,7 +571,7 @@ public class Spotify extends Method {
                         removeAlbumsForCurrentUserRequest.execute();
                         logger.debug("removed albums (" + currentIds.length + "): " + currentIds.toString());
                         offset += limit;
-                        if (offset >= albumIds.size()) {
+                        if (limit > currentIds.length) {
                             hasMore = false;
                         }
                     } catch (TooManyRequestsException e) {
@@ -612,7 +615,7 @@ public class Spotify extends Method {
                     pb.stepBy(currentAlbumIds.length);
                     saveAlbumsForCurrentUserRequest.execute();
                     offset += limit;
-                    if (offset >= albumIds.size()) {
+                    if (limit > currentAlbumIds.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -671,9 +674,9 @@ public class Spotify extends Method {
                                 playlists.add(playlist);
                             }
                         }
-                        offset += limit;
                     }
-                    if (offset >= playlistSimplifiedPaging.getTotal()) {
+                    offset += limit;
+                    if (limit > items.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -774,9 +777,9 @@ public class Spotify extends Method {
                                 songs.add(song);
                             }
                         }
-                        offset += limit;
                     }
-                    if (offset >= playlistTrackPaging.getTotal()) {
+                    offset += limit;
+                    if (limit > items.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -867,7 +870,7 @@ public class Spotify extends Method {
                             logger.debug("removed playlist '" + playlist.getName() + "'' songs (" + currentIds.length
                                     + "): " + currentIds.toString());
                             offset += limit;
-                            if (offset >= songIds.size()) {
+                            if (limit > currentIds.length) {
                                 hasMore = false;
                             }
                         } catch (TooManyRequestsException e) {
@@ -935,7 +938,7 @@ public class Spotify extends Method {
                 try {
                     addItemsToPlaylistRequest.execute();
                     offset += limit;
-                    if (offset >= songUris.size()) {
+                    if (limit > currentSongUris.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
@@ -1011,9 +1014,9 @@ public class Spotify extends Method {
                                 return spotifyPlaylist.getId();
                             }
                         }
-                        offset += limit;
                     }
-                    if (offset >= playlistSimplifiedPaging.getTotal()) {
+                    offset += limit;
+                    if (limit > items.length) {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {

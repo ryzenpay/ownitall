@@ -2,7 +2,6 @@ package ryzen.ownitall.methods;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,9 +12,15 @@ import ryzen.ownitall.classes.Playlist;
 
 public class Method {
     private static final Logger logger = LogManager.getLogger(Method.class);
-    public static final LinkedHashMap<String, Class<? extends Method>> methods = new LinkedHashMap<>(
-            Map.of("Jellyfin", Jellyfin.class, "Spotify", Spotify.class,
-                    "Youtube", Youtube.class, "Local", Local.class));
+    public static final LinkedHashMap<String, Class<? extends Method>> methods;
+    // needs to be like this for it to maintain the order
+    static {
+        methods = new LinkedHashMap<>();
+        methods.put("Jellyfin", Jellyfin.class);
+        methods.put("Spotify", Spotify.class);
+        methods.put("Youtube", Youtube.class);
+        methods.put("Local", Local.class);
+    }
 
     public LikedSongs getLikedSongs() throws InterruptedException {
         logger.debug("Unsupported method to get liked songs");
