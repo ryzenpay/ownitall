@@ -20,8 +20,6 @@ import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class Manual {
-    // TODO: search needs capitalization?
-    // lastfm for some reason is triggered by it
     private static final Logger logger = LogManager.getLogger(Manual.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();

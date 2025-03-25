@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ public class Download {
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
+    private AtomicBoolean interrupted = new AtomicBoolean(false);
     private File localLibrary;
 
     /**
@@ -81,8 +83,16 @@ public class Download {
             try {
                 // Attempt to execute the task
                 executor.execute(() -> {
-                    this.downloadSong(song, path);
+                    try {
+                        this.downloadSong(song, path);
+                    } catch (InterruptedException e) {
+                        interrupted.set(true);
+                    }
                 });
+                if (interrupted.get()) {
+                    interrupted.set(false);
+                    throw new InterruptedException();
+                }
                 break;
             } catch (RejectedExecutionException e) {
                 Thread.sleep(1000);
@@ -128,7 +138,7 @@ public class Download {
      * @param song - constructed song
      * @param path - folder of where to place
      */
-    public void downloadSong(Song song, File path) {
+    public void downloadSong(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
             return;
@@ -227,7 +237,7 @@ public class Download {
             } else {
                 logger.warn("song '" + song.toString() + "' failed to download, check logs");
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Exception preparing yt-dlp: ", e);
         }
     }

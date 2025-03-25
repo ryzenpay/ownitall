@@ -21,6 +21,7 @@ public class Menu {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();
+        printLogo();
     }
 
     public static void printLogo() {
@@ -54,7 +55,6 @@ public class Menu {
         int choice;
         while (true) {
             clearScreen();
-            printLogo();
             System.out.println("[" + menuName + "] Choose an option from the following: ");
             i = 1;
             for (String option : options) {
