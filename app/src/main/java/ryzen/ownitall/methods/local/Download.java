@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +40,6 @@ public class Download {
     static {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
     }
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
     private File localLibrary;
 
     /**
@@ -83,18 +81,10 @@ public class Download {
             try {
                 // Attempt to execute the task
                 executor.execute(() -> {
-                    try {
-                        this.downloadSong(song, path);
-                    } catch (InterruptedException e) {
-                        interrupted.set(true);
-                    }
+                    this.downloadSong(song, path);
                 });
                 break;
             } catch (RejectedExecutionException e) {
-                if (interrupted.get()) {
-                    interrupted.set(false);
-                    throw new InterruptedException();
-                }
                 Thread.sleep(1000);
             }
         }
@@ -138,7 +128,7 @@ public class Download {
      * @param song - constructed song
      * @param path - folder of where to place
      */
-    public void downloadSong(Song song, File path) throws InterruptedException {
+    public void downloadSong(Song song, File path) {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
             return;
@@ -195,14 +185,13 @@ public class Download {
             searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         }
         command.add(searchQuery);
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
             File songFile = new File(path, song.getFileName());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
-                interruptionHandler.throwInterruption();
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
@@ -237,7 +226,7 @@ public class Download {
             } else {
                 logger.warn("song '" + song.toString() + "' failed to download, check logs");
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
         }
     }

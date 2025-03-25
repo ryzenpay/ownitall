@@ -366,7 +366,7 @@ public class MethodMenu {
     private void exportAlbums() throws InterruptedException {
         logger.info("Uploading " + collection.getAlbumCount() + " albums to '" + methodName
                 + "'");
-        method.uploadPlaylists();
+        method.uploadAlbums();
         logger.info("Exported " + collection.getAlbumCount() + " albums to '"
                 + methodName + "'");
     }
