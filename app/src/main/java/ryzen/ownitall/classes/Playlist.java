@@ -305,8 +305,12 @@ public class Playlist {
      * @param id  - id to add
      */
     public void addId(String key, String id) {
-        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or id in addId");
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": empty key in addId");
+            return;
+        }
+        if (id == null || id.isEmpty()) {
+            logger.debug(this.toString() + " empty id for key '" + key + "' in addId");
             return;
         }
         this.ids.put(key, id);

@@ -89,12 +89,12 @@ public class Download {
                         interrupted.set(true);
                     }
                 });
+                break;
+            } catch (RejectedExecutionException e) {
                 if (interrupted.get()) {
                     interrupted.set(false);
                     throw new InterruptedException();
                 }
-                break;
-            } catch (RejectedExecutionException e) {
                 Thread.sleep(1000);
             }
         }

@@ -265,7 +265,6 @@ public class Spotify extends Method {
                         for (SavedTrack savedTrack : items) {
                             interruptionHandler.throwInterruption();
                             Track track = savedTrack.getTrack();
-                            pb.setExtraMessage(track.getName());
                             Song song = new Song(track.getName());
                             song.setArtist(new Artist(track.getArtists()[0].getName()));
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
@@ -279,10 +278,10 @@ public class Spotify extends Method {
                                 if (foundSong != null) {
                                     song = foundSong;
                                 }
-                                if (song != null) {
-                                    likedSongs.addSong(song);
-                                }
-                                pb.step();
+                            }
+                            if (song != null) {
+                                likedSongs.addSong(song);
+                                pb.setExtraMessage(song.getName()).step();
                             }
                             offset += limit;
                         }
@@ -457,20 +456,20 @@ public class Spotify extends Method {
         if (artistName != null) {
             album.addArtist(new Artist(artistName));
         }
+        album.addId("spotify", albumId);
         if (library != null) {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album = foundAlbum;
             }
-            if (album != null) {
-                if (album.size() == 0) {
-                    ArrayList<Song> songs = this.getAlbumSongs(albumId);
-                    if (songs != null && !songs.isEmpty()) {
-                        album.addSongs(songs);
-                    }
+        }
+        if (album != null) {
+            if (album.size() == 0) {
+                ArrayList<Song> songs = this.getAlbumSongs(albumId);
+                if (songs != null && !songs.isEmpty()) {
+                    album.addSongs(songs);
                 }
             }
-            album.addId("spotify", albumId);
         }
         return album;
     }
@@ -760,6 +759,8 @@ public class Spotify extends Method {
                                 }
                                 song.addId("spotify", episode.getId());
                             } else {
+                                logger.debug("skipped non track '" + playlistTrack.toString() + "' in playlist: "
+                                        + playlistId);
                                 logger.info("Skipping non-Track in playlist: " + playlistId);
                                 continue;
                             }

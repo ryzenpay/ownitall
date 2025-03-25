@@ -17,6 +17,7 @@ public class Menu {
     public static void clearScreen() {
         // TODO: print last log?
         // to prevent it being lost and not knowing if it happened or not
+        // and then remove the "press enter to continue" elsewhere
         if (logger.getLevel() != Level.DEBUG) {
             System.out.print("\033[H\033[2J");
         }
