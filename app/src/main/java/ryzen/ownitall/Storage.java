@@ -321,7 +321,7 @@ public class Storage {
      * @param likedSongs - constructed LikedSongs
      */
     public void exportLikedSongs(LikedSongs likedSongs) {
-        if (likedSongs == null || likedSongs.size() == 0) {
+        if (likedSongs == null || likedSongs.isEmpty()) {
             return;
         }
         this.setDataFolder();

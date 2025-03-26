@@ -118,6 +118,7 @@ public class Download {
             logger.debug("All threads shut down");
         } catch (InterruptedException e) {
             executor.shutdownNow();
+            logger.debug("All threads forcibly shut down");
             throw e;
         }
     }
@@ -147,13 +148,6 @@ public class Download {
         command.add("--no-playlist"); // Prevent downloading playlists
         command.add("--break-match-filter");
         command.add("duration>=45"); // exclude shorts
-        if (!settings.getDownloadCookiesFile().isEmpty()) {
-            command.add("--cookies");
-            command.add(settings.getDownloadCookiesFile());
-        } else if (!settings.getDownloadCookiesBrowser().isEmpty()) {
-            command.add("--cookies-from-browser");
-            command.add(settings.getDownloadCookiesBrowser());
-        }
         // metadata and formatting
         command.add("--extract-audio");
         // command.add("--embed-thumbnail");
@@ -192,6 +186,16 @@ public class Download {
             File songFile = new File(path, song.getFileName());
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
+                if (retries == 1) {
+                    // cookies for age restriction (do not default to them)
+                    if (!settings.getDownloadCookiesFile().isEmpty()) {
+                        command.add(1, "--cookies");
+                        command.add(2, settings.getDownloadCookiesFile());
+                    } else if (!settings.getDownloadCookiesBrowser().isEmpty()) {
+                        command.add(1, "--cookies-from-browser");
+                        command.add(2, settings.getDownloadCookiesBrowser());
+                    }
+                }
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;

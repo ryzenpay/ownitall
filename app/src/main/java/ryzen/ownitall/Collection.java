@@ -228,7 +228,7 @@ public class Collection {
      * @return - linkedhashset of standalone liked songs
      */
     public ArrayList<Song> getStandaloneLikedSongs() {
-        if (this.likedSongs.size() == 0) {
+        if (this.likedSongs.isEmpty()) {
             return new ArrayList<>();
         }
         LikedSongs likedSongs = new LikedSongs();

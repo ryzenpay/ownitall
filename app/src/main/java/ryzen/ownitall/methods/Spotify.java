@@ -467,7 +467,7 @@ public class Spotify extends Method {
             }
         }
         if (album != null) {
-            if (album.size() == 0) {
+            if (album.isEmpty()) {
                 ArrayList<Song> songs = this.getAlbumSongs(albumId);
                 if (songs != null && !songs.isEmpty()) {
                     album.addSongs(songs);

@@ -172,7 +172,8 @@ public class Settings {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             setting.setAccessible(true);
-            System.out.print("Enter new value " + setting.getType().toString() + " for '" + setting.getName() + "': ");
+            System.out.print(
+                    "Enter new value " + setting.getType().getSimpleName() + " for '" + setting.getName() + "': ");
             if (setting.getType() == boolean.class) {
                 boolean input = Input.request().getBool();
                 setting.set(this, input);
