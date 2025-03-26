@@ -321,7 +321,7 @@ public class MethodMenu {
                     return;
                 }
                 if (choice.equals("All")) {
-                    this.exportPlaylists();
+                    this.exportAlbums();
                 } else {
                     this.exportAlbum(options.get(choice));
                 }
