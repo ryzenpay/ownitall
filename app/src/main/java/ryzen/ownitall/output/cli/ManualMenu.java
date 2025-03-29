@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.output.cli;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,14 +19,13 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.CLIMenu;
 import ryzen.ownitall.util.Progressbar;
 
-public class Manual {
-    // TODO: isolate menu and manual
-    private static final Logger logger = LogManager.getLogger(Manual.class);
+public class ManualMenu {
+    private static final Logger logger = LogManager.getLogger(ManualMenu.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private static Library library = Library.load();
 
-    public Manual() {
+    public ManualMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add", this::addMenu);
         options.put("Merge", this::mergeMenu);

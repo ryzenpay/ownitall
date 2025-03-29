@@ -9,7 +9,6 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.methods.Manual;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.CLIMenu;
 import ryzen.ownitall.util.MusicTools;
@@ -66,7 +65,7 @@ public class CollectionMenu {
     }
 
     private void optionModify() {
-        new Manual();
+        new ManualMenu();
     }
 
     /**
