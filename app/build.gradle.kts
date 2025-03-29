@@ -1,5 +1,3 @@
-import org.gradle.jvm.tasks.Jar
-
 plugins {
     id("application")
     id("java")
@@ -19,6 +17,7 @@ dependencies {
 
     // spotify wrapper
     implementation("se.michaelthelin.spotify:spotify-web-api-java:9.1.0")
+
     // audio metadata: https://bitbucket.org/ijabz/jaudiotagger/src/master/ | http://www.jthink.net/jaudiotagger/
     implementation("net.jthink:jaudiotagger:3.0.1")
 
@@ -31,9 +30,6 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
 
-    //json + web scraping
-    implementation("org.jsoup:jsoup:1.18.3")
-
     //logging
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
@@ -41,22 +37,11 @@ dependencies {
     //progress bar
     implementation("me.tongfei:progressbar:0.10.1")
 
-    //vaadin (GUI)
-    //implementation("com.vaadin:vaadin-spring-boot-starter:24.7.0")
+    //cli input options (common cli)
+    implementation("commons-cli:commons-cli:1.9.0")
+
 }
 
-// vaadin {
-//     optimizeBundle = false
-//     productionMode = false
-// }
-
-// tasks.register<Jar>("web") {
-//     dependsOn("vaadinBuildFrontend")
-//     archiveBaseName.set("web")
-//     archiveVersion.set("")
-//     archiveClassifier.set("")
-//     from(sourceSets.main.get().output)
-// }
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)

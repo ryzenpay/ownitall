@@ -2,6 +2,12 @@ package ryzen.ownitall;
 
 import java.util.LinkedHashMap;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,7 +54,7 @@ public class Main {
             }
         } catch (InterruptedException e) {
             logger.info("Interruption caught in main menu, gracefully closing program");
-            optionSave();
+            exit();
         }
     }
 
@@ -57,24 +63,33 @@ public class Main {
             logger.debug("no flags provided");
             return;
         }
-        for (int i = 0; i < args.length - 1; i++) {
-            String arg = args[i];
-            if (arg != null) {
-                if (arg.startsWith("-")) {
-                    i++;
-                    String param = args[i];
-                    if (arg.toLowerCase().contains("-i")) {
-                        logger.debug("non interactive parameter provided: " + param);
-                        Input.request(param);
-                        continue;
-                    }
-                    if (arg.toLowerCase().contains("-l")) {
-                        logger.debug("log level provided: " + param);
-                        Logs.setLogLevel(param);
-                        continue;
-                    }
-                }
+        // https://commons.apache.org/proper/commons-cli/usage.html
+        Options options = new Options();
+        options.addOption("h", "help", false, "see all flag options");
+        options.addOption("l", "log", true, "logging level");
+        options.addOption("i", "noninteractive", true, "Enable non interactive");
+        options.addOption("w", "web", false, "enable web front");
+        CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption("h")) {
+                HelpFormatter help = new HelpFormatter();
+                help.printHelp("ant", options);
+                exit();
             }
+            if (cmd.hasOption("l")) {
+                String level = cmd.getOptionValue("l");
+                logger.debug("log level provided: " + level);
+                Logs.setLogLevel(level);
+            }
+            if (cmd.hasOption("i")) {
+                String trace = cmd.getOptionValue("i");
+                logger.debug("non interactive parameter provided: " + trace);
+                Input.request(trace);
+            }
+        } catch (ParseException e) {
+            logger.error("Exception parsing input flags");
+            exit();
         }
     }
 
@@ -111,5 +126,10 @@ public class Main {
      */
     private static void optionSettings() {
         settings.changeSettings();
+    }
+
+    private static void exit() {
+        optionSave();
+        System.exit(0);
     }
 }
