@@ -57,7 +57,7 @@ public class Main {
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
-                ryzen.ownitall.output.web.MainMenu.load(args);
+                ryzen.ownitall.output.web.MainMenu.main(args);
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
                 new ryzen.ownitall.output.cli.MainMenu();

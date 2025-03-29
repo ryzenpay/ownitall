@@ -1,9 +1,9 @@
 package ryzen.ownitall.output.web;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -11,58 +11,53 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
-import java.awt.Desktop;
 
 @Controller
 @SpringBootApplication
 public class MainMenu {
     private static final Logger logger = LogManager.getLogger(MainMenu.class);
 
-    public static void load(String[] args) {
+    public static void main(String[] args) {
+        // for some reason desktop bricks after springapplication is started
+        openBrowser("http://localhost:8080");
+        SpringApplication.run(MainMenu.class, args);
+    }
+
+    private static void openBrowser(String url) {
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("http://localhost:8080"));
+                Desktop.getDesktop().browse(new URI(url));
             } catch (IOException | URISyntaxException e) {
                 logger.error("Exception opening web browser: " + e);
             }
         } else {
-            logger.info("Unable to open web browser automatically, navigate to 'http://localhost:8080'");
+            logger.info("Unable to open web browser automatically. Please navigate to " + url);
         }
-        SpringApplication.run(MainMenu.class, args);
     }
 
     @GetMapping("/")
-    private String showMenu() {
-        return "mainmenu";
+    public String showMenu() {
+        return "mainmenu/index";
     }
 
     @PostMapping("/collection")
     public String optionCollection() {
         // TODO: collection menu
-        return "redirect:/"; // Redirect back to main menu
+        return "redirect:/collectionmenu";
     }
 
     @PostMapping("/save")
     public String optionSave() {
-        return "saving";
+        return "mainmenu/saving";
     }
 
     @PostMapping("/saving")
     public String saving() {
-        Settings settings = Settings.load();
-        Collection.load().save();
-        settings.save();
-        if (settings.isSaveCredentials()) {
-            Credentials.load().save();
-        }
-        if (Library.checkInstance()) {
-            Library.load(); // caches in the load
-        }
+        save();
         return "redirect:/";
     }
 
@@ -74,7 +69,7 @@ public class MainMenu {
             Credentials.load().save();
         }
         if (Library.checkInstance()) {
-            Library.load(); // caches in the load
+            Library.load();
         }
     }
 
@@ -86,13 +81,13 @@ public class MainMenu {
 
     @PostMapping("/settings")
     public String optionSettings() {
-        // TODO: change settings menu
-        return "redirect:/";
+        // TODO: settings menu
+        return "redirect:/settingsmenu";
     }
 
     @PostMapping("/exit")
     public String optionExit() {
-        return "exiting";
+        return "mainmenu/exiting";
     }
 
     @PostMapping("/exiting")
