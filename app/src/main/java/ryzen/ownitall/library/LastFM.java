@@ -23,6 +23,7 @@ public class LastFM extends Library {
     private static final Logger logger = LogManager.getLogger(LastFM.class);
     private static final Credentials credentials = Credentials.load();
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
+    private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/bce322316de6b8b4e0c83d5cc9f6b9eb.png";
 
     /**
      * default LastFM constructor
@@ -88,7 +89,9 @@ public class LastFM extends Library {
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
                     if (coverImage != null && !coverImage.isEmpty()) {
-                        album.setCoverImage(coverImage);
+                        if (!defaultImg.equals(coverImage)) {
+                            album.setCoverImage(coverImage);
+                        }
                     }
                 } else {
                     logger.debug(album.toString() + ": album missing images: " + albumNode.toString());
@@ -179,7 +182,9 @@ public class LastFM extends Library {
                     if (imageNode.isArray() && !imageNode.isEmpty()) {
                         String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
                         if (coverImage != null && !coverImage.isEmpty()) {
-                            song.setCoverImage(coverImage);
+                            if (!defaultImg.equals(coverImage)) {
+                                song.setCoverImage(coverImage);
+                            }
                         }
                     } else {
                         logger.debug(song.toString() + ": song missing images: " + albumNode.toString());
@@ -234,7 +239,9 @@ public class LastFM extends Library {
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
                     String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
                     if (coverImage != null && !coverImage.isEmpty()) {
-                        artist.setCoverImage(coverImage);
+                        if (!defaultImg.equals(coverImage)) {
+                            artist.setCoverImage(coverImage);
+                        }
                     }
                 } else {
                     logger.debug(artist.toString() + ": artist missing images: " + artistNode.toString());

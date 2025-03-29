@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
 
 public class Menu {
+    // TODO: web front menu
     private static final Logger logger = LogManager.getLogger(Menu.class);
 
     /**

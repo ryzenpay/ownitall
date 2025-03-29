@@ -6,6 +6,7 @@ import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 
 public class Progressbar {
+    // TODO: web front pb
 
     /**
      * standardized progressbar

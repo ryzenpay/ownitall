@@ -33,8 +33,6 @@ public class Main {
      * 
      * @param args - possible arguments to pass (not defined)
      */
-    // TODO: web front
-    // replace all the menus + pb's
     public static void main(String[] args) {
         handleFlags(args);
         Menu.clearScreen();
