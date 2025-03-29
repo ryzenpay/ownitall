@@ -1,8 +1,8 @@
 plugins {
     id("application")
     id("java")
-    //vaadin https://github.com/vaadin/base-starter-spring-gradle
-    //id("com.vaadin") version "24.7.0"
+    // web gui
+    id("org.springframework.boot") version "3.4.4"
 }
 
 repositories {
@@ -39,6 +39,16 @@ dependencies {
 
     //cli input options (common cli)
     implementation("commons-cli:commons-cli:1.9.0")
+
+    //web gui (spring boot) https://docs.spring.io/spring-boot/tutorial/first-application/index.html
+    implementation("org.springframework.boot:spring-boot-starter-web:3.4.4")
+    //https://docs.spring.io/spring-boot/how-to/logging.html
+    implementation("org.springframework.boot:spring-boot-starter-log4j2:3.4.4")
+    modules {
+		module("org.springframework.boot:spring-boot-starter-logging") {
+			replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+		}
+	}
 
 }
 

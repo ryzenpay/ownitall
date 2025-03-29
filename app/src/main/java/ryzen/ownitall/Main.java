@@ -10,6 +10,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RestController;
 
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
@@ -18,6 +21,8 @@ import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
+@RestController
+@SpringBootApplication
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     private static final Settings settings = Settings.load();
@@ -28,7 +33,7 @@ public class Main {
      * 
      * @param args - possible arguments to pass (not defined)
      */
-    // TODO: vaadin web front
+    // TODO: web front
     // replace all the menus + pb's
     public static void main(String[] args) {
         handleFlags(args);
@@ -68,7 +73,7 @@ public class Main {
         options.addOption("h", "help", false, "see all flag options");
         options.addOption("l", "log", true, "logging level");
         options.addOption("i", "noninteractive", true, "Enable non interactive");
-        options.addOption("w", "web", false, "enable web front");
+        options.addOption("w", "web", false, "enable web front (localhost:8080)");
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
@@ -86,6 +91,10 @@ public class Main {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
                 Input.request(trace);
+            }
+            if (cmd.hasOption("w") && !cmd.hasOption("i")) {
+                logger.debug("Web parameter provided");
+                SpringApplication.run(Main.class, args);
             }
         } catch (ParseException e) {
             logger.error("Exception parsing input flags");
