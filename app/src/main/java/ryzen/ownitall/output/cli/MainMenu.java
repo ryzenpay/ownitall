@@ -14,7 +14,6 @@ import ryzen.ownitall.util.CLIMenu;
 
 public class MainMenu {
     private static final Logger logger = LogManager.getLogger(MainMenu.class);
-    private static final Settings settings = Settings.load();
 
     public MainMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -49,8 +48,9 @@ public class MainMenu {
      * save current library to local files
      */
     private void optionSave() {
+        Settings settings = Settings.load();
         Collection.load().save();
-        Settings.load().save();
+        settings.save();
         if (settings.isSaveCredentials()) {
             Credentials.load().save();
         }
@@ -63,14 +63,14 @@ public class MainMenu {
      * tools menu
      */
     private void optionTools() {
-        new Tools();
+        new ToolsMenu();
     }
 
     /**
      * change settings menu
      */
     private void optionSettings() {
-        settings.changeSettings();
+        Settings.load().changeSettings();
     }
 
     private void exit() {

@@ -8,17 +8,18 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 
 # Current goals  
 -[x] non-interactive mode (for automation)  
--[x] syncronization between libraries (put them all into ownitall and then have the same library everywhere)  
--[ ]  JFrame GUI  
+-[x] syncronization between libraries (put them all into ownitall and then have the same library elsewhere)  
+-[ ]  Web GUI
 
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## Flags
-
+- -h : help command, and will display all current flags (this list might be out of date)  
 - -i : non interactive mode which requires a string parameter in the format of ex: `1,1,4,1,0,3,2,C:\\Users\\ryzen\\Music,0,0`  
         - agreements are accepted, enter is automatically passed and if windows filenames need to have `\\`  
 - -l : log level, supports: debug, info, off  
+- -w : web gui (rather than default cli gui)  
 
 ## Library  
 A library can be used to get the best metadata and coverart for your tracks, there are several options and they each have their benefits and drawbacks
@@ -76,13 +77,13 @@ Youtube will provide you with all by doing the following:  (can also be done fol
     9. save the client id and secret  
 
 When doing this, read every TOS as you are using them at the risk of your own youtube account  
+
 ## Local
 the current format to importing your local music library is currently strict  
     - if you have a "liked songs" folder, name it "liked songs"  (can be changed in settings)
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
         - default is playlist  
     - cover image of an and playlist album needs to be a file called "`<playlist/album name>`.png" in the folder  
-
 
 # Gradle and compiling
 ## generate javadoc documentation
@@ -93,15 +94,5 @@ please fix any of the errors it throws as they show incomplete documentation
 to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
 a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  
 
-### Compiling Dependencies
-#### Vaadin
-requires node.js to be installed: https://nodejs.org/en  
-
-
 ## JRE Requirements
 current java version is 17, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
-
-
-## Useful commands for debugging  
-start in info mode: `java -jar .\ownitall.jar -Dlog4j.configurationFile=app\src\main\resources\log_info.xml`  
-start in debug mode: `java -jar .\ownitall.jar -Dlog4j.configurationFile=app\src\main\resources\debug_info.xml`

@@ -47,7 +47,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
-    // TODO: isolate menu
     private static final Logger logger = LogManager.getLogger(Settings.class);
     private final ObjectMapper objectMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD,
             JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
@@ -138,6 +137,7 @@ public class Settings {
      * 
      */
     public void changeSettings() {
+        // TODO: make function for web and cli
         System.out.println("Choose a setting to change: ");
         Map<String, String> options = new HashMap<>();
         try {
