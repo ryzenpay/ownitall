@@ -47,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
+    // TODO: isolate menu
     private static final Logger logger = LogManager.getLogger(Settings.class);
     private final ObjectMapper objectMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD,
             JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
@@ -144,7 +145,7 @@ public class Settings {
                 for (Field setting : this.getAllSettings()) {
                     options.put(setting.getName(), setting.get(this).toString());
                 }
-                String choice = Menu.optionMenuWithValue(options, "SETTINGS");
+                String choice = CLIMenu.optionMenuWithValue(options, "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
                 }

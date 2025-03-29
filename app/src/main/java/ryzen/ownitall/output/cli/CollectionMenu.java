@@ -1,17 +1,17 @@
-package ryzen.ownitall;
+package ryzen.ownitall.output.cli;
 
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.methods.Manual;
-import ryzen.ownitall.methods.MethodMenu;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.CLIMenu;
 import ryzen.ownitall.util.MusicTools;
 
 public class CollectionMenu {
@@ -30,7 +30,7 @@ public class CollectionMenu {
         options.put("Print Inventory", this::printInventory);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "INVENTORY MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }

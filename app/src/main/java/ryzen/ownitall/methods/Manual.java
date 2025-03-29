@@ -16,10 +16,11 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.CLIMenu;
 import ryzen.ownitall.util.Progressbar;
 
 public class Manual {
+    // TODO: isolate menu and manual
     private static final Logger logger = LogManager.getLogger(Manual.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
@@ -33,7 +34,7 @@ public class Manual {
         options.put("Delete", this::deleteMenu);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "MANUAL MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "MANUAL MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -52,7 +53,7 @@ public class Manual {
         options.put("Add Artist", this::optionAddArtist);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "ADD MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "ADD MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -125,7 +126,7 @@ public class Manual {
                 options.put(playlist.toString(), playlist);
             }
             try {
-                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
@@ -217,7 +218,7 @@ public class Manual {
         options.put("Clear Collection", this::optionClearInventory);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -240,7 +241,7 @@ public class Manual {
                 options.put(playlist.toString(), playlist);
             }
             try {
-                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
@@ -268,7 +269,7 @@ public class Manual {
                 options.put(album.toString(), album);
             }
             try {
-                String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
@@ -296,7 +297,7 @@ public class Manual {
                 options.put(song.toString(), song);
             }
             try {
-                String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "SONG DELETION MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
@@ -335,7 +336,7 @@ public class Manual {
         options.put("Playlists", this::optionMergePlaylist);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "MERGE MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "MERGE MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -354,13 +355,13 @@ public class Manual {
             options.put(playlist.toString(), playlist);
         }
         try {
-            String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
+            String choice = CLIMenu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
             if (choice.equals("Exit")) {
                 return;
             }
             Playlist playlist = options.get(choice);
             options.remove(choice);
-            String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
+            String choice2 = CLIMenu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
             if (choice2.equals("Exit")) {
                 return;
             }

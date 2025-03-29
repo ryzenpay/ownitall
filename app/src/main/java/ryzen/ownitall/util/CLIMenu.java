@@ -8,9 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
 
-public class Menu {
-    // TODO: web front menu
-    private static final Logger logger = LogManager.getLogger(Menu.class);
+public class CLIMenu {
+    private static final Logger logger = LogManager.getLogger(CLIMenu.class);
 
     /**
      * clears screen contents when not in debug mode

@@ -17,13 +17,14 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.CLIMenu;
 import ryzen.ownitall.util.Progressbar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Storage {
+    // TODO: isolate menu
     private static final Logger logger = LogManager.getLogger(Storage.class);
     private static final Settings settings = Settings.load();
     private static Storage instance;
@@ -128,7 +129,7 @@ public class Storage {
         }
         String choice;
         try {
-            choice = Menu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
+            choice = CLIMenu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting unarchive folder choice");
             return;

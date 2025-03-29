@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.CLIMenu;
 
 public class Tools {
     private static final Logger logger = LogManager.getLogger(Tools.class);
@@ -17,6 +17,7 @@ public class Tools {
      * default tools constructor prompting tools menu
      */
     public Tools() {
+        // TODO: isolate menu
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
@@ -25,7 +26,7 @@ public class Tools {
         options.put("Reset Settings", this::optionClearSettings);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
+                String choice = CLIMenu.optionMenu(options.keySet(), "TOOL MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
