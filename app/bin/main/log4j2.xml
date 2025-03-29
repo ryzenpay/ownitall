@@ -10,9 +10,12 @@
     </Appenders>
     <Loggers>
         <!-- Root Logger -->
-        <Root level="info">
-            <AppenderRef ref="Console" level="info"/>
-            <AppenderRef ref="File" level="info"/>
+        <Root>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File" level="INFO"/>
         </Root>
+        <!-- disable jaudiotagger log -->
+        <Logger name="org.jaudiotagger" level="OFF">
+        </Logger>
     </Loggers>
 </Configuration>

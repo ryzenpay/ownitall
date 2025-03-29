@@ -13,9 +13,8 @@ repositories {
 
 dependencies {
     //testing
-    testImplementation(libs.junit.jupiter)
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation(libs.guava)
     testImplementation("org.hamcrest:hamcrest:2.2")
 
     // spotify wrapper
