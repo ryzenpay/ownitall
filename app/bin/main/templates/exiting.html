@@ -1,0 +1,43 @@
+<!-- src/main/resources/templates/exit.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Exiting...</title>
+    <script type="text/javascript">
+        async function performShutdown() {
+            try {
+                const response = await fetch('/actuator/shutdown', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    console.log('Application is shutting down...');
+                    showCloseButton();
+                } else {
+                    console.error('Shutdown request failed.');
+                }
+            } catch (error) {
+                console.error('Error during shutdown:', error);
+            }
+        }
+
+        function showCloseButton() {
+            let button = document.createElement('button');
+            button.innerText = 'You can now close this tab';
+            button.onclick = function () {
+                window.close();
+            };
+            document.body.appendChild(button);
+        }
+
+        window.onload = performShutdown;
+    </script>
+</head>
+
+<body>
+    <h1>Exiting...</h1>
+    <p>This window will close shortly.</p>
+    <!-- The button will be appended here after a successful shutdown -->
+</body>
+
+</html>

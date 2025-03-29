@@ -1,0 +1,23 @@
+<!-- src/main/resources/templates/saving.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Saving...</title>
+    <script type="text/javascript">
+        window.onload = function () {
+            document.getElementById('saveForm').submit();
+        };
+    </script>
+</head>
+
+<body>
+    <h1>Saving...</h1>
+    <p>Your changes are being saved. Please wait.</p>
+
+    <form id="saveForm" action="/saving" method="post" style="display: none;">
+        <!-- Hidden form with a POST action -->
+    </form>
+</body>
+
+</html>

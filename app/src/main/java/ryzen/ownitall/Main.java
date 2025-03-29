@@ -50,7 +50,6 @@ public class Main {
                 Logs.setLogLevel(level);
             }
             sync.importCollection();
-            Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
@@ -58,8 +57,9 @@ public class Main {
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
-                SpringApplication.run(ryzen.ownitall.output.web.MainMenu.class, args);
+                ryzen.ownitall.output.web.MainMenu.load(args);
             } else {
+                Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
                 new ryzen.ownitall.output.cli.MainMenu();
             }
         } catch (ParseException e) {

@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.Tools;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.CLIMenu;
 
@@ -26,10 +25,10 @@ public class MainMenu {
             while (true) {
                 String choice = CLIMenu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
-                    logger.info("Exiting program...");
                     exit();
+                } else {
+                    options.get(choice).run();
                 }
-                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.info("Interruption caught in main menu, gracefully closing program");
@@ -74,6 +73,7 @@ public class MainMenu {
     }
 
     private void exit() {
+        logger.info("Exiting program...");
         optionSave();
         System.exit(0);
     }

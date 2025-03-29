@@ -43,6 +43,7 @@ dependencies {
     //web gui (spring boot) https://docs.spring.io/spring-boot/tutorial/first-application/index.html
     implementation("org.springframework.boot:spring-boot-starter-web:3.4.4")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.4.4")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.4.4")
     //https://docs.spring.io/spring-boot/how-to/logging.html
     implementation("org.springframework.boot:spring-boot-starter-log4j2:3.4.4")
     modules {
