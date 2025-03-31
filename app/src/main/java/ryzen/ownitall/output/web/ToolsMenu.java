@@ -32,14 +32,12 @@ public class ToolsMenu {
 
     @PostMapping("/tools/clearcache")
     public String optionClearCache() {
-        // TODO: clear cache agreement
         Library.load().clear();
         return "redirect:/tools";
     }
 
     @PostMapping("/tools/clearcredentials")
     public String optionClearCredentials() {
-        // TODO: clear credentials agreement
         Credentials.load().clear();
         return "redirect:/tools";
     }

@@ -3,6 +3,15 @@
 
 <head>
     <title>Tools Menu</title>
+    <script>
+        function confirmAction(event, message) {
+            event.preventDefault();
+            const userConfirmed = confirm(message);
+            if (userConfirmed) {
+                event.target.submit();
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -13,10 +22,12 @@
     <form action="/tools/unarchive" method="post">
         <button type="submit">unArchive</button>
     </form>
-    <form action="/tools/clearcache" method="post">
+    <form action="/tools/clearcache" method="post"
+        onsubmit="confirmAction(event, 'Are you sure you want to clear the cache?')">
         <button type="submit">Clear Cache</button>
     </form>
-    <form action="/tools/clearcredentials" method="post">
+    <form action="/tools/clearcredentials" method="post"
+        onsubmit="confirmAction(event, 'Are you sure you want to clear saved logins?')">
         <button type="submit">Clear Saved Logins</button>
     </form>
     <form action="/settings/reset" method="post">

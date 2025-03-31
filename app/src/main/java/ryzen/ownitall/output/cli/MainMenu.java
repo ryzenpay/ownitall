@@ -5,11 +5,8 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Main;
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.CLIMenu;
 
 public class MainMenu {
