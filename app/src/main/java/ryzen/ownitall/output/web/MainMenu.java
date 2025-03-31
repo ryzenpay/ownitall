@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Main;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 
@@ -47,52 +48,33 @@ public class MainMenu {
     @PostMapping("/collection")
     public String optionCollection() {
         // TODO: collection menu
-        return "redirect:/collectionmenu";
+        return "collectionmenu/index";
     }
 
     @PostMapping("/save")
     public String optionSave() {
-        return "mainmenu/saving";
-    }
-
-    @PostMapping("/saving")
-    public String saving() {
         save();
         return "redirect:/";
     }
 
     private void save() {
-        Settings settings = Settings.load();
-        Collection.load().save();
-        settings.save();
-        if (settings.isSaveCredentials()) {
-            Credentials.load().save();
-        }
-        if (Library.checkInstance()) {
-            Library.load();
-        }
+        Main.save();
     }
 
     @PostMapping("/tools")
     public String optionTools() {
-        // TODO: tools menu
-        return "redirect:/";
+        return "toolsmenu/index";
     }
 
     @PostMapping("/settings")
     public String optionSettings() {
         // TODO: settings menu
-        return "redirect:/settingsmenu";
+        return "settingsmenu/index";
     }
 
     @PostMapping("/exit")
     public String optionExit() {
-        return "mainmenu/exiting";
-    }
-
-    @PostMapping("/exiting")
-    public String exit() {
         save();
-        return "redirect:/";
+        return "exit";
     }
 }

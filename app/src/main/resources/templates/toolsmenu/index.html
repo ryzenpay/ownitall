@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Tools Menu</title>
+</head>
+
+<body>
+    <h1>Tools Menu</h1>
+    <form action="/tools/archive" method="post">
+        <button type="submit">Archive</button>
+    </form>
+    <form action="/tools/unarchive" method="post">
+        <button type="submit">unArchive</button>
+    </form>
+    <form action="/tools/clearcache" method="post">
+        <button type="submit">Clear Cache</button>
+    </form>
+    <form action="/tools/clearcredentials" method="post">
+        <button type="submit">Clear Saved Logins</button>
+    </form>
+    <form action="/settings/reset" method="post">
+        <button type="submit">Reset Settings</button>
+    </form>
+    <form action="/tools/return" method="post">
+        <button type="submit">Return</button>
+    </form>
+</body>
+
+</html>

@@ -12,7 +12,7 @@
                 });
                 if (response.ok) {
                     console.log('Application is shutting down...');
-                    showCloseButton();
+                    showCloseText();
                 } else {
                     console.error('Shutdown request failed.');
                 }
@@ -21,13 +21,10 @@
             }
         }
 
-        function showCloseButton() {
-            let button = document.createElement('button');
-            button.innerText = 'You can now close this tab';
-            button.onclick = function () {
-                window.close();
-            };
-            document.body.appendChild(button);
+        function showCloseText() {
+            let textBlock = document.createElement('div');
+            textBlock.innerText = 'You can now close this tab.';
+            document.body.appendChild(textBlock);
         }
 
         window.onload = performShutdown;
@@ -36,8 +33,6 @@
 
 <body>
     <h1>Exiting...</h1>
-    <p>This window will close shortly.</p>
-    <!-- The button will be appended here after a successful shutdown -->
 </body>
 
 </html>

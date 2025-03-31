@@ -55,8 +55,16 @@ public class Tools {
      * clear memory credentials and local credentials
      */
     public static void clearCredentials() {
-        Credentials.load().clear();
-        logger.info("Cleared credentials");
+        try {
+            System.out.print("Are you sure you wan to clear Credentials (y/N): ");
+            if (Input.request().getAgreement()) {
+                logger.info("Clearing Credentials...");
+                Credentials.load().clear();
+                logger.info("Done clearing Credentials");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting clear Credentials agreement");
+        }
     }
 
     /**

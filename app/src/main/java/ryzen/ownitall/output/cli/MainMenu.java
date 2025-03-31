@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Main;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.CLIMenu;
@@ -47,15 +48,7 @@ public class MainMenu {
      * save current library to local files
      */
     private void optionSave() {
-        Settings settings = Settings.load();
-        Collection.load().save();
-        settings.save();
-        if (settings.isSaveCredentials()) {
-            Credentials.load().save();
-        }
-        if (Library.checkInstance()) {
-            Library.load(); // caches in the load
-        }
+        Main.save();
     }
 
     /**

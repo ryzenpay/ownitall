@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.CLIMenu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -64,6 +65,18 @@ public class Main {
             }
         } catch (ParseException e) {
             logger.error("Exception parsing input flags");
+        }
+    }
+
+    public static void save() {
+        Settings settings = Settings.load();
+        Collection.load().save();
+        settings.save();
+        if (settings.isSaveCredentials()) {
+            Credentials.load().save();
+        }
+        if (Library.checkInstance()) {
+            Library.load();
         }
     }
 }
