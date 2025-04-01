@@ -54,12 +54,4 @@ public class Tools {
             logger.debug("Interrupted while getting clear Credentials agreement");
         }
     }
-
-    /**
-     * clear memory settings and local settings
-     */
-    public static void clearSettings() {
-        Settings.load().clear();
-        logger.info("Cleared settings");
-    }
 }

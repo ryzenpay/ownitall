@@ -55,15 +55,37 @@ public class Download {
      */
     public Download(File localLibrary) throws InterruptedException {
         if (settings.getYoutubedlPath().isEmpty()) {
-            settings.setYoutubedlPath();
+            this.setYoutubedlPath();
         }
         if (settings.getFfmpegPath().isEmpty()) {
-            settings.setFfmpegPath();
+            this.setFfmpegPath();
         }
         this.localLibrary = localLibrary;
         System.out.println("This is where i reccomend you to connect to VPN / use proxies");
         System.out.print("Enter enter to continue: ");
         Input.request().getEnter();
+    }
+
+    private void setYoutubedlPath() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Local Youtube DL executable path: ");
+            settings.setYoutubedlPath(Input.request().getFile(true).getAbsolutePath());
+        } catch (InterruptedException e) {
+            logger.debug("Interrutped while setting youtubedl path");
+            throw e;
+        }
+    }
+
+    private void setFfmpegPath() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Local FFMPEG executable path: ");
+            settings.setFfmpegPath(Input.request().getFile(true).getAbsolutePath());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting FFMPEG executable path");
+            throw e;
+        }
     }
 
     /**

@@ -17,7 +17,6 @@ public class ToolsMenu {
         options.put("UnArchive", Tools::unArchive);
         options.put("Clear Cache", Tools::clearCache);
         options.put("Clear Saved Logins", Tools::clearCredentials);
-        options.put("Reset Settings", Tools::clearSettings);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");

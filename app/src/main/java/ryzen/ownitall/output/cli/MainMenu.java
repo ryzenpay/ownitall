@@ -59,7 +59,7 @@ public class MainMenu {
      * change settings menu
      */
     private void optionSettings() {
-        Settings.load().changeSettings();
+        new SettingsMenu();
     }
 
     private void exit() {

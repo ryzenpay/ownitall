@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -119,47 +117,21 @@ public class Settings {
      * @return - ArrayList of all setting varialbes as Object
      */
     @JsonIgnore
-    public ArrayList<Field> getAllSettings() {
-        ArrayList<Field> allSettings = new ArrayList<>();
+    public LinkedHashMap<String, String> getAllSettings() {
+        LinkedHashMap<String, String> settings = new LinkedHashMap<>();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             // only allow option to change non final and protected fields
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
                 field.setAccessible(true);
-                allSettings.add(field); // Add field value to the list
-            }
-        }
-        return allSettings;
-    }
-
-    /**
-     * print menu of settings and values, prompt user for which to change
-     * 
-     */
-    public void changeSettings() {
-        // TODO: isolate CLIMenu
-        System.out.println("Choose a setting to change: ");
-        Map<String, String> options = new HashMap<>();
-        try {
-            while (true) {
-                for (Field setting : this.getAllSettings()) {
-                    options.put(setting.getName(), setting.get(this).toString());
-                }
-                String choice = Menu.optionMenuWithValue(options, "SETTINGS");
-                if (choice.equals("Exit")) {
-                    break;
-                }
-                if (this.changeSetting(choice)) {
-                    logger.info("Successfully changed setting '" + choice + "'");
-                } else {
-                    logger.error("Unsuccessfully changed setting");
+                try {
+                    settings.put(field.getName(), field.get(this).toString());
+                } catch (IllegalAccessException e) {
+                    logger.error("Exception fetching settings value: " + e);
                 }
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting change setting option");
-        } catch (IllegalAccessException e) {
-            logger.debug("Exception while getting setting in changeSettings: " + e);
         }
+        return settings;
     }
 
     /**
@@ -169,7 +141,7 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
-    private boolean changeSetting(String settingName) throws InterruptedException {
+    public boolean changeSetting(String settingName) throws InterruptedException {
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             setting.setAccessible(true);

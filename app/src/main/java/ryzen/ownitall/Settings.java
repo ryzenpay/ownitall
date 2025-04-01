@@ -232,15 +232,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return youtubedlPath;
     }
 
-    public void setYoutubedlPath() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Local Youtube DL executable path: ");
-            youtubedlPath = Input.request().getFile(true).getAbsolutePath();
-        } catch (InterruptedException e) {
-            logger.debug("Interrutped while setting youtubedl path");
-            throw e;
-        }
+    public void setYoutubedlPath(String path) {
+        this.youtubedlPath = path;
     }
 
     public String getDownloadFormat() {
@@ -255,15 +248,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return ffmpegPath;
     }
 
-    public void setFfmpegPath() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Local FFMPEG executable path: ");
-            ffmpegPath = Input.request().getFile(true).getAbsolutePath();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting FFMPEG executable path");
-            throw e;
-        }
+    public void setFfmpegPath(String path) {
+        this.ffmpegPath = path;
     }
 
     public String getDownloadFolder() {
