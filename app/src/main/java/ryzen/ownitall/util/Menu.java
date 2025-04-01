@@ -10,6 +10,13 @@ import org.apache.logging.log4j.Level;
 
 public class Menu {
     private static final Logger logger = LogManager.getLogger(Menu.class);
+    public static final String asciiLogo = "                        _  _          _  _ \n" +
+            "                       (_)| |        | || |\n" +
+            "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
+            " / _  \\ \\ /\\ / /| '_ \\ | || __|/ _` || || |\n" +
+            "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
+            " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
+            "                ";
 
     /**
      * clears screen contents when not in debug mode
@@ -26,13 +33,6 @@ public class Menu {
     }
 
     public static void printLogo() {
-        String asciiLogo = "                        _  _          _  _ \n" +
-                "                       (_)| |        | || |\n" +
-                "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
-                " / _  \\ \\ /\\ / /| '_ \\ | || __|/ _` || || |\n" +
-                "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
-                " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
-                "                ";
         System.out.println(asciiLogo);
     }
 

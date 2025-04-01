@@ -4,13 +4,18 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import ryzen.ownitall.Main;
 
 @Controller
@@ -37,40 +42,47 @@ public class MainMenu {
     }
 
     @GetMapping("/")
-    public String showMenu() {
-        return "mainmenu/index";
+    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("collection", "/collection");
+        options.put("save", "/save");
+        options.put("tools", "/tools");
+        options.put("settings", "/settings");
+        options.put("exit", "/exit");
+        model.addAttribute("menuName", "Main Menu");
+        model.addAttribute("menuOptions", options);
+        if (notification != null) {
+            model.addAttribute("notification", notification);
+        }
+        return "menu";
     }
 
     @PostMapping("/collection")
     public String optionCollection() {
         // TODO: collection menu
-        return "collectionmenu/index";
+        return "redirect:/";
     }
 
     @PostMapping("/save")
     public String optionSave() {
-        save();
-        return "redirect:/";
-    }
-
-    private void save() {
         Main.save();
+        return "redirect:/?notification=Successfully saved";
     }
 
     @PostMapping("/tools")
-    public String optionTools() {
-        return "toolsmenu";
+    public String optionTools(Model model) {
+        return new ToolsMenu().menu(model, null);
     }
 
     @PostMapping("/settings")
     public String optionSettings() {
         // TODO: settings menu
-        return "settingsmenu/index";
+        return "redirect:/";
     }
 
     @PostMapping("/exit")
     public String optionExit() {
-        save();
+        Main.save();
         return "exit";
     }
 }

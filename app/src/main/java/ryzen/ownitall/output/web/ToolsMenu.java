@@ -17,14 +17,25 @@ import ryzen.ownitall.library.Library;
 public class ToolsMenu {
 
     @GetMapping("/tools")
-    public String showMenu() {
-        return "toolsmenu";
+    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("Archive", "/tools/archive");
+        options.put("Unarchive", "/tools/unarchive/choose");
+        options.put("Clear Cache", "/tools/clearcache");
+        options.put("Reset Credentials", "/tools/clearcredentials");
+        options.put("Return", "/tools/return");
+        model.addAttribute("menuName", "Main Menu");
+        model.addAttribute("menuOptions", options);
+        if (notification != null) {
+            model.addAttribute("notification", notification);
+        }
+        return "menu";
     }
 
     @PostMapping("/tools/archive")
     public String optionArchive() {
         Storage.load().archive();
-        return "redirect:/tools";
+        return "redirect:/tools?notification=Successfully archived";
     }
 
     @PostMapping("/tools/unarchive/choose")
@@ -41,19 +52,19 @@ public class ToolsMenu {
     @PostMapping("/tools/unarchive")
     public String unarchive(@RequestParam("folderPath") String folderPath) {
         Storage.load().unArchive(new File(folderPath));
-        return "redirect:/tools";
+        return "redirect:/tools?notification=Successfully unarchived";
     }
 
     @PostMapping("/tools/clearcache")
     public String optionClearCache() {
         Library.load().clear();
-        return "redirect:/tools";
+        return "redirect:/tools?notification=Successfully cleared cache";
     }
 
     @PostMapping("/tools/clearcredentials")
     public String optionClearCredentials() {
         Credentials.load().clear();
-        return "redirect:/tools";
+        return "redirect:/tools?notification=Successfully cleared credentials";
     }
 
     @PostMapping("/tools/return")

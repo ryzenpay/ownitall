@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title th:text="${menuName}"></title>
+</head>
+
+<body>
+    <div th:if="${notification}" class="notification">
+        <p th:text="${notification}"></p>
+    </div>
+    <h1 th:text="${menuName}"></h1>
+    <div th:each="entry : ${menuOptions}">
+        <form th:action="@{${entry.value}}" method="post">
+            <button type="submit" th:name="option" th:value="${entry.value}" th:text="${entry.key}"></button>
+            <br>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -47,12 +47,14 @@
         },
         {
             "type": "java",
-            "name": "web gui",
+            "name": "web debug",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
             "projectName": "app",
             "args": [
                 "-w",
+                "-l",
+                "debug"
             ]
         }
     ]
