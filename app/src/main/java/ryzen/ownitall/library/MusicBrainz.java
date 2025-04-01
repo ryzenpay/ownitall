@@ -375,7 +375,7 @@ public class MusicBrainz extends Library {
                 return rootNode;
             }
         } catch (URISyntaxException e) {
-            logger.error("Error querying MusicBee: " + e);
+            logger.error("Exception querying MusicBee: " + e);
         }
         return null;
     }

@@ -23,8 +23,6 @@ public class MethodMenu {
     private Method method;
     private String methodName;
 
-    // TODO: library menu
-    // especially setting the credentials
     public MethodMenu() throws InterruptedException {
         String choice = CLIMenu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
@@ -34,9 +32,12 @@ public class MethodMenu {
         try {
             this.method = methodClass.getDeclaredConstructor().newInstance();
             this.methodName = method.getClass().getSimpleName();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+        } catch (InstantiationException e) {
+            logger.debug("Interrupted while setting up method '" + choice + "'");
+            throw new InterruptedException();
+        } catch (IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException e) {
-            logger.error("Error instantiating method '" + choice + "': " + e);
+            logger.error("Exception instantiating method '" + choice + "': " + e);
             throw new InterruptedException();
         }
     }

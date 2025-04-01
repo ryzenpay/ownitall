@@ -76,11 +76,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     /**
      * int representative of which library to use
-     * 0 - dont use library
-     * 1 - lastFM
-     * 2 - musicBrainz
      */
-    protected int libraryType = 1;
+    protected String libraryType = "";
 
     /**
      * youtube dl installation path
@@ -227,7 +224,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return soundCloudPlaylistLimit;
     }
 
-    public int getLibrayType() {
+    public String getLibraryType() {
         return this.libraryType;
     }
 
@@ -309,13 +306,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public String getSongFile() {
         return songFile;
-    }
-
-    /**
-     * @return the libraryType
-     */
-    public int getLibraryType() {
-        return libraryType;
     }
 
     public boolean isDownloadLikedSongsPlaylist() {

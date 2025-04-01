@@ -179,7 +179,7 @@ public class ManualMenu {
     }
 
     private void optionAddArtist() {
-        if (settings.getLibrayType() != 1) {
+        if (settings.getLibraryType().isEmpty()) {
             logger.warn("LastFM library type is required for this");
             return;
         }

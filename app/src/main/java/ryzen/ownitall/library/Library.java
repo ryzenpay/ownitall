@@ -3,6 +3,7 @@ package ryzen.ownitall.library;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final Settings settings = Settings.load();
     private static final Storage sync = Storage.load();
+    public static final LinkedHashMap<String, Class<? extends Library>> libraries;
     private static Library instance;
     private ObjectMapper objectMapper;
     private long lastQueryTime = 0;
@@ -37,6 +39,12 @@ public class Library {
     protected LinkedHashMap<String, Song> songs;
     protected LinkedHashMap<String, String> ids;
 
+    static {
+        libraries = new LinkedHashMap<>();
+        libraries.put("LastFM", LastFM.class);
+        libraries.put("MusicBrainz", MusicBrainz.class);
+    }
+
     /**
      * instance call method
      * sets library type with the integer set in settings
@@ -46,23 +54,18 @@ public class Library {
      */
     public static Library load() {
         if (instance == null) {
-            try {
-                switch (settings.getLibrayType()) {
-                    case 0:
-                        instance = null;
-                        break;
-                    case 1:
-                        instance = new LastFM();
-                        break;
-                    case 2:
-                        instance = new MusicBrainz();
-                        break;
-                    default:
-                        logger.error("Library type set in settings '" + settings.getLibrayType() + "' does not exist");
-                        break;
+            if (!settings.getLibraryType().isEmpty()) {
+                Class<? extends Library> libraryClass = libraries.get(settings.getLibraryType());
+                if (libraryClass != null) {
+                    try {
+                        instance = libraryClass.getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException e) {
+                        logger.debug("Interrupted while setting up library type '" + settings.getLibraryType() + "'");
+                    } catch (IllegalAccessException | NoSuchMethodException
+                            | InvocationTargetException e) {
+                        logger.error("Exception instantiating library '" + settings.getLibraryType() + "': " + e);
+                    }
                 }
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while setting up library");
             }
         }
         if (instance != null) {
@@ -128,7 +131,7 @@ public class Library {
     }
 
     public void setCredentials() throws InterruptedException {
-        logger.warn("Setting credentials supported for library type: " + settings.getLibrayType());
+        logger.warn("Setting credentials supported for library type: " + settings.getLibraryType());
     }
 
     public boolean credentialsIsEmpty() {
@@ -137,22 +140,22 @@ public class Library {
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("get album supported for library type: " + settings.getLibrayType());
+        logger.warn("get album supported for library type: " + settings.getLibraryType());
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        logger.warn("get song supported for library type: " + settings.getLibrayType());
+        logger.warn("get song supported for library type: " + settings.getLibraryType());
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("get artist for library type: " + settings.getLibrayType());
+        logger.warn("get artist for library type: " + settings.getLibraryType());
         return null;
     }
 
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.warn("get artist albums for library type: " + settings.getLibrayType());
+        logger.warn("get artist albums for library type: " + settings.getLibraryType());
         return null;
     }
 
@@ -208,7 +211,7 @@ public class Library {
             }
             return rootNode;
         } catch (IOException e) {
-            logger.error("Error querying API: " + e);
+            logger.error("Exception querying API: " + e);
             return null;
         }
     }
