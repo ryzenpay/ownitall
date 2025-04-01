@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Main;
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Menu;
 
 public class MainMenu {

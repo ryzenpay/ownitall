@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,14 +18,12 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Storage {
-    // TODO: isolate menu
     private static final Logger logger = LogManager.getLogger(Storage.class);
     private static final Settings settings = Settings.load();
     private static Storage instance;
@@ -81,28 +80,12 @@ public class Storage {
     /**
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
-     * 
-     * @param userInput - optional boolean to hardcode user input
      */
-    public void archive(boolean userInput) {
+    public void archive() {
         this.setDataFolder();
         LocalDate currentDate = LocalDate.now();
         String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         File archiveFolder = new File(this.dataFolder, folderName);
-        if (archiveFolder.exists() && userInput) {
-            try {
-                System.out.println(
-                        "You are about to overwrite the contents of the folder: '" + archiveFolder.getAbsolutePath()
-                                + "'");
-                System.out.print("Are you sure y/N: ");
-                if (!Input.request().getAgreement()) {
-                    return;
-                }
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting archive overwrite agreement");
-                return;
-            }
-        }
         archiveFolder.mkdir();
         for (File file : this.dataFolder.listFiles()) {
             if (file.isFile()) {
@@ -114,32 +97,28 @@ public class Storage {
         logger.info("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
     }
 
+    public LinkedHashSet<File> getArchiveFolders() {
+        LinkedHashSet<File> archiveFolders = new LinkedHashSet<>();
+        for (File file : this.dataFolder.listFiles()) {
+            if (file.isDirectory()) {
+                archiveFolders.add(file);
+            }
+        }
+        return archiveFolders;
+    }
+
     /**
      * display a menu of all archived files (folders and dates) and give an option
      * to unarchive
      * also archives current files with todays date to prevent data loss
      */
-    public void unArchive() {
-        // TODO: isolate CLIMenu
+    public void unArchive(File unarchiveFolder) {
+        if (unarchiveFolder == null || !unarchiveFolder.exists()) {
+            logger.debug("null or non existant unarchive folder provided in unarchive");
+            return;
+        }
         this.setDataFolder();
-        LinkedHashMap<String, File> archiveFolders = new LinkedHashMap<>();
-        for (File file : this.dataFolder.listFiles()) {
-            if (file.isDirectory()) {
-                archiveFolders.put(file.getName(), file);
-            }
-        }
-        String choice;
-        try {
-            choice = Menu.optionMenu(archiveFolders.keySet(), "UNARCHIVING");
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting unarchive folder choice");
-            return;
-        }
-        if (choice.equals("Exit")) {
-            return;
-        }
-        archive(false);
-        File unarchiveFolder = archiveFolders.get(choice);
+        this.archive();
         for (File file : unarchiveFolder.listFiles()) {
             if (file.isFile()) {
                 File destFile = new File(this.dataFolder, file.getName());

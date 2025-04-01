@@ -2,8 +2,6 @@ package ryzen.ownitall;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import ryzen.ownitall.util.Input;
-
 import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;

@@ -1,11 +1,15 @@
 package ryzen.ownitall.output.cli;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.Tools;
+import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Storage;
+import ryzen.ownitall.library.Library;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class ToolsMenu {
@@ -13,10 +17,10 @@ public class ToolsMenu {
 
     public ToolsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Archive", Tools::archive);
-        options.put("UnArchive", Tools::unArchive);
-        options.put("Clear Cache", Tools::clearCache);
-        options.put("Clear Saved Logins", Tools::clearCredentials);
+        options.put("Archive", this::optionArchive);
+        options.put("UnArchive", this::optionUnArchive);
+        options.put("Clear Cache", this::optionClearCache);
+        options.put("Clear Saved Logins", this::optionClearCredentials);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
@@ -27,6 +31,55 @@ public class ToolsMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting tools menu response");
+        }
+    }
+
+    private void optionArchive() {
+        Storage.load().archive();
+        logger.info("Successfully archived");
+    }
+
+    private void optionUnArchive() {
+        Storage storage = Storage.load();
+        LinkedHashMap<String, File> archiveFoldersMap = new LinkedHashMap<>();
+        for (File file : storage.getArchiveFolders()) {
+            archiveFoldersMap.put(file.getName(), file);
+        }
+        try {
+            String choice = Menu.optionMenu(archiveFoldersMap.keySet(), "UNARCHIVING");
+            if (choice.equals("Exit")) {
+                return;
+            }
+            storage.unArchive(archiveFoldersMap.get(choice));
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting unarchive folder choice");
+            return;
+        }
+    }
+
+    private void optionClearCache() {
+        try {
+            System.out.print("Are you sure you wan to clear cache (y/N): ");
+            if (Input.request().getAgreement()) {
+                logger.info("Clearing cache...");
+                Library.load().clear();
+                logger.info("Done clearing cache");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting clear cache agreement");
+        }
+    }
+
+    private void optionClearCredentials() {
+        try {
+            System.out.print("Are you sure you wan to clear Credentials (y/N): ");
+            if (Input.request().getAgreement()) {
+                logger.info("Clearing Credentials...");
+                Credentials.load().clear();
+                logger.info("Done clearing Credentials");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting clear Credentials agreement");
         }
     }
 }

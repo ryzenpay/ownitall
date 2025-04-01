@@ -18,15 +18,13 @@ public class ToolsMenu {
 
     @PostMapping("/tools/archive")
     public String optionArhive() {
-        // TODO: archive menu
-        Storage.load().archive(true);
+        Storage.load().archive();
         return "redirect:/tools";
     }
 
     @PostMapping("/tools/unarchive")
     public String optionUnArchive() {
         // TODO: unarchive menu
-        Storage.load().unArchive();
         return "redirect:/tools";
     }
 

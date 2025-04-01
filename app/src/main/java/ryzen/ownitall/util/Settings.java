@@ -142,6 +142,10 @@ public class Settings {
      */
     @JsonIgnore
     public boolean changeSetting(String settingName) throws InterruptedException {
+        if (settingName == null) {
+            logger.debug("null setting name provided in changeSetting");
+            return false;
+        }
         try {
             Field setting = this.getClass().getDeclaredField(settingName);
             setting.setAccessible(true);
