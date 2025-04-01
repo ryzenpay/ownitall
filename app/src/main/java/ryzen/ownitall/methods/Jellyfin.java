@@ -30,6 +30,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
@@ -46,21 +47,51 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/
     public Jellyfin() throws InterruptedException {
         super();
-        if (credentials.jellyfinIsEmpty()) {
-            credentials.setJellyfinCredentials();
-        }
         objectMapper = new ObjectMapper();
+        if (this.credentialsIsEmpty()) {
+            this.setCredentials();
+        }
         this.authenticate();
     }
 
+    private void setCredentials() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("instance url: ");
+            credentials.setJellyFinUrl(Input.request().getURL().toString());
+            System.out.print("username: ");
+            credentials.setJellyFinUsername(Input.request().getString());
+            System.out.print("password: ");
+            credentials.setJellyFinPassword(Input.request().getString());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting jellyfin credentials");
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean credentialsIsEmpty() {
+        if (credentials.getJellyfinUsername().isEmpty()) {
+            return true;
+        }
+        if (credentials.getJellyfinPassword().isEmpty()) {
+            return true;
+        }
+        if (credentials.getJellyfinUrl().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
-    private void authenticate() {
+    private void authenticate() throws InterruptedException {
         ObjectNode credsNode = objectMapper.createObjectNode();
         credsNode.put("Username", credentials.getJellyfinUsername());
         credsNode.put("Pw", credentials.getJellyfinPassword());
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
+            throw new InterruptedException();
         } else {
             logger.debug("Authenticated into jellyfin with user " + response.get("User").get("Name").asText());
             this.userId = response.get("User").get("Id").asText();
@@ -313,9 +344,12 @@ public class Jellyfin extends Method {
             if (artistNode != null) {
                 song.setArtist(new Artist(artistNode.asText()));
             }
-            String albumName = response.get("Album").asText();
-            if (albumName != null && !albumName.isEmpty()) {
-                song.setAlbumName(albumName);
+            JsonNode albumNode = response.get("Album");
+            if (albumNode != null) {
+                String albumName = albumNode.asText();
+                if (albumName != null && !albumName.isEmpty()) {
+                    song.setAlbumName(albumName);
+                }
             }
             if (library != null) {
                 Song foundSong = library.getSong(song);

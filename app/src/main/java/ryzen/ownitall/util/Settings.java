@@ -137,7 +137,7 @@ public class Settings {
      * 
      */
     public void changeSettings() {
-        // TODO: make function for web and cli
+        // TODO: isolate CLIMenu
         System.out.println("Choose a setting to change: ");
         Map<String, String> options = new HashMap<>();
         try {

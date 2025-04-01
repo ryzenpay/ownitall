@@ -120,6 +120,7 @@ public class Storage {
      * also archives current files with todays date to prevent data loss
      */
     public void unArchive() {
+        // TODO: isolate CLIMenu
         this.setDataFolder();
         LinkedHashMap<String, File> archiveFolders = new LinkedHashMap<>();
         for (File file : this.dataFolder.listFiles()) {

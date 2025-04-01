@@ -13,7 +13,7 @@ public class ToolsMenu {
 
     @GetMapping("/tools")
     public String showMenu() {
-        return "toolsmenu/index";
+        return "toolsmenu";
     }
 
     @PostMapping("/tools/archive")

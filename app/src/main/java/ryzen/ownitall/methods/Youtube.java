@@ -20,6 +20,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
@@ -50,10 +51,39 @@ public class Youtube extends Method {
      */
     public Youtube() throws InterruptedException {
         super();
-        if (credentials.youtubeIsEmpty()) {
-            credentials.setYoutubeCredentials();
+        if (this.credentialsIsEmpty()) {
+            this.setCredentials();
         }
         this.youtubeApi = this.getService();
+    }
+
+    private void setCredentials() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Enter youtube application name: ");
+            credentials.setYoutubeApplicationName(Input.request().getString());
+            System.out.print("Enter youtube client id: ");
+            credentials.setYoutubeClientId(Input.request().getString(72));
+            System.out.print("Enter youtube client secret: ");
+            credentials.setYoutubeClientSecret(Input.request().getString(35));
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting youtube credentials");
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean credentialsIsEmpty() {
+        if (credentials.getYoutubeClientId().isEmpty()) {
+            return true;
+        }
+        if (credentials.getYoutubeApplicationName().isEmpty()) {
+            return true;
+        }
+        if (credentials.getYoutubeClientSecret().isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     /**

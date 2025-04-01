@@ -65,8 +65,8 @@ public class Spotify extends Method {
      */
     public Spotify() throws InterruptedException {
         super();
-        if (credentials.spotifyIsEmpty()) {
-            credentials.setSpotifyCredentials();
+        if (this.credentialsIsEmpty()) {
+            this.setCredentials();
         }
         this.spotifyApi = new SpotifyApi.Builder()
                 .setClientId(credentials.getSpotifyClientId())
@@ -75,6 +75,21 @@ public class Spotify extends Method {
                 .build();
         this.requestCode();
         this.setToken();
+    }
+
+    private void setCredentials() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("Client id: ");
+            credentials.setSpotifyClientId(Input.request().getString(32));
+            System.out.print("Client secret: ");
+            credentials.setSpotifyClientSecret(Input.request().getString(32));
+            System.out.print("Redirect url:");
+            credentials.setSpotifyRedirectUrl(Input.request().getURL().toString());
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting spotify credentials");
+            throw e;
+        }
     }
 
     /**
@@ -109,7 +124,7 @@ public class Spotify extends Method {
      * 
      * @param code - the authentication code provided in the oauth
      */
-    private void setToken() {
+    private void setToken() throws InterruptedException {
         AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.code).build();
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
@@ -117,6 +132,7 @@ public class Spotify extends Method {
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             logger.error("Exception logging in: " + e);
+            throw new InterruptedException();
         }
     }
 

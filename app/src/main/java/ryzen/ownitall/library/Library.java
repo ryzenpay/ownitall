@@ -66,7 +66,15 @@ public class Library {
             }
         }
         if (instance != null) {
-            instance.cache();
+            try {
+                if (instance.credentialsIsEmpty()) {
+                    instance.setCredentials();
+                }
+                instance.cache();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while setting '" + settings.getLibraryType() + "' credentials");
+                instance = null;
+            }
         }
         return instance;
     }
@@ -119,23 +127,32 @@ public class Library {
         instance = null;
     }
 
+    public void setCredentials() throws InterruptedException {
+        logger.warn("Setting credentials supported for library type: " + settings.getLibrayType());
+    }
+
+    public boolean credentialsIsEmpty() {
+        logger.warn("Checking credentials supported for library type: " + settings.getLibraryType());
+        return false;
+    }
+
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("not supported for library type: " + settings.getLibrayType());
+        logger.warn("get album supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        logger.warn("not supported for library type: " + settings.getLibrayType());
+        logger.warn("get song supported for library type: " + settings.getLibrayType());
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("not supported for library type: " + settings.getLibrayType());
+        logger.warn("get artist for library type: " + settings.getLibrayType());
         return null;
     }
 
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.warn("not supported for library type: " + settings.getLibrayType());
+        logger.warn("get artist albums for library type: " + settings.getLibrayType());
         return null;
     }
 

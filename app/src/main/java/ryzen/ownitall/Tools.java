@@ -13,26 +13,14 @@ public class Tools {
      * trigger sync archive
      */
     public static void archive() {
-        try {
-            Storage.load().archive(true);
-            System.out.print("Press Enter to continue...");
-            Input.request().getEnter();
-        } catch (InterruptedException e) {
-
-        }
+        Storage.load().archive(true);
     }
 
     /**
      * trigger sync unarchive
      */
     public static void unArchive() {
-        try {
-            Storage.load().unArchive();
-            System.out.print("Press Enter to continue...");
-            Input.request().getEnter();
-        } catch (InterruptedException e) {
-
-        }
+        Storage.load().unArchive();
     }
 
     /**

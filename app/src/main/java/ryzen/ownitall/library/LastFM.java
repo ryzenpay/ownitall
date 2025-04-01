@@ -16,6 +16,7 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Input;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,10 +34,27 @@ public class LastFM extends Library {
      */
     public LastFM() throws InterruptedException {
         super();
-        if (credentials.lastFMIsEmpty()) {
-            credentials.setLastFMCredentials();
-        }
         this.queryDiff = 10;
+    }
+
+    @Override
+    public void setCredentials() throws InterruptedException {
+        logger.info("A guide to obtaining the following variables is in the readme");
+        try {
+            System.out.print("LastFM API key: ");
+            credentials.setLastFMApiKey(Input.request().getString(32));
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while setting lastfm credentials");
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean credentialsIsEmpty() {
+        if (credentials.getLastFMApiKey().isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     /**

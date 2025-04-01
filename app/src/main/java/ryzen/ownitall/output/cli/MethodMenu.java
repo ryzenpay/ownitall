@@ -23,6 +23,8 @@ public class MethodMenu {
     private Method method;
     private String methodName;
 
+    // TODO: library menu
+    // especially setting the credentials
     public MethodMenu() throws InterruptedException {
         String choice = CLIMenu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {

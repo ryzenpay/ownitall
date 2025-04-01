@@ -95,11 +95,6 @@ public class CollectionMenu {
                 System.err.println("Invalid recursion option.");
                 break;
         }
-        try {
-            System.out.print("Press enter to continue: ");
-            Input.request().getEnter();
-        } catch (InterruptedException e) {
-        }
     }
 
     public void printInventoryR1() {

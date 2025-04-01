@@ -31,6 +31,11 @@ import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.Progressbar;
 
 public class Download {
+    // TODO: multiple download sources
+    // qobuz
+    // deezer
+    // youtube (already implemented)
+    // tidal
     private static final Logger logger = LogManager.getLogger(Download.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();

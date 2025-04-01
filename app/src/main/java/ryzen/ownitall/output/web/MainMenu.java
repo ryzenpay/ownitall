@@ -59,7 +59,7 @@ public class MainMenu {
 
     @PostMapping("/tools")
     public String optionTools() {
-        return "toolsmenu/index";
+        return "toolsmenu";
     }
 
     @PostMapping("/settings")
