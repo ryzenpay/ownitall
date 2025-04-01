@@ -145,7 +145,7 @@ public class Settings {
                 for (Field setting : this.getAllSettings()) {
                     options.put(setting.getName(), setting.get(this).toString());
                 }
-                String choice = CLIMenu.optionMenuWithValue(options, "SETTINGS");
+                String choice = Menu.optionMenuWithValue(options, "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
                 }

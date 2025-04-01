@@ -65,6 +65,8 @@ public class Library {
                             | InvocationTargetException e) {
                         logger.error("Exception instantiating library '" + settings.getLibraryType() + "': " + e);
                     }
+                } else {
+                    logger.warn("Unsupported library method '" + settings.getLibraryType() + "' provided");
                 }
             }
         }

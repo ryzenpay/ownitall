@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Tools;
-import ryzen.ownitall.util.CLIMenu;
+import ryzen.ownitall.util.Menu;
 
 public class ToolsMenu {
     private static final Logger logger = LogManager.getLogger(ToolsMenu.class);
@@ -20,7 +20,7 @@ public class ToolsMenu {
         options.put("Reset Settings", Tools::clearSettings);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(), "TOOL MENU");
+                String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }

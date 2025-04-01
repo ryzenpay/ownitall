@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Main;
 import ryzen.ownitall.Settings;
-import ryzen.ownitall.util.CLIMenu;
+import ryzen.ownitall.util.Menu;
 
 public class MainMenu {
     private static final Logger logger = LogManager.getLogger(MainMenu.class);
@@ -21,7 +21,7 @@ public class MainMenu {
         options.put("Settings", this::optionSettings);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(), "MAIN MENU");
+                String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 if (choice.equals("Exit")) {
                     exit();
                 } else {

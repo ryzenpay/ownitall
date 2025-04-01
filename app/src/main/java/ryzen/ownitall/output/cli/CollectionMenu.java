@@ -10,7 +10,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.CLIMenu;
+import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
 
 public class CollectionMenu {
@@ -29,7 +29,7 @@ public class CollectionMenu {
         options.put("Print Inventory", this::printInventory);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(), "INVENTORY MENU");
+                String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }

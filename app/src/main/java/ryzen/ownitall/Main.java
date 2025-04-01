@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logs;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.CLIMenu;
+import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -26,7 +26,7 @@ public class Main {
      * @param args - possible arguments to pass (not defined)
      */
     public static void main(String[] args) {
-        CLIMenu.clearScreen();
+        Menu.clearScreen();
         if (args == null || args.length == 0) {
             logger.debug("no flags provided");
         }

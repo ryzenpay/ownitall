@@ -14,7 +14,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.methods.Method;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.CLIMenu;
+import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class MethodMenu {
@@ -24,7 +24,7 @@ public class MethodMenu {
     private String methodName;
 
     public MethodMenu() throws InterruptedException {
-        String choice = CLIMenu.optionMenu(Method.methods.keySet(), "METHODS");
+        String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException();
         }
@@ -50,7 +50,7 @@ public class MethodMenu {
         options.put("Import Playlist(s)", this::optionImportPlaylistsMenu);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(),
+                String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT " + this.methodName.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
@@ -92,7 +92,7 @@ public class MethodMenu {
         options.put("Individual album", this::optionImportAlbum);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(),
+                String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT ALBUM" + this.methodName.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
@@ -143,7 +143,7 @@ public class MethodMenu {
         options.put("Individual playlist", this::optionImportPlaylist);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(),
+                String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT PlAYLIST" + this.methodName.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
@@ -249,7 +249,7 @@ public class MethodMenu {
         options.put("Export Playlist(s)", this::optionExportPlaylists);
         try {
             while (true) {
-                String choice = CLIMenu.optionMenu(options.keySet(),
+                String choice = Menu.optionMenu(options.keySet(),
                         "EXPORT " + this.methodName.toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
@@ -294,7 +294,7 @@ public class MethodMenu {
                 options.put(playlist.toString(), playlist);
             }
             try {
-                String choice = CLIMenu.optionMenu(options.keySet(), "PLAYLIST EXPORT MENU");
+                String choice = Menu.optionMenu(options.keySet(), "PLAYLIST EXPORT MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
@@ -320,7 +320,7 @@ public class MethodMenu {
                 options.put(album.toString(), album);
             }
             try {
-                String choice = CLIMenu.optionMenu(options.keySet(), "ALBUM EXPORT MENU");
+                String choice = Menu.optionMenu(options.keySet(), "ALBUM EXPORT MENU");
                 if (choice.equals("Exit")) {
                     return;
                 }
