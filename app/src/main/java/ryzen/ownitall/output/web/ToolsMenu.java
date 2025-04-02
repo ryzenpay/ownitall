@@ -24,7 +24,7 @@ public class ToolsMenu {
         options.put("Clear Cache", "/tools/clearcache");
         options.put("Reset Credentials", "/tools/clearcredentials");
         options.put("Return", "/tools/return");
-        model.addAttribute("menuName", "Main Menu");
+        model.addAttribute("menuName", "Tools Menu");
         model.addAttribute("menuOptions", options);
         if (notification != null) {
             model.addAttribute("notification", notification);

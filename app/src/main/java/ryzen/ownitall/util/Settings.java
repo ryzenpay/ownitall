@@ -141,6 +141,7 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
+    // TODO: isolate setting, input should include the variable
     public boolean changeSetting(String settingName) throws InterruptedException {
         if (settingName == null) {
             logger.debug("null setting name provided in changeSetting");

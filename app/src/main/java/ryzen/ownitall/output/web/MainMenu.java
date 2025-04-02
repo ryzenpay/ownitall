@@ -58,9 +58,8 @@ public class MainMenu {
     }
 
     @PostMapping("/collection")
-    public String optionCollection() {
-        // TODO: collection menu
-        return "redirect:/";
+    public String optionCollection(Model model) {
+        return new CollectionMenu().menu(model, null);
     }
 
     @PostMapping("/save")
@@ -75,13 +74,13 @@ public class MainMenu {
     }
 
     @PostMapping("/settings")
-    public String optionSettings() {
-        // TODO: settings menu
-        return "redirect:/";
+    public String optionSettings(Model model) {
+        return new SettingsMenu().menu(model, null);
     }
 
     @PostMapping("/exit")
     public String optionExit() {
+        logger.info("Exiting program...");
         Main.save();
         return "exit";
     }

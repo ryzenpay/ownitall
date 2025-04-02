@@ -14,9 +14,9 @@ public class SettingsMenu {
 
     public SettingsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Save Settings", this::saveSettings);
-        options.put("Change Setting", this::changeSettings);
-        options.put("Reset Settings", this::resetSettings);
+        options.put("Save Settings", this::optionSave);
+        options.put("Change Setting", this::optionChange);
+        options.put("Reset Settings", this::optionReset);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
@@ -30,12 +30,12 @@ public class SettingsMenu {
         }
     }
 
-    private void saveSettings() {
+    private void optionSave() {
         Settings.load().save();
         logger.info("Successfully saved settings");
     }
 
-    private void changeSettings() {
+    private void optionChange() {
         Settings settings = Settings.load();
         try {
             while (true) {
@@ -57,7 +57,7 @@ public class SettingsMenu {
     /**
      * clear memory settings and local settings
      */
-    private void resetSettings() {
+    private void optionReset() {
         System.out.print("Are you sure y/N: ");
         try {
             if (Input.request().getAgreement()) {

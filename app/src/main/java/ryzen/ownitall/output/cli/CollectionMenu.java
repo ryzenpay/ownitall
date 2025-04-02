@@ -26,7 +26,7 @@ public class CollectionMenu {
         options.put("Export", this::optionExport);
         options.put("Sync", this::optionSync);
         options.put("Modify", this::optionModify);
-        options.put("Print Inventory", this::printInventory);
+        options.put("Browse", this::printInventory);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
