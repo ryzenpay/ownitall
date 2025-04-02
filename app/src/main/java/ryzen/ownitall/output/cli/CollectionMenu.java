@@ -65,7 +65,7 @@ public class CollectionMenu {
     }
 
     private void optionModify() {
-        new ManualMenu();
+        new ModifyMenu();
     }
 
     /**

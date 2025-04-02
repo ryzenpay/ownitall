@@ -19,13 +19,13 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
-public class ManualMenu {
-    private static final Logger logger = LogManager.getLogger(ManualMenu.class);
+public class ModifyMenu {
+    private static final Logger logger = LogManager.getLogger(ModifyMenu.class);
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private static Library library = Library.load();
 
-    public ManualMenu() {
+    public ModifyMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add", this::addMenu);
         options.put("Merge", this::mergeMenu);
@@ -33,14 +33,14 @@ public class ManualMenu {
         options.put("Delete", this::deleteMenu);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "MANUAL MENU");
+                String choice = Menu.optionMenu(options.keySet(), "MODIFY MENU");
                 if (choice.equals("Exit")) {
                     break;
                 }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting manual menu choice");
+            logger.debug("Interrupted while getting modify menu choice");
         }
     }
 
@@ -59,7 +59,7 @@ public class ManualMenu {
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting manual add menu choice");
+            logger.debug("Interrupted while getting modify add menu choice");
         }
     }
 
@@ -135,7 +135,7 @@ public class ManualMenu {
                     logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting manual add song playlist option");
+                logger.debug("Interrupted while getting modify add song playlist option");
                 return;
             }
         }
@@ -341,7 +341,7 @@ public class ManualMenu {
                 }
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting manual merge menu choice");
+            logger.debug("Interrupted while getting modify merge menu choice");
         }
     }
 

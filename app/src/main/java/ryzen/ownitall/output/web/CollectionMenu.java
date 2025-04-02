@@ -27,33 +27,28 @@ public class CollectionMenu {
     }
 
     @PostMapping("/collection/import")
-    public String optionImport() {
-        // TODO: import menu
-        return "redirect:/collection";
+    public String optionImport(Model model) {
+        return new MethodMenu().importMenu(model, null);
     }
 
     @PostMapping("/collection/export")
-    public String optionExport() {
-        // TODO: export menu
-        return "redirect:/collection";
+    public String optionExport(Model model) {
+        return new MethodMenu().exportMenu(model, null);
     }
 
     @PostMapping("/collection/sync")
     public String optionSync() {
-        // TODO: sync menu
-        return "redirect:/collection";
+        return new MethodMenu().sync();
     }
 
     @PostMapping("/collection/modify")
     public String optionModify() {
-        // TODO: modify menu
-        return "redirect:/collection";
+        return new MethodMenu().modify();
     }
 
     @PostMapping("/collection/browse")
     public String optionBrowse() {
-        // TODO: browse menu
-        return "redirect:/collection";
+        return new MethodMenu().browse();
     }
 
     @PostMapping("/collection/return")
