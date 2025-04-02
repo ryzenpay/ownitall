@@ -12,7 +12,8 @@ import ryzen.ownitall.Settings;
 public class SettingsMenu {
 
     @GetMapping("/settings")
-    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+    public static String menu(Model model,
+            @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Save Settings", "/settings/save");
         options.put("Change Setting", "/settings/change");
@@ -27,26 +28,26 @@ public class SettingsMenu {
     }
 
     @PostMapping("/settings/save")
-    public String optionSave() {
+    public static String optionSave() {
         Settings.load().save();
         return "redirect:/settings?notification=Successfully saved";
     }
 
     @PostMapping("/settings/change")
-    public String optionChange() {
+    public static String optionChange() {
         // TODO: change setting menu
         // look at unarchive
         return "redirect:/settings";
     }
 
     @PostMapping("/settings/reset")
-    public String optionReset() {
+    public static String optionReset() {
         Settings.load().clear();
         return "redirect:/settings?notification=Successfully reset";
     }
 
     @PostMapping("/settings/return")
-    public String optionReturn() {
-        return "redirect:/";
+    public static String optionReturn(Model model) {
+        return MainMenu.menu(model, null);
     }
 }

@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class CollectionMenu {
 
     @GetMapping("/collection")
-    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+    public static String menu(Model model,
+            @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import", "/collection/import");
         options.put("Export", "/collection/export");
@@ -27,32 +28,32 @@ public class CollectionMenu {
     }
 
     @PostMapping("/collection/import")
-    public String optionImport(Model model) {
-        return new MethodMenu().importMenu(model, null);
+    public static String optionImport(Model model) {
+        return MethodMenu.importMenu(model, null);
     }
 
     @PostMapping("/collection/export")
-    public String optionExport(Model model) {
-        return new MethodMenu().exportMenu(model, null);
+    public static String optionExport(Model model) {
+        return MethodMenu.exportMenu(model, null);
     }
 
     @PostMapping("/collection/sync")
-    public String optionSync() {
-        return new MethodMenu().sync();
+    public static String optionSync() {
+        return MethodMenu.sync();
     }
 
     @PostMapping("/collection/modify")
-    public String optionModify() {
-        return new MethodMenu().modify();
+    public static String optionModify() {
+        return MethodMenu.modify();
     }
 
     @PostMapping("/collection/browse")
-    public String optionBrowse() {
-        return new MethodMenu().browse();
+    public static String optionBrowse() {
+        return MethodMenu.browse();
     }
 
     @PostMapping("/collection/return")
-    public String optionReturn() {
-        return "redirect:/";
+    public static String optionReturn(Model model) {
+        return MainMenu.menu(model, null);
     }
 }

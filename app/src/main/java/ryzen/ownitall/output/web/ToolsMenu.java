@@ -17,7 +17,8 @@ import ryzen.ownitall.library.Library;
 public class ToolsMenu {
 
     @GetMapping("/tools")
-    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+    public static String menu(Model model,
+            @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Archive", "/tools/archive");
         options.put("Unarchive", "/tools/unarchive/choose");
@@ -33,13 +34,13 @@ public class ToolsMenu {
     }
 
     @PostMapping("/tools/archive")
-    public String optionArchive() {
+    public static String optionArchive() {
         Storage.load().archive();
         return "redirect:/tools?notification=Successfully archived";
     }
 
     @PostMapping("/tools/unarchive/choose")
-    public String optionUnArchive(Model model) {
+    public static String optionUnArchive(Model model) {
         Storage storage = Storage.load();
         LinkedHashMap<String, String> archiveFoldersMap = new LinkedHashMap<>();
         for (File file : storage.getArchiveFolders()) {
@@ -50,25 +51,25 @@ public class ToolsMenu {
     }
 
     @PostMapping("/tools/unarchive")
-    public String unarchive(@RequestParam("folderPath") String folderPath) {
+    public static String unarchive(@RequestParam("folderPath") String folderPath) {
         Storage.load().unArchive(new File(folderPath));
         return "redirect:/tools?notification=Successfully unarchived";
     }
 
     @PostMapping("/tools/clearcache")
-    public String optionClearCache() {
+    public static String optionClearCache() {
         Library.load().clear();
         return "redirect:/tools?notification=Successfully cleared cache";
     }
 
     @PostMapping("/tools/clearcredentials")
-    public String optionClearCredentials() {
+    public static String optionClearCredentials() {
         Credentials.load().clear();
         return "redirect:/tools?notification=Successfully cleared credentials";
     }
 
     @PostMapping("/tools/return")
-    public String optionReturn() {
-        return "redirect:/";
+    public static String optionReturn(Model model) {
+        return MainMenu.menu(model, null);
     }
 }

@@ -10,6 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,16 @@ import ryzen.ownitall.Main;
 @SpringBootApplication
 public class MainMenu {
     private static final Logger logger = LogManager.getLogger(MainMenu.class);
+    public static final String url = "http://localhost:8080";
 
     public static void main(String[] args) {
-        // for some reason desktop bricks after springapplication is started
-        openBrowser("http://localhost:8080");
+        logger.info("Starting up, browser will open soon");
         SpringApplication.run(MainMenu.class, args);
     }
 
-    private static void openBrowser(String url) {
+    @EventListener(ApplicationReadyEvent.class)
+    private static void openBrowser() {
+        System.setProperty("java.awt.headless", "false");
         if (Desktop.isDesktopSupported()) {
             try {
                 Desktop.getDesktop().browse(new URI(url));
@@ -42,7 +46,8 @@ public class MainMenu {
     }
 
     @GetMapping("/")
-    public String menu(Model model, @RequestParam(value = "notification", required = false) String notification) {
+    public static String menu(Model model,
+            @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("collection", "/collection");
         options.put("save", "/save");
@@ -58,28 +63,28 @@ public class MainMenu {
     }
 
     @PostMapping("/collection")
-    public String optionCollection(Model model) {
-        return new CollectionMenu().menu(model, null);
+    public static String optionCollection(Model model) {
+        return CollectionMenu.menu(model, null);
     }
 
     @PostMapping("/save")
-    public String optionSave() {
+    public static String optionSave() {
         Main.save();
         return "redirect:/?notification=Successfully saved";
     }
 
     @PostMapping("/tools")
-    public String optionTools(Model model) {
-        return new ToolsMenu().menu(model, null);
+    public static String optionTools(Model model) {
+        return ToolsMenu.menu(model, null);
     }
 
     @PostMapping("/settings")
-    public String optionSettings(Model model) {
-        return new SettingsMenu().menu(model, null);
+    public static String optionSettings(Model model) {
+        return SettingsMenu.menu(model, null);
     }
 
     @PostMapping("/exit")
-    public String optionExit() {
+    public static String optionExit() {
         logger.info("Exiting program...");
         Main.save();
         return "exit";
