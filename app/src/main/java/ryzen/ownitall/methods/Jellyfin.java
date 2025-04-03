@@ -91,7 +91,7 @@ public class Jellyfin extends Method {
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
-            throw new InterruptedException();
+            throw new InterruptedException("Failed to authenticate with jellyfin");
         } else {
             logger.debug("Authenticated into jellyfin with user " + response.get("User").get("Name").asText());
             this.userId = response.get("User").get("Id").asText();

@@ -78,7 +78,7 @@ public class Input {
             throw new RuntimeException(e);
         }
         Thread.dumpStack();
-        throw new RuntimeException();
+        throw new RuntimeException("Got out of getString loop");
     }
 
     /**

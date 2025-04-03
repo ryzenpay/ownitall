@@ -2,15 +2,16 @@ package ryzen.ownitall.output.web;
 
 import java.util.LinkedHashMap;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Controller
 public class CollectionMenu {
 
     @GetMapping("/collection")
-    public static String menu(Model model,
+    public static String collectionMenu(Model model,
             @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import", "/collection/import");
@@ -27,33 +28,20 @@ public class CollectionMenu {
         return "menu";
     }
 
-    @PostMapping("/collection/import")
-    public static String optionImport(Model model) {
-        return MethodMenu.importMenu(model, null);
+    @GetMapping("/collection/modify")
+    public String optionModify() {
+        // TODO: modify menu
+        return "redirect:/collection";
     }
 
-    @PostMapping("/collection/export")
-    public static String optionExport(Model model) {
-        return MethodMenu.exportMenu(model, null);
+    @GetMapping("/collection/browse")
+    public String optionBrowse() {
+        // TODO: browse (print inventory)
+        return "redirect:/collection";
     }
 
-    @PostMapping("/collection/sync")
-    public static String optionSync() {
-        return MethodMenu.sync();
-    }
-
-    @PostMapping("/collection/modify")
-    public static String optionModify() {
-        return MethodMenu.modify();
-    }
-
-    @PostMapping("/collection/browse")
-    public static String optionBrowse() {
-        return MethodMenu.browse();
-    }
-
-    @PostMapping("/collection/return")
-    public static String optionReturn(Model model) {
-        return MainMenu.menu(model, null);
+    @GetMapping("/collection/return")
+    public String optionReturn(Model model) {
+        return MainMenu.mainMenu(model, null);
     }
 }

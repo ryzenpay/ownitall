@@ -41,16 +41,16 @@ public class ToolsMenu {
 
     private void optionUnArchive() {
         Storage storage = Storage.load();
-        LinkedHashMap<String, File> archiveFoldersMap = new LinkedHashMap<>();
+        LinkedHashMap<String, File> options = new LinkedHashMap<>();
         for (File file : storage.getArchiveFolders()) {
-            archiveFoldersMap.put(file.getName(), file);
+            options.put(file.getName(), file);
         }
         try {
-            String choice = Menu.optionMenu(archiveFoldersMap.keySet(), "UNARCHIVING");
+            String choice = Menu.optionMenu(options.keySet(), "UNARCHIVING");
             if (choice.equals("Exit")) {
                 return;
             }
-            storage.unArchive(archiveFoldersMap.get(choice));
+            storage.unArchive(options.get(choice));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting unarchive folder choice");
             return;

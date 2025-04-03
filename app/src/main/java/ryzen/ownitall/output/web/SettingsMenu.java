@@ -2,17 +2,18 @@ package ryzen.ownitall.output.web;
 
 import java.util.LinkedHashMap;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Settings;
 
+@Controller
 public class SettingsMenu {
 
     @GetMapping("/settings")
-    public static String menu(Model model,
+    public static String settingsMenu(Model model,
             @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Save Settings", "/settings/save");
@@ -27,27 +28,27 @@ public class SettingsMenu {
         return "menu";
     }
 
-    @PostMapping("/settings/save")
-    public static String optionSave() {
+    @GetMapping("/settings/save")
+    public static String optionSave(Model model) {
         Settings.load().save();
-        return "redirect:/settings?notification=Successfully saved";
+        return settingsMenu(model, "Successfully saved");
     }
 
-    @PostMapping("/settings/change")
+    @GetMapping("/settings/change")
     public static String optionChange() {
         // TODO: change setting menu
         // look at unarchive
         return "redirect:/settings";
     }
 
-    @PostMapping("/settings/reset")
-    public static String optionReset() {
+    @GetMapping("/settings/reset")
+    public static String optionReset(Model model) {
         Settings.load().clear();
-        return "redirect:/settings?notification=Successfully reset";
+        return settingsMenu(model, "Successfully reset");
     }
 
-    @PostMapping("/settings/return")
+    @GetMapping("/settings/return")
     public static String optionReturn(Model model) {
-        return MainMenu.menu(model, null);
+        return MainMenu.mainMenu(model, null);
     }
 }

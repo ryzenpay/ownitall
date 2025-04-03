@@ -132,7 +132,7 @@ public class Spotify extends Method {
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             logger.error("Exception logging in: " + e);
-            throw new InterruptedException();
+            throw new InterruptedException(e.getMessage());
         }
     }
 

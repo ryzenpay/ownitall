@@ -32,7 +32,7 @@ public class InterruptionHandler implements AutoCloseable {
     public void throwInterruption() throws InterruptedException {
         if (interrupted.get()) {
             interrupted.set(false);
-            throw new InterruptedException();
+            throw new InterruptedException("Interruption caught");
         }
     }
 
@@ -43,7 +43,7 @@ public class InterruptionHandler implements AutoCloseable {
      */
     public void triggerInterruption() throws InterruptedException {
         interrupted.set(false);
-        throw new InterruptedException();
+        throw new InterruptedException("Interruption manually triggered");
     }
 
     @Override

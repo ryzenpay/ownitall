@@ -26,7 +26,7 @@ public class MethodMenu {
     public MethodMenu() throws InterruptedException {
         String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
-            throw new InterruptedException();
+            throw new InterruptedException("Exited");
         }
         Class<? extends Method> methodClass = Method.methods.get(choice);
         try {
@@ -34,11 +34,11 @@ public class MethodMenu {
             this.methodName = method.getClass().getSimpleName();
         } catch (InstantiationException e) {
             logger.debug("Interrupted while setting up method '" + choice + "'");
-            throw new InterruptedException();
+            throw new InterruptedException(e.getMessage());
         } catch (IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException e) {
             logger.error("Exception instantiating method '" + choice + "': " + e);
-            throw new InterruptedException();
+            throw new InterruptedException(e.getMessage());
         }
     }
 

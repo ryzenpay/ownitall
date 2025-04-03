@@ -15,7 +15,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Main;
@@ -46,7 +45,7 @@ public class MainMenu {
     }
 
     @GetMapping("/")
-    public static String menu(Model model,
+    public static String mainMenu(Model model,
             @RequestParam(value = "notification", required = false) String notification) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("collection", "/collection");
@@ -62,28 +61,13 @@ public class MainMenu {
         return "menu";
     }
 
-    @PostMapping("/collection")
-    public static String optionCollection(Model model) {
-        return CollectionMenu.menu(model, null);
-    }
-
-    @PostMapping("/save")
+    @GetMapping("/save")
     public static String optionSave() {
         Main.save();
         return "redirect:/?notification=Successfully saved";
     }
 
-    @PostMapping("/tools")
-    public static String optionTools(Model model) {
-        return ToolsMenu.menu(model, null);
-    }
-
-    @PostMapping("/settings")
-    public static String optionSettings(Model model) {
-        return SettingsMenu.menu(model, null);
-    }
-
-    @PostMapping("/exit")
+    @GetMapping("/exit")
     public static String optionExit() {
         logger.info("Exiting program...");
         Main.save();

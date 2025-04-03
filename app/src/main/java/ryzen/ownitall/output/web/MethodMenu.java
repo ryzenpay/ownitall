@@ -1,27 +1,42 @@
 package ryzen.ownitall.output.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ryzen.ownitall.methods.Method;
+
+@Controller
 public class MethodMenu {
+    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
+    private Method method;
+    private String methodName;
 
-    @GetMapping("/collection/method/choose")
-    public static String menu() {
-        // TODO: option menu
-        // enforce it before any of the other options are set
-        return "menu";
-    }
-
-    // TODO: import menu
-    @GetMapping("/collection/method/import")
-    public static String importMenu(Model model,
+    @GetMapping("/method")
+    public String methodMenu(Model model, @RequestParam(value = "method", required = false) String method,
+            @RequestParam(value = "callback", required = true) String callback,
             @RequestParam(value = "notification", required = false) String notification) {
+        if (method != null) {
+            try {
+                this.setMethod(method);
+            } catch (InterruptedException e) {
+                notification = "Interrupted while setting up '" + method + "': " + e;
+            }
+        }
+        if (this.method != null) {
+            return "/method/" + callback;
+        }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Return", "/collection/method/return");
+        for (String currMethod : Method.methods.keySet()) {
+            options.put(currMethod, "/method?method=" + currMethod + "?callback=" + callback);
+        }
+        options.put("Exit", "/method/" + callback);
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
         if (notification != null) {
@@ -30,12 +45,74 @@ public class MethodMenu {
         return "menu";
     }
 
-    // TODO: export menu
-    @GetMapping("/collection/method/export")
-    public static String exportMenu(Model model,
+    private void setMethod(String choice) throws InterruptedException {
+        Class<? extends Method> methodClass = Method.methods.get(choice);
+        try {
+            this.method = methodClass.getDeclaredConstructor().newInstance();
+            this.methodName = method.getClass().getSimpleName();
+        } catch (InstantiationException e) {
+            logger.debug("Interrupted while setting up method '" + choice + "'");
+            throw new InterruptedException(e.getMessage());
+        } catch (IllegalAccessException | NoSuchMethodException
+                | InvocationTargetException e) {
+            logger.error("Exception instantiating method '" + choice + "': " + e);
+            throw new InterruptedException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/collection/import")
+    public String importMenu(Model model,
             @RequestParam(value = "notification", required = false) String notification) {
+        if (this.method == null) {
+            return methodMenu(model, null, "import", null);
+        }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Return", "/collection/method/return");
+        options.put("Import Library", "/collection/import/library");
+        options.put("Import Liked Songs", "/collection/import/likedsongs");
+        options.put("Import Album(s)", "/collection/import/album/choose");
+        options.put("Import Playlist(s)", "/collection/import/playlist/choose");
+        options.put("Return", "/method/return");
+        model.addAttribute("menuName", "Import Menu");
+        model.addAttribute("menuOptions", options);
+        if (notification != null) {
+            model.addAttribute("notification", notification);
+        }
+        return "menu";
+    }
+
+    @GetMapping("/collection/import/library")
+    public String optionImportLibrary() {
+        // TODO: library progress
+        return "redirect:/collection/method/import";
+    }
+
+    @GetMapping("/collection/import/likedsongs")
+    public String optionImportLikedSongs() {
+        // TODO: liked songs progress
+        return "redirect:/collection/method/import";
+    }
+
+    @GetMapping("/collection/import/album/choose")
+    public String optionImportAlbumsMenu() {
+        // TODO: albums menu
+        return "redirect:/collection/method/import";
+    }
+
+    @GetMapping("/collection/import/playlist/choose")
+    public String optionImportPlaylistsMenu() {
+        // TODO: playlist menu
+        return "redirect:/collection/method/import";
+    }
+
+    // TODO: export menu
+    @GetMapping("/collection/export")
+    public String exportMenu(Model model,
+            @RequestParam(value = "notification", required = false) String notification) {
+        if (this.method == null) {
+            return methodMenu(model, null, "export", null);
+        }
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("Return", "/method/return");
         model.addAttribute("menuName", "Export Menu");
         model.addAttribute("menuOptions", options);
         if (notification != null) {
@@ -44,26 +121,17 @@ public class MethodMenu {
         return "menu";
     }
 
-    @GetMapping("/collection/method/sync")
-    public static String sync() {
+    @GetMapping("/collection/sync")
+    public String sync(Model model) {
+        if (this.method == null) {
+            return methodMenu(model, null, "sync", null);
+        }
         // TODO: sync
         return "redirect:/collection";
     }
 
-    @GetMapping("/collection/method/modify")
-    public static String modify() {
-        // TODO: modify menu
-        return "redirect:/collection";
-    }
-
-    @GetMapping("/collection/method/browse")
-    public static String browse() {
-        // TODO: browse menu
-        return "redirect:/collection";
-    }
-
-    @PostMapping("/collection/method/return")
-    public static String optionReturn(Model model) {
-        return CollectionMenu.menu(model, null);
+    @GetMapping("/method/return")
+    public String optionReturn(Model model) {
+        return CollectionMenu.collectionMenu(model, null);
     }
 }

@@ -11,7 +11,7 @@
     </div>
     <h1 th:text="${menuName}"></h1>
     <div th:each="entry : ${menuOptions}">
-        <form th:action="@{${entry.value}}" method="post">
+        <form th:action="@{${entry.value}}" method="get">
             <button type="submit" th:name="option" th:value="${entry.value}" th:text="${entry.key}"></button>
             <br>
         </form>
