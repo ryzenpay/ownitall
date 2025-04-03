@@ -317,7 +317,7 @@ public class MusicBrainz extends Library {
                 return new URI(redirectUrl);
             }
         } catch (IOException | URISyntaxException e) {
-            logger.debug("Exception while getting coverArt: " + e);
+            logger.debug("Exception while getting coverArt", e);
         }
         logger.debug("No coverart found for: '" + id + "'");
         return null;
@@ -333,7 +333,7 @@ public class MusicBrainz extends Library {
         try {
             builder.append(URLEncoder.encode(paramBuilder.toString(), StandardCharsets.UTF_8.toString()));
         } catch (UnsupportedEncodingException e) {
-            logger.error("Exception while encoding query: " + e);
+            logger.error("Exception while encoding query", e);
             return null;
         }
         builder.append("&fmt=json");
@@ -375,7 +375,7 @@ public class MusicBrainz extends Library {
                 return rootNode;
             }
         } catch (URISyntaxException e) {
-            logger.error("Exception querying MusicBee: " + e);
+            logger.error("Exception querying MusicBee", e);
         }
         return null;
     }

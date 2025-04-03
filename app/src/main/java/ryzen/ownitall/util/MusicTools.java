@@ -28,9 +28,6 @@ import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class MusicTools {
     private static final Logger logger = LogManager.getLogger(MusicTools.class);
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-    }
 
     /**
      * convert duration into music time (mm:ss)
@@ -145,7 +142,8 @@ public class MusicTools {
             } catch (Exception e) {
                 logger.error(
                         "Exception writing coverImage '" + coverImage.toString() + "' for '"
-                                + songFile.getAbsolutePath() + "': " + e);
+                                + songFile.getAbsolutePath() + "'",
+                        e);
             }
         }
         if (liked) {

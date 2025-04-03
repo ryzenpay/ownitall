@@ -26,7 +26,7 @@ public class SettingsMenu {
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting tools menu response");
+            logger.debug("Interrupted while getting tools menu choice");
         }
     }
 
@@ -43,15 +43,32 @@ public class SettingsMenu {
                 if (choice.equals("Exit")) {
                     break;
                 }
-                if (settings.changeSetting(choice)) {
+                if (this.changeSetting(choice)) {
                     logger.info("Successfully changed setting '" + choice + "'");
                 } else {
-                    logger.error("Unsuccessfully changed setting");
+                    logger.error("Unsuccessfully changed setting '" + choice + "'");
                 }
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting change setting option");
+            logger.debug("Interrupted while getting change setting choice");
         }
+    }
+
+    private boolean changeSetting(String settingName) throws InterruptedException {
+        if (settingName == null) {
+            logger.debug("null settingName provided in changeSetting");
+            return false;
+        }
+        Settings settings = Settings.load();
+        Class<?> settingType = settings.getSettingType(settingName);
+        if (settingType == null) {
+            logger.error("Unable to find setting type  of '" + settingName + "'");
+            return false;
+        }
+        System.out.print(
+                "Enter new value " + settingType.getSimpleName() + " for '" + settingName + "': ");
+        Object input = Input.request().getValue(settingType);
+        return settings.changeSetting(settingName, input);
     }
 
     /**

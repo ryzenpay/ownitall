@@ -34,24 +34,15 @@ public class LastFM extends Library {
      */
     public LastFM() throws InterruptedException {
         super();
+        if (credentials.isLastFMCredentialsEmpty()) {
+            throw new InterruptedException("Empty LastFM credentials");
+        }
         this.queryDiff = 10;
     }
 
     @Override
-    public void setCredentials() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("LastFM API key: ");
-            credentials.setLastFMApiKey(Input.request().getString(32));
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting lastfm credentials");
-            throw e;
-        }
-    }
-
-    @Override
     public boolean credentialsIsEmpty() {
-        if (credentials.getLastFMApiKey().isEmpty()) {
+        if (credentials.isLastFMCredentialsEmpty()) {
             return true;
         }
         return false;
@@ -345,7 +336,7 @@ public class LastFM extends Library {
             }
             return builder.toString();
         } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to build a query: " + e);
+            logger.error("Unable to build a query", e);
             return null;
         }
     }
@@ -379,7 +370,7 @@ public class LastFM extends Library {
                 return rootNode;
             }
         } catch (URISyntaxException e) {
-            logger.error("Exception querying LastFM: " + e);
+            logger.error("Exception querying LastFM", e);
         }
         return null;
     }

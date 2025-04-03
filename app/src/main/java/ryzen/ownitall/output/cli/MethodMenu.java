@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -20,10 +21,14 @@ import ryzen.ownitall.util.Progressbar;
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private static Collection collection = Collection.load();
+    private static Settings settings = Settings.load();
     private Method method;
     private String methodName;
 
     public MethodMenu() throws InterruptedException {
+        if (!settings.getLibraryType().isEmpty()) {
+            // TODO: set library credentials
+        }
         String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException("Exited");
@@ -37,7 +42,7 @@ public class MethodMenu {
             throw new InterruptedException(e.getMessage());
         } catch (IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException e) {
-            logger.error("Exception instantiating method '" + choice + "': " + e);
+            logger.error("Exception instantiating method '" + choice + "'", e);
             throw new InterruptedException(e.getMessage());
         }
     }
@@ -74,7 +79,7 @@ public class MethodMenu {
             pb.setExtraMessage("Done").step();
             logger.debug("done importing '" + this.methodName + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + this.methodName + "' music");
+            logger.debug("Interrupted while importing '" + this.methodName + "' music", e);
         }
     }
 
@@ -82,7 +87,7 @@ public class MethodMenu {
         try {
             this.importLikedSongs();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + this.methodName + "' liked songs");
+            logger.debug("Interrupted while importing '" + this.methodName + "' liked songs", e);
         }
     }
 
@@ -109,7 +114,7 @@ public class MethodMenu {
         try {
             this.importAlbums();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing albums");
+            logger.debug("Interrupted while importing albums", e);
         }
     }
 
@@ -133,7 +138,7 @@ public class MethodMenu {
         try {
             this.importAlbum(albumId, albumName, albumArtistName);
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + this.methodName + "' album");
+            logger.debug("Interrupted while getting '" + this.methodName + "' album", e);
         }
     }
 
@@ -160,7 +165,7 @@ public class MethodMenu {
         try {
             this.importPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing playlists");
+            logger.debug("Interrupted while importing playlists", e);
         }
     }
 
@@ -181,7 +186,7 @@ public class MethodMenu {
         try {
             this.importPlaylist(playlistId, playlistName);
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + this.methodName + "' playlist");
+            logger.debug("Interrupted while getting '" + this.methodName + "' playlist", e);
         }
     }
 
@@ -274,7 +279,7 @@ public class MethodMenu {
             pb.setExtraMessage("Done").step();
             logger.debug("done uploading '" + this.methodName + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + this.methodName + "' music");
+            logger.debug("Interrupted while uploading '" + this.methodName + "' music", e);
         }
     }
 
@@ -282,7 +287,7 @@ public class MethodMenu {
         try {
             method.uploadLikedSongs();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + this.methodName + "' liked songs");
+            logger.debug("Interrupted while uploading '" + this.methodName + "' liked songs", e);
         }
     }
 
@@ -308,7 +313,7 @@ public class MethodMenu {
             }
             this.exportPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + this.methodName + "' playlists");
+            logger.debug("Interrupted while uploading '" + this.methodName + "' playlists", e);
         }
     }
 
@@ -334,7 +339,7 @@ public class MethodMenu {
             }
             this.exportPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + this.methodName + "' playlists");
+            logger.debug("Interrupted while uploading '" + this.methodName + "' playlists", e);
         }
     }
 
@@ -401,7 +406,7 @@ public class MethodMenu {
                 method.uploadAlbum(album);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncing '" + this.methodName + "'");
+            logger.debug("Interrupted while syncing '" + this.methodName + "'", e);
         }
     }
 }

@@ -60,10 +60,11 @@ public class Library {
                     try {
                         instance = libraryClass.getDeclaredConstructor().newInstance();
                     } catch (InstantiationException e) {
-                        logger.debug("Interrupted while setting up library type '" + settings.getLibraryType() + "'");
+                        logger.debug("Interrupted while setting up library type '" + settings.getLibraryType() + "'",
+                                e);
                     } catch (IllegalAccessException | NoSuchMethodException
                             | InvocationTargetException e) {
-                        logger.error("Exception instantiating library '" + settings.getLibraryType() + "': " + e);
+                        logger.error("Exception instantiating library '" + settings.getLibraryType() + "'", e);
                     }
                 } else {
                     logger.warn("Unsupported library method '" + settings.getLibraryType() + "' provided");
@@ -71,15 +72,7 @@ public class Library {
             }
         }
         if (instance != null) {
-            try {
-                if (instance.credentialsIsEmpty()) {
-                    instance.setCredentials();
-                }
-                instance.cache();
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while setting '" + settings.getLibraryType() + "' credentials");
-                instance = null;
-            }
+            instance.cache();
         }
         return instance;
     }
@@ -130,10 +123,6 @@ public class Library {
         this.ids.clear();
         Storage.load().clearCache();
         instance = null;
-    }
-
-    public void setCredentials() throws InterruptedException {
-        logger.warn("Setting credentials supported for library type: " + settings.getLibraryType());
     }
 
     public boolean credentialsIsEmpty() {
@@ -213,7 +202,7 @@ public class Library {
             }
             return rootNode;
         } catch (IOException e) {
-            logger.error("Exception querying API: " + e);
+            logger.error("Exception querying API", e);
             return null;
         }
     }

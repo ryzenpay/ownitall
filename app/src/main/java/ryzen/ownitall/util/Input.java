@@ -271,4 +271,25 @@ public class Input {
         }
         this.getString();
     }
+
+    public Object getValue(Class<?> type) throws InterruptedException {
+        if (type == boolean.class) {
+            return this.getBool();
+        } else if (type == String.class) {
+            return this.getString();
+        } else if (type == int.class) {
+            return this.getInt();
+        } else if (type == char.class) {
+            return this.getChar();
+        } else if (type == long.class) {
+            return this.getLong();
+        } else if (type == URI.class) {
+            return this.getURL();
+        } else if (type == File.class) {
+            return this.getFile(false);
+        } else {
+            logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is currently not supported");
+            return null;
+        }
+    }
 }

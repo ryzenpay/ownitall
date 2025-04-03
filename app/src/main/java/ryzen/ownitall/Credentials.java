@@ -3,8 +3,7 @@ package ryzen.ownitall;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,17 +15,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
 public class Credentials extends ryzen.ownitall.util.Settings {
     @JsonIgnore
-    private static Credentials instance;
-    @JsonIgnore
     private static final Logger logger = LogManager.getLogger(Credentials.class);
     @JsonIgnore
     private final static String credentialsFilePath = "credentials.json";
+    @JsonIgnore
+    private static Credentials instance;
     /**
      * spotify credentials
      */
     protected String spotifyClientId = "";
     protected String spotifyClientSecret = "";
     protected String spotifyRedirectUrl = "";
+
+    @JsonIgnore
+    public LinkedHashMap<String, String> getSpotifyCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("Spotify Client ID", "spotifyClientId");
+        credentials.put("Spotify Client Secret", "spotifyClientSecret");
+        credentials.put("Spotify Redirect URL", "spotifyRedirectUrl");
+        return credentials;
+    }
 
     /**
      * youtube credentials
@@ -36,18 +44,27 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     protected String youtubeClientId = "";
     protected String youtubeClientSecret = "";
 
-    /**
-     * soundcloud credentials
-     * 
-     */
-    protected String soundCloudClientId = "";
-    protected String soundCloudClientSecret = "";
+    @JsonIgnore
+    public LinkedHashMap<String, String> getYoutubeCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("Youtube Application Name", "youtubeApplicationName");
+        credentials.put("Youtube Client ID", "youtubeClientId");
+        credentials.put("Youtube Client Secret", "youtubeClientSecret");
+        return credentials;
+    }
 
     /**
      * Last FM Credentials
      * 
      */
     protected String lastFMApiKey = "";
+
+    @JsonIgnore
+    public LinkedHashMap<String, String> getLastFMCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("LastFM API Key", "lastFMApiKey");
+        return credentials;
+    }
 
     /**
      * Jellyfin Credentials
@@ -58,13 +75,22 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     protected String jellyfinPassword = "";
 
     @JsonIgnore
+    public LinkedHashMap<String, String> getJellyfinCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("JellyFin URL", "jellyfinUrl");
+        credentials.put("JellyFin Username", "jellyfinUsername");
+        credentials.put("JellyFin Password", "jellyfinPassword");
+        return credentials;
+    }
+
+    @JsonIgnore
     public static Credentials load() {
         if (instance == null) {
             instance = new Credentials();
             try {
                 instance.importSettings(Credentials.class, credentialsFilePath);
             } catch (IOException e) {
-                logger.error("exception importing credentials: " + e);
+                logger.error("exception importing credentials", e);
                 logger.warn("If this persists, delete the file: '" + credentialsFilePath + "'");
             }
             logger.debug("New instance created");
@@ -74,7 +100,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     @JsonIgnore
     public void clear() {
-        instance = null;
         this.clearSettings(credentialsFilePath);
     }
 
@@ -90,13 +115,8 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return spotifyClientSecret;
     }
 
-    public URI getSpotifyRedirectUrl() {
-        try {
-            return new URI(spotifyRedirectUrl);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to convert spotify redirect url: " + e);
-            return null;
-        }
+    public String getSpotifyRedirectUrl() {
+        return spotifyRedirectUrl;
     }
 
     public String getYoutubeApplicationName() {
@@ -109,14 +129,6 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public String getYoutubeClientSecret() {
         return youtubeClientSecret;
-    }
-
-    public String getSoundCloudClientId() {
-        return this.soundCloudClientId;
-    }
-
-    public String getSoundCloudClientSecret() {
-        return this.soundCloudClientSecret;
     }
 
     public String getLastFMApiKey() {
@@ -135,43 +147,109 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return jellyfinPassword;
     }
 
-    public void setYoutubeApplicationName(String name) {
-        this.youtubeApplicationName = name;
+    public boolean isJellyFinCredentialsEmpty() {
+        for (String fieldName : this.getJellyfinCredentials().values()) {
+            if (super.isEmpty(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setYoutubeClientId(String id) {
-        this.youtubeClientId = id;
+    public boolean isSpotifyCredentialsEmpty() {
+        for (String fieldName : this.getSpotifyCredentials().values()) {
+            if (super.isEmpty(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setYoutubeClientSecret(String secret) {
-        this.youtubeClientSecret = secret;
+    public boolean isYoutubeCredentialsEmpty() {
+        for (String fieldName : this.getYoutubeCredentials().values()) {
+            if (super.isEmpty(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setSpotifyClientId(String id) {
-        this.spotifyClientId = id;
+    public boolean isLastFMCredentialsEmpty() {
+        for (String fieldName : this.getLastFMCredentials().values()) {
+            if (super.isEmpty(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setSpotifyClientSecret(String secret) {
-        this.spotifyClientSecret = secret;
+    /**
+     * @param spotifyClientId the spotifyClientId to set
+     */
+    public void setSpotifyClientId(String spotifyClientId) {
+        this.spotifyClientId = spotifyClientId;
     }
 
-    public void setSpotifyRedirectUrl(String url) {
-        this.spotifyRedirectUrl = url;
+    /**
+     * @param spotifyClientSecret the spotifyClientSecret to set
+     */
+    public void setSpotifyClientSecret(String spotifyClientSecret) {
+        this.spotifyClientSecret = spotifyClientSecret;
     }
 
-    public void setLastFMApiKey(String key) {
-        this.lastFMApiKey = key;
+    /**
+     * @param spotifyRedirectUrl the spotifyRedirectUrl to set
+     */
+    public void setSpotifyRedirectUrl(String spotifyRedirectUrl) {
+        this.spotifyRedirectUrl = spotifyRedirectUrl;
     }
 
-    public void setJellyFinUrl(String url) {
-        this.jellyfinUrl = url;
+    /**
+     * @param youtubeApplicationName the youtubeApplicationName to set
+     */
+    public void setYoutubeApplicationName(String youtubeApplicationName) {
+        this.youtubeApplicationName = youtubeApplicationName;
     }
 
-    public void setJellyFinUsername(String username) {
-        this.jellyfinUsername = username;
+    /**
+     * @param youtubeClientId the youtubeClientId to set
+     */
+    public void setYoutubeClientId(String youtubeClientId) {
+        this.youtubeClientId = youtubeClientId;
     }
 
-    public void setJellyFinPassword(String password) {
-        this.jellyfinPassword = password;
+    /**
+     * @param youtubeClientSecret the youtubeClientSecret to set
+     */
+    public void setYoutubeClientSecret(String youtubeClientSecret) {
+        this.youtubeClientSecret = youtubeClientSecret;
+    }
+
+    /**
+     * @param lastFMApiKey the lastFMApiKey to set
+     */
+    public void setLastFMApiKey(String lastFMApiKey) {
+        this.lastFMApiKey = lastFMApiKey;
+    }
+
+    /**
+     * @param jellyfinUrl the jellyfinUrl to set
+     */
+    public void setJellyfinUrl(String jellyfinUrl) {
+        this.jellyfinUrl = jellyfinUrl;
+    }
+
+    /**
+     * @param jellyfinUsername the jellyfinUsername to set
+     */
+    public void setJellyfinUsername(String jellyfinUsername) {
+        this.jellyfinUsername = jellyfinUsername;
+    }
+
+    /**
+     * @param jellyfinPassword the jellyfinPassword to set
+     */
+    public void setJellyfinPassword(String jellyfinPassword) {
+        this.jellyfinPassword = jellyfinPassword;
     }
 }

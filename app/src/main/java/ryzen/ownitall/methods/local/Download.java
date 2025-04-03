@@ -597,7 +597,7 @@ public class Download {
         try {
             MusicTools.writeMetaData(id3Data, collection.isLiked(song), song.getCoverImage(), songFile);
         } catch (Exception e) {
-            logger.error("writing song metadata for '" + song.toString() + "': " + e);
+            logger.error("writing song metadata for '" + song.toString() + "'", e);
         }
     }
 
@@ -620,7 +620,7 @@ public class Download {
             File m3uFile = new File(folder, playlist.getFolderName() + ".m3u");
             MusicTools.writeData(m3uFile, collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
-            logger.error("Exception writing playlist '" + playlist.toString() + "' m3u: " + e);
+            logger.error("Exception writing playlist '" + playlist.toString() + "' m3u", e);
         }
         try {
             if (playlist.getCoverImage() != null) {
@@ -628,7 +628,7 @@ public class Download {
                         new File(folder, playlist.getFolderName() + ".png"));
             }
         } catch (IOException e) {
-            logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage: " + e);
+            logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
         }
     }
 
@@ -651,7 +651,7 @@ public class Download {
             File nfoFile = new File(folder, "album.nfo");
             MusicTools.writeData(nfoFile, collection.getAlbumNFO(album));
         } catch (Exception e) {
-            logger.error("Exception writing album '" + album.toString() + "' nfo: " + e);
+            logger.error("Exception writing album '" + album.toString() + "' nfo", e);
         }
         try {
             if (album.getCoverImage() != null) {
@@ -659,7 +659,7 @@ public class Download {
                         new File(folder, album.getFolderName() + ".png"));
             }
         } catch (IOException e) {
-            logger.error("Exception writing album '" + album.toString() + "' coverimage: " + e);
+            logger.error("Exception writing album '" + album.toString() + "' coverimage", e);
         }
     }
 

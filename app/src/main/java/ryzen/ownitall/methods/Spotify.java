@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.awt.Desktop;
 
 public class Spotify extends Method {
@@ -65,31 +66,20 @@ public class Spotify extends Method {
      */
     public Spotify() throws InterruptedException {
         super();
-        if (this.credentialsIsEmpty()) {
-            this.setCredentials();
+        if (credentials.isSpotifyCredentialsEmpty()) {
+            throw new InterruptedException("empty spotify credentials");
         }
-        this.spotifyApi = new SpotifyApi.Builder()
-                .setClientId(credentials.getSpotifyClientId())
-                .setClientSecret(credentials.getSpotifyClientSecret())
-                .setRedirectUri(credentials.getSpotifyRedirectUrl())
-                .build();
+        try {
+            this.spotifyApi = new SpotifyApi.Builder()
+                    .setClientId(credentials.getSpotifyClientId())
+                    .setClientSecret(credentials.getSpotifyClientSecret())
+                    .setRedirectUri(new URI(credentials.getSpotifyRedirectUrl()))
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new InterruptedException(e.getMessage());
+        }
         this.requestCode();
         this.setToken();
-    }
-
-    private void setCredentials() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Client id: ");
-            credentials.setSpotifyClientId(Input.request().getString(32));
-            System.out.print("Client secret: ");
-            credentials.setSpotifyClientSecret(Input.request().getString(32));
-            System.out.print("Redirect url:");
-            credentials.setSpotifyRedirectUrl(Input.request().getURL().toString());
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting spotify credentials");
-            throw e;
-        }
     }
 
     /**
@@ -110,7 +100,7 @@ public class Spotify extends Method {
                 Desktop.getDesktop().browse(auth_uri);
                 this.startLocalServer();
             } catch (IOException e) {
-                logger.error("Exception opening web browser: " + e);
+                logger.error("Exception opening web browser", e);
             }
         } else {
             System.out.println("Open this link:\n" + auth_uri.toString());
@@ -131,7 +121,7 @@ public class Spotify extends Method {
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            logger.error("Exception logging in: " + e);
+            logger.error("Exception logging in", e);
             throw new InterruptedException(e.getMessage());
         }
     }
@@ -149,7 +139,7 @@ public class Spotify extends Method {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             return true;
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            logger.error("Exception refreshing token: " + e.getMessage());
+            logger.error("Exception refreshing token", e);
             return false;
         }
     }
@@ -186,7 +176,7 @@ public class Spotify extends Method {
                     System.out.println("Code it provides (in url)");
                     this.code = Input.request().getString();
                 } catch (InterruptedException e) {
-                    logger.debug("Interrupted while getting code (failed getting from browser)");
+                    logger.debug("Interrupted while getting code (failed getting from browser)", e);
                 }
             }
 
@@ -309,7 +299,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching liked songs: " + e);
+                    logger.error("Exception fetching liked songs", e);
                     hasMore = false;
                 }
             }
@@ -355,7 +345,7 @@ public class Spotify extends Method {
                         logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                         this.sleep(e.getRetryAfter());
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        logger.error("Exception adding users saved tracks: " + e);
+                        logger.error("Exception adding users saved tracks", e);
                     }
                 }
             }
@@ -405,7 +395,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users saved tracks: " + e);
+                    logger.error("Exception adding users saved tracks", e);
                 }
             }
         }
@@ -457,7 +447,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception getting albums: " + e);
+                    logger.error("Exception getting albums", e);
                     hasMore = false;
                 }
             }
@@ -549,7 +539,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching songs for album: " + albumId + ": " + e);
+                    logger.error("Exception fetching songs for album: " + albumId + "", e);
                     hasMore = false;
                 }
             }
@@ -594,7 +584,7 @@ public class Spotify extends Method {
                         logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                         this.sleep(e.getRetryAfter());
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        logger.error("Exception adding users saved tracks: " + e);
+                        logger.error("Exception adding users saved tracks", e);
                     }
                 }
             }
@@ -638,7 +628,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users Albums: " + e);
+                    logger.error("Exception adding users Albums", e);
                 }
             }
         }
@@ -699,7 +689,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching playlists: " + e);
+                    logger.error("Exception fetching playlists", e);
                     hasMore = false;
                 }
             }
@@ -802,7 +792,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching playlist tracks: " + e);
+                    logger.error("Exception fetching playlist tracks", e);
                     hasMore = false;
                 }
             }
@@ -893,7 +883,7 @@ public class Spotify extends Method {
                             logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                             this.sleep(e.getRetryAfter());
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
-                            logger.error("Exception adding users saved tracks: " + e);
+                            logger.error("Exception adding users saved tracks", e);
                         }
                     }
                 }
@@ -926,7 +916,7 @@ public class Spotify extends Method {
                 logger.debug("Created new playlist: " + playlist.getName());
                 playlist.addId("spotify", playlistId);
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.debug("Exception creating user playlist: " + e);
+                logger.debug("Exception creating user playlist", e);
             }
         } else {
             // filter out the existing playlist songs
@@ -961,7 +951,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users saved tracks: " + e);
+                    logger.error("Exception adding users saved tracks", e);
                 }
             }
         }
@@ -991,7 +981,7 @@ public class Spotify extends Method {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Exception searching for song: " + e);
+                logger.error("Exception searching for song", e);
                 return null;
             }
         }
@@ -1039,7 +1029,7 @@ public class Spotify extends Method {
                     logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching playlists: " + e);
+                    logger.error("Exception fetching playlists", e);
                     hasMore = false;
                 }
             }
@@ -1071,7 +1061,7 @@ public class Spotify extends Method {
                 logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Exception searching for Album: " + e);
+                logger.error("Exception searching for Album", e);
                 return null;
             }
         }

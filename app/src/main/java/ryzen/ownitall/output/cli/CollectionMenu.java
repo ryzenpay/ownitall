@@ -44,7 +44,7 @@ public class CollectionMenu {
         try {
             new MethodMenu().importMenu();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting up import menu");
+            logger.debug("Interrupted while setting up import menu", e);
         }
     }
 
@@ -52,7 +52,7 @@ public class CollectionMenu {
         try {
             new MethodMenu().exportMenu();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting up export menu");
+            logger.debug("Interrupted while setting up export menu", e);
         }
     }
 
@@ -60,7 +60,7 @@ public class CollectionMenu {
         try {
             new MethodMenu().sync();
         } catch (InterruptedException e) {
-            logger.debug("Interrutped while setting up sync menu");
+            logger.debug("Interrutped while setting up sync menu", e);
         }
     }
 

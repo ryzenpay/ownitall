@@ -479,7 +479,7 @@ public class Collection {
             return writer.toString();
 
         } catch (Exception e) {
-            logger.error("exception generating NFO content: " + e);
+            logger.error("exception generating NFO content", e);
             return null;
         }
     }

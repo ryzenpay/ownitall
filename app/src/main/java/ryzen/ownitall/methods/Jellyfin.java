@@ -30,7 +30,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
@@ -48,39 +47,10 @@ public class Jellyfin extends Method {
     public Jellyfin() throws InterruptedException {
         super();
         objectMapper = new ObjectMapper();
-        if (this.credentialsIsEmpty()) {
-            this.setCredentials();
+        if (credentials.isJellyFinCredentialsEmpty()) {
+            throw new InterruptedException("empty jellyfin credentials");
         }
         this.authenticate();
-    }
-
-    private void setCredentials() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("instance url: ");
-            credentials.setJellyFinUrl(Input.request().getURL().toString());
-            System.out.print("username: ");
-            credentials.setJellyFinUsername(Input.request().getString());
-            System.out.print("password: ");
-            credentials.setJellyFinPassword(Input.request().getString());
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting jellyfin credentials");
-            throw e;
-        }
-    }
-
-    @Override
-    public boolean credentialsIsEmpty() {
-        if (credentials.getJellyfinUsername().isEmpty()) {
-            return true;
-        }
-        if (credentials.getJellyfinPassword().isEmpty()) {
-            return true;
-        }
-        if (credentials.getJellyfinUrl().isEmpty()) {
-            return true;
-        }
-        return false;
     }
 
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
@@ -414,7 +384,7 @@ public class Jellyfin extends Method {
                         .append(URLEncoder.encode(params.get(key), StandardCharsets.UTF_8.toString()));
             }
         } catch (UnsupportedEncodingException e) {
-            logger.error("Exception while encoding query: " + e);
+            logger.error("Exception while encoding query", e);
             return null;
         }
         try {
@@ -446,10 +416,10 @@ public class Jellyfin extends Method {
             }
             return rootNode;
         } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin paramQuery: " + e);
+            logger.error("Exception while constructing jellyfin paramQuery", e);
             return null;
         } catch (IOException e) {
-            logger.error("Exception while paramQuery jellyfin: " + e);
+            logger.error("Exception while paramQuery jellyfin", e);
             return null;
         }
     }
@@ -501,10 +471,10 @@ public class Jellyfin extends Method {
             }
             return rootNode;
         } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin payloadQuery: " + e);
+            logger.error("Exception while constructing jellyfin payloadQuery", e);
             return null;
         } catch (IOException e) {
-            logger.error("Exception while payloadQuery jellyfin: " + e);
+            logger.error("Exception while payloadQuery jellyfin", e);
             return null;
         }
     }

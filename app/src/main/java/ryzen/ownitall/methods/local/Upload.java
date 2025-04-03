@@ -109,7 +109,7 @@ public class Upload {
                                 }
                             } catch (Exception e) {
                                 logger.error(
-                                        "Exception checking if song '" + file.getAbsolutePath() + "' is liked: " + e);
+                                        "Exception checking if song '" + file.getAbsolutePath() + "' is liked", e);
                             }
                         }
                     }
@@ -196,7 +196,7 @@ public class Upload {
                 }
             }
         } catch (IOException e) {
-            logger.error("Exception reading m3u file '" + file.getAbsolutePath() + "': " + e);
+            logger.error("Exception reading m3u file '" + file.getAbsolutePath() + "'", e);
             return null;
         }
         return playlist;
@@ -267,7 +267,7 @@ public class Upload {
                     album.setName(songData.get(FieldKey.ALBUM));
                 }
             } catch (Exception e) {
-                logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath());
+                logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath(), e);
             }
         }
         File albumCover = new File(folder, album.getFolderName() + ".png");
@@ -389,7 +389,7 @@ public class Upload {
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to read file '" + file.getAbsolutePath() + "' metadata: " + e);
+            logger.error("Unable to read file '" + file.getAbsolutePath() + "' metadata", e);
         }
         if (library != null) {
             Song foundSong = library.getSong(song);

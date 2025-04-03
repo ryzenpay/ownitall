@@ -30,7 +30,7 @@ public class ToolsMenu {
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting tools menu response");
+            logger.debug("Interrupted while getting tools menu choice");
         }
     }
 

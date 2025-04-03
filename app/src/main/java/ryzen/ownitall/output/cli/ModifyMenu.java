@@ -92,7 +92,7 @@ public class ModifyMenu {
                     return;
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interruption caught while getting album");
+                logger.debug("Interruption caught while getting album", e);
                 return;
             }
         }
@@ -109,7 +109,7 @@ public class ModifyMenu {
                 playlistName = Input.request().getString();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting Playlist Name");
+            logger.debug("Interrupted while getting Playlist details");
             return;
         }
         Playlist playlist = new Playlist(playlistName);
@@ -135,7 +135,7 @@ public class ModifyMenu {
                     logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting modify add song playlist option");
+                logger.debug("Interrupted while getting modify add song playlist choice");
                 return;
             }
         }
@@ -153,7 +153,7 @@ public class ModifyMenu {
             System.out.print("Enter main artist name: ");
             artistName = Input.request().getString();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting songname");
+            logger.debug("Interrupted while setting song details");
             return null;
         }
         Song song = new Song(songName);
@@ -171,7 +171,7 @@ public class ModifyMenu {
                     return null;
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interruption caugth while adding song");
+                logger.debug("Interruption caugth while adding song", e);
                 return null;
             }
         }
@@ -190,7 +190,7 @@ public class ModifyMenu {
                 artistName = Input.request().getString();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting Artist Name");
+            logger.debug("Interrupted while getting Artist details");
             return;
         }
         try {
@@ -205,7 +205,7 @@ public class ModifyMenu {
                         + "' to collection");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while adding artist");
+            logger.debug("Interrupted while adding artist", e);
         }
     }
 
@@ -279,7 +279,7 @@ public class ModifyMenu {
                 }
                 logger.info("Successfully removed album: '" + choice + "'");
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting collection delete album option");
+                logger.debug("Interrupted while getting collection delete album choice");
                 return;
             }
         }
@@ -407,7 +407,7 @@ public class ModifyMenu {
                 pb.setExtraMessage(album.getName()).stepBy(album.size());
             }
         } catch (InterruptedException e) {
-            logger.debug("Interruption caught while verifying inventory");
+            logger.debug("Interruption caught while verifying inventory", e);
             return;
         }
         logger.debug("done updating collection content");

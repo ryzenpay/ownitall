@@ -22,11 +22,6 @@ public class Method {
         methods.put("Local", Local.class);
     }
 
-    public boolean credentialsIsEmpty() {
-        logger.warn("Unsupported method to check credentials");
-        return false;
-    }
-
     public LikedSongs getLikedSongs() throws InterruptedException {
         logger.warn("Unsupported method to get liked songs");
         return null;

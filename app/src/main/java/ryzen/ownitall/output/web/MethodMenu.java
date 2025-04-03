@@ -2,6 +2,7 @@ package ryzen.ownitall.output.web;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,9 +51,19 @@ public class MethodMenu {
     @GetMapping("/method/login")
     public String login(Model model, @RequestParam(value = "method", required = true) String method,
             @RequestParam(value = "callback", required = false) String callback) {
-
-        // if success
-        return methodMenu(model, method, callback, "Successfully signed in");
+        if (this.method == null) {
+            LinkedHashSet<String> fields = new LinkedHashSet<>();
+            // TODO: set all credential fields
+            fields.add("Cancel");
+            model.addAttribute("loginName", method);
+            model.addAttribute("loginFields", fields);
+            return "login";
+        }
+        if (this.method != null) {
+            return methodMenu(model, method, callback, "Successfully signed into " + method);
+        } else {
+            return methodMenu(model, method, callback, "failed to sign into " + method);
+        }
     }
 
     private void setMethod(String choice) throws InterruptedException {
@@ -65,7 +76,7 @@ public class MethodMenu {
             throw new InterruptedException(e.getMessage());
         } catch (IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException e) {
-            logger.error("Exception instantiating method '" + choice + "': " + e);
+            logger.error("Exception instantiating method '" + choice + "'", e);
             throw new InterruptedException(e.getMessage());
         }
     }

@@ -265,7 +265,7 @@ public class Song {
         try {
             this.coverImage = new URI(coverImage);
         } catch (URISyntaxException e) {
-            logger.error(this.toString() + ": exception parsing song cover image: '" + coverImage + "'");
+            logger.error(this.toString() + ": exception parsing song cover image: '" + coverImage + "'", e);
         }
     }
 

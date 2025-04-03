@@ -37,7 +37,7 @@ public class MainMenu {
             try {
                 Desktop.getDesktop().browse(new URI(url));
             } catch (IOException | URISyntaxException e) {
-                logger.error("Exception opening web browser: " + e);
+                logger.error("Exception opening web browser", e);
             }
         } else {
             logger.info("Unable to open web browser automatically. Please navigate to " + url);

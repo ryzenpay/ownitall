@@ -6,14 +6,11 @@
 </head>
 
 <body>
-    <div th:if="${notification}" class="notification">
-        <p th:text="${notification}"></p>
-    </div>
     <h1 th:text="${loginName}"></h1>
     <form th:action="@{/method/login}" method="get">
         <div th:each="entry : ${loginFields}">
-            <label th:for="${entry.key}" th:text="${entry.key}"></label>
-            <input type="text" th:id="${entry.key}" th:name="${entry.key}">
+            <label th:for="${entry}" th:text="${entry}"></label>
+            <input type="text" th:id="${entry}" th:name="${entry}">
             <br>
         </div>
         <button type="submit">Login</button>

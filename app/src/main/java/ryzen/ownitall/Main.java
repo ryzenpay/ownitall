@@ -63,7 +63,7 @@ public class Main {
                 new ryzen.ownitall.output.cli.MainMenu();
             }
         } catch (ParseException e) {
-            logger.error("Exception parsing input flags");
+            logger.error("Exception parsing input flags", e);
         }
     }
 

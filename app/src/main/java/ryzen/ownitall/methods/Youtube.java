@@ -20,7 +20,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
@@ -51,39 +50,10 @@ public class Youtube extends Method {
      */
     public Youtube() throws InterruptedException {
         super();
-        if (this.credentialsIsEmpty()) {
-            this.setCredentials();
+        if (credentials.isYoutubeCredentialsEmpty()) {
+            throw new InterruptedException("empty youtube credentials");
         }
         this.youtubeApi = this.getService();
-    }
-
-    private void setCredentials() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Enter youtube application name: ");
-            credentials.setYoutubeApplicationName(Input.request().getString());
-            System.out.print("Enter youtube client id: ");
-            credentials.setYoutubeClientId(Input.request().getString(72));
-            System.out.print("Enter youtube client secret: ");
-            credentials.setYoutubeClientSecret(Input.request().getString(35));
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while setting youtube credentials");
-            throw e;
-        }
-    }
-
-    @Override
-    public boolean credentialsIsEmpty() {
-        if (credentials.getYoutubeClientId().isEmpty()) {
-            return true;
-        }
-        if (credentials.getYoutubeApplicationName().isEmpty()) {
-            return true;
-        }
-        if (credentials.getYoutubeClientSecret().isEmpty()) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -100,7 +70,7 @@ public class Youtube extends Method {
                     .setApplicationName(credentials.getYoutubeApplicationName())
                     .build();
         } catch (IOException | GeneralSecurityException e) {
-            logger.error("Exception logging in with youtube api: " + e);
+            logger.error("Exception logging in with youtube api", e);
             throw new InterruptedException(e.getMessage());
         }
     }
@@ -183,7 +153,7 @@ public class Youtube extends Method {
                 pageToken = response.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Exception obtaining liked songs: " + e);
+            logger.error("Exception obtaining liked songs", e);
         }
         return likedSongs;
     }
@@ -228,7 +198,7 @@ public class Youtube extends Method {
                 pageToken = playlistResponse.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Exception retrieving playlists: " + e);
+            logger.error("Exception retrieving playlists", e);
         }
         return playlists;
     }
@@ -282,7 +252,7 @@ public class Youtube extends Method {
                 pageToken = itemResponse.getNextPageToken();
             } while (pageToken != null);
         } catch (IOException e) {
-            logger.error("Exception retrieving playlist songs: " + e);
+            logger.error("Exception retrieving playlist songs", e);
         }
         return songs;
     }
@@ -310,7 +280,7 @@ public class Youtube extends Method {
                 return "10".equals(video.getSnippet().getCategoryId());
             }
         } catch (IOException e) {
-            logger.error("Exception checking if video is music: " + e);
+            logger.error("Exception checking if video is music", e);
         }
         return false;
     }
@@ -335,7 +305,7 @@ public class Youtube extends Method {
                 return videoResponse.getItems().get(0).getSnippet().getChannelTitle();
             }
         } catch (IOException e) {
-            logger.error("Exception retrieving video details for '" + videoId + "': " + e);
+            logger.error("Exception retrieving video details for '" + videoId + "'", e);
         }
         return null;
     }

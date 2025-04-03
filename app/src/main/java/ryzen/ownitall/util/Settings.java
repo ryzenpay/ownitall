@@ -90,13 +90,13 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    protected void save(String filePath) {
+    public void save(String filePath) {
         this.setSettingsFolder();
         File settingsFile = new File(settingsFolderPath, filePath);
         try {
             this.objectMapper.writeValue(settingsFile, this);
         } catch (IOException e) {
-            logger.error("Exception saving settings: " + e);
+            logger.error("Exception saving settings", e);
         }
     }
 
@@ -114,7 +114,8 @@ public class Settings {
     /**
      * flexibly get all settings
      * 
-     * @return - ArrayList of all setting varialbes as Object
+     * @return - LinkedHashSet of all settings with mapping field name : field
+     *         value, only gets protected and non final entries
      */
     @JsonIgnore
     public LinkedHashMap<String, String> getAllSettings() {
@@ -127,11 +128,26 @@ public class Settings {
                 try {
                     settings.put(field.getName(), field.get(this).toString());
                 } catch (IllegalAccessException e) {
-                    logger.error("Exception fetching settings value: " + e);
+                    logger.error("Exception fetching settings value", e);
                 }
             }
         }
         return settings;
+    }
+
+    @JsonIgnore
+    public Class<?> getSettingType(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getSettingType");
+            return null;
+        }
+        try {
+            Field setting = this.getClass().getDeclaredField(name);
+            return setting.getType();
+        } catch (NoSuchFieldException e) {
+            logger.error("Unable to find field  '" + name + "'", e);
+            return null;
+        }
     }
 
     /**
@@ -141,43 +157,48 @@ public class Settings {
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
     @JsonIgnore
-    // TODO: isolate setting, input should include the variable
-    public boolean changeSetting(String settingName) throws InterruptedException {
-        if (settingName == null) {
+    public boolean changeSetting(String name, Object value) {
+        if (name == null) {
             logger.debug("null setting name provided in changeSetting");
             return false;
         }
+        if (value == null) {
+            logger.debug("null setting value provided in changeSetting");
+            return false;
+        }
         try {
-            Field setting = this.getClass().getDeclaredField(settingName);
+            Field setting = this.getClass().getDeclaredField(name);
             setting.setAccessible(true);
-            System.out.print(
-                    "Enter new value " + setting.getType().getSimpleName() + " for '" + setting.getName() + "': ");
-            if (setting.getType() == boolean.class) {
-                boolean input = Input.request().getBool();
-                setting.set(this, input);
-                return true;
-            } else if (setting.getType() == String.class) {
-                String input = Input.request().getString();
-                setting.set(this, input);
-                return true;
-            } else if (setting.getType() == int.class) {
-                int input = Input.request().getInt();
-                setting.set(this, input);
-                return true;
-            } else if (setting.getType() == long.class) {
-                long input = Input.request().getLong();
-                setting.set(this, input);
-                return true;
-            } else {
-                logger.warn("Modifying settings of the type '" + setting.getType() + "' is currently not supported");
-            }
+            setting.set(this, value);
             setting.setAccessible(false);
+            return true;
         } catch (NoSuchFieldException e) {
-            logger.error("Exception modifying setting (No Such Field Exception): " + e);
+            logger.error("Exception modifying setting (No Such Field Exception)", e);
         } catch (IllegalAccessException e) {
-            logger.error("Exception modifying setting (IllegalAccessException): " + e);
+            logger.error("Exception modifying setting (IllegalAccessException)", e);
         }
         return false;
+    }
+
+    public boolean isEmpty(String name) {
+        if (name == null) {
+            logger.debug("null name provided in isEmpty");
+            return true;
+        }
+        try {
+            Field setting = this.getClass().getDeclaredField(name);
+            setting.setAccessible(true);
+            if (setting.get(this).toString().isEmpty()) {
+                setting.setAccessible(false);
+                return true;
+            } else {
+                setting.setAccessible(false);
+                return false;
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            logger.error("Unable to find or access setting '" + name + "'", e);
+            return true;
+        }
     }
 
     /**
@@ -195,7 +216,7 @@ public class Settings {
                     field.set(this, value);
                     field.setAccessible(false);
                 } catch (IllegalAccessException e) {
-                    logger.error("Exception setting setting (Illegal Access Exception): " + e);
+                    logger.error("Exception setting setting (Illegal Access Exception)", e);
                 }
             }
         }
@@ -217,7 +238,7 @@ public class Settings {
                     }
                     field.setAccessible(false);
                 } catch (IllegalAccessException e) {
-                    logger.error("Exception checking field: " + e);
+                    logger.error("Exception checking field", e);
 
                 }
             }
