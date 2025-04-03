@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title th:text="${loginName}"></title>
+</head>
+
+<body>
+    <div th:if="${notification}" class="notification">
+        <p th:text="${notification}"></p>
+    </div>
+    <h1 th:text="${loginName}"></h1>
+    <form th:action="@{/method/login}" method="get">
+        <div th:each="entry : ${loginFields}">
+            <label th:for="${entry.key}" th:text="${entry.key}"></label>
+            <input type="text" th:id="${entry.key}" th:name="${entry.key}">
+            <br>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</body>
+
+</html>

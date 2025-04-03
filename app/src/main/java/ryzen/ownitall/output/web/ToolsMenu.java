@@ -48,7 +48,7 @@ public class ToolsMenu {
                 options.put(file.getName(), file.getAbsolutePath());
             }
             options.put("Exit", "Exit");
-            model.addAttribute("archiveFolders", options);
+            model.addAttribute("options", options);
             return "unarchiving";
         } else if (folderPath.equals("Exit")) {
             return toolsMenu(model, null);

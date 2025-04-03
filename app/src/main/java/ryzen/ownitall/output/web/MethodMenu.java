@@ -24,6 +24,7 @@ public class MethodMenu {
             @RequestParam(value = "notification", required = false) String notification) {
         if (method != null) {
             try {
+                this.login(model, method, callback);
                 this.setMethod(method);
             } catch (InterruptedException e) {
                 notification = "Interrupted while setting up '" + method + "': " + e;
@@ -36,13 +37,22 @@ public class MethodMenu {
         for (String currMethod : Method.methods.keySet()) {
             options.put(currMethod, "/method?method=" + currMethod + "?callback=" + callback);
         }
-        options.put("Exit", "/method/" + callback);
+        options.put("Cancel", "/method/" + callback);
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
         if (notification != null) {
             model.addAttribute("notification", notification);
         }
         return "menu";
+    }
+
+    // TODO: get credentials as parameters and attempt to sign in
+    @GetMapping("/method/login")
+    public String login(Model model, @RequestParam(value = "method", required = true) String method,
+            @RequestParam(value = "callback", required = false) String callback) {
+
+        // if success
+        return methodMenu(model, method, callback, "Successfully signed in");
     }
 
     private void setMethod(String choice) throws InterruptedException {

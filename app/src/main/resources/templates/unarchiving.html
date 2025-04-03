@@ -8,7 +8,7 @@
 <body>
     <h1>Choose Folder to Unarchive</h1>
     <form th:action="@{/tools/unarchive}" method="get">
-        <div th:each="entry : ${archiveFolders}">
+        <div th:each="entry : ${options}">
             <button type="submit" th:value="${entry.value}" th:name="folderPath" th:text="${entry.key}"></button>
             <br>
         </div>
