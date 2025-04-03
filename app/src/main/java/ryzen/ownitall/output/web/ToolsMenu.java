@@ -49,7 +49,7 @@ public class ToolsMenu {
             }
             options.put("Exit", "Exit");
             model.addAttribute("options", options);
-            return "unarchiving";
+            return "unarchive";
         } else if (folderPath.equals("Exit")) {
             return toolsMenu(model, null);
         } else {

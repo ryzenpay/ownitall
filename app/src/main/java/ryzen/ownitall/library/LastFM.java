@@ -16,7 +16,6 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.Input;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
