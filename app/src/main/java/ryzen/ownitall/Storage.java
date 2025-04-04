@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Storage {
-    private static final Logger logger = LogManager.getLogger(Storage.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static Storage instance;
     private File dataFolder;
@@ -36,8 +36,8 @@ public class Storage {
      * 
      */
     public Storage() {
-        this.dataFolder = new File(settings.dataFolderPath);
-        this.cacheFolder = new File(settings.cacheFolderPath);
+        this.dataFolder = settings.getFile("datafolder");
+        this.cacheFolder = settings.getFile("cachefolder");
         this.setDataFolder();
         this.setCacheFolder();
         this.objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -223,7 +223,7 @@ public class Storage {
             return;
         }
         this.setDataFolder();
-        File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
+        File albumFile = new File(this.dataFolder, settings.getString("albumfile") + ".json");
         try {
             this.objectMapper.writeValue(albumFile, albums);
             logger.debug("Saved albums to: '" + albumFile.getAbsolutePath() + "'");
@@ -239,7 +239,7 @@ public class Storage {
      */
     public ArrayList<Album> importAlbums() {
         this.setDataFolder();
-        File albumFile = new File(this.dataFolder, settings.albumFile + ".json");
+        File albumFile = new File(this.dataFolder, settings.getString("albumfile") + ".json");
         if (!albumFile.exists()) {
             return null;
         }
@@ -264,7 +264,7 @@ public class Storage {
             return;
         }
         this.setDataFolder();
-        File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
+        File playlistFile = new File(this.dataFolder, settings.getString("playlistfile") + ".json");
         try {
             this.objectMapper.writeValue(playlistFile, playlists);
             logger.debug("Saved playlists to: '" + playlistFile.getAbsolutePath() + "'");
@@ -280,7 +280,7 @@ public class Storage {
      */
     public ArrayList<Playlist> importPlaylists() {
         this.setDataFolder();
-        File playlistFile = new File(this.dataFolder, settings.playlistFile + ".json");
+        File playlistFile = new File(this.dataFolder, settings.getString("playlistfile") + ".json");
         if (!playlistFile.exists()) {
             return null;
         }
@@ -306,7 +306,7 @@ public class Storage {
             return;
         }
         this.setDataFolder();
-        File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
+        File likedSongFile = new File(this.dataFolder, settings.getString("likedsongfile") + ".json");
         try {
             this.objectMapper.writeValue(likedSongFile, likedSongs);
             logger.debug("Saved liked songs to: '" + likedSongFile.getAbsolutePath() + "'");
@@ -322,7 +322,7 @@ public class Storage {
      */
     public LikedSongs importLikedSongs() {
         this.setDataFolder();
-        File likedSongFile = new File(this.dataFolder, settings.likedSongFile + ".json");
+        File likedSongFile = new File(this.dataFolder, settings.getString("likedsongfile") + ".json");
         if (!likedSongFile.exists()) {
             return null;
         }
@@ -338,7 +338,7 @@ public class Storage {
 
     public LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
         this.setCacheFolder();
-        File albumFile = new File(this.cacheFolder, settings.albumFile + ".json");
+        File albumFile = new File(this.cacheFolder, settings.getString("albumfile") + ".json");
         LinkedHashMap<String, Album> cachedAlbums = new LinkedHashMap<>();
         if (albumFile.exists()) {
             try {
@@ -363,7 +363,7 @@ public class Storage {
 
     public LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
         this.setCacheFolder();
-        File artistFile = new File(this.cacheFolder, settings.artistFile + ".json");
+        File artistFile = new File(this.cacheFolder, settings.getString("artistfile") + ".json");
         LinkedHashMap<String, Artist> cachedArtists = new LinkedHashMap<>();
         if (artistFile.exists()) {
             try {
@@ -388,7 +388,7 @@ public class Storage {
 
     public LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
         this.setCacheFolder();
-        File songFile = new File(this.cacheFolder, settings.songFile + ".json");
+        File songFile = new File(this.cacheFolder, settings.getString("songfile") + ".json");
         LinkedHashMap<String, Song> cachedSongs = new LinkedHashMap<>();
         if (songFile.exists()) {
             try {

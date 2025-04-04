@@ -22,7 +22,7 @@ import ryzen.ownitall.Main;
 @Controller
 @SpringBootApplication
 public class MainMenu {
-    private static final Logger logger = LogManager.getLogger(MainMenu.class);
+    private static final Logger logger = LogManager.getLogger();
     public static final String url = "http://localhost:8080";
 
     public static void main(String[] args) {

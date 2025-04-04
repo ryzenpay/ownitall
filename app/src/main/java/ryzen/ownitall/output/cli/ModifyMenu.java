@@ -20,7 +20,7 @@ import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.Progressbar;
 
 public class ModifyMenu {
-    private static final Logger logger = LogManager.getLogger(ModifyMenu.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private static Library library = Library.load();
@@ -86,7 +86,7 @@ public class ModifyMenu {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
                     album = foundAlbum;
-                } else if (settings.isLibraryVerified()) {
+                } else if (settings.getBool("libraryverified")) {
                     logger.warn(
                             "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
                     return;
@@ -165,7 +165,7 @@ public class ModifyMenu {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song = foundSong;
-                } else if (settings.isLibraryVerified()) {
+                } else if (settings.getBool("libraryverified")) {
                     logger.warn(
                             "Song was not found in library and `LibraryVerified` is set to true, not adding song");
                     return null;
@@ -179,8 +179,8 @@ public class ModifyMenu {
     }
 
     private void optionAddArtist() {
-        if (settings.getLibraryType().isEmpty()) {
-            logger.warn("LastFM library type is required for this");
+        if (settings.isEmpty("librarytype")) {
+            logger.warn("library is required to add artist albums");
             return;
         }
         String artistName = null;

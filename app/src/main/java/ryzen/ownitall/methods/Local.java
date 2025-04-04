@@ -19,7 +19,7 @@ public class Local extends Method {
 
     public Local() throws InterruptedException {
         super();
-        if (settings.getUploadFolder().isEmpty() || this.localLibrary == null) {
+        if (settings.isEmpty("uploadfolder") || this.localLibrary == null) {
             this.setLocalLibrary();
         }
         upload = new Upload(localLibrary);

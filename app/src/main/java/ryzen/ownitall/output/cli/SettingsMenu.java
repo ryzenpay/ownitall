@@ -10,7 +10,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class SettingsMenu {
-    private static final Logger logger = LogManager.getLogger(SettingsMenu.class);
+    private static final Logger logger = LogManager.getLogger();
 
     public SettingsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -39,7 +39,7 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         try {
             while (true) {
-                String choice = Menu.optionMenuWithValue(settings.getAllSettings(), "SETTINGS");
+                String choice = Menu.optionMenuWithValue(settings.getAll(), "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -60,7 +60,7 @@ public class SettingsMenu {
             return false;
         }
         Settings settings = Settings.load();
-        Class<?> settingType = settings.getSettingType(settingName);
+        Class<?> settingType = settings.getType(settingName);
         if (settingType == null) {
             logger.error("Unable to find setting type  of '" + settingName + "'");
             return false;
@@ -68,7 +68,7 @@ public class SettingsMenu {
         System.out.print(
                 "Enter new value " + settingType.getSimpleName() + " for '" + settingName + "': ");
         Object input = Input.request().getValue(settingType);
-        return settings.changeSetting(settingName, input);
+        return settings.change(settingName, input);
     }
 
     /**

@@ -21,7 +21,7 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class MusicBrainz extends Library {
-    private static final Logger logger = LogManager.getLogger(MusicBrainz.class);
+    private static final Logger logger = LogManager.getLogger();
     private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
     private final String coverArtUrl = "https://coverartarchive.org/";
 

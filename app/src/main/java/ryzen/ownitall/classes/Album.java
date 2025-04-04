@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Album extends Playlist {
-    private static final Logger logger = LogManager.getLogger(Album.class);
+    private static final Logger logger = LogManager.getLogger();
     private ArrayList<Artist> artists;
 
     /**

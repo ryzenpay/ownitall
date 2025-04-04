@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
 
 public class Menu {
-    private static final Logger logger = LogManager.getLogger(Menu.class);
+    private static final Logger logger = LogManager.getLogger();
     public static final String asciiLogo = "                        _  _          _  _ \n" +
             "                       (_)| |        | || |\n" +
             "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +

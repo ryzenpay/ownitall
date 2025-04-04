@@ -23,7 +23,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
 public class Collection {
-    private static final Logger logger = LogManager.getLogger(Collection.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static Collection instance;
     private LikedSongs likedSongs;
@@ -396,7 +396,7 @@ public class Collection {
         }
         for (Song song : playlist.getSongs()) {
             File songFile = new File(song.getFileName());
-            if (!settings.isDownloadHierachy()) {
+            if (!settings.getBool("downloadhierachy")) {
                 Album foundAlbum = this.getSongAlbum(song);
                 if (foundAlbum != null) {
                     songFile = new File(foundAlbum.getFolderName(), song.getFileName());

@@ -34,7 +34,7 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Progressbar;
 
 public class Jellyfin extends Method {
-    private static final Logger logger = LogManager.getLogger(Jellyfin.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Credentials credentials = Credentials.load();
     private static final Settings settings = Settings.load();
     private static Library library = Library.load();
@@ -47,7 +47,7 @@ public class Jellyfin extends Method {
     public Jellyfin() throws InterruptedException {
         super();
         objectMapper = new ObjectMapper();
-        if (credentials.isJellyFinCredentialsEmpty()) {
+        if (super.isCredentialsEmpty(Jellyfin.class)) {
             throw new InterruptedException("empty jellyfin credentials");
         }
         this.authenticate();
@@ -56,8 +56,8 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
     private void authenticate() throws InterruptedException {
         ObjectNode credsNode = objectMapper.createObjectNode();
-        credsNode.put("Username", credentials.getJellyfinUsername());
-        credsNode.put("Pw", credentials.getJellyfinPassword());
+        credsNode.put("Username", credentials.getString("jellyfinusername"));
+        credsNode.put("Pw", credentials.getString("jellyfinpassword"));
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
@@ -262,7 +262,7 @@ public class Jellyfin extends Method {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album = foundAlbum;
-            } else if (settings.isLibraryVerified()) {
+            } else if (settings.getBool("libraryverified")) {
                 album = null;
             }
         }
@@ -325,7 +325,7 @@ public class Jellyfin extends Method {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song = foundSong;
-                } else if (settings.isLibraryVerified()) {
+                } else if (settings.getBool("libraryverified")) {
                     song = null;
                 }
             }
@@ -388,7 +388,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(credentials.getJellyfinUrl() + type + builder.toString());
+            URI url = new URI(credentials.getString("jellyfinurl") + type + builder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -398,7 +398,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    credentials.getJellyfinUsername() + "ownitall",
+                    credentials.getString("jellyfinusername") + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);
@@ -438,7 +438,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(credentials.getJellyfinUrl() + type);
+            URI url = new URI(credentials.getString("jellyfinurl") + type);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -448,7 +448,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    credentials.getJellyfinUsername() + "ownitall",
+                    credentials.getString("jellyfinusername") + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);

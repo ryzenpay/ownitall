@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
@@ -23,9 +24,10 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 public class Library {
-    private static final Logger logger = LogManager.getLogger(Library.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static final Storage sync = Storage.load();
+    private static final Credentials credentials = Credentials.load();
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
     private static Library instance;
     private ObjectMapper objectMapper;
@@ -54,20 +56,21 @@ public class Library {
      */
     public static Library load() {
         if (instance == null) {
-            if (!settings.getLibraryType().isEmpty()) {
-                Class<? extends Library> libraryClass = libraries.get(settings.getLibraryType());
+            String libraryType = settings.getString("librarytype");
+            if (!libraryType.isEmpty()) {
+                Class<? extends Library> libraryClass = libraries.get(libraryType);
                 if (libraryClass != null) {
                     try {
                         instance = libraryClass.getDeclaredConstructor().newInstance();
                     } catch (InstantiationException e) {
-                        logger.debug("Interrupted while setting up library type '" + settings.getLibraryType() + "'",
+                        logger.debug("Interrupted while setting up library type '" + libraryType + "'",
                                 e);
                     } catch (IllegalAccessException | NoSuchMethodException
                             | InvocationTargetException e) {
-                        logger.error("Exception instantiating library '" + settings.getLibraryType() + "'", e);
+                        logger.error("Exception instantiating library '" + libraryType + "'", e);
                     }
                 } else {
-                    logger.warn("Unsupported library method '" + settings.getLibraryType() + "' provided");
+                    logger.warn("Unsupported library method '" + libraryType + "' provided");
                 }
             }
         }
@@ -125,28 +128,47 @@ public class Library {
         instance = null;
     }
 
-    public boolean credentialsIsEmpty() {
-        logger.warn("Checking credentials supported for library type: " + settings.getLibraryType());
+    public static LinkedHashMap<String, String> getCredentials(Class<?> type) {
+        if (type == null) {
+            logger.debug("null type provided in getCredentials");
+            return null;
+        }
+        LinkedHashMap<Class<?>, LinkedHashMap<String, String>> credentialGroups = new LinkedHashMap<>();
+        credentialGroups.put(LastFM.class, credentials.getJellyfinCredentials());
+        return credentialGroups.get(type);
+    }
+
+    public static boolean isCredentialsEmpty(Class<?> type) {
+        if (type == null) {
+            logger.debug("null type provided in isCredentialsEmpty");
+            return true;
+        }
+        LinkedHashMap<String, String> credentialVars = getCredentials(type);
+        for (String varName : credentialVars.values()) {
+            if (credentials.isEmpty(varName)) {
+                return true;
+            }
+        }
         return false;
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("get album supported for library type: " + settings.getLibraryType());
+        logger.warn("get album supported for library type: " + settings.getString("librarytype"));
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        logger.warn("get song supported for library type: " + settings.getLibraryType());
+        logger.warn("get song supported for library type: " + settings.getString("librarytype"));
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("get artist for library type: " + settings.getLibraryType());
+        logger.warn("get artist for library type: " + settings.getString("librarytype"));
         return null;
     }
 
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.warn("get artist albums for library type: " + settings.getLibraryType());
+        logger.warn("get artist albums for library type: " + settings.getString("librarytype"));
         return null;
     }
 

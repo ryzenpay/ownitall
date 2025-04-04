@@ -36,15 +36,12 @@ public class Download {
     // deezer
     // youtube (already implemented)
     // tidal
-    private static final Logger logger = LogManager.getLogger(Download.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static Collection collection = Collection.load();
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
-            Arrays.asList("m3u", "png", "nfo", settings.getDownloadFormat()));
-    static {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.SEVERE);
-    }
+            Arrays.asList("m3u", "png", "nfo", settings.getString("downloadformat")));
     private File localLibrary;
 
     /**
@@ -54,23 +51,20 @@ public class Download {
      * @throws InterruptedException - when user interrupts
      */
     public Download(File localLibrary) throws InterruptedException {
-        if (settings.getYoutubedlPath().isEmpty()) {
+        if (settings.isEmpty("youtubedlpath")) {
             this.setYoutubedlPath();
         }
-        if (settings.getFfmpegPath().isEmpty()) {
+        if (settings.isEmpty("ffmpegpath")) {
             this.setFfmpegPath();
         }
         this.localLibrary = localLibrary;
-        System.out.println("This is where i reccomend you to connect to VPN / use proxies");
-        System.out.print("Enter enter to continue: ");
-        Input.request().getEnter();
     }
 
     private void setYoutubedlPath() throws InterruptedException {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local Youtube DL executable path: ");
-            settings.setYoutubedlPath(Input.request().getFile(true).getAbsolutePath());
+            settings.change("youtubedlpath", Input.request().getFile(true).getAbsolutePath());
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting youtubedl path");
             throw e;
@@ -81,7 +75,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local FFMPEG executable path: ");
-            settings.setFfmpegPath(Input.request().getFile(true).getAbsolutePath());
+            settings.change("ffmpegpath", Input.request().getFile(true).getAbsolutePath());
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting FFMPEG executable path");
             throw e;
@@ -121,12 +115,13 @@ public class Download {
      * setup threading
      */
     public void threadInit() {
+        int downloadThreads = settings.getInt("downloadthreads");
         this.executor = new ThreadPoolExecutor(
-                settings.getDownloadThreads(),
-                settings.getDownloadThreads(),
+                downloadThreads,
+                downloadThreads,
                 0L,
                 TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(settings.getDownloadThreads()));
+                new LinkedBlockingQueue<Runnable>(downloadThreads));
     }
 
     /**
@@ -163,9 +158,9 @@ public class Download {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(settings.getYoutubedlPath());
+        command.add(settings.getFile("youtubedlpath").toString());
         command.add("--ffmpeg-location");
-        command.add(settings.getFfmpegPath());
+        command.add(settings.getFile("ffmpegpath").toString());
         // command.add("--concurrent-fragments");
         // command.add(String.valueOf(settings.getDownloadThreads()));
         // set up youtube searching and only 1 result
@@ -181,9 +176,9 @@ public class Download {
         command.add("--format");
         command.add("bestaudio/best");
         command.add("--audio-format");
-        command.add(settings.getDownloadFormat());
+        command.add(settings.getString("downloadformat"));
         command.add("--audio-quality");
-        command.add(String.valueOf(settings.getDownloadQuality()));
+        command.add(settings.getInt("downloadquality").toString());
         // command.add("--embed-metadata"); // metadata we have overwrites this
         // command.add("--no-write-comments");
         // download location
@@ -215,12 +210,12 @@ public class Download {
             while (!songFile.exists() && retries < 3) {
                 if (retries == 1) {
                     // cookies for age restriction (do not default to them)
-                    if (!settings.getDownloadCookiesFile().isEmpty()) {
+                    if (!settings.isEmpty("downloadcookiesfile")) {
                         command.add(1, "--cookies");
-                        command.add(2, settings.getDownloadCookiesFile());
-                    } else if (!settings.getDownloadCookiesBrowser().isEmpty()) {
+                        command.add(2, settings.getFile("downloadcookiesfile").toString());
+                    } else if (!settings.isEmpty("downloadcookiesbrowser")) {
                         command.add(1, "--cookies-from-browser");
-                        command.add(2, settings.getDownloadCookiesBrowser());
+                        command.add(2, settings.getString("downloadcookiesbrowser"));
                     }
                 }
                 Process process = processBuilder.start();
@@ -272,13 +267,13 @@ public class Download {
         Upload upload = new Upload(this.localLibrary);
         LikedSongs likedSongs = upload.getLikedSongs();
         File songFolder = this.localLibrary;
-        if (settings.isDownloadHierachy()) {
-            songFolder = new File(this.localLibrary, settings.getLikedSongsName());
+        if (settings.getBool("downloadhierachy")) {
+            songFolder = new File(this.localLibrary, settings.getString("likedsongsname"));
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
-                if (!settings.isDownloadHierachy()) {
+                if (!settings.getBool("downloadhierachy")) {
                     // skip if in a playlist
                     if (collection.getSongPlaylist(song) != null) {
                         continue;
@@ -304,15 +299,15 @@ public class Download {
     public void downloadLikedSongs() throws InterruptedException {
         ArrayList<Song> songs;
         File likedSongsFolder;
-        if (settings.isDownloadHierachy()) {
+        if (settings.getBool("downloadhierachy")) {
             songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(this.localLibrary, settings.getLikedSongsName());
+            likedSongsFolder = new File(this.localLibrary, settings.getString("likedsongsname"));
             likedSongsFolder.mkdirs();
         } else {
             songs = collection.getStandaloneLikedSongs();
             likedSongsFolder = this.localLibrary;
-            if (settings.isDownloadLikedSongsPlaylist()) {
-                Playlist likedSongsPlaylist = new Playlist(settings.getLikedSongsName());
+            if (settings.getBool("downloadlikedsongsplaylist")) {
+                Playlist likedSongsPlaylist = new Playlist(settings.getString("likedsongsname"));
                 likedSongsPlaylist.addSongs(collection.getLikedSongs().getSongs());
                 this.writePlaylistData(likedSongsPlaylist, this.localLibrary);
             }
@@ -343,7 +338,7 @@ public class Download {
         if (playlists != null && !playlists.isEmpty()) {
             playlists.removeAll(collection.getPlaylists());
             for (Playlist playlist : playlists) {
-                if (settings.isDownloadHierachy()) {
+                if (settings.getBool("downloadhierachy")) {
                     File playlistFolder = new File(this.localLibrary, playlist.getFolderName());
                     if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
@@ -399,7 +394,7 @@ public class Download {
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
         File playlistFolder = this.localLibrary;
         Playlist localPlaylist = null;
-        if (settings.isDownloadHierachy()) {
+        if (settings.getBool("downloadhierachy")) {
             playlistFolder = new File(this.localLibrary, playlist.getFolderName());
             localPlaylist = Upload.getPlaylist(playlistFolder);
         } else {
@@ -413,7 +408,7 @@ public class Download {
             for (Song song : localPlaylist.getSongs()) {
                 File songFile = new File(playlistFolder, song.getFileName());
                 if (songFile.exists()) {
-                    if (!settings.isDownloadHierachy()) {
+                    if (!settings.getBool("downloadhierachy")) {
                         if (collection.isLiked(song)) {
                             continue;
                         }
@@ -443,7 +438,7 @@ public class Download {
         }
         ArrayList<Song> songs;
         File playlistFolder;
-        if (settings.isDownloadHierachy()) {
+        if (settings.getBool("downloadhierachy")) {
             songs = playlist.getSongs();
             playlistFolder = new File(this.localLibrary, playlist.getFolderName());
             playlistFolder.mkdirs();

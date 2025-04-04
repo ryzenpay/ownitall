@@ -1,298 +1,148 @@
 package ryzen.ownitall;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC)
 public class Settings extends ryzen.ownitall.util.Settings {
-    @JsonIgnore
+
     private static Settings instance;
-    @JsonIgnore
-    private static final Logger logger = LogManager.getLogger(Settings.class);
-    @JsonIgnore
-    private final static String settingsFilePath = "settings.json";
+
+    private static final Logger logger = LogManager.getLogger();
+
+    public Settings() throws IOException {
+        super(Settings.class, "settings.json");
+    }
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
     /**
      * default file names (without extensions)
      */
-    protected String dataFolderPath = "data";
-    protected String likedSongsName = "liked songs";
-    protected String albumFile = "albums";
-    protected String likedSongFile = "likedsongs";
-    protected String playlistFile = "playlists";
-    protected String artistFile = "artists";
-    protected String songFile = "songs";
+    protected File datafolder = new File("data");
+    protected String likedsongsname = "liked songs";
+    protected String albumfile = "albums";
+    protected String likedsongfile = "likedsongs";
+    protected String playlistfile = "playlists";
+    protected String artistfile = "artists";
+    protected String songfile = "songs";
 
-    protected String cacheFolderPath = ".cache";
+    protected File cachefolder = new File(".cache");
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
      * to prevent having to provide them each time
      */
-    protected boolean saveCredentials = true;
+    protected boolean savecredentials = true;
 
     /**
      * in the Spotify class, this decides if the user has to click "accept"
      * everytime they "log in", set to true in case you use multiple accounts and
      * want to easily switch between them
      */
-    protected boolean spotifyShowDialog = false;
+    protected boolean spotifyshowdialog = false;
 
     /**
      * to limit number of songs in each spotify API batch query
      */
-    protected Integer spotifySongLimit = 50;
-    protected Integer spotifyAlbumLimit = 20;
-    protected Integer spotifyPlaylistLimit = 20;
+    protected Integer spotifysonglimit = 50;
+    protected Integer spotifyalbumlimit = 20;
+    protected Integer spotifyplaylistlimit = 20;
 
     /**
      * to limit number of songs in each youtube API batch query
      */
-    protected Long youtubeSongLimit = 50L;
-    protected Long youtubePlaylistLimit = 20L;
-
-    /**
-     * to limit number of songs in each soundcloud API batch query
-     */
-    protected Integer soundCloudSongLimit = 50;
-    protected Integer soundCloudAlbumLimit = 20;
-    protected Integer soundCloudPlaylistLimit = 20;
+    protected Long youtubesonglimit = 50L;
+    protected Long youtubeplaylistlimit = 20L;
 
     /**
      * only put songs in collection if they are library verified
      */
-    protected boolean libraryVerified = true;
+    protected boolean libraryverified = true;
 
     /**
      * int representative of which library to use
      */
-    protected String libraryType = "";
+    protected String librarytype = "";
 
     /**
      * youtube dl installation path
      * 
      */
-    protected String youtubedlPath = "";
+    protected File youtubedlfile = null;
     /**
      * ffmpeg path (required for youtubedl)
      * 
      */
-    protected String ffmpegPath = "";
+    protected File ffmpegfile = null;
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    protected String downloadFormat = "mp3";
+    protected String downloadformat = "mp3";
 
     /**
      * optional to hardcode local download path
      */
-    protected String downloadFolder = "";
+    protected File downloadfolder = null;
 
     /**
      * option to hardcode cookies file
      */
-    protected String downloadCookiesFile = "";
+    protected File downloadcookiesfile = null;
 
     /**
      * option to hardcode browser to get cookies from
      * options: chrome, firefox, check yt-dlp docs,...
      */
-    protected String downloadCookiesBrowser = "";
+    protected String downloadcookiesbrowser = "";
 
     /**
      * download all files in a hierachy method
      * playlists get their own folders
      * most applications such as jellyfin use false
      */
-    protected boolean downloadHierachy = false;
+    protected boolean downloadhierachy = false;
 
-    protected boolean downloadLikedSongsPlaylist = true;
+    protected boolean downloadlikedsongsplaylist = true;
 
     /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
-    protected Integer downloadQuality = 5;
+    protected Integer downloadquality = 5;
     /**
      * enable yt-dlp threading
      */
-    protected Integer downloadThreads = 1;
+    protected Integer downloadthreads = 1;
 
     /**
      * optional to hardcode local upload path
      */
-    protected String uploadFolder = "";
+    protected File uploadfolder = null;
 
-    @JsonIgnore
     public static Settings load() {
         if (instance == null) {
-            instance = new Settings();
             try {
-                instance.importSettings(Settings.class, settingsFilePath);
+                instance = new Settings();
+                logger.debug("New Settings instance created");
             } catch (IOException e) {
-                logger.error("Exception loading settings", e);
-                logger.warn("If this persists, delete the file: '" + settingsFilePath + "'");
+                logger.error("Failed to initialize settings", e);
+                logger.info("If this error persists, try to delete settings.json");
             }
-            logger.debug("New instance created");
         }
         return instance;
     }
 
     public void clear() {
         instance = null;
-        this.clearSettings(settingsFilePath);
+        super.clear();
     }
 
-    public void save() {
-        super.save(settingsFilePath);
-    }
-
-    public String getDataFolderPath() {
-        return dataFolderPath;
-    }
-
-    public String getLikedSongsName() {
-        return likedSongsName;
-    }
-
-    public String getAlbumFile() {
-        return albumFile;
-    }
-
-    public String getLikedSongFile() {
-        return likedSongFile;
-    }
-
-    public String getPlaylistFile() {
-        return playlistFile;
-    }
-
-    public String getCacheFolderPath() {
-        return cacheFolderPath;
-    }
-
-    public boolean isSaveCredentials() {
-        return saveCredentials;
-    }
-
-    public boolean isSpotifyShowDialog() {
-        return spotifyShowDialog;
-    }
-
-    public int getSpotifySongLimit() {
-        return spotifySongLimit;
-    }
-
-    public int getSpotifyAlbumLimit() {
-        return spotifyAlbumLimit;
-    }
-
-    public int getSpotifyPlaylistLimit() {
-        return spotifyPlaylistLimit;
-    }
-
-    public Long getYoutubeSongLimit() {
-        return youtubeSongLimit;
-    }
-
-    public Long getYoutubePlaylistLimit() {
-        return youtubePlaylistLimit;
-    }
-
-    public int getSoundCloudSongLimit() {
-        return soundCloudSongLimit;
-    }
-
-    public int getSoundCloudAlbumLimit() {
-        return soundCloudAlbumLimit;
-    }
-
-    public int getSoundCloudPlaylistLimit() {
-        return soundCloudPlaylistLimit;
-    }
-
-    public String getLibraryType() {
-        return this.libraryType;
-    }
-
-    public String getYoutubedlPath() {
-        return youtubedlPath;
-    }
-
-    public void setYoutubedlPath(String path) {
-        this.youtubedlPath = path;
-    }
-
-    public String getDownloadFormat() {
-        return downloadFormat;
-    }
-
-    public int getDownloadQuality() {
-        return downloadQuality;
-    }
-
-    public String getFfmpegPath() {
-        return ffmpegPath;
-    }
-
-    public void setFfmpegPath(String path) {
-        this.ffmpegPath = path;
-    }
-
-    public String getDownloadFolder() {
-        return downloadFolder;
-    }
-
-    public boolean isDownloadHierachy() {
-        return downloadHierachy;
-    }
-
-    public String getUploadFolder() {
-        return uploadFolder;
-    }
-
-    public int getDownloadThreads() {
-        return downloadThreads;
-    }
-
-    public boolean isLibraryVerified() {
-        return libraryVerified;
-    }
-
-    public String getDownloadCookiesFile() {
-        return downloadCookiesFile;
-    }
-
-    public String getDownloadCookiesBrowser() {
-        return downloadCookiesBrowser;
-    }
-
-    /**
-     * @return the artistFile
-     */
-    public String getArtistFile() {
-        return artistFile;
-    }
-
-    /**
-     * @return the songFile
-     */
-    public String getSongFile() {
-        return songFile;
-    }
-
-    public boolean isDownloadLikedSongsPlaylist() {
-        return downloadLikedSongsPlaylist;
+    public LinkedHashMap<String, Object> getAll() {
+        return super.getAll();
     }
 }

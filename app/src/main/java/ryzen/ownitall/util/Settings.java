@@ -10,79 +10,46 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * This class serves as a default settings configuration that can be easily
- * extended
- * to include custom settings. To create your own settings class, simply define
- * the private variables along with their corresponding getters and setters.
- * 
- * To implement a singleton pattern, ensuring that all settings are
- * synchronized,
- * include the following method in your extended class:
- * 
- * public static Settings load() {
- * if (instance == null) {
- * instance = new Settings();
- * try {
- * instance.loadSettings(Settings.class); // Rename to your class if
- * not
- * "Settings"
- * } catch (Exception e) {
- * logger.error(e);
- * logger.warn("If this persists, delete the file: " +
- * instance.getSettingsFilePath());
- * }
- * }
- * return instance;
- * }
- */
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Settings {
-    private static final Logger logger = LogManager.getLogger(Settings.class);
+    private static final Logger logger = LogManager.getLogger();
     private final ObjectMapper objectMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD,
             JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
     private final String settingsFolderPath = ".appdata";
+    private File settingsFile;
+
+    public Settings(Class<? extends Settings> type, String saveFile) throws IOException {
+        this.settingsFile = new File(this.settingsFolderPath, saveFile);
+        this.setSettingsFile();
+        this.read();
+    }
 
     /**
      * check if settings folder exists, if not make it (to prevent errors)
      */
-    private void setSettingsFolder() {
-        File settingsFolder = new File(this.settingsFolderPath);
-        if (!settingsFolder.exists()) {
-            settingsFolder.mkdirs(); // Create folder if it does not exist
+    private void setSettingsFile() {
+        if (!settingsFile.exists()) {
+            settingsFile.mkdirs(); // Create folder if it does not exist
         }
     }
 
-    /**
-     * load settings from saved file
-     * 
-     * @param <T>           - settings class
-     * @param settingsClass - settings class
-     * @param filePath      - filepath to save to
-     * @throws IOException - incase of running into error while saving
-     */
-    protected <T extends Settings> void importSettings(Class<T> settingsClass, String filePath) throws IOException {
-        setSettingsFolder();
-        File settingsFile = new File(this.getSettingsFolderPath(), filePath);
-
-        if (!settingsFile.exists() || settingsFile.length() == 0) {
-            this.save(filePath);
+    protected void read() throws IOException {
+        setSettingsFile();
+        if (!settingsFile.exists()) {
+            this.save();
             return;
         }
-        T importedSettings = this.objectMapper.readValue(settingsFile, settingsClass);
-        if (importedSettings == null || importedSettings.isEmpty()) {
-            logger.error("Failed to import settings from file '" + settingsFile.getAbsolutePath() + "'");
+        LinkedHashMap<String, Object> imported = this.objectMapper.readValue(settingsFile,
+                new TypeReference<LinkedHashMap<String, Object>>() {
+                });
+        if (imported == null || imported.isEmpty()) {
+            logger.error("Failed to import from file '" + settingsFile.getAbsolutePath() + "'");
         } else {
-            this.setSettings(importedSettings);
+            this.setAll(imported);
         }
-
     }
 
     /**
@@ -90,11 +57,10 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    public void save(String filePath) {
-        this.setSettingsFolder();
-        File settingsFile = new File(settingsFolderPath, filePath);
+    public void save() {
+        this.setSettingsFile();
         try {
-            this.objectMapper.writeValue(settingsFile, this);
+            this.objectMapper.writeValue(settingsFile, this.getAll());
         } catch (IOException e) {
             logger.error("Exception saving settings", e);
         }
@@ -105,9 +71,7 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    protected void clearSettings(String filePath) {
-        this.setSettingsFolder();
-        File settingsFile = new File(settingsFolderPath, filePath);
+    protected void clear() {
         settingsFile.delete();
     }
 
@@ -117,16 +81,17 @@ public class Settings {
      * @return - LinkedHashSet of all settings with mapping field name : field
      *         value, only gets protected and non final entries
      */
-    @JsonIgnore
-    public LinkedHashMap<String, String> getAllSettings() {
-        LinkedHashMap<String, String> settings = new LinkedHashMap<>();
+
+    protected LinkedHashMap<String, Object> getAll() {
+        LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             // only allow option to change non final and protected fields
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
                 field.setAccessible(true);
                 try {
-                    settings.put(field.getName(), field.get(this).toString());
+                    settings.put(field.getName(),
+                            this.transform(field.get(this).getClass(), field.getName()));
                 } catch (IllegalAccessException e) {
                     logger.error("Exception fetching settings value", e);
                 }
@@ -135,17 +100,30 @@ public class Settings {
         return settings;
     }
 
-    @JsonIgnore
-    public Class<?> getSettingType(String name) {
+    private void setAll(LinkedHashMap<String, Object> settings) {
+        for (String name : settings.keySet()) {
+            try {
+                Field field = this.getClass().getDeclaredField(name);
+                field.setAccessible(true);
+                field.set(this, this.transform(field.getType(), name));
+                field.setAccessible(false);
+            } catch (IllegalAccessException e) {
+                logger.error("Failed to overwrite value for '" + name + "'", e);
+            } catch (NoSuchFieldException e) {
+                logger.debug("Failed to find '" + name + "'", e);
+            }
+        }
+    }
+
+    public Class<?> getType(String name) {
         if (name == null) {
-            logger.debug("null setting name provided in getSettingType");
+            logger.debug("null name provided in getType");
             return null;
         }
         try {
-            Field setting = this.getClass().getDeclaredField(name);
-            return setting.getType();
+            return this.getClass().getDeclaredField(name).getType();
         } catch (NoSuchFieldException e) {
-            logger.error("Unable to find field  '" + name + "'", e);
+            logger.debug("no variable with name '" + name + "' found");
             return null;
         }
     }
@@ -156,8 +134,9 @@ public class Settings {
      * @return - true if modified, false if not
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
-    @JsonIgnore
-    public boolean changeSetting(String name, Object value) {
+    // TODO: make protected?
+
+    public boolean change(String name, Object value) {
         if (name == null) {
             logger.debug("null setting name provided in changeSetting");
             return false;
@@ -202,33 +181,12 @@ public class Settings {
     }
 
     /**
-     * copy over settings from constructed Settings to this
-     * 
-     * @param setting - constructed Settings
-     */
-    @JsonIgnore
-    private <T extends Settings> void setSettings(T settings) {
-        for (Field field : settings.getClass().getDeclaredFields()) {
-            if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-                try {
-                    field.setAccessible(true);
-                    Object value = field.get(settings);
-                    field.set(this, value);
-                    field.setAccessible(false);
-                } catch (IllegalAccessException e) {
-                    logger.error("Exception setting setting (Illegal Access Exception)", e);
-                }
-            }
-        }
-    }
-
-    /**
      * check if settings correctly imported
      * 
      * @return - true if errors, false if none
      */
-    @JsonIgnore
-    public boolean isEmpty() {
+
+    protected boolean isEmpty() {
         for (Field field : this.getClass().getDeclaredFields()) {
             if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())) {
                 try {
@@ -246,8 +204,119 @@ public class Settings {
         return false;
     }
 
-    @JsonIgnore
-    public String getSettingsFolderPath() {
-        return settingsFolderPath;
+    private Object transform(Class<?> type, String name) {
+        if (type == null) {
+            logger.debug("null type provided in transform");
+            return null;
+        }
+        if (name == null) {
+            logger.debug("null name provided in transform");
+            return null;
+        }
+        if (type.equals(String.class)) {
+            return this.getString(name);
+        } else if (type.equals(boolean.class)) {
+            return this.getBool(name);
+        } else if (type.equals(int.class)) {
+            return this.getInt(name);
+        } else if (type.equals(Long.class)) {
+            return this.getLong(name);
+        } else if (type.equals(char.class)) {
+            return this.getChar(name);
+        } else if (type.equals(File.class)) {
+            return this.getFile(name);
+        } else {
+            logger.error("Unsupported type '" + type.getName() + "' provided");
+            return null;
+        }
+    }
+
+    public String getString(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getString");
+            return null;
+        }
+        try {
+            Field field = this.getClass().getDeclaredField(name.toLowerCase());
+            field.setAccessible(true);
+            Object object = field.get(this);
+            if (object != null) {
+                String value = field.get(this).toString();
+                field.setAccessible(false);
+                return value;
+            } else {
+                logger.debug("null object detected for '" + name + "'");
+            }
+        } catch (NoSuchFieldException e) {
+            logger.error("No variable named '" + name + "' found");
+        } catch (IllegalAccessException e) {
+            logger.error("Unable to access variable named '" + name + "'");
+        }
+        return null;
+    }
+
+    public boolean getBool(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getBool");
+            return false;
+        }
+        String value = this.getString(name);
+        if (value != null) {
+            return Boolean.getBoolean(value);
+        } else {
+            return false;
+        }
+    }
+
+    public Integer getInt(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getInt");
+            return null;
+        }
+        String value = this.getString(name);
+        if (value != null) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
+    public Long getLong(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getLong");
+            return null;
+        }
+        String value = this.getString(name);
+        if (value != null) {
+            return Long.parseLong(value);
+        } else {
+            return null;
+        }
+    }
+
+    public char getChar(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getChar");
+            return '\0';
+        }
+        String value = this.getString(name);
+        if (value != null) {
+            return value.charAt(0);
+        } else {
+            return '\0';
+        }
+    }
+
+    public File getFile(String name) {
+        if (name == null) {
+            logger.debug("null setting name provided in getFile");
+            return null;
+        }
+        String value = this.getString(name);
+        if (value != null) {
+            return new File(value);
+        } else {
+            return null;
+        }
     }
 }

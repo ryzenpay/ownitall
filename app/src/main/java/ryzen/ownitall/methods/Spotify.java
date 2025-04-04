@@ -49,7 +49,7 @@ import java.awt.Desktop;
 public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
-    private static final Logger logger = LogManager.getLogger(Spotify.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
     private static Collection collection = Collection.load();
@@ -66,14 +66,14 @@ public class Spotify extends Method {
      */
     public Spotify() throws InterruptedException {
         super();
-        if (credentials.isSpotifyCredentialsEmpty()) {
+        if (super.isCredentialsEmpty(Spotify.class)) {
             throw new InterruptedException("empty spotify credentials");
         }
         try {
             this.spotifyApi = new SpotifyApi.Builder()
-                    .setClientId(credentials.getSpotifyClientId())
-                    .setClientSecret(credentials.getSpotifyClientSecret())
-                    .setRedirectUri(new URI(credentials.getSpotifyRedirectUrl()))
+                    .setClientId(credentials.getString("spotifyclientid"))
+                    .setClientSecret(credentials.getString("spotifyclientsecret"))
+                    .setRedirectUri(new URI(credentials.getString("spotifyredirecturl")))
                     .build();
         } catch (URISyntaxException e) {
             throw new InterruptedException(e.getMessage());
@@ -91,7 +91,7 @@ public class Spotify extends Method {
     private void requestCode() throws InterruptedException {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
-                .show_dialog(settings.isSpotifyShowDialog())
+                .show_dialog(settings.getBool("spotifyshowdialog"))
                 .build();
         URI auth_uri = authorizationCodeUriRequest.execute();
         // Open the default browser with the authorization URL
@@ -250,7 +250,7 @@ public class Spotify extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        int limit = settings.getSpotifySongLimit();
+        int limit = settings.getInt("spotifysonglimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Spotify Liked", -1);
@@ -310,7 +310,7 @@ public class Spotify extends Method {
     @Override
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting spotify liked songs to remove mismatches");
-        int limit = settings.getSpotifySongLimit();
+        int limit = settings.getInt("spotifysonglimit");
         int offset = 0;
         boolean hasMore = true;
         LikedSongs likedSongs = this.getLikedSongs();
@@ -370,7 +370,7 @@ public class Spotify extends Method {
             logger.debug("No liked songs in collection");
             return;
         }
-        int limit = settings.getSpotifySongLimit();
+        int limit = settings.getInt("spotifysonglimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", likedSongs.size());
@@ -410,7 +410,7 @@ public class Spotify extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        int limit = settings.getSpotifyAlbumLimit();
+        int limit = settings.getInt("spotifyalbumlimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Spotify Albums", -1);
@@ -499,7 +499,7 @@ public class Spotify extends Method {
         try (ProgressBar pb = Progressbar.progressBar(albumId, -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             ArrayList<Song> songs = new ArrayList<>();
-            int limit = settings.getSpotifyAlbumLimit();
+            int limit = settings.getInt("spotifysonglimit");
             boolean hasMore = true;
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -562,7 +562,7 @@ public class Spotify extends Method {
             if (albumIds.isEmpty()) {
                 return;
             }
-            int limit = settings.getSpotifyAlbumLimit();
+            int limit = settings.getInt("spotifyalbumlimit");
             int offset = 0;
             boolean hasMore = true;
             try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -605,7 +605,7 @@ public class Spotify extends Method {
             logger.debug("No Saved albums in collection");
             return;
         }
-        int limit = settings.getSpotifyAlbumLimit();
+        int limit = settings.getInt("spotifyalbumlimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Spotify Albums", albumIds.size());
@@ -644,7 +644,7 @@ public class Spotify extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        int limit = settings.getSpotifyPlaylistLimit();
+        int limit = settings.getInt("spotifyplaylistlimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Spotify Playlists", -1);
@@ -726,7 +726,7 @@ public class Spotify extends Method {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        int limit = settings.getSpotifySongLimit();
+        int limit = settings.getInt("spotifysonglimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar(playlistId, -1);
@@ -854,7 +854,7 @@ public class Spotify extends Method {
                 if (songIds.isEmpty()) {
                     return;
                 }
-                int limit = settings.getSpotifySongLimit();
+                int limit = settings.getInt("spotifysonglimit");
                 int offset = 0;
                 boolean hasMore = true;
                 try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -930,7 +930,7 @@ public class Spotify extends Method {
             logger.debug("Playlist '" + playlist.toString() + "' is empty / no update");
             return;
         }
-        int limit = settings.getSpotifySongLimit();
+        int limit = settings.getInt("spotifysonglimit");
         int offset = 0;
         boolean hasMore = true;
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
@@ -993,7 +993,7 @@ public class Spotify extends Method {
             return null;
         }
         // do not use cached playlist id because the playlist might have been deleted
-        int limit = settings.getSpotifyPlaylistLimit();
+        int limit = settings.getInt("spotifyplaylistlimit");
         int offset = 0;
         boolean hasMore = true;
         try (ProgressBar pb = Progressbar.progressBar("Spotify Playlists", -1);

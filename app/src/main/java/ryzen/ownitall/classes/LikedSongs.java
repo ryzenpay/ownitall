@@ -4,7 +4,7 @@ import ryzen.ownitall.Settings;
 
 //a playlist for just liked songs (as they might not be in playlists)
 public class LikedSongs extends Playlist {
-    private static final String name = Settings.load().getLikedSongsName();
+    private static final String name = Settings.load().getString("likedsongsname");
 
     /**
      * LikedSongs construcor with no songs

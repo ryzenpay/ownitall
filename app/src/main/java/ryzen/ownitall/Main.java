@@ -17,7 +17,7 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 public class Main {
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final Logger logger = LogManager.getLogger();
     private static final Storage sync = Storage.load();
 
     /**
@@ -71,7 +71,7 @@ public class Main {
         Settings settings = Settings.load();
         Collection.load().save();
         settings.save();
-        if (settings.isSaveCredentials()) {
+        if (settings.getBool("savecredentials")) {
             Credentials.load().save();
         }
         if (Library.checkInstance()) {

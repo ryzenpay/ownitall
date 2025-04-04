@@ -15,7 +15,7 @@ import ryzen.ownitall.methods.Method;
 
 @Controller
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
+    private static final Logger logger = LogManager.getLogger();
     private Method method;
     private String methodName;
 
