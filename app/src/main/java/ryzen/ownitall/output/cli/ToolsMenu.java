@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Storage;
-import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
@@ -19,7 +18,7 @@ public class ToolsMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
-        options.put("Clear Cache", this::optionClearCache);
+        options.put("Library", this::optionLibrary);
         options.put("Clear Saved Logins", this::optionClearCredentials);
         try {
             while (true) {
@@ -57,16 +56,11 @@ public class ToolsMenu {
         }
     }
 
-    private void optionClearCache() {
+    private void optionLibrary() {
         try {
-            System.out.print("Are you sure you wan to clear cache (y/N): ");
-            if (Input.request().getAgreement()) {
-                logger.info("Clearing cache...");
-                Library.load().clear();
-                logger.info("Done clearing cache");
-            }
+            new LibraryMenu();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting clear cache agreement");
+            logger.debug("Interrupted while getting library menu choice");
         }
     }
 

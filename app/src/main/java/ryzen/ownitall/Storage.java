@@ -26,10 +26,10 @@ import org.apache.logging.log4j.Logger;
 public class Storage {
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
+    private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private static Storage instance;
     private File dataFolder;
     private File cacheFolder;
-    ObjectMapper objectMapper;
 
     /**
      * initialize all files for syncronization
@@ -40,7 +40,6 @@ public class Storage {
         this.cacheFolder = settings.getFile("cachefolder");
         this.setDataFolder();
         this.setCacheFolder();
-        this.objectMapper = new ObjectMapper().findAndRegisterModules();
     }
 
     /**
@@ -225,7 +224,7 @@ public class Storage {
         this.setDataFolder();
         File albumFile = new File(this.dataFolder, settings.getString("albumfile") + ".json");
         try {
-            this.objectMapper.writeValue(albumFile, albums);
+            objectMapper.writeValue(albumFile, albums);
             logger.debug("Saved albums to: '" + albumFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving albums", e);
@@ -244,7 +243,7 @@ public class Storage {
             return null;
         }
         try {
-            return this.objectMapper.readValue(albumFile,
+            return objectMapper.readValue(albumFile,
                     new TypeReference<ArrayList<Album>>() {
                     });
         } catch (IOException e) {
@@ -266,7 +265,7 @@ public class Storage {
         this.setDataFolder();
         File playlistFile = new File(this.dataFolder, settings.getString("playlistfile") + ".json");
         try {
-            this.objectMapper.writeValue(playlistFile, playlists);
+            objectMapper.writeValue(playlistFile, playlists);
             logger.debug("Saved playlists to: '" + playlistFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving playlists", e);
@@ -285,7 +284,7 @@ public class Storage {
             return null;
         }
         try {
-            return this.objectMapper.readValue(playlistFile,
+            return objectMapper.readValue(playlistFile,
                     new TypeReference<ArrayList<Playlist>>() {
                     });
 
@@ -308,7 +307,7 @@ public class Storage {
         this.setDataFolder();
         File likedSongFile = new File(this.dataFolder, settings.getString("likedsongfile") + ".json");
         try {
-            this.objectMapper.writeValue(likedSongFile, likedSongs);
+            objectMapper.writeValue(likedSongFile, likedSongs);
             logger.debug("Saved liked songs to: '" + likedSongFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception saving liked songs", e);
@@ -327,7 +326,7 @@ public class Storage {
             return null;
         }
         try {
-            return this.objectMapper.readValue(likedSongFile,
+            return objectMapper.readValue(likedSongFile,
                     LikedSongs.class);
         } catch (IOException e) {
             logger.error("exception importing liked songs", e);
@@ -342,7 +341,7 @@ public class Storage {
         LinkedHashMap<String, Album> cachedAlbums = new LinkedHashMap<>();
         if (albumFile.exists()) {
             try {
-                cachedAlbums = this.objectMapper.readValue(albumFile,
+                cachedAlbums = objectMapper.readValue(albumFile,
                         new TypeReference<LinkedHashMap<String, Album>>() {
                         });
                 logger.debug("loaded cached albums from: '" + albumFile.getAbsolutePath() + "'");
@@ -353,7 +352,7 @@ public class Storage {
         }
         cachedAlbums.putAll(albums);
         try {
-            this.objectMapper.writeValue(albumFile, cachedAlbums);
+            objectMapper.writeValue(albumFile, cachedAlbums);
             logger.debug("saved cached albums to: '" + albumFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached albums", e);
@@ -367,7 +366,7 @@ public class Storage {
         LinkedHashMap<String, Artist> cachedArtists = new LinkedHashMap<>();
         if (artistFile.exists()) {
             try {
-                cachedArtists = this.objectMapper.readValue(artistFile,
+                cachedArtists = objectMapper.readValue(artistFile,
                         new TypeReference<LinkedHashMap<String, Artist>>() {
                         });
                 logger.debug("loaded cached artists from: " + artistFile.getAbsolutePath());
@@ -378,7 +377,7 @@ public class Storage {
         }
         cachedArtists.putAll(artists);
         try {
-            this.objectMapper.writeValue(artistFile, cachedArtists);
+            objectMapper.writeValue(artistFile, cachedArtists);
             logger.debug("saved cached artists to: '" + artistFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached artists", e);
@@ -392,7 +391,7 @@ public class Storage {
         LinkedHashMap<String, Song> cachedSongs = new LinkedHashMap<>();
         if (songFile.exists()) {
             try {
-                cachedSongs = this.objectMapper.readValue(songFile,
+                cachedSongs = objectMapper.readValue(songFile,
                         new TypeReference<LinkedHashMap<String, Song>>() {
                         });
                 logger.debug("loaded cached songs from: '" + songFile.getAbsolutePath() + "'");
@@ -403,7 +402,7 @@ public class Storage {
         }
         cachedSongs.putAll(songs);
         try {
-            this.objectMapper.writeValue(songFile, cachedSongs);
+            objectMapper.writeValue(songFile, cachedSongs);
             logger.debug("saved cached songs to: '" + songFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached songs", e);
@@ -417,7 +416,7 @@ public class Storage {
         LinkedHashMap<String, String> cachedIds = new LinkedHashMap<>();
         if (idFile.exists()) {
             try {
-                cachedIds = this.objectMapper.readValue(idFile,
+                cachedIds = objectMapper.readValue(idFile,
                         new TypeReference<LinkedHashMap<String, String>>() {
                         });
                 logger.debug("loaded cached ids from: '" + idFile.getAbsolutePath() + "'");
@@ -428,7 +427,7 @@ public class Storage {
         }
         cachedIds.putAll(ids);
         try {
-            this.objectMapper.writeValue(idFile, cachedIds);
+            objectMapper.writeValue(idFile, cachedIds);
             logger.debug("saved cached ids to: '" + idFile.getAbsolutePath() + "'");
         } catch (IOException e) {
             logger.error("exception exporting cached ids", e);

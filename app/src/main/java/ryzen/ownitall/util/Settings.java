@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Settings {
     private static final Logger logger = LogManager.getLogger();
-    private final ObjectMapper objectMapper = new ObjectMapper()
+    private static final ObjectMapper objectMapper = new ObjectMapper()
             // needed to include null values
             .setSerializationInclusion(JsonInclude.Include.ALWAYS);
     protected String folderPath = ".appdata";
@@ -32,7 +32,9 @@ public class Settings {
      */
     private void setFile() {
         if (!file.exists()) {
-            file.getParentFile().mkdirs();// Create folder if it does not exist
+            if (!file.getParentFile().mkdirs()) {
+                logger.warn("Unable to create folder '" + file.getParentFile().getAbsolutePath() + "'");
+            }
         }
     }
 
@@ -42,7 +44,7 @@ public class Settings {
             this.save();
             return;
         }
-        LinkedHashMap<String, Object> imported = this.objectMapper.readValue(
+        LinkedHashMap<String, Object> imported = objectMapper.readValue(
                 file,
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
@@ -61,7 +63,7 @@ public class Settings {
     protected void save() {
         this.setFile();
         try {
-            this.objectMapper.writeValue(file, this.getAll());
+            objectMapper.writeValue(file, this.getAll());
         } catch (IOException e) {
             logger.error("Exception saving settings", e);
         }
@@ -87,10 +89,15 @@ public class Settings {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
-            // only allow option to change non final and protected fields
-            if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-                settings.put(field.getName(),
-                        this.transform(field.getType(), field.getName()));
+            try {
+                field.setAccessible(true);
+                // only allow option to change non final and protected fields
+                if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
+                    settings.put(field.getName(), field.get(this));
+                }
+                field.setAccessible(false);
+            } catch (IllegalAccessException e) {
+                logger.error("Unable to access '" + field.getName() + "'", e);
             }
         }
         return settings;
@@ -194,92 +201,86 @@ public class Settings {
         }
     }
 
-    public String getString(String name) {
+    // TODO: restrict?
+    private Object getFieldValue(String name) {
         if (name == null) {
-            logger.debug("null setting name provided in getString");
+            logger.debug("null setting name provided in getFieldValue");
             return null;
         }
         try {
             Field field = this.getClass().getDeclaredField(name.toLowerCase());
             field.setAccessible(true);
-            Object object = field.get(this);
-            if (object != null) {
-                String value = object.toString();
-                field.setAccessible(false);
-                return value;
-            } else {
-                return null;
-            }
+            Object value = field.get(this);
+            field.setAccessible(false);
+            return value;
         } catch (NoSuchFieldException e) {
-            logger.error("No variable named '" + name + "' found");
+            logger.warn("No setting field named '" + name + "' found"); // Use warn or debug
         } catch (IllegalAccessException e) {
-            logger.error("Unable to access variable named '" + name + "'");
+            logger.error("Unable to access setting field named '" + name + "'", e);
+        }
+        return null;
+    }
+
+    public String getString(String name) {
+        Object value = this.getFieldValue(name);
+        if (value != null) {
+            return value.toString();
         }
         return null;
     }
 
     public boolean getBool(String name) {
-        if (name == null) {
-            logger.debug("null setting name provided in getBool");
-            return false;
+        Object value = this.getFieldValue(name);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
         }
-        String value = this.getString(name);
         if (value != null) {
-            return Boolean.parseBoolean(value);
-        } else {
-            return false;
+            return Boolean.parseBoolean(value.toString());
         }
+        return false;
     }
 
     public Integer getInt(String name) {
-        if (name == null) {
-            logger.debug("null setting name provided in getInt");
-            return null;
+        Object value = this.getFieldValue(name);
+        if (value instanceof Integer) {
+            return (Integer) value;
         }
-        String value = this.getString(name);
         if (value != null) {
-            return Integer.parseInt(value);
-        } else {
-            return null;
+            return Integer.parseInt(value.toString());
         }
+        return null;
     }
 
     public Long getLong(String name) {
-        if (name == null) {
-            logger.debug("null setting name provided in getLong");
-            return null;
+        Object value = this.getFieldValue(name);
+        if (value instanceof Long) {
+            return (Long) value;
         }
-        String value = this.getString(name);
         if (value != null) {
-            return Long.parseLong(value);
-        } else {
-            return null;
+            return Long.parseLong(value.toString());
         }
+        return null;
     }
 
     public char getChar(String name) {
-        if (name == null) {
-            logger.debug("null setting name provided in getChar");
-            return '\0';
+        Object value = this.getFieldValue(name);
+        if (value instanceof Character) {
+            return (char) value;
         }
-        String value = this.getString(name);
         if (value != null) {
-            return value.charAt(0);
-        } else {
-            return '\0';
+            return value.toString().charAt(0);
         }
+        return '\0';
     }
 
     public File getFile(String name) {
-        if (name == null) {
-            logger.debug("null setting name provided in getFile");
-            return null;
+        Object value = this.getFieldValue(name);
+        if (value instanceof File) {
+            return (File) value;
         }
-        String value = this.getString(name);
         if (value != null) {
-            return new File(value);
-        } else {
-            return null;
+            return new File(value.toString());
         }
+        return null;
     }
 }

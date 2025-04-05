@@ -52,8 +52,8 @@ public class Spotify extends Method {
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
-    private static Collection collection = Collection.load();
-    private static Library library = Library.load();
+    private static final Collection collection = Collection.load();
+    private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
     private SpotifyApi spotifyApi;

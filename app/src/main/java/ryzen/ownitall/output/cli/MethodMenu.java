@@ -10,11 +10,9 @@ import org.apache.logging.log4j.Logger;
 import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.library.Library;
 import ryzen.ownitall.methods.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
@@ -22,14 +20,13 @@ import ryzen.ownitall.util.Progressbar;
 
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger();
-    private static Collection collection = Collection.load();
-    private static Credentials credentials = Credentials.load();
-    private static Settings settings = Settings.load();
+    private static final Collection collection = Collection.load();
+    private static final Credentials credentials = Credentials.load();
     private Method method;
     private String methodName;
 
     public MethodMenu() throws InterruptedException {
-        this.initializeLibrary();
+        LibraryMenu.initializeLibrary();
         String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException("Exited");
@@ -49,30 +46,6 @@ public class MethodMenu {
         }
     }
 
-    private void initializeLibrary() throws InterruptedException {
-        if (settings.isEmpty("librarytype")) {
-            return;
-        }
-        Class<? extends Library> libraryClass = Library.libraries.get(settings.getString("librarytype"));
-        if (!Library.isCredentialsEmpty(libraryClass)) {
-            return;
-        }
-        LinkedHashMap<String, String> classCredentials = Library.getCredentials(libraryClass);
-        if (classCredentials != null) {
-            for (String name : classCredentials.keySet()) {
-                System.out.print("Enter '" + name + "': ");
-                String value = Input.request().getString();
-                if (!credentials.change(classCredentials.get(name), value)) {
-                    throw new InterruptedException(
-                            "Unable to set credential '" + name + "' for '" + libraryClass.getSimpleName() + "'");
-                }
-            }
-        }
-        if (Library.isCredentialsEmpty(libraryClass)) {
-            throw new InterruptedException("Unable to set credentials for '" + libraryClass.getSimpleName() + "'");
-        }
-    }
-
     private void setCredentials(Class<?> type) throws InterruptedException {
         if (type == null) {
             logger.debug("null type provided in setCredentials");
@@ -81,7 +54,7 @@ public class MethodMenu {
         if (!Method.isCredentialsEmpty(type)) {
             return;
         }
-        LinkedHashMap<String, String> classCredentials = Method.getCredentials(type);
+        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(type);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");

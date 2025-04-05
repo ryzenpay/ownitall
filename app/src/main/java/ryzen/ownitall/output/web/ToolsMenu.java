@@ -60,7 +60,7 @@ public class ToolsMenu {
 
     @GetMapping("/tools/clearcache")
     public static String optionClearCache(Model model) {
-        Library.load().clear();
+        Library.clear();
         return toolsMenu(model, "Successfully cleared cache");
     }
 

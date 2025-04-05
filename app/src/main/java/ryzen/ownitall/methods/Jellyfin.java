@@ -37,16 +37,15 @@ public class Jellyfin extends Method {
     private static final Logger logger = LogManager.getLogger();
     private static final Credentials credentials = Credentials.load();
     private static final Settings settings = Settings.load();
-    private static Library library = Library.load();
-    private static Collection collection = Collection.load();
-    private ObjectMapper objectMapper;
+    private static final Library library = Library.load();
+    private static final Collection collection = Collection.load();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private String userId;
     private String accessToken;
 
     // https://api.jellyfin.org/
     public Jellyfin() throws InterruptedException {
         super();
-        objectMapper = new ObjectMapper();
         if (super.isCredentialsEmpty(Jellyfin.class)) {
             throw new InterruptedException("empty jellyfin credentials");
         }

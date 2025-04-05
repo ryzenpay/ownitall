@@ -38,7 +38,7 @@ public class Youtube extends Method {
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
     private static final Credentials credentials = Credentials.load();
-    private static Library library = Library.load();
+    private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
     private JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();

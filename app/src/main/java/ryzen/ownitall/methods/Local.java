@@ -12,7 +12,7 @@ import ryzen.ownitall.methods.local.Upload;
 import ryzen.ownitall.util.Input;
 
 public class Local extends Method {
-    private static Settings settings = Settings.load();
+    private static final Settings settings = Settings.load();
     private Download download;
     private Upload upload;
     private File localLibrary;

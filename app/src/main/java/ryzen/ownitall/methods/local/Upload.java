@@ -28,7 +28,7 @@ import org.jaudiotagger.tag.FieldKey;
 public class Upload {
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
-    private static Library library = Library.load();
+    private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
         {
             add("mp3");

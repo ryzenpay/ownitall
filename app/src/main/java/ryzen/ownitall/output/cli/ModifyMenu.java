@@ -22,8 +22,8 @@ import ryzen.ownitall.util.Progressbar;
 public class ModifyMenu {
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
-    private static Collection collection = Collection.load();
-    private static Library library = Library.load();
+    private static final Collection collection = Collection.load();
+    private static final Library library = Library.load();
 
     public ModifyMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

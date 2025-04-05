@@ -38,7 +38,7 @@ public class Download {
     // tidal
     private static final Logger logger = LogManager.getLogger();
     private static final Settings settings = Settings.load();
-    private static Collection collection = Collection.load();
+    private static final Collection collection = Collection.load();
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", settings.getString("downloadformat")));

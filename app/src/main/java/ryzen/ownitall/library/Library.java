@@ -28,9 +28,10 @@ public class Library {
     private static final Settings settings = Settings.load();
     private static final Storage sync = Storage.load();
     private static final Credentials credentials = Credentials.load();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
+    public static final LinkedHashMap<Class<?>, LinkedHashMap<String, String>> credentialGroups;
     private static Library instance;
-    private ObjectMapper objectMapper;
     private long lastQueryTime = 0;
     protected long queryDiff;
     /**
@@ -45,6 +46,10 @@ public class Library {
         libraries = new LinkedHashMap<>();
         libraries.put("LastFM", LastFM.class);
         libraries.put("MusicBrainz", MusicBrainz.class);
+    }
+    static {
+        credentialGroups = new LinkedHashMap<>();
+        credentialGroups.put(LastFM.class, credentials.getJellyfinCredentials());
     }
 
     /**
@@ -98,7 +103,6 @@ public class Library {
      * initializes all values and loads from cache
      */
     public Library() {
-        this.objectMapper = new ObjectMapper();
         this.artists = new LinkedHashMap<>();
         this.albums = new LinkedHashMap<>();
         this.songs = new LinkedHashMap<>();
@@ -119,23 +123,15 @@ public class Library {
     /**
      * clear in memory cache
      */
-    public void clear() {
-        this.artists.clear();
-        this.albums.clear();
-        this.songs.clear();
-        this.ids.clear();
-        Storage.load().clearCache();
-        instance = null;
-    }
-
-    public static LinkedHashMap<String, String> getCredentials(Class<?> type) {
-        if (type == null) {
-            logger.debug("null type provided in getCredentials");
-            return null;
+    public static void clear() {
+        if (instance != null) {
+            instance.artists.clear();
+            instance.albums.clear();
+            instance.songs.clear();
+            instance.ids.clear();
+            instance = null;
         }
-        LinkedHashMap<Class<?>, LinkedHashMap<String, String>> credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(LastFM.class, credentials.getJellyfinCredentials());
-        return credentialGroups.get(type);
+        Storage.load().clearCache();
     }
 
     public static boolean isCredentialsEmpty(Class<?> type) {
@@ -143,7 +139,11 @@ public class Library {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
         }
-        LinkedHashMap<String, String> credentialVars = getCredentials(type);
+        LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
+        if (credentialVars == null) {
+            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
+            return false;
+        }
         for (String varName : credentialVars.values()) {
             if (credentials.isEmpty(varName)) {
                 return true;
