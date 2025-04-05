@@ -1,6 +1,5 @@
 package ryzen.ownitall;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -11,19 +10,15 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     private static final Logger logger = LogManager.getLogger();
 
-    public Credentials() throws IOException {
-        super(Credentials.class, "credentials.json");
-    }
-
     private static Credentials instance;
     /**
      * spotify credentials
      */
-    protected String spotifyclientid = "";
-    protected String spotifyclientsecret = "";
-    protected String spotifyredirecturl = "";
+    protected static String spotifyclientid = "";
+    protected static String spotifyclientsecret = "";
+    protected static String spotifyredirecturl = "";
 
-    public LinkedHashMap<String, String> getSpotifyCredentials() {
+    public final LinkedHashMap<String, String> getSpotifyCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.put("Spotify Client ID", "spotifyclientid");
         credentials.put("Spotify Client Secret", "spotifyclientsecret");
@@ -35,11 +30,11 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * youtube credentials
      * 
      */
-    protected String youtubeapplicationame = "";
-    protected String youtubeclientid = "";
-    protected String youtubeclientsecret = "";
+    protected static String youtubeapplicationame = "";
+    protected static String youtubeclientid = "";
+    protected static String youtubeclientsecret = "";
 
-    public LinkedHashMap<String, String> getYoutubeCredentials() {
+    public final LinkedHashMap<String, String> getYoutubeCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.put("Youtube Application Name", "youtubeapplicationame");
         credentials.put("Youtube Client ID", "youtubeclientid");
@@ -51,9 +46,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * Last FM Credentials
      * 
      */
-    protected String lastfmapikey = "";
+    protected static String lastfmapikey = "";
 
-    public LinkedHashMap<String, String> getLastFMCredentials() {
+    public final LinkedHashMap<String, String> getLastFMCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.put("LastFM API Key", "lastfmapikey");
         return credentials;
@@ -63,16 +58,20 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * Jellyfin Credentials
      * 
      */
-    protected String jellyfinurl = "";
-    protected String jellyfinusername = "";
-    protected String jellyfinpassword = "";
+    protected static String jellyfinurl = "";
+    protected static String jellyfinusername = "";
+    protected static String jellyfinpassword = "";
 
-    public LinkedHashMap<String, String> getJellyfinCredentials() {
+    public final LinkedHashMap<String, String> getJellyfinCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.put("JellyFin URL", "jellyfinurl");
         credentials.put("JellyFin Username", "jellyfinusername");
         credentials.put("JellyFin Password", "jellyfinpassword");
         return credentials;
+    }
+
+    public Credentials() throws IOException {
+        super("credentials.json");
     }
 
     public static Credentials load() {

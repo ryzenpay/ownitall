@@ -9,19 +9,18 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Settings {
     private static final Logger logger = LogManager.getLogger();
-    private final ObjectMapper objectMapper = new ObjectMapper().setVisibility(PropertyAccessor.FIELD,
-            JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.ALWAYS);
     private final String settingsFolderPath = ".appdata";
     private File settingsFile;
 
-    public Settings(Class<? extends Settings> type, String saveFile) throws IOException {
+    public Settings(String saveFile) throws IOException {
         this.settingsFile = new File(this.settingsFolderPath, saveFile);
         this.setSettingsFile();
         this.read();
@@ -32,7 +31,7 @@ public class Settings {
      */
     private void setSettingsFile() {
         if (!settingsFile.exists()) {
-            settingsFile.mkdirs(); // Create folder if it does not exist
+            settingsFile.getParentFile().mkdirs();// Create folder if it does not exist
         }
     }
 
@@ -88,13 +87,8 @@ public class Settings {
         for (Field field : fields) {
             // only allow option to change non final and protected fields
             if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-                field.setAccessible(true);
-                try {
-                    settings.put(field.getName(),
-                            this.transform(field.get(this).getClass(), field.getName()));
-                } catch (IllegalAccessException e) {
-                    logger.error("Exception fetching settings value", e);
-                }
+                settings.put(field.getName(),
+                        this.transform(field.getType(), field.getName()));
             }
         }
         return settings;
@@ -110,7 +104,7 @@ public class Settings {
             } catch (IllegalAccessException e) {
                 logger.error("Failed to overwrite value for '" + name + "'", e);
             } catch (NoSuchFieldException e) {
-                logger.debug("Failed to find '" + name + "'", e);
+                logger.debug("Failed to find '" + name + "'");
             }
         }
     }
@@ -180,30 +174,6 @@ public class Settings {
         }
     }
 
-    /**
-     * check if settings correctly imported
-     * 
-     * @return - true if errors, false if none
-     */
-
-    protected boolean isEmpty() {
-        for (Field field : this.getClass().getDeclaredFields()) {
-            if (!Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())) {
-                try {
-                    field.setAccessible(true);
-                    if (field.get(this) == null) {
-                        return true;
-                    }
-                    field.setAccessible(false);
-                } catch (IllegalAccessException e) {
-                    logger.error("Exception checking field", e);
-
-                }
-            }
-        }
-        return false;
-    }
-
     private Object transform(Class<?> type, String name) {
         if (type == null) {
             logger.debug("null type provided in transform");
@@ -241,11 +211,11 @@ public class Settings {
             field.setAccessible(true);
             Object object = field.get(this);
             if (object != null) {
-                String value = field.get(this).toString();
+                String value = object.toString();
                 field.setAccessible(false);
                 return value;
             } else {
-                logger.debug("null object detected for '" + name + "'");
+                return null;
             }
         } catch (NoSuchFieldException e) {
             logger.error("No variable named '" + name + "' found");
@@ -262,7 +232,7 @@ public class Settings {
         }
         String value = this.getString(name);
         if (value != null) {
-            return Boolean.getBoolean(value);
+            return Boolean.parseBoolean(value);
         } else {
             return false;
         }

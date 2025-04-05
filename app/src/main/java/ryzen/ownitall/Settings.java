@@ -13,116 +13,117 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     private static final Logger logger = LogManager.getLogger();
 
-    public Settings() throws IOException {
-        super(Settings.class, "settings.json");
-    }
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
     /**
      * default file names (without extensions)
      */
-    protected File datafolder = new File("data");
-    protected String likedsongsname = "liked songs";
-    protected String albumfile = "albums";
-    protected String likedsongfile = "likedsongs";
-    protected String playlistfile = "playlists";
-    protected String artistfile = "artists";
-    protected String songfile = "songs";
+    protected static File datafolder = new File("data");
+    protected static String likedsongsname = "liked songs";
+    protected static String albumfile = "albums";
+    protected static String likedsongfile = "likedsongs";
+    protected static String playlistfile = "playlists";
+    protected static String artistfile = "artists";
+    protected static String songfile = "songs";
 
-    protected File cachefolder = new File(".cache");
+    protected static File cachefolder = new File(".cache");
     /**
      * to save credentials of anything 3rd party logins (youtube, spotify etc)
      * to prevent having to provide them each time
      */
-    protected boolean savecredentials = true;
+    protected static boolean savecredentials = true;
 
     /**
      * in the Spotify class, this decides if the user has to click "accept"
      * everytime they "log in", set to true in case you use multiple accounts and
      * want to easily switch between them
      */
-    protected boolean spotifyshowdialog = false;
+    protected static boolean spotifyshowdialog = false;
 
     /**
      * to limit number of songs in each spotify API batch query
      */
-    protected Integer spotifysonglimit = 50;
-    protected Integer spotifyalbumlimit = 20;
-    protected Integer spotifyplaylistlimit = 20;
+    protected static int spotifysonglimit = 50;
+    protected static int spotifyalbumlimit = 20;
+    protected static int spotifyplaylistlimit = 20;
 
     /**
      * to limit number of songs in each youtube API batch query
      */
-    protected Long youtubesonglimit = 50L;
-    protected Long youtubeplaylistlimit = 20L;
+    protected static Long youtubesonglimit = 50L;
+    protected static Long youtubeplaylistlimit = 20L;
 
     /**
      * only put songs in collection if they are library verified
      */
-    protected boolean libraryverified = true;
+    protected static boolean libraryverified = true;
 
     /**
      * int representative of which library to use
      */
-    protected String librarytype = "";
+    protected static String librarytype = "";
 
     /**
      * youtube dl installation path
      * 
      */
-    protected File youtubedlfile = null;
+    protected static File youtubedlfile = null;
     /**
      * ffmpeg path (required for youtubedl)
      * 
      */
-    protected File ffmpegfile = null;
+    protected static File ffmpegfile = null;
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    protected String downloadformat = "mp3";
+    protected static String downloadformat = "mp3";
 
     /**
      * optional to hardcode local download path
      */
-    protected File downloadfolder = null;
+    protected static File downloadfolder = null;
 
     /**
      * option to hardcode cookies file
      */
-    protected File downloadcookiesfile = null;
+    protected static File downloadcookiesfile = null;
 
     /**
      * option to hardcode browser to get cookies from
      * options: chrome, firefox, check yt-dlp docs,...
      */
-    protected String downloadcookiesbrowser = "";
+    protected static String downloadcookiesbrowser = "";
 
     /**
      * download all files in a hierachy method
      * playlists get their own folders
      * most applications such as jellyfin use false
      */
-    protected boolean downloadhierachy = false;
+    protected static boolean downloadhierachy = false;
 
-    protected boolean downloadlikedsongsplaylist = true;
+    protected static boolean downloadlikedsongsplaylist = true;
 
     /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
-    protected Integer downloadquality = 5;
+    protected static int downloadquality = 5;
     /**
      * enable yt-dlp threading
      */
-    protected Integer downloadthreads = 1;
+    protected static int downloadthreads = 1;
 
     /**
      * optional to hardcode local upload path
      */
-    protected File uploadfolder = null;
+    protected static File uploadfolder = null;
+
+    public Settings() throws IOException {
+        super("settings.json");
+    }
 
     public static Settings load() {
         if (instance == null) {
