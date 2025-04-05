@@ -138,9 +138,20 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return instance;
     }
 
+    public void save() {
+        if (instance == null) {
+            load();
+        }
+        super.save();
+    }
+
     public void clear() {
         instance = null;
         super.clear();
+    }
+
+    public boolean change(String name, Object value) {
+        return super.change(name, value);
     }
 
     public LinkedHashMap<String, Object> getAll() {

@@ -16,8 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Settings {
     private static final Logger logger = LogManager.getLogger();
     private final ObjectMapper objectMapper = new ObjectMapper()
+            // needed to include null values
             .setSerializationInclusion(JsonInclude.Include.ALWAYS);
-    private final String folderPath = ".appdata";
+    protected String folderPath = ".appdata";
     private File file;
 
     public Settings(String saveFile) throws IOException {
@@ -57,7 +58,7 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    public void save() {
+    protected void save() {
         this.setFile();
         try {
             this.objectMapper.writeValue(file, this.getAll());
@@ -129,9 +130,8 @@ public class Settings {
      * @return - true if modified, false if not
      * @throws IllegalAccessException - if unaccessible setting is being modified
      */
-    // TODO: make protected?
 
-    public boolean change(String name, Object value) {
+    protected boolean change(String name, Object value) {
         if (name == null) {
             logger.debug("null setting name provided in changeSetting");
             return false;

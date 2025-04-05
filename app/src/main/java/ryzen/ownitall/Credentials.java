@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Credentials extends ryzen.ownitall.util.Settings {
-
     private static final Logger logger = LogManager.getLogger();
 
     private static Credentials instance;
@@ -85,6 +84,18 @@ public class Credentials extends ryzen.ownitall.util.Settings {
             }
         }
         return instance;
+    }
+
+    public void save() {
+        if (instance == null) {
+            load();
+        }
+        super.save();
+    }
+
+    // TODO: limit?
+    public boolean change(String name, Object value) {
+        return super.change(name, value);
     }
 
     public void clear() {
