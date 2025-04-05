@@ -97,7 +97,11 @@ public class Menu {
             System.out.println("[" + menuName + "] Choose an option from the following: ");
             i = 1;
             for (String option : options) {
-                System.out.println("[" + i + "] " + option + ": " + setOptions.get(option).toString());
+                Object object = setOptions.get(option);
+                if (object == null) {
+                    object = "";
+                }
+                System.out.println("[" + i + "] " + option + ": " + object.toString());
                 i++;
             }
             System.out.println("[0] Exit");
