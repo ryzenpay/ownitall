@@ -43,7 +43,7 @@ public class Method {
         }
         LinkedHashMap<String, String> credentialVars = getCredentials(type);
         for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
+            if (!credentials.isEmpty(varName)) {
                 return true;
             }
         }

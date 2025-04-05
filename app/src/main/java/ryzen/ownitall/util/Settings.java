@@ -17,35 +17,36 @@ public class Settings {
     private static final Logger logger = LogManager.getLogger();
     private final ObjectMapper objectMapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.ALWAYS);
-    private final String settingsFolderPath = ".appdata";
-    private File settingsFile;
+    private final String folderPath = ".appdata";
+    private File file;
 
     public Settings(String saveFile) throws IOException {
-        this.settingsFile = new File(this.settingsFolderPath, saveFile);
-        this.setSettingsFile();
+        this.file = new File(this.folderPath, saveFile);
+        this.setFile();
         this.read();
     }
 
     /**
      * check if settings folder exists, if not make it (to prevent errors)
      */
-    private void setSettingsFile() {
-        if (!settingsFile.exists()) {
-            settingsFile.getParentFile().mkdirs();// Create folder if it does not exist
+    private void setFile() {
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();// Create folder if it does not exist
         }
     }
 
     protected void read() throws IOException {
-        setSettingsFile();
-        if (!settingsFile.exists()) {
+        setFile();
+        if (!file.exists()) {
             this.save();
             return;
         }
-        LinkedHashMap<String, Object> imported = this.objectMapper.readValue(settingsFile,
+        LinkedHashMap<String, Object> imported = this.objectMapper.readValue(
+                file,
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
-        if (imported == null || imported.isEmpty()) {
-            logger.error("Failed to import from file '" + settingsFile.getAbsolutePath() + "'");
+        if (imported == null) {
+            logger.error("Failed to import from file '" + file.getAbsolutePath() + "'");
         } else {
             this.setAll(imported);
         }
@@ -57,9 +58,9 @@ public class Settings {
      * @param filePath - filepath of settings file
      */
     public void save() {
-        this.setSettingsFile();
+        this.setFile();
         try {
-            this.objectMapper.writeValue(settingsFile, this.getAll());
+            this.objectMapper.writeValue(file, this.getAll());
         } catch (IOException e) {
             logger.error("Exception saving settings", e);
         }
@@ -71,7 +72,7 @@ public class Settings {
      * @param filePath - filepath of settings file
      */
     protected void clear() {
-        settingsFile.delete();
+        file.delete();
     }
 
     /**
@@ -158,19 +159,11 @@ public class Settings {
             logger.debug("null name provided in isEmpty");
             return true;
         }
-        try {
-            Field setting = this.getClass().getDeclaredField(name);
-            setting.setAccessible(true);
-            if (setting.get(this).toString().isEmpty()) {
-                setting.setAccessible(false);
-                return true;
-            } else {
-                setting.setAccessible(false);
-                return false;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            logger.error("Unable to find or access setting '" + name + "'", e);
+        String string = this.getString(name);
+        if (string == null || string.isEmpty()) {
             return true;
+        } else {
+            return false;
         }
     }
 
