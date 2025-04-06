@@ -13,15 +13,15 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     /**
      * spotify credentials
      */
-    protected static String spotifyclientid = "";
-    protected static String spotifyclientsecret = "";
-    protected static String spotifyredirecturl = "";
+    public static String spotifyClientID = "";
+    public static String spotifyClientSecret = "";
+    public static String spotifyRedirectURL = "";
 
-    public final LinkedHashMap<String, String> getSpotifyCredentials() {
+    public static final LinkedHashMap<String, String> getSpotifyCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Spotify Client ID", "spotifyclientid");
-        credentials.put("Spotify Client Secret", "spotifyclientsecret");
-        credentials.put("Spotify Redirect URL", "spotifyredirecturl");
+        credentials.put("Spotify Client ID", spotifyClientID);
+        credentials.put("Spotify Client Secret", spotifyClientSecret);
+        credentials.put("Spotify Redirect URL", spotifyRedirectURL);
         return credentials;
     }
 
@@ -29,15 +29,15 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * youtube credentials
      * 
      */
-    protected static String youtubeapplicationame = "";
-    protected static String youtubeclientid = "";
-    protected static String youtubeclientsecret = "";
+    public static String youtubeApplicatioName = "";
+    public static String youtubeClientID = "";
+    public static String youtubeClientSecret = "";
 
-    public final LinkedHashMap<String, String> getYoutubeCredentials() {
+    public static final LinkedHashMap<String, String> getYoutubeCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Youtube Application Name", "youtubeapplicationame");
-        credentials.put("Youtube Client ID", "youtubeclientid");
-        credentials.put("Youtube Client Secret", "youtubeclientsecret");
+        credentials.put("Youtube Application Name", youtubeApplicatioName);
+        credentials.put("Youtube Client ID", youtubeClientID);
+        credentials.put("Youtube Client Secret", youtubeClientSecret);
         return credentials;
     }
 
@@ -45,11 +45,11 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * Last FM Credentials
      * 
      */
-    protected static String lastfmapikey = "";
+    public static String lastFMApiKey = "";
 
-    public final LinkedHashMap<String, String> getLastFMCredentials() {
+    public static final LinkedHashMap<String, String> getLastFMCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("LastFM API Key", "lastfmapikey");
+        credentials.put("LastFM API Key", lastFMApiKey);
         return credentials;
     }
 
@@ -57,15 +57,15 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * Jellyfin Credentials
      * 
      */
-    protected static String jellyfinurl = "";
-    protected static String jellyfinusername = "";
-    protected static String jellyfinpassword = "";
+    public static String jellyfinURL = "";
+    public static String jellyfinUsername = "";
+    public static String jellyfinPassword = "";
 
-    public final LinkedHashMap<String, String> getJellyfinCredentials() {
+    public static final LinkedHashMap<String, String> getJellyfinCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("JellyFin URL", "jellyfinurl");
-        credentials.put("JellyFin Username", "jellyfinusername");
-        credentials.put("JellyFin Password", "jellyfinpassword");
+        credentials.put("JellyFin URL", jellyfinURL);
+        credentials.put("JellyFin Username", jellyfinUsername);
+        credentials.put("JellyFin Password", jellyfinPassword);
         return credentials;
     }
 
@@ -80,20 +80,15 @@ public class Credentials extends ryzen.ownitall.util.Settings {
                 logger.debug("New Credential instance created");
             } catch (IOException e) {
                 logger.error("Failed to initialize credentials", e);
-                logger.info("If this error persists, try to delete credentials.json");
             }
         }
         return instance;
     }
 
     public void save() {
-        if (instance == null) {
-            load();
-        }
         super.save();
     }
 
-    // TODO: limit?
     public boolean change(String name, Object value) {
         return super.change(name, value);
     }
@@ -101,5 +96,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     public void clear() {
         instance = null;
         super.clear();
+    }
+
+    public LinkedHashMap<String, Object> getAll() {
+        return super.getAll();
     }
 }

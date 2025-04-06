@@ -18,7 +18,6 @@ import sun.misc.SignalHandler;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger();
-    private static final Storage sync = Storage.load();
 
     /**
      * main function launching the main ownitall menu
@@ -49,7 +48,9 @@ public class Main {
                 logger.debug("log level provided: " + level);
                 Logs.setLogLevel(level);
             }
-            sync.importCollection();
+            Settings.load();
+            Credentials.load();
+            Storage.importCollection();
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
@@ -68,10 +69,9 @@ public class Main {
     }
 
     public static void save() {
-        Settings settings = Settings.load();
-        Collection.load().save();
-        settings.save();
-        if (settings.getBool("savecredentials")) {
+        Collection.save();
+        Settings.load().save();
+        if (Settings.saveCredentials) {
             Credentials.load().save();
         }
         if (Library.checkInstance()) {

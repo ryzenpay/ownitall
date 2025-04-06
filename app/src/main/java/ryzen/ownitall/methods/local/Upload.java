@@ -27,7 +27,6 @@ import org.jaudiotagger.tag.FieldKey;
 
 public class Upload {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
     private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
         {
@@ -58,8 +57,8 @@ public class Upload {
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             pb.setExtraMessage(this.localLibrary.getName()).step();
-            if (settings.getBool("downloadhierachy")) {
-                File likedSongsFolder = new File(this.localLibrary, settings.getString("likedsongsname"));
+            if (Settings.downloadHierachy) {
+                File likedSongsFolder = new File(this.localLibrary, Settings.likedSongName);
                 if (likedSongsFolder.exists()) {
                     pb.setExtraMessage(likedSongsFolder.getName()).step();
                     ArrayList<Song> songs = getSongs(likedSongsFolder);
@@ -100,7 +99,7 @@ public class Upload {
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                     Song song = getSong(file);
                     if (song != null) {
-                        if (settings.getBool("downloadhierachy")) {
+                        if (Settings.downloadHierachy) {
                             likedSongs.addSong(song);
                         } else {
                             try {
@@ -125,8 +124,8 @@ public class Upload {
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
-                if (settings.getBool("downloadhierachy")) {
-                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getString("likedsongsname"))) {
+                if (Settings.downloadHierachy) {
+                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                         if (!isAlbum(file)) {
                             Playlist playlist = getPlaylist(file);
                             if (playlist != null) {
@@ -137,7 +136,7 @@ public class Upload {
                     }
                 } else if (file.isFile()) {
                     if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
-                        if (file.getName().equalsIgnoreCase(settings.getString("likedsongsname") + ".m3u")) {
+                        if (file.getName().equalsIgnoreCase(Settings.likedSongName + ".m3u")) {
                             continue;
                         }
                         Playlist playlist = getM3UPlaylist(file);
@@ -227,7 +226,7 @@ public class Upload {
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
-                if (file.isDirectory() && !file.getName().equalsIgnoreCase(settings.getString("likedsongsname"))) {
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                     if (isAlbum(file)) {
                         Album album = getAlbum(file);
                         if (album != null) {
@@ -278,7 +277,7 @@ public class Upload {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album = foundAlbum;
-            } else if (settings.getBool("libraryverified")) {
+            } else if (Settings.libraryVerified) {
                 album = null;
             }
         }
@@ -395,7 +394,7 @@ public class Upload {
             Song foundSong = library.getSong(song);
             if (foundSong != null) {
                 song = foundSong;
-            } else if (settings.getBool("libraryverified")) {
+            } else if (Settings.libraryVerified) {
                 song = null;
             }
         }

@@ -18,7 +18,7 @@ import ryzen.ownitall.util.MusicTools;
 
 public class Song {
     private static final Logger logger = LogManager.getLogger();
-    private static final String downloadFormat = Settings.load().getString("downloadformat");
+    private static final String downloadFormat = Settings.downloadFormat;
     private String name;
     private Artist artist;
     private Duration duration;

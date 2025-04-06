@@ -1,5 +1,6 @@
 package ryzen.ownitall.methods;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -13,9 +14,9 @@ import ryzen.ownitall.classes.Playlist;
 
 public class Method {
     private static final Logger logger = LogManager.getLogger();
-    private static final Credentials credentials = Credentials.load();
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
-    public static final LinkedHashMap<Class<?>, LinkedHashMap<String, String>> credentialGroups;
+    public static final LinkedHashMap<Class<? extends Method>, LinkedHashMap<String, String>> credentialGroups;
+    private static Method instance;
     // needs to be like this for it to maintain the order
     static {
         methods = new LinkedHashMap<>();
@@ -27,12 +28,32 @@ public class Method {
 
     static {
         credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(Spotify.class, credentials.getSpotifyCredentials());
-        credentialGroups.put(Youtube.class, credentials.getYoutubeCredentials());
-        credentialGroups.put(Jellyfin.class, credentials.getJellyfinCredentials());
+        credentialGroups.put(Spotify.class, Credentials.getSpotifyCredentials());
+        credentialGroups.put(Youtube.class, Credentials.getYoutubeCredentials());
+        credentialGroups.put(Jellyfin.class, Credentials.getJellyfinCredentials());
     }
 
-    public static boolean isCredentialsEmpty(Class<?> type) {
+    public static Method load(Class<? extends Method> methodClass) throws InterruptedException {
+        if (methodClass == null) {
+            logger.debug("null method class provided in load");
+            return null;
+        }
+        if (instance == null || !methodClass.getName().equals(instance.getClass().getName())) {
+            try {
+                instance = methodClass.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException e) {
+                logger.error("Interrupted while setting up method '" + methodClass.getSimpleName() + "'", e);
+                throw new InterruptedException(e.getMessage());
+            } catch (IllegalAccessException | NoSuchMethodException
+                    | InvocationTargetException e) {
+                logger.error("Exception creating method '" + methodClass.getSimpleName() + "'", e);
+                throw new InterruptedException(e.getMessage());
+            }
+        }
+        return instance;
+    }
+
+    public static boolean isCredentialsEmpty(Class<? extends Method> type) {
         if (type == null) {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
@@ -42,8 +63,8 @@ public class Method {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
-        for (String varName : credentialVars.values()) {
-            if (!credentials.isEmpty(varName)) {
+        for (String cred : credentialVars.values()) {
+            if (cred.isEmpty()) {
                 return true;
             }
         }

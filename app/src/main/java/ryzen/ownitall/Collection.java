@@ -24,60 +24,36 @@ import ryzen.ownitall.classes.Song;
 
 public class Collection {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
-    private static Collection instance;
-    private LikedSongs likedSongs;
-    private ArrayList<Playlist> playlists;
-    private ArrayList<Album> albums;
-
-    /**
-     * default constructor initializing arrays
-     */
-    public Collection() {
-        this.likedSongs = new LikedSongs();
-        this.playlists = new ArrayList<>();
-        this.albums = new ArrayList<>();
-    }
-
-    /**
-     * initialize collection instance
-     * 
-     * @return - existing or new collection instance
-     */
-    public static Collection load() {
-        if (instance == null) {
-            instance = new Collection();
-            logger.debug("New instance created");
-        }
-        return instance;
-    }
+    private static LikedSongs likedSongs = new LikedSongs();
+    private static ArrayList<Playlist> playlists = new ArrayList<>();
+    private static ArrayList<Album> albums = new ArrayList<>();
 
     /**
      * save all data from collection
      */
-    public void save() {
-        Storage.load().exportCollection();
+    public static void save() {
+        Storage.exportCollection();
     }
 
     /**
      * clear current collection
      */
-    public void clear() {
-        this.clearLikedSongs();
-        this.clearPlaylists();
-        this.clearAlbums();
+    public static void clear() {
+        clearLikedSongs();
+        clearPlaylists();
+        clearAlbums();
     }
 
-    public void clearLikedSongs() {
-        this.likedSongs.getSongs().clear();
+    public static void clearLikedSongs() {
+        likedSongs.getSongs().clear();
     }
 
-    public void clearPlaylists() {
-        this.playlists.clear();
+    public static void clearPlaylists() {
+        playlists.clear();
     }
 
-    public void clearAlbums() {
-        this.albums.clear();
+    public static void clearAlbums() {
+        albums.clear();
     }
 
     /**
@@ -85,13 +61,13 @@ public class Collection {
      * 
      * @param albums - linkedhashset of albums to merge
      */
-    public void addAlbums(ArrayList<Album> albums) {
+    public static void addAlbums(ArrayList<Album> albums) {
         if (albums == null) {
             logger.debug("null album array in addAlbums");
             return;
         }
         for (Album album : albums) {
-            this.addAlbum(album);
+            addAlbum(album);
         }
     }
 
@@ -101,16 +77,16 @@ public class Collection {
      * 
      * @param album - constructed album to merge
      */
-    public void addAlbum(Album album) {
+    public static void addAlbum(Album album) {
         if (album == null) {
             logger.debug("null album provided in addAlbum");
             return;
         }
-        Album foundAlbum = this.getAlbum(album);
+        Album foundAlbum = getAlbum(album);
         if (foundAlbum != null) {
             foundAlbum.merge(album);
         } else {
-            this.albums.add(album);
+            albums.add(album);
         }
     }
 
@@ -119,12 +95,12 @@ public class Collection {
      * 
      * @param album - album to remove
      */
-    public void removeAlbum(Album album) {
+    public static void removeAlbum(Album album) {
         if (album == null) {
             logger.debug("null album provided in removeAlbum");
             return;
         }
-        this.albums.remove(album);
+        albums.remove(album);
     }
 
     /**
@@ -132,13 +108,13 @@ public class Collection {
      * 
      * @param playlists - linkedhashset of playlists to merge
      */
-    public void addPlaylists(ArrayList<Playlist> playlists) {
+    public static void addPlaylists(ArrayList<Playlist> playlists) {
         if (playlists == null) {
             logger.debug("null playlist array passed in addPlaylists");
             return;
         }
         for (Playlist playlist : playlists) {
-            this.addPlaylist(playlist);
+            addPlaylist(playlist);
         }
     }
 
@@ -148,16 +124,16 @@ public class Collection {
      * 
      * @param playlist - constructed playlist to add
      */
-    public void addPlaylist(Playlist playlist) {
+    public static void addPlaylist(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in addPlaylist");
             return;
         }
-        Playlist foundPlaylist = this.getPlaylist(playlist);
+        Playlist foundPlaylist = getPlaylist(playlist);
         if (foundPlaylist != null) {
             foundPlaylist.merge(playlist);
         } else {
-            this.playlists.add(playlist);
+            playlists.add(playlist);
         }
     }
 
@@ -166,12 +142,12 @@ public class Collection {
      * 
      * @param playlist - constructed playlist to remove
      */
-    public void removePlaylist(Playlist playlist) {
+    public static void removePlaylist(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in removePlaylist");
             return;
         }
-        this.playlists.remove(playlist);
+        playlists.remove(playlist);
     }
 
     /**
@@ -179,12 +155,12 @@ public class Collection {
      * 
      * @param likedSongs - array of constructed Song
      */
-    public void addLikedSongs(LikedSongs likedSongs) {
+    public static void addLikedSongs(LikedSongs fromLikedSongs) {
         if (likedSongs == null) {
             logger.debug("null liked songs passed in addLikedSongs");
             return;
         }
-        this.likedSongs.addSongs(likedSongs.getSongs()); // handled by playlist addSongs
+        likedSongs.addSongs(fromLikedSongs.getSongs()); // handled by playlist addSongs
     }
 
     /**
@@ -192,12 +168,12 @@ public class Collection {
      * 
      * @param song - constructed song to add
      */
-    public void addLikedSong(Song song) {
+    public static void addLikedSong(Song song) {
         if (song == null) {
             logger.debug("null song provided in addLikedSong");
             return;
         }
-        this.likedSongs.addSong(song);
+        likedSongs.addSong(song);
     }
 
     /**
@@ -205,12 +181,12 @@ public class Collection {
      * 
      * @param song - constructed song to remove
      */
-    public void removeLikedSong(Song song) {
+    public static void removeLikedSong(Song song) {
         if (song == null) {
             logger.debug("null song provided in removeLikedSong");
             return;
         }
-        this.likedSongs.removeSong(song);
+        likedSongs.removeSong(song);
     }
 
     /**
@@ -218,8 +194,8 @@ public class Collection {
      * 
      * @return - constructed LikedSongs
      */
-    public LikedSongs getLikedSongs() {
-        return this.likedSongs;
+    public static LikedSongs getLikedSongs() {
+        return likedSongs;
     }
 
     /**
@@ -227,16 +203,16 @@ public class Collection {
      * 
      * @return - linkedhashset of standalone liked songs
      */
-    public ArrayList<Song> getStandaloneLikedSongs() {
-        if (this.likedSongs.isEmpty()) {
+    public static ArrayList<Song> getStandaloneLikedSongs() {
+        if (likedSongs.isEmpty()) {
             return new ArrayList<>();
         }
         LikedSongs likedSongs = new LikedSongs();
-        likedSongs.addSongs(this.likedSongs.getSongs());
-        for (Playlist playlist : this.playlists) {
+        likedSongs.addSongs(likedSongs.getSongs());
+        for (Playlist playlist : playlists) {
             likedSongs.removeSongs(playlist.getSongs());
         }
-        for (Album album : this.albums) {
+        for (Album album : albums) {
             likedSongs.removeSongs(album.getSongs());
         }
         return likedSongs.getSongs();
@@ -248,14 +224,14 @@ public class Collection {
      * @param playlist - playlist to get songs from
      * @return - arraylist of songs only in that playlist
      */
-    public ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
+    public static ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
             return null;
         }
         Playlist tmpPlaylist = new Playlist("");
         tmpPlaylist.addSongs(playlist.getSongs());
-        for (Album album : this.albums) {
+        for (Album album : albums) {
             tmpPlaylist.removeSongs(album.getSongs());
         }
         return tmpPlaylist.getSongs();
@@ -267,12 +243,12 @@ public class Collection {
      * @param song - song to check
      * @return - constructed album
      */
-    public Album getSongAlbum(Song song) {
+    public static Album getSongAlbum(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongAlbum");
             return null;
         }
-        for (Album album : this.getAlbums()) {
+        for (Album album : getAlbums()) {
             if (album.contains(song)) {
                 return album;
             }
@@ -286,12 +262,12 @@ public class Collection {
      * @param song - song to check
      * @return - constructed playlist
      */
-    public Playlist getSongPlaylist(Song song) {
+    public static Playlist getSongPlaylist(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongPlaylist");
             return null;
         }
-        for (Playlist playlist : this.getPlaylists()) {
+        for (Playlist playlist : getPlaylists()) {
             if (playlist.contains(song)) {
                 return playlist;
             }
@@ -305,12 +281,12 @@ public class Collection {
      * @param song - constructed song to check if liked
      * @return - true if liked, false if not
      */
-    public boolean isLiked(Song song) {
+    public static boolean isLiked(Song song) {
         if (song == null) {
             logger.debug("null song provided in isLiked");
             return false;
         }
-        if (this.likedSongs.contains(song)) {
+        if (likedSongs.contains(song)) {
             return true;
         }
         return false;
@@ -321,8 +297,8 @@ public class Collection {
      * 
      * @return - linkedhashset of albums
      */
-    public ArrayList<Album> getAlbums() {
-        return this.albums;
+    public static ArrayList<Album> getAlbums() {
+        return albums;
     }
 
     /**
@@ -331,12 +307,12 @@ public class Collection {
      * @param album - constructed album
      * @return - found constructed album or null
      */
-    public Album getAlbum(Album album) {
+    public static Album getAlbum(Album album) {
         if (album == null) {
             logger.debug("null album provided in getAlbum");
             return null;
         }
-        for (Album thisAlbum : this.albums) {
+        for (Album thisAlbum : albums) {
             if (thisAlbum.equals(album)) {
                 return thisAlbum;
             }
@@ -350,8 +326,8 @@ public class Collection {
      * 
      * @return - linkedhashset of playlists
      */
-    public ArrayList<Playlist> getPlaylists() {
-        return this.playlists;
+    public static ArrayList<Playlist> getPlaylists() {
+        return playlists;
     }
 
     /**
@@ -360,12 +336,12 @@ public class Collection {
      * @param playlist - constructed playlist to find
      * @return - found playlist or null
      */
-    public Playlist getPlaylist(Playlist playlist) {
+    public static Playlist getPlaylist(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in getPlaylist");
             return null;
         }
-        for (Playlist thisPlaylist : this.playlists) {
+        for (Playlist thisPlaylist : playlists) {
             if (thisPlaylist.equals(playlist)) {
                 return thisPlaylist;
             }
@@ -380,7 +356,7 @@ public class Collection {
      * @param playlist - playlist to get songs from
      * @return - string in m3u format
      */
-    public String getPlaylistM3U(Playlist playlist) {
+    public static String getPlaylistM3U(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in getPlaylistM3u");
             return null;
@@ -396,8 +372,8 @@ public class Collection {
         }
         for (Song song : playlist.getSongs()) {
             File songFile = new File(song.getFileName());
-            if (!settings.getBool("downloadhierachy")) {
-                Album foundAlbum = this.getSongAlbum(song);
+            if (!Settings.downloadHierachy) {
+                Album foundAlbum = getSongAlbum(song);
                 if (foundAlbum != null) {
                     songFile = new File(foundAlbum.getFolderName(), song.getFileName());
                 }
@@ -415,7 +391,7 @@ public class Collection {
      * @param album - album to get songs from
      * @return - string of an xml nfo file to write to a file
      */
-    public String getAlbumNFO(Album album) {
+    public static String getAlbumNFO(Album album) {
         if (album == null) {
             logger.debug("null album provided in getAlbumNFO");
             return null;
@@ -489,9 +465,9 @@ public class Collection {
      * 
      * @return - int of playlist track count
      */
-    public int getPlaylistsTrackCount() {
+    public static int getPlaylistsTrackCount() {
         int trackCount = 0;
-        for (Playlist playlist : this.playlists) {
+        for (Playlist playlist : playlists) {
             trackCount += playlist.size();
         }
         return trackCount;
@@ -502,9 +478,9 @@ public class Collection {
      * 
      * @return - int of album track count
      */
-    public int getAlbumsTrackCount() {
+    public static int getAlbumsTrackCount() {
         int trackCount = 0;
-        for (Album album : this.albums) {
+        for (Album album : albums) {
             trackCount += album.size();
         }
         return trackCount;
@@ -515,14 +491,14 @@ public class Collection {
      * 
      * @return - int of total track count
      */
-    public int getTotalTrackCount() {
+    public static int getTotalTrackCount() {
         int trackCount = 0;
-        trackCount += this.getStandaloneLikedSongs().size();
-        for (Playlist playlist : this.playlists) {
-            ArrayList<Song> songs = this.getStandalonePlaylistSongs(playlist);
+        trackCount += getStandaloneLikedSongs().size();
+        for (Playlist playlist : playlists) {
+            ArrayList<Song> songs = getStandalonePlaylistSongs(playlist);
             trackCount += songs.size();
         }
-        trackCount += this.getAlbumsTrackCount();
+        trackCount += getAlbumsTrackCount();
         return trackCount;
     }
 
@@ -531,8 +507,8 @@ public class Collection {
      * 
      * @return - int of playlists in collection
      */
-    public int getPlaylistCount() {
-        return this.playlists.size();
+    public static int getPlaylistCount() {
+        return playlists.size();
     }
 
     /**
@@ -540,7 +516,11 @@ public class Collection {
      * 
      * @return - int of playlists in collection
      */
-    public int getAlbumCount() {
-        return this.albums.size();
+    public static int getAlbumCount() {
+        return albums.size();
+    }
+
+    public static int getLikedSongCount() {
+        return likedSongs.size();
     }
 }

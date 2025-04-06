@@ -35,10 +35,7 @@ import ryzen.ownitall.util.Progressbar;
 
 public class Jellyfin extends Method {
     private static final Logger logger = LogManager.getLogger();
-    private static final Credentials credentials = Credentials.load();
-    private static final Settings settings = Settings.load();
     private static final Library library = Library.load();
-    private static final Collection collection = Collection.load();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private String userId;
     private String accessToken;
@@ -55,8 +52,8 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
     private void authenticate() throws InterruptedException {
         ObjectNode credsNode = objectMapper.createObjectNode();
-        credsNode.put("Username", credentials.getString("jellyfinusername"));
-        credsNode.put("Pw", credentials.getString("jellyfinpassword"));
+        credsNode.put("Username", Credentials.jellyfinUsername);
+        credsNode.put("Pw", Credentials.jellyfinPassword);
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
@@ -108,7 +105,7 @@ public class Jellyfin extends Method {
         LikedSongs likedSongs = this.getLikedSongs();
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (likedSongs != null && !likedSongs.isEmpty()) {
-                likedSongs.removeSongs(collection.getLikedSongs().getSongs());
+                likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
                 for (Song song : likedSongs.getSongs()) {
                     interruptionHandler.throwInterruption();
                     String songId = this.getSongId(song);
@@ -124,7 +121,7 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/#tag/UserLibrary/operation/MarkFavoriteItem
     @Override
     public void uploadLikedSongs() throws InterruptedException {
-        LikedSongs likedSongs = collection.getLikedSongs();
+        LikedSongs likedSongs = Collection.getLikedSongs();
         try (ProgressBar pb = Progressbar.progressBar("Liked Songs", likedSongs.size() * 2);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : likedSongs.getSongs()) {
@@ -261,7 +258,7 @@ public class Jellyfin extends Method {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
                 album = foundAlbum;
-            } else if (settings.getBool("libraryverified")) {
+            } else if (Settings.libraryVerified) {
                 album = null;
             }
         }
@@ -324,7 +321,7 @@ public class Jellyfin extends Method {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song = foundSong;
-                } else if (settings.getBool("libraryverified")) {
+                } else if (Settings.libraryVerified) {
                     song = null;
                 }
             }
@@ -387,7 +384,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(credentials.getString("jellyfinurl") + type + builder.toString());
+            URI url = new URI(Credentials.jellyfinURL + type + builder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -397,7 +394,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    credentials.getString("jellyfinusername") + "ownitall",
+                    Credentials.jellyfinUsername + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);
@@ -437,7 +434,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(credentials.getString("jellyfinurl") + type);
+            URI url = new URI(Credentials.jellyfinURL + type);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -447,7 +444,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    credentials.getString("jellyfinusername") + "ownitall",
+                    Credentials.jellyfinUsername + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);

@@ -23,15 +23,15 @@ public class Settings {
 
     public Settings(String saveFile) throws IOException {
         this.file = new File(this.folderPath, saveFile);
-        this.setFile();
+        this.setFolder();
         this.read();
     }
 
     /**
      * check if settings folder exists, if not make it (to prevent errors)
      */
-    private void setFile() {
-        if (!file.exists()) {
+    private void setFolder() {
+        if (!file.getParentFile().exists()) {
             if (!file.getParentFile().mkdirs()) {
                 logger.warn("Unable to create folder '" + file.getParentFile().getAbsolutePath() + "'");
             }
@@ -39,7 +39,7 @@ public class Settings {
     }
 
     protected void read() throws IOException {
-        setFile();
+        setFolder();
         if (!file.exists()) {
             this.save();
             return;
@@ -60,8 +60,9 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
+    // TODO: doesnt save strings?
     protected void save() {
-        this.setFile();
+        this.setFolder();
         try {
             objectMapper.writeValue(file, this.getAll());
         } catch (IOException e) {
@@ -87,17 +88,17 @@ public class Settings {
 
     protected LinkedHashMap<String, Object> getAll() {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
+        for (Field field : this.getClass().getDeclaredFields()) {
             try {
-                field.setAccessible(true);
-                // only allow option to change non final and protected fields
-                if (!Modifier.isFinal(field.getModifiers()) && Modifier.isProtected(field.getModifiers())) {
-                    settings.put(field.getName(), field.get(this));
+                int modifiers = field.getModifiers();
+                if (Modifier.isPrivate(modifiers) || Modifier.isFinal(modifiers)) {
+                    continue;
                 }
-                field.setAccessible(false);
+                field.setAccessible(true);
+                Object value = field.get(null);
+                settings.put(field.getName(), value);
             } catch (IllegalAccessException e) {
-                logger.error("Unable to access '" + field.getName() + "'", e);
+                logger.error("Field access error '" + field.getName() + "'", e);
             }
         }
         return settings;
@@ -107,8 +108,13 @@ public class Settings {
         for (String name : settings.keySet()) {
             try {
                 Field field = this.getClass().getDeclaredField(name);
+                int modifiers = field.getModifiers();
+                if (Modifier.isPrivate(modifiers) || Modifier.isFinal(modifiers)) {
+                    continue;
+                }
+                Object converted = objectMapper.convertValue(settings.get(name), field.getType());
                 field.setAccessible(true);
-                field.set(this, this.transform(field.getType(), name));
+                field.set(null, converted);
                 field.setAccessible(false);
             } catch (IllegalAccessException e) {
                 logger.error("Failed to overwrite value for '" + name + "'", e);
@@ -161,48 +167,20 @@ public class Settings {
         return false;
     }
 
-    public boolean isEmpty(String name) {
+    protected boolean isEmpty(String name) {
         if (name == null) {
             logger.debug("null name provided in isEmpty");
             return true;
         }
-        String string = this.getString(name);
-        if (string == null || string.isEmpty()) {
+        Object value = this.getFieldValue(name);
+        if (value == null || value.toString().isEmpty()) {
             return true;
         } else {
             return false;
         }
     }
 
-    private Object transform(Class<?> type, String name) {
-        if (type == null) {
-            logger.debug("null type provided in transform");
-            return null;
-        }
-        if (name == null) {
-            logger.debug("null name provided in transform");
-            return null;
-        }
-        if (type.equals(String.class)) {
-            return this.getString(name);
-        } else if (type.equals(boolean.class)) {
-            return this.getBool(name);
-        } else if (type.equals(int.class)) {
-            return this.getInt(name);
-        } else if (type.equals(Long.class)) {
-            return this.getLong(name);
-        } else if (type.equals(char.class)) {
-            return this.getChar(name);
-        } else if (type.equals(File.class)) {
-            return this.getFile(name);
-        } else {
-            logger.error("Unsupported type '" + type.getName() + "' provided");
-            return null;
-        }
-    }
-
-    // TODO: restrict?
-    private Object getFieldValue(String name) {
+    protected Object getFieldValue(String name) {
         if (name == null) {
             logger.debug("null setting name provided in getFieldValue");
             return null;
@@ -217,69 +195,6 @@ public class Settings {
             logger.warn("No setting field named '" + name + "' found"); // Use warn or debug
         } catch (IllegalAccessException e) {
             logger.error("Unable to access setting field named '" + name + "'", e);
-        }
-        return null;
-    }
-
-    public String getString(String name) {
-        Object value = this.getFieldValue(name);
-        if (value != null) {
-            return value.toString();
-        }
-        return null;
-    }
-
-    public boolean getBool(String name) {
-        Object value = this.getFieldValue(name);
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        if (value != null) {
-            return Boolean.parseBoolean(value.toString());
-        }
-        return false;
-    }
-
-    public Integer getInt(String name) {
-        Object value = this.getFieldValue(name);
-        if (value instanceof Integer) {
-            return (Integer) value;
-        }
-        if (value != null) {
-            return Integer.parseInt(value.toString());
-        }
-        return null;
-    }
-
-    public Long getLong(String name) {
-        Object value = this.getFieldValue(name);
-        if (value instanceof Long) {
-            return (Long) value;
-        }
-        if (value != null) {
-            return Long.parseLong(value.toString());
-        }
-        return null;
-    }
-
-    public char getChar(String name) {
-        Object value = this.getFieldValue(name);
-        if (value instanceof Character) {
-            return (char) value;
-        }
-        if (value != null) {
-            return value.toString().charAt(0);
-        }
-        return '\0';
-    }
-
-    public File getFile(String name) {
-        Object value = this.getFieldValue(name);
-        if (value instanceof File) {
-            return (File) value;
-        }
-        if (value != null) {
-            return new File(value.toString());
         }
         return null;
     }

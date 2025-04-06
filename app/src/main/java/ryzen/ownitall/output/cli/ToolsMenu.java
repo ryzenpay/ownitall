@@ -34,14 +34,13 @@ public class ToolsMenu {
     }
 
     private void optionArchive() {
-        Storage.load().archive();
+        Storage.archive();
         logger.info("Successfully archived");
     }
 
     private void optionUnArchive() {
-        Storage storage = Storage.load();
         LinkedHashMap<String, File> options = new LinkedHashMap<>();
-        for (File file : storage.getArchiveFolders()) {
+        for (File file : Storage.getArchiveFolders()) {
             options.put(file.getName(), file);
         }
         try {
@@ -49,7 +48,7 @@ public class ToolsMenu {
             if (choice.equals("Exit")) {
                 return;
             }
-            storage.unArchive(options.get(choice));
+            Storage.unArchive(options.get(choice));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting unarchive folder choice");
             return;

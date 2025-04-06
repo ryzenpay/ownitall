@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Storage;
-import ryzen.ownitall.library.Library;
 
 @Controller
 public class ToolsMenu {
@@ -21,7 +20,7 @@ public class ToolsMenu {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Archive", "/tools/archive");
         options.put("Unarchive", "/tools/unarchive");
-        options.put("Clear Cache", "/tools/clearcache");
+        options.put("Library", "/library");
         options.put("Reset Credentials", "/tools/clearcredentials");
         options.put("Return", "/tools/return");
         model.addAttribute("menuName", "Tools Menu");
@@ -34,7 +33,7 @@ public class ToolsMenu {
 
     @GetMapping("/tools/archive")
     public static String optionArchive(Model model) {
-        Storage.load().archive();
+        Storage.archive();
         return toolsMenu(model, "Successfully archived");
     }
 
@@ -42,9 +41,8 @@ public class ToolsMenu {
     public static String optionUnArchive(Model model,
             @RequestParam(value = "folderPath", required = false) String folderPath) {
         if (folderPath == null) {
-            Storage storage = Storage.load();
             LinkedHashMap<String, String> options = new LinkedHashMap<>();
-            for (File file : storage.getArchiveFolders()) {
+            for (File file : Storage.getArchiveFolders()) {
                 options.put(file.getName(), file.getAbsolutePath());
             }
             options.put("Exit", "Exit");
@@ -53,15 +51,9 @@ public class ToolsMenu {
         } else if (folderPath.equals("Exit")) {
             return toolsMenu(model, null);
         } else {
-            Storage.load().unArchive(new File(folderPath));
+            Storage.unArchive(new File(folderPath));
             return toolsMenu(model, "Successfully unarchived");
         }
-    }
-
-    @GetMapping("/tools/clearcache")
-    public static String optionClearCache(Model model) {
-        Library.clear();
-        return toolsMenu(model, "Successfully cleared cache");
     }
 
     @GetMapping("/tools/clearcredentials")

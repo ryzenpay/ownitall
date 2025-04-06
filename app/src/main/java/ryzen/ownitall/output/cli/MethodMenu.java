@@ -1,6 +1,5 @@
 package ryzen.ownitall.output.cli;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -20,7 +19,6 @@ import ryzen.ownitall.util.Progressbar;
 
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger();
-    private static final Collection collection = Collection.load();
     private static final Credentials credentials = Credentials.load();
     private Method method;
     private String methodName;
@@ -29,24 +27,21 @@ public class MethodMenu {
         LibraryMenu.initializeLibrary();
         String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
-            throw new InterruptedException("Exited");
+            throw new InterruptedException("Cancelled method selection");
         }
         Class<? extends Method> methodClass = Method.methods.get(choice);
-        try {
-            this.setCredentials(methodClass);
-            this.method = methodClass.getDeclaredConstructor().newInstance();
-            this.methodName = method.getClass().getSimpleName();
-        } catch (InstantiationException e) {
-            logger.debug("Interrupted while setting up method '" + choice + "'");
-            throw new InterruptedException(e.getMessage());
-        } catch (IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException e) {
-            logger.error("Exception instantiating method '" + choice + "'", e);
-            throw new InterruptedException(e.getMessage());
-        }
+        this.initializeMethod(methodClass);
     }
 
-    private void setCredentials(Class<?> type) throws InterruptedException {
+    private void initializeMethod(Class<? extends Method> methodClass) throws InterruptedException {
+        if (Method.isCredentialsEmpty(methodClass)) {
+            this.setCredentials(methodClass);
+        }
+        this.method = Method.load(methodClass);
+        this.methodName = method.getClass().getSimpleName();
+    }
+
+    private void setCredentials(Class<? extends Method> type) throws InterruptedException {
         if (type == null) {
             logger.debug("null type provided in setCredentials");
             return;
@@ -217,7 +212,7 @@ public class MethodMenu {
         logger.info("Getting liked songs from '" + methodName + "'...");
         LikedSongs likedSongs = method.getLikedSongs();
         if (likedSongs != null) {
-            collection.addLikedSongs(likedSongs);
+            Collection.addLikedSongs(likedSongs);
             logger.info(
                     "Imported " + likedSongs.size() + " liked songs from '" + methodName + "'");
         }
@@ -227,7 +222,7 @@ public class MethodMenu {
         logger.info("Getting playlists from '" + methodName + "'...");
         ArrayList<Playlist> playlists = method.getPlaylists();
         if (playlists != null) {
-            collection.addPlaylists(playlists);
+            Collection.addPlaylists(playlists);
             logger.info("Imported " + playlists.size() + " playlists from '" + method.getClass() + "'");
         }
     }
@@ -240,7 +235,7 @@ public class MethodMenu {
         logger.info("Getting playlist '" + playlistId + "' from '" + methodName + "'...");
         Playlist playlist = method.getPlaylist(playlistId, playlistName);
         if (playlist != null) {
-            collection.addPlaylist(playlist);
+            Collection.addPlaylist(playlist);
             logger.info("Imported playlist '" + playlist.getName() + "' (" + playlist.size() + ") from '"
                     + methodName + "'");
         }
@@ -250,7 +245,7 @@ public class MethodMenu {
         logger.info("Getting albums from '" + methodName + "'...");
         ArrayList<Album> albums = method.getAlbums();
         if (albums != null) {
-            collection.addAlbums(albums);
+            Collection.addAlbums(albums);
             logger.info("Imported " + albums.size() + " albums from '" + method.getClass() + "'");
         }
     }
@@ -263,7 +258,7 @@ public class MethodMenu {
         logger.info("Getting album '" + albumId + "' from '" + methodName + "'...");
         Album album = method.getAlbum(albumId, albumName, albumArtistName);
         if (album != null) {
-            collection.addAlbum(album);
+            Collection.addAlbum(album);
             logger.info("Imported album '" + album.getName() + "' (" + album.size() + ") from '"
                     + methodName + "'");
         }
@@ -290,7 +285,7 @@ public class MethodMenu {
     }
 
     private void optionExportCollection() {
-        logger.debug("Uploading '" + this.methodName + "' (" + collection.getTotalTrackCount()
+        logger.debug("Uploading '" + this.methodName + "' (" + Collection.getTotalTrackCount()
                 + ") music...");
         try (ProgressBar pb = Progressbar.progressBar(this.methodName + " Upload", 3)) {
             pb.setExtraMessage("Liked Songs");
@@ -318,7 +313,7 @@ public class MethodMenu {
         try {
             LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
             options.put("All", null);
-            for (Playlist playlist : collection.getPlaylists()) {
+            for (Playlist playlist : Collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
             try {
@@ -344,7 +339,7 @@ public class MethodMenu {
         try {
             LinkedHashMap<String, Album> options = new LinkedHashMap<>();
             options.put("All", null);
-            for (Album album : collection.getAlbums()) {
+            for (Album album : Collection.getAlbums()) {
                 options.put(album.toString(), album);
             }
             try {
@@ -367,20 +362,20 @@ public class MethodMenu {
     }
 
     private void exportLikedSongs() throws InterruptedException {
-        logger.info("Uploading " + collection.getLikedSongs().size() + " liked songs to '"
+        logger.info("Uploading " + Collection.getLikedSongs().size() + " liked songs to '"
                 + methodName
                 + "'");
         method.uploadLikedSongs();
-        logger.info("Exported " + collection.getLikedSongs().size() + " liked songs to '"
+        logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                 + methodName
                 + "'");
     }
 
     private void exportPlaylists() throws InterruptedException {
-        logger.info("Uploading " + collection.getPlaylistCount() + " playlists to '" + methodName
+        logger.info("Uploading " + Collection.getPlaylistCount() + " playlists to '" + methodName
                 + "'");
         method.uploadPlaylists();
-        logger.info("Exported " + collection.getPlaylistCount() + " playlists to '"
+        logger.info("Exported " + Collection.getPlaylistCount() + " playlists to '"
                 + methodName + "'");
     }
 
@@ -396,10 +391,10 @@ public class MethodMenu {
     }
 
     private void exportAlbums() throws InterruptedException {
-        logger.info("Uploading " + collection.getAlbumCount() + " albums to '" + methodName
+        logger.info("Uploading " + Collection.getAlbumCount() + " albums to '" + methodName
                 + "'");
         method.uploadAlbums();
-        logger.info("Exported " + collection.getAlbumCount() + " albums to '"
+        logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
                 + methodName + "'");
     }
 
@@ -419,12 +414,12 @@ public class MethodMenu {
             method.syncLikedSongs();
             method.uploadLikedSongs();
             method.syncPlaylists();
-            for (Playlist playlist : collection.getPlaylists()) {
+            for (Playlist playlist : Collection.getPlaylists()) {
                 method.syncPlaylist(playlist);
                 method.uploadPlaylist(playlist);
             }
             method.syncAlbums();
-            for (Album album : collection.getAlbums()) {
+            for (Album album : Collection.getAlbums()) {
                 method.syncAlbum(album);
                 method.uploadAlbum(album);
             }

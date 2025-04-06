@@ -25,54 +25,26 @@ import org.apache.logging.log4j.Logger;
 
 public class Storage {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private static Storage instance;
-    private File dataFolder;
-    private File cacheFolder;
-
-    /**
-     * initialize all files for syncronization
-     * 
-     */
-    public Storage() {
-        this.dataFolder = settings.getFile("datafolder");
-        this.cacheFolder = settings.getFile("cachefolder");
-        this.setDataFolder();
-        this.setCacheFolder();
-    }
-
-    /**
-     * set instance
-     * 
-     * @return - new or existing instance
-     */
-    public static Storage load() {
-        if (instance == null) {
-            instance = new Storage();
-            logger.debug("New instance created");
-        }
-        return instance;
-    }
 
     /**
      * function which is called to check if datafolder exists and create if deleted
      * in middle of process
      */
-    private void setDataFolder() {
-        if (!this.dataFolder.exists()) { // create folder if it does not exist
-            this.dataFolder.mkdirs();
-            logger.debug("Created datafolder '" + this.dataFolder.getAbsolutePath() + "'");
+    private static void setDataFolder() {
+        if (!Settings.dataFolder.exists()) { // create folder if it does not exist
+            Settings.dataFolder.mkdirs();
+            logger.debug("Created datafolder '" + Settings.dataFolder.getAbsolutePath() + "'");
         }
     }
 
     /**
      * set cache folder
      */
-    private void setCacheFolder() {
-        if (!this.cacheFolder.exists()) {
-            this.cacheFolder.mkdirs();
-            logger.debug("Created cache folder: '" + this.cacheFolder.getAbsolutePath() + "'");
+    private static void setCacheFolder() {
+        if (!Settings.cacheFolder.exists()) {
+            Settings.cacheFolder.mkdirs();
+            logger.debug("Created cache folder: '" + Settings.cacheFolder.getAbsolutePath() + "'");
         }
     }
 
@@ -80,25 +52,25 @@ public class Storage {
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
      */
-    public void archive() {
-        this.setDataFolder();
+    public static void archive() {
+        setDataFolder();
         LocalDate currentDate = LocalDate.now();
         String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        File archiveFolder = new File(this.dataFolder, folderName);
+        File archiveFolder = new File(Settings.dataFolder, folderName);
         archiveFolder.mkdir();
-        for (File file : this.dataFolder.listFiles()) {
+        for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.renameTo(new File(archiveFolder, file.getName()));
                 logger.debug("Renamed file: '" + file.getAbsolutePath() + "'");
             }
         }
-        Collection.load().clear();
+        Collection.clear();
         logger.info("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
     }
 
-    public LinkedHashSet<File> getArchiveFolders() {
+    public static LinkedHashSet<File> getArchiveFolders() {
         LinkedHashSet<File> archiveFolders = new LinkedHashSet<>();
-        for (File file : this.dataFolder.listFiles()) {
+        for (File file : Settings.dataFolder.listFiles()) {
             if (file.isDirectory()) {
                 archiveFolders.add(file);
             }
@@ -111,16 +83,16 @@ public class Storage {
      * to unarchive
      * also archives current files with todays date to prevent data loss
      */
-    public void unArchive(File unarchiveFolder) {
+    public static void unArchive(File unarchiveFolder) {
         if (unarchiveFolder == null || !unarchiveFolder.exists()) {
             logger.debug("null or non existant unarchive folder provided in unarchive");
             return;
         }
-        this.setDataFolder();
-        this.archive();
+        setDataFolder();
+        archive();
         for (File file : unarchiveFolder.listFiles()) {
             if (file.isFile()) {
-                File destFile = new File(this.dataFolder, file.getName());
+                File destFile = new File(Settings.dataFolder, file.getName());
                 if (destFile.exists()) {
                     System.out
                             .print("This will delete file '" + destFile.getAbsolutePath() + "' are you sure y/N: ");
@@ -141,27 +113,25 @@ public class Storage {
         }
         unarchiveFolder.delete();
         logger.info("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
-
-        Collection collection = Collection.load();
-        collection.clear();
-        this.importCollection();
+        Collection.clear();
+        importCollection();
         logger.info("Successfully unarchived music library");
     }
 
     /**
      * clear cache files
      */
-    public void clearCache() {
-        this.setCacheFolder();
-        for (File file : this.cacheFolder.listFiles()) {
+    public static void clearCacheFiles() {
+        setCacheFolder();
+        for (File file : Settings.cacheFolder.listFiles()) {
             file.delete();
             logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
         }
     }
 
-    public void clearInventory() {
-        this.setDataFolder();
-        for (File file : this.dataFolder.listFiles()) {
+    public static void clearInventoryFiles() {
+        setDataFolder();
+        for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
                 logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
@@ -174,19 +144,15 @@ public class Storage {
      * orchestrates import albums, playlists and liked songs
      * 
      */
-    public void importCollection() {
-        Collection collection = Collection.load();
+    public static void importCollection() {
         logger.debug("importing collection... ");
         try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
             pb.setExtraMessage("Albums");
-            collection.addAlbums(importAlbums());
+            Collection.addAlbums(importAlbums());
             pb.setExtraMessage("Playlists").step();
-            collection.addPlaylists(importPlaylists());
+            Collection.addPlaylists(importPlaylists());
             pb.setExtraMessage("Liked Songs").step();
-            LikedSongs likedSongs = importLikedSongs();
-            if (likedSongs != null) {
-                collection.addLikedSongs(likedSongs);
-            }
+            Collection.addLikedSongs(importLikedSongs());
             pb.setExtraMessage("Done").step();
             logger.debug("Successfully imported collection");
         }
@@ -197,16 +163,15 @@ public class Storage {
      * orchestrates export albums, playlists and liked songs
      * 
      */
-    public void exportCollection() {
-        Collection collection = Collection.load();
+    public static void exportCollection() {
         logger.debug("Exporting music collection...");
         try (ProgressBar pb = Progressbar.progressBar("Saving Data", 3)) {
             pb.setExtraMessage("Albums");
-            exportAlbums(collection.getAlbums());
+            exportAlbums(Collection.getAlbums());
             pb.setExtraMessage("Playlists").step();
-            exportPlaylists(collection.getPlaylists());
+            exportPlaylists(Collection.getPlaylists());
             pb.setExtraMessage("Liked Songs").step();
-            exportLikedSongs(collection.getLikedSongs());
+            exportLikedSongs(Collection.getLikedSongs());
             pb.setExtraMessage("Done").step();
             logger.debug("Successfully exported music collection");
         }
@@ -217,12 +182,12 @@ public class Storage {
      * 
      * @param albums - linkedhashset of constructed Album
      */
-    public void exportAlbums(ArrayList<Album> albums) {
+    public static void exportAlbums(ArrayList<Album> albums) {
         if (albums == null || albums.isEmpty()) {
             return;
         }
-        this.setDataFolder();
-        File albumFile = new File(this.dataFolder, settings.getString("albumfile") + ".json");
+        setDataFolder();
+        File albumFile = new File(Settings.dataFolder, Settings.albumFile + ".json");
         try {
             objectMapper.writeValue(albumFile, albums);
             logger.debug("Saved albums to: '" + albumFile.getAbsolutePath() + "'");
@@ -236,9 +201,9 @@ public class Storage {
      * 
      * @return - linkedhashset of constructed Album
      */
-    public ArrayList<Album> importAlbums() {
-        this.setDataFolder();
-        File albumFile = new File(this.dataFolder, settings.getString("albumfile") + ".json");
+    public static ArrayList<Album> importAlbums() {
+        setDataFolder();
+        File albumFile = new File(Settings.dataFolder, Settings.albumFile + ".json");
         if (!albumFile.exists()) {
             return null;
         }
@@ -258,12 +223,12 @@ public class Storage {
      * 
      * @param playlists - linkedhashset of constructed Playlist
      */
-    public void exportPlaylists(ArrayList<Playlist> playlists) {
+    public static void exportPlaylists(ArrayList<Playlist> playlists) {
         if (playlists == null || playlists.isEmpty()) {
             return;
         }
-        this.setDataFolder();
-        File playlistFile = new File(this.dataFolder, settings.getString("playlistfile") + ".json");
+        setDataFolder();
+        File playlistFile = new File(Settings.dataFolder, Settings.playlistFile + ".json");
         try {
             objectMapper.writeValue(playlistFile, playlists);
             logger.debug("Saved playlists to: '" + playlistFile.getAbsolutePath() + "'");
@@ -277,9 +242,9 @@ public class Storage {
      * 
      * @return - linkedhashset of constructed Playlist
      */
-    public ArrayList<Playlist> importPlaylists() {
-        this.setDataFolder();
-        File playlistFile = new File(this.dataFolder, settings.getString("playlistfile") + ".json");
+    public static ArrayList<Playlist> importPlaylists() {
+        setDataFolder();
+        File playlistFile = new File(Settings.dataFolder, Settings.playlistFile + ".json");
         if (!playlistFile.exists()) {
             return null;
         }
@@ -300,12 +265,12 @@ public class Storage {
      * 
      * @param likedSongs - constructed LikedSongs
      */
-    public void exportLikedSongs(LikedSongs likedSongs) {
+    public static void exportLikedSongs(LikedSongs likedSongs) {
         if (likedSongs == null || likedSongs.isEmpty()) {
             return;
         }
-        this.setDataFolder();
-        File likedSongFile = new File(this.dataFolder, settings.getString("likedsongfile") + ".json");
+        setDataFolder();
+        File likedSongFile = new File(Settings.dataFolder, Settings.likedSongFile + ".json");
         try {
             objectMapper.writeValue(likedSongFile, likedSongs);
             logger.debug("Saved liked songs to: '" + likedSongFile.getAbsolutePath() + "'");
@@ -319,9 +284,9 @@ public class Storage {
      * 
      * @return - constructed LikedSongs
      */
-    public LikedSongs importLikedSongs() {
-        this.setDataFolder();
-        File likedSongFile = new File(this.dataFolder, settings.getString("likedsongfile") + ".json");
+    public static LikedSongs importLikedSongs() {
+        setDataFolder();
+        File likedSongFile = new File(Settings.dataFolder, Settings.likedSongFile + ".json");
         if (!likedSongFile.exists()) {
             return null;
         }
@@ -335,9 +300,9 @@ public class Storage {
         }
     }
 
-    public LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
-        this.setCacheFolder();
-        File albumFile = new File(this.cacheFolder, settings.getString("albumfile") + ".json");
+    public static LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
+        setCacheFolder();
+        File albumFile = new File(Settings.cacheFolder, Settings.albumFile + ".json");
         LinkedHashMap<String, Album> cachedAlbums = new LinkedHashMap<>();
         if (albumFile.exists()) {
             try {
@@ -360,9 +325,9 @@ public class Storage {
         return cachedAlbums;
     }
 
-    public LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
-        this.setCacheFolder();
-        File artistFile = new File(this.cacheFolder, settings.getString("artistfile") + ".json");
+    public static LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
+        setCacheFolder();
+        File artistFile = new File(Settings.cacheFolder, Settings.artistFile + ".json");
         LinkedHashMap<String, Artist> cachedArtists = new LinkedHashMap<>();
         if (artistFile.exists()) {
             try {
@@ -385,9 +350,9 @@ public class Storage {
         return cachedArtists;
     }
 
-    public LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
-        this.setCacheFolder();
-        File songFile = new File(this.cacheFolder, settings.getString("songfile") + ".json");
+    public static LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
+        setCacheFolder();
+        File songFile = new File(Settings.cacheFolder, Settings.songFile + ".json");
         LinkedHashMap<String, Song> cachedSongs = new LinkedHashMap<>();
         if (songFile.exists()) {
             try {
@@ -410,9 +375,9 @@ public class Storage {
         return cachedSongs;
     }
 
-    public LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
-        this.setCacheFolder();
-        File idFile = new File(this.cacheFolder, "ids.json");
+    public static LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
+        setCacheFolder();
+        File idFile = new File(Settings.cacheFolder, "ids.json");
         LinkedHashMap<String, String> cachedIds = new LinkedHashMap<>();
         if (idFile.exists()) {
             try {

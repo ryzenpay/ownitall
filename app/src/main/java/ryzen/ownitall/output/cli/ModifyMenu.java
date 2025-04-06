@@ -14,6 +14,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
@@ -21,8 +22,6 @@ import ryzen.ownitall.util.Progressbar;
 
 public class ModifyMenu {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
-    private static final Collection collection = Collection.load();
     private static final Library library = Library.load();
 
     public ModifyMenu() {
@@ -86,7 +85,7 @@ public class ModifyMenu {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
                     album = foundAlbum;
-                } else if (settings.getBool("libraryverified")) {
+                } else if (Settings.libraryVerified) {
                     logger.warn(
                             "Album was not found in library and `LibraryVerified` is set to true, not adding Album");
                     return;
@@ -97,7 +96,7 @@ public class ModifyMenu {
             }
         }
 
-        collection.addAlbum(album);
+        Collection.addAlbum(album);
         logger.info("Successfully added album '" + album.toString() + "' to collection");
     }
 
@@ -113,15 +112,15 @@ public class ModifyMenu {
             return;
         }
         Playlist playlist = new Playlist(playlistName);
-        collection.addPlaylist(playlist);
+        Collection.addPlaylist(playlist);
         logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
     }
 
     private void optionAddSong() {
         while (true) {
             LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-            options.put("Liked Songs", collection.getLikedSongs());
-            for (Playlist playlist : collection.getPlaylists()) {
+            options.put("Liked Songs", Collection.getLikedSongs());
+            for (Playlist playlist : Collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
             try {
@@ -165,7 +164,7 @@ public class ModifyMenu {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song = foundSong;
-                } else if (settings.getBool("libraryverified")) {
+                } else if (Settings.libraryVerified) {
                     logger.warn(
                             "Song was not found in library and `LibraryVerified` is set to true, not adding song");
                     return null;
@@ -179,8 +178,8 @@ public class ModifyMenu {
     }
 
     private void optionAddArtist() {
-        if (settings.isEmpty("librarytype")) {
-            logger.warn("library is required to add artist albums");
+        if (Settings.libraryType != LastFM.class) {
+            logger.warn("LastFM library is required to add artist albums");
             return;
         }
         String artistName = null;
@@ -200,7 +199,7 @@ public class ModifyMenu {
             }
             ArrayList<Album> albums = library.getArtistAlbums(artist);
             if (albums != null) {
-                collection.addAlbums(albums);
+                Collection.addAlbums(albums);
                 logger.info("Successfully added " + albums.size() + " albums from '" + artist.toString()
                         + "' to collection");
             }
@@ -236,7 +235,7 @@ public class ModifyMenu {
         while (true) {
             LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
             options.put("All", null);
-            for (Playlist playlist : collection.getPlaylists()) {
+            for (Playlist playlist : Collection.getPlaylists()) {
                 options.put(playlist.toString(), playlist);
             }
             try {
@@ -245,9 +244,9 @@ public class ModifyMenu {
                     return;
                 }
                 if (choice.equals("All")) {
-                    collection.clearPlaylists();
+                    Collection.clearPlaylists();
                 } else {
-                    collection.removePlaylist(options.get(choice));
+                    Collection.removePlaylist(options.get(choice));
                 }
                 logger.info("Successfully removed playlist: '" + choice + "'");
             } catch (InterruptedException e) {
@@ -264,7 +263,7 @@ public class ModifyMenu {
         while (true) {
             LinkedHashMap<String, Album> options = new LinkedHashMap<>();
             options.put("All", null);
-            for (Album album : collection.getAlbums()) {
+            for (Album album : Collection.getAlbums()) {
                 options.put(album.toString(), album);
             }
             try {
@@ -273,9 +272,9 @@ public class ModifyMenu {
                     return;
                 }
                 if (choice.equals("All")) {
-                    collection.clearAlbums();
+                    Collection.clearAlbums();
                 } else {
-                    collection.removeAlbum(options.get(choice));
+                    Collection.removeAlbum(options.get(choice));
                 }
                 logger.info("Successfully removed album: '" + choice + "'");
             } catch (InterruptedException e) {
@@ -292,7 +291,7 @@ public class ModifyMenu {
         while (true) {
             LinkedHashMap<String, Song> options = new LinkedHashMap<>();
             options.put("All", null);
-            for (Song song : collection.getLikedSongs().getSongs()) {
+            for (Song song : Collection.getLikedSongs().getSongs()) {
                 options.put(song.toString(), song);
             }
             try {
@@ -301,9 +300,9 @@ public class ModifyMenu {
                     return;
                 }
                 if (choice.equals("All")) {
-                    collection.clearLikedSongs();
+                    Collection.clearLikedSongs();
                 } else {
-                    collection.removeLikedSong(options.get(choice));
+                    Collection.removeLikedSong(options.get(choice));
                 }
                 logger.info("Successfully removed liked song: '" + choice + "'");
             } catch (InterruptedException e) {
@@ -321,8 +320,8 @@ public class ModifyMenu {
             System.out.print("Are you sure you want to clear the current inventory (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing inventory...");
-                collection.clear();
-                Storage.load().clearInventory();
+                Collection.clear();
+                Storage.clearInventoryFiles();
                 logger.info("Successfully cleared inventory");
             }
         } catch (InterruptedException e) {
@@ -350,7 +349,7 @@ public class ModifyMenu {
      */
     private void optionMergePlaylist() {
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
-        for (Playlist playlist : collection.getPlaylists()) {
+        for (Playlist playlist : Collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }
         try {
@@ -365,7 +364,7 @@ public class ModifyMenu {
                 return;
             }
             playlist.merge(options.get(choice2));
-            collection.removePlaylist(options.get(choice2));
+            Collection.removePlaylist(options.get(choice2));
             logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting collection merge playlist choice");
@@ -382,15 +381,15 @@ public class ModifyMenu {
             return;
         }
         logger.debug("updating current collection with library...");
-        try (ProgressBar pb = Progressbar.progressBar("Updating Collection", collection.getTotalTrackCount())) {
-            for (Song song : collection.getLikedSongs().getSongs()) {
+        try (ProgressBar pb = Progressbar.progressBar("Updating Collection", Collection.getTotalTrackCount())) {
+            for (Song song : Collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song.merge(foundSong);
                 }
                 pb.setExtraMessage(song.getName()).step();
             }
-            for (Playlist playlist : collection.getPlaylists()) {
+            for (Playlist playlist : Collection.getPlaylists()) {
                 for (Song song : playlist.getSongs()) {
                     Song foundSong = library.getSong(song);
                     if (foundSong != null) {
@@ -399,7 +398,7 @@ public class ModifyMenu {
                     pb.setExtraMessage(song.getName()).step();
                 }
             }
-            for (Album album : collection.getAlbums()) {
+            for (Album album : Collection.getAlbums()) {
                 Album foundAlbum = library.getAlbum(album);
                 if (foundAlbum != null) {
                     album.merge(foundAlbum);

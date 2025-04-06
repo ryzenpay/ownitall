@@ -37,11 +37,9 @@ public class Download {
     // youtube (already implemented)
     // tidal
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
-    private static final Collection collection = Collection.load();
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
-            Arrays.asList("m3u", "png", "nfo", settings.getString("downloadformat")));
+            Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
     private File localLibrary;
 
     /**
@@ -51,10 +49,10 @@ public class Download {
      * @throws InterruptedException - when user interrupts
      */
     public Download(File localLibrary) throws InterruptedException {
-        if (settings.isEmpty("youtubedlpath")) {
+        if (Settings.youtubeDLFile == null || !Settings.youtubeDLFile.exists()) {
             this.setYoutubedlPath();
         }
-        if (settings.isEmpty("ffmpegpath")) {
+        if (Settings.ffmpegFile == null || !Settings.ffmpegFile.exists()) {
             this.setFfmpegPath();
         }
         this.localLibrary = localLibrary;
@@ -64,7 +62,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local Youtube DL executable path: ");
-            settings.change("youtubedlpath", Input.request().getFile(true).getAbsolutePath());
+            Settings.load().change("youtubedlpath", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting youtubedl path");
             throw e;
@@ -75,7 +73,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local FFMPEG executable path: ");
-            settings.change("ffmpegpath", Input.request().getFile(true).getAbsolutePath());
+            Settings.load().change("ffmpegpath", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting FFMPEG executable path");
             throw e;
@@ -115,7 +113,7 @@ public class Download {
      * setup threading
      */
     public void threadInit() {
-        int downloadThreads = settings.getInt("downloadthreads");
+        int downloadThreads = Settings.downloadThreads;
         this.executor = new ThreadPoolExecutor(
                 downloadThreads,
                 downloadThreads,
@@ -158,9 +156,9 @@ public class Download {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(settings.getFile("youtubedlpath").toString());
+        command.add(Settings.youtubeDLFile.getAbsolutePath());
         command.add("--ffmpeg-location");
-        command.add(settings.getFile("ffmpegpath").toString());
+        command.add(Settings.ffmpegFile.getAbsolutePath());
         // command.add("--concurrent-fragments");
         // command.add(String.valueOf(settings.getDownloadThreads()));
         // set up youtube searching and only 1 result
@@ -176,9 +174,9 @@ public class Download {
         command.add("--format");
         command.add("bestaudio/best");
         command.add("--audio-format");
-        command.add(settings.getString("downloadformat"));
+        command.add(Settings.downloadFormat);
         command.add("--audio-quality");
-        command.add(settings.getInt("downloadquality").toString());
+        command.add(Integer.toString(Settings.downloadQuality));
         // command.add("--embed-metadata"); // metadata we have overwrites this
         // command.add("--no-write-comments");
         // download location
@@ -210,12 +208,12 @@ public class Download {
             while (!songFile.exists() && retries < 3) {
                 if (retries == 1) {
                     // cookies for age restriction (do not default to them)
-                    if (!settings.isEmpty("downloadcookiesfile")) {
+                    if (Settings.downloadCookieFile == null || !Settings.downloadCookieFile.exists()) {
                         command.add(1, "--cookies");
-                        command.add(2, settings.getFile("downloadcookiesfile").toString());
-                    } else if (!settings.isEmpty("downloadcookiesbrowser")) {
+                        command.add(2, Settings.downloadCookieFile.getAbsolutePath());
+                    } else if (Settings.downloadCookieBrowser.isEmpty()) {
                         command.add(1, "--cookies-from-browser");
-                        command.add(2, settings.getString("downloadcookiesbrowser"));
+                        command.add(2, Settings.downloadCookieBrowser);
                     }
                 }
                 Process process = processBuilder.start();
@@ -267,15 +265,15 @@ public class Download {
         Upload upload = new Upload(this.localLibrary);
         LikedSongs likedSongs = upload.getLikedSongs();
         File songFolder = this.localLibrary;
-        if (settings.getBool("downloadhierachy")) {
-            songFolder = new File(this.localLibrary, settings.getString("likedsongsname"));
+        if (Settings.downloadHierachy) {
+            songFolder = new File(this.localLibrary, Settings.likedSongName);
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
-            likedSongs.removeSongs(collection.getLikedSongs().getSongs());
+            likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
             for (Song song : likedSongs.getSongs()) {
-                if (!settings.getBool("downloadhierachy")) {
+                if (!Settings.downloadHierachy) {
                     // skip if in a playlist
-                    if (collection.getSongPlaylist(song) != null) {
+                    if (Collection.getSongPlaylist(song) != null) {
                         continue;
                     }
                 }
@@ -299,16 +297,16 @@ public class Download {
     public void downloadLikedSongs() throws InterruptedException {
         ArrayList<Song> songs;
         File likedSongsFolder;
-        if (settings.getBool("downloadhierachy")) {
-            songs = collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(this.localLibrary, settings.getString("likedsongsname"));
+        if (Settings.downloadHierachy) {
+            songs = Collection.getLikedSongs().getSongs();
+            likedSongsFolder = new File(this.localLibrary, Settings.likedSongName);
             likedSongsFolder.mkdirs();
         } else {
-            songs = collection.getStandaloneLikedSongs();
+            songs = Collection.getStandaloneLikedSongs();
             likedSongsFolder = this.localLibrary;
-            if (settings.getBool("downloadlikedsongsplaylist")) {
-                Playlist likedSongsPlaylist = new Playlist(settings.getString("likedsongsname"));
-                likedSongsPlaylist.addSongs(collection.getLikedSongs().getSongs());
+            if (Settings.downloadLikedsongPlaylist) {
+                Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
+                likedSongsPlaylist.addSongs(Collection.getLikedSongs().getSongs());
                 this.writePlaylistData(likedSongsPlaylist, this.localLibrary);
             }
         }
@@ -336,9 +334,9 @@ public class Download {
         Upload upload = new Upload(this.localLibrary);
         ArrayList<Playlist> playlists = upload.getPlaylists();
         if (playlists != null && !playlists.isEmpty()) {
-            playlists.removeAll(collection.getPlaylists());
+            playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
-                if (settings.getBool("downloadhierachy")) {
+                if (Settings.downloadHierachy) {
                     File playlistFolder = new File(this.localLibrary, playlist.getFolderName());
                     if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
@@ -370,7 +368,7 @@ public class Download {
      * @throws InterruptedException - when user interrupts
      */
     public void downloadPlaylists() throws InterruptedException {
-        ArrayList<Playlist> playlists = collection.getPlaylists();
+        ArrayList<Playlist> playlists = Collection.getPlaylists();
         try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
                 this.downloadPlaylist(playlist);
@@ -394,7 +392,7 @@ public class Download {
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
         File playlistFolder = this.localLibrary;
         Playlist localPlaylist = null;
-        if (settings.getBool("downloadhierachy")) {
+        if (Settings.downloadHierachy) {
             playlistFolder = new File(this.localLibrary, playlist.getFolderName());
             localPlaylist = Upload.getPlaylist(playlistFolder);
         } else {
@@ -408,8 +406,8 @@ public class Download {
             for (Song song : localPlaylist.getSongs()) {
                 File songFile = new File(playlistFolder, song.getFileName());
                 if (songFile.exists()) {
-                    if (!settings.getBool("downloadhierachy")) {
-                        if (collection.isLiked(song)) {
+                    if (!Settings.downloadHierachy) {
+                        if (Collection.isLiked(song)) {
                             continue;
                         }
                     }
@@ -438,12 +436,12 @@ public class Download {
         }
         ArrayList<Song> songs;
         File playlistFolder;
-        if (settings.getBool("downloadhierachy")) {
+        if (Settings.downloadHierachy) {
             songs = playlist.getSongs();
             playlistFolder = new File(this.localLibrary, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
-            songs = collection.getStandalonePlaylistSongs(playlist);
+            songs = Collection.getStandalonePlaylistSongs(playlist);
             playlistFolder = this.localLibrary;
             this.writePlaylistData(playlist, playlistFolder);
         }
@@ -472,7 +470,7 @@ public class Download {
         Upload upload = new Upload(this.localLibrary);
         ArrayList<Album> albums = upload.getAlbums();
         if (albums != null && !albums.isEmpty()) {
-            albums.removeAll(collection.getAlbums());
+            albums.removeAll(Collection.getAlbums());
             for (Album album : albums) {
                 File albumFolder = new File(this.localLibrary, album.getFolderName());
                 if (albumFolder.exists()) {
@@ -494,7 +492,7 @@ public class Download {
      * @throws InterruptedException - when user interrupts
      */
     public void downloadAlbums() throws InterruptedException {
-        ArrayList<Album> albums = collection.getAlbums();
+        ArrayList<Album> albums = Collection.getAlbums();
         try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
                 this.downloadAlbum(album);
@@ -590,7 +588,7 @@ public class Download {
             id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
         }
         try {
-            MusicTools.writeMetaData(id3Data, collection.isLiked(song), song.getCoverImage(), songFile);
+            MusicTools.writeMetaData(id3Data, Collection.isLiked(song), song.getCoverImage(), songFile);
         } catch (Exception e) {
             logger.error("writing song metadata for '" + song.toString() + "'", e);
         }
@@ -613,7 +611,7 @@ public class Download {
         }
         try {
             File m3uFile = new File(folder, playlist.getFolderName() + ".m3u");
-            MusicTools.writeData(m3uFile, collection.getPlaylistM3U(playlist));
+            MusicTools.writeData(m3uFile, Collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' m3u", e);
         }
@@ -644,7 +642,7 @@ public class Download {
         }
         try {
             File nfoFile = new File(folder, "album.nfo");
-            MusicTools.writeData(nfoFile, collection.getAlbumNFO(album));
+            MusicTools.writeData(nfoFile, Collection.getAlbumNFO(album));
         } catch (Exception e) {
             logger.error("Exception writing album '" + album.toString() + "' nfo", e);
         }

@@ -16,12 +16,12 @@ public class LibraryMenu {
     private static final Credentials credentials = Credentials.load();
     private static final Settings settings = Settings.load();
 
-    // TODO: statistics?
     public LibraryMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         // main menu
-        options.put("Change", this::optionChange);
+        options.put("Change Provider", this::optionChange);
         options.put("Clear Cache", this::optionClearCache);
+        options.put("Cache Size", this::optionCacheSize);
         while (true) {
             String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
             if (choice.equals("Exit")) {
@@ -32,36 +32,30 @@ public class LibraryMenu {
         }
     }
 
-    public static void initializeLibrary() throws InterruptedException {
-        if (settings.isEmpty("librarytype")) {
-            return;
-        }
-        Class<? extends Library> libraryClass = Library.libraries.get(settings.getString("librarytype"));
-        if (!Library.isCredentialsEmpty(libraryClass)) {
-            return;
-        }
-        setCredentials(libraryClass);
-        if (Library.isCredentialsEmpty(libraryClass)) {
-            throw new InterruptedException("Unable to set credentials for '" + libraryClass.getSimpleName() + "'");
-        }
-    }
-
     private void optionChange() {
         try {
             String choice = Menu.optionMenu(Library.libraries.keySet(), "LIBRARIES");
             if (choice.equals("Exit")) {
                 throw new InterruptedException("Exited");
             }
-            Class<? extends Library> libraryClass = Library.libraries.get(choice);
             settings.change("librarytype", choice.toLowerCase());
-            setCredentials(libraryClass);
+            initializeLibrary();
             logger.info("Successfully changed library type to '" + choice + "'");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting library change option");
         }
     }
 
-    private static void setCredentials(Class<?> type) throws InterruptedException {
+    public static void initializeLibrary() throws InterruptedException {
+        if (Settings.libraryType == null) {
+            return;
+        }
+        if (Library.isCredentialsEmpty(Settings.libraryType)) {
+            setCredentials(Settings.libraryType);
+        }
+    }
+
+    private static void setCredentials(Class<? extends Library> type) throws InterruptedException {
         if (type == null) {
             logger.debug("null type provided in setCredentials");
             return;
@@ -93,5 +87,10 @@ public class LibraryMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting clear cache agreement");
         }
+    }
+
+    private void optionCacheSize() {
+        int size = Library.getCacheSize();
+        logger.info("The library cache has '" + size + "' entries");
     }
 }

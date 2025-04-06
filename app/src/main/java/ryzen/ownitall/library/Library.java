@@ -25,12 +25,9 @@ import ryzen.ownitall.classes.Song;
 
 public class Library {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
-    private static final Storage sync = Storage.load();
-    private static final Credentials credentials = Credentials.load();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
-    public static final LinkedHashMap<Class<?>, LinkedHashMap<String, String>> credentialGroups;
+    public static final LinkedHashMap<Class<? extends Library>, LinkedHashMap<String, String>> credentialGroups;
     private static Library instance;
     private long lastQueryTime = 0;
     protected long queryDiff;
@@ -49,7 +46,7 @@ public class Library {
     }
     static {
         credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(LastFM.class, credentials.getJellyfinCredentials());
+        credentialGroups.put(LastFM.class, Credentials.getJellyfinCredentials());
     }
 
     /**
@@ -61,21 +58,16 @@ public class Library {
      */
     public static Library load() {
         if (instance == null) {
-            String libraryType = settings.getString("librarytype");
-            if (!libraryType.isEmpty()) {
-                Class<? extends Library> libraryClass = libraries.get(libraryType);
-                if (libraryClass != null) {
-                    try {
-                        instance = libraryClass.getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException e) {
-                        logger.debug("Interrupted while setting up library type '" + libraryType + "'",
-                                e);
-                    } catch (IllegalAccessException | NoSuchMethodException
-                            | InvocationTargetException e) {
-                        logger.error("Exception instantiating library '" + libraryType + "'", e);
-                    }
-                } else {
-                    logger.warn("Unsupported library method '" + libraryType + "' provided");
+            Class<? extends Library> libraryType = Settings.libraryType;
+            if (libraryType != null) {
+                try {
+                    instance = libraryType.getDeclaredConstructor().newInstance();
+                } catch (InstantiationException e) {
+                    logger.error("Interrupted while setting up library type '" + libraryType + "'",
+                            e);
+                } catch (IllegalAccessException | NoSuchMethodException
+                        | InvocationTargetException e) {
+                    logger.error("Exception creating library '" + libraryType + "'", e);
                 }
             }
         }
@@ -114,10 +106,10 @@ public class Library {
      * dump all data into cache
      */
     public void cache() {
-        this.artists = sync.cacheArtists(this.artists);
-        this.albums = sync.cacheAlbums(this.albums);
-        this.songs = sync.cacheSongs(this.songs);
-        this.ids = sync.cacheIds(this.ids);
+        this.artists = Storage.cacheArtists(this.artists);
+        this.albums = Storage.cacheAlbums(this.albums);
+        this.songs = Storage.cacheSongs(this.songs);
+        this.ids = Storage.cacheIds(this.ids);
     }
 
     /**
@@ -131,10 +123,10 @@ public class Library {
             instance.ids.clear();
             instance = null;
         }
-        Storage.load().clearCache();
+        Storage.clearCacheFiles();
     }
 
-    public static boolean isCredentialsEmpty(Class<?> type) {
+    public static boolean isCredentialsEmpty(Class<? extends Library> type) {
         if (type == null) {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
@@ -144,8 +136,8 @@ public class Library {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
-        for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
+        for (String cred : credentialVars.values()) {
+            if (cred.isEmpty()) {
                 return true;
             }
         }
@@ -153,22 +145,22 @@ public class Library {
     }
 
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("get album supported for library type: " + settings.getString("librarytype"));
+        logger.warn("get album supported for library type: " + Settings.libraryType);
         return null;
     }
 
     public Song getSong(Song song) throws InterruptedException {
-        logger.warn("get song supported for library type: " + settings.getString("librarytype"));
+        logger.warn("get song supported for library type: " + Settings.libraryType);
         return null;
     }
 
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("get artist for library type: " + settings.getString("librarytype"));
+        logger.warn("get artist for library type: " + Settings.libraryType);
         return null;
     }
 
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.warn("get artist albums for library type: " + settings.getString("librarytype"));
+        logger.warn("get artist albums for library type: " + Settings.libraryType);
         return null;
     }
 
@@ -231,5 +223,32 @@ public class Library {
 
     protected void queryErrorHandle(int code, String message) {
         logger.error("Received error code (" + code + ") while querying: " + message);
+    }
+
+    public static int getCacheSize() {
+        int size = 0;
+        if (instance != null) {
+            size += instance.getArtistCacheSize();
+            size += instance.getAlbumCacheSize();
+            size += instance.getSongCacheSize();
+            size += instance.getIdCacheSize();
+        }
+        return size;
+    }
+
+    public int getArtistCacheSize() {
+        return this.artists.size();
+    }
+
+    public int getAlbumCacheSize() {
+        return this.albums.size();
+    }
+
+    public int getSongCacheSize() {
+        return this.songs.size();
+    }
+
+    public int getIdCacheSize() {
+        return this.ids.size();
     }
 }

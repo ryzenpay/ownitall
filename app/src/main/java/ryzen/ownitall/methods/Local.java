@@ -12,14 +12,13 @@ import ryzen.ownitall.methods.local.Upload;
 import ryzen.ownitall.util.Input;
 
 public class Local extends Method {
-    private static final Settings settings = Settings.load();
     private Download download;
     private Upload upload;
     private File localLibrary;
 
     public Local() throws InterruptedException {
         super();
-        if (settings.isEmpty("uploadfolder") || this.localLibrary == null) {
+        if ((Settings.uploadFolder == null || !Settings.uploadFolder.exists()) || this.localLibrary == null) {
             this.setLocalLibrary();
         }
         upload = new Upload(localLibrary);

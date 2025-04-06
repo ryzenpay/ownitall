@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class LastFM extends Library {
     private static final Logger logger = LogManager.getLogger();
-    private static final Credentials credentials = Credentials.load();
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/bce322316de6b8b4e0c83d5cc9f6b9eb.png";
 
@@ -352,7 +351,7 @@ public class LastFM extends Library {
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append("?method=").append(type);
-            urlBuilder.append("&api_key=").append(credentials.getString("lastfmapikey"));
+            urlBuilder.append("&api_key=").append(Credentials.lastFMApiKey);
             urlBuilder.append("&format=json");
             urlBuilder.append(query);
             URI url = new URI(urlBuilder.toString());

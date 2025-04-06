@@ -36,8 +36,6 @@ import org.apache.logging.log4j.Logger;
 
 public class Youtube extends Method {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
-    private static final Credentials credentials = Credentials.load();
     private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");
@@ -67,7 +65,7 @@ public class Youtube extends Method {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
             return new com.google.api.services.youtube.YouTube.Builder(httpTransport, this.JSON_FACTORY, credential)
-                    .setApplicationName(credentials.getString("youtubeapplicationname"))
+                    .setApplicationName(Credentials.youtubeApplicatioName)
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Exception logging in with youtube api", e);
@@ -86,8 +84,8 @@ public class Youtube extends Method {
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()
-                        .setClientId(credentials.getString("youtubeclientid"))
-                        .setClientSecret(credentials.getString("youtubeclientsecret")));
+                        .setClientId(Credentials.youtubeClientID)
+                        .setClientSecret(Credentials.youtubeClientSecret));
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
@@ -118,7 +116,7 @@ public class Youtube extends Method {
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
                         .setVideoCategoryId("10") // Category ID 10 is for Music
-                        .setMaxResults(settings.getLong("youtubesonglimit"))
+                        .setMaxResults(Settings.youtubeSongLimit)
                         .setPageToken(pageToken)
                         .execute();
 
@@ -138,7 +136,7 @@ public class Youtube extends Method {
                                 Song foundSong = library.getSong(song);
                                 if (foundSong != null) {
                                     song = foundSong;
-                                } else if (settings.getBool("libraryverified")) {
+                                } else if (Settings.libraryVerified) {
                                     song = null;
                                 }
                             }
@@ -180,7 +178,7 @@ public class Youtube extends Method {
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
-                        .setMaxResults(settings.getLong("youtubeplaylistlimit"))
+                        .setMaxResults(Settings.youtubePlaylistLimit)
                         .setPageToken(pageToken);
 
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
@@ -225,7 +223,7 @@ public class Youtube extends Method {
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
-                        .setMaxResults(settings.getLong("youtubesonglimit"))
+                        .setMaxResults(Settings.youtubeSongLimit)
                         .setPageToken(pageToken);
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
                 for (PlaylistItem item : itemResponse.getItems()) {
@@ -239,7 +237,7 @@ public class Youtube extends Method {
                             Song foundSong = library.getSong(song);
                             if (foundSong != null) {
                                 song = foundSong;
-                            } else if (settings.getBool("libraryverified")) {
+                            } else if (Settings.libraryVerified) {
                                 song = null;
                             }
                         }
