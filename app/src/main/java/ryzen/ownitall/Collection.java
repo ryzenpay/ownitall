@@ -156,7 +156,7 @@ public class Collection {
      * @param likedSongs - array of constructed Song
      */
     public static void addLikedSongs(LikedSongs fromLikedSongs) {
-        if (likedSongs == null) {
+        if (fromLikedSongs == null) {
             logger.debug("null liked songs passed in addLikedSongs");
             return;
         }

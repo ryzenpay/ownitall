@@ -19,9 +19,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getSpotifyCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Spotify Client ID", spotifyClientID);
-        credentials.put("Spotify Client Secret", spotifyClientSecret);
-        credentials.put("Spotify Redirect URL", spotifyRedirectURL);
+        credentials.put("Spotify Client ID", "spotifyClientID");
+        credentials.put("Spotify Client Secret", "spotifyClientSecret");
+        credentials.put("Spotify Redirect URL", "spotifyRedirectURL");
         return credentials;
     }
 
@@ -35,9 +35,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getYoutubeCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Youtube Application Name", youtubeApplicatioName);
-        credentials.put("Youtube Client ID", youtubeClientID);
-        credentials.put("Youtube Client Secret", youtubeClientSecret);
+        credentials.put("Youtube Application Name", "youtubeApplicatioName");
+        credentials.put("Youtube Client ID", "youtubeClientID");
+        credentials.put("Youtube Client Secret", "youtubeClientSecret");
         return credentials;
     }
 
@@ -49,7 +49,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getLastFMCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("LastFM API Key", lastFMApiKey);
+        credentials.put("LastFM API Key", "lastFMApiKey");
         return credentials;
     }
 
@@ -63,9 +63,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getJellyfinCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("JellyFin URL", jellyfinURL);
-        credentials.put("JellyFin Username", jellyfinUsername);
-        credentials.put("JellyFin Password", jellyfinPassword);
+        credentials.put("JellyFin URL", "jellyfinURL");
+        credentials.put("JellyFin Username", "jellyfinUsername");
+        credentials.put("JellyFin Password", "jellyfinPassword");
         return credentials;
     }
 
@@ -100,5 +100,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     public LinkedHashMap<String, Object> getAll() {
         return super.getAll();
+    }
+
+    public boolean isEmpty(String name) {
+        return super.isEmpty(name);
     }
 }

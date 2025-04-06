@@ -21,8 +21,6 @@ public class Local extends Method {
         if ((Settings.uploadFolder == null || !Settings.uploadFolder.exists()) || this.localLibrary == null) {
             this.setLocalLibrary();
         }
-        upload = new Upload(localLibrary);
-        download = new Download(localLibrary);
     }
 
     private void setLocalLibrary() throws InterruptedException {
@@ -35,31 +33,49 @@ public class Local extends Method {
 
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
+        if (upload == null) {
+            upload = new Upload(localLibrary);
+        }
         return upload.getLikedSongs();
     }
 
     @Override
     public void syncLikedSongs() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.syncLikedSongs();
     }
 
     @Override
     public void uploadLikedSongs() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.downloadLikedSongs();
     }
 
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
+        if (upload == null) {
+            upload = new Upload(localLibrary);
+        }
         return upload.getPlaylists();
     }
 
     @Override
     public void syncPlaylists() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.syncPlaylists();
     }
 
     @Override
     public void uploadPlaylists() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.downloadPlaylists();
     }
 
@@ -71,26 +87,41 @@ public class Local extends Method {
 
     @Override
     public void syncPlaylist(Playlist playlist) throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.syncPlaylist(playlist);
     }
 
     @Override
     public void uploadPlaylist(Playlist playlist) throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.downloadPlaylist(playlist);
     }
 
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
+        if (upload == null) {
+            upload = new Upload(localLibrary);
+        }
         return upload.getAlbums();
     }
 
     @Override
     public void syncAlbums() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.syncAlbums();
     }
 
     @Override
     public void uploadAlbums() throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.downloadAlbums();
     }
 
@@ -102,11 +133,17 @@ public class Local extends Method {
 
     @Override
     public void syncAlbum(Album album) throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.syncAlbum(album);
     }
 
     @Override
     public void uploadAlbum(Album album) throws InterruptedException {
+        if (download == null) {
+            download = new Download(localLibrary);
+        }
         download.downloadAlbum(album);
     }
 }

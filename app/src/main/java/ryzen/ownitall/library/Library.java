@@ -46,7 +46,7 @@ public class Library {
     }
     static {
         credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(LastFM.class, Credentials.getJellyfinCredentials());
+        credentialGroups.put(LastFM.class, Credentials.getLastFMCredentials());
     }
 
     /**
@@ -131,13 +131,14 @@ public class Library {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
         }
+        Credentials credentials = Credentials.load();
         LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
-        for (String cred : credentialVars.values()) {
-            if (cred.isEmpty()) {
+        for (String varName : credentialVars.values()) {
+            if (credentials.isEmpty(varName)) {
                 return true;
             }
         }

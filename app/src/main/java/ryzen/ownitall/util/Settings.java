@@ -66,7 +66,7 @@ public class Settings {
         try {
             objectMapper.writeValue(file, this.getAll());
         } catch (IOException e) {
-            logger.error("Exception saving settings", e);
+            logger.error("Exception saving", e);
         }
     }
 
@@ -146,11 +146,11 @@ public class Settings {
 
     protected boolean change(String name, Object value) {
         if (name == null) {
-            logger.debug("null setting name provided in changeSetting");
+            logger.debug("null name provided in change");
             return false;
         }
         if (value == null) {
-            logger.debug("null setting value provided in changeSetting");
+            logger.debug("null value provided in change");
             return false;
         }
         try {
@@ -160,9 +160,9 @@ public class Settings {
             setting.setAccessible(false);
             return true;
         } catch (NoSuchFieldException e) {
-            logger.error("Exception modifying setting (No Such Field Exception)", e);
+            logger.error("Unable to find field '" + name + "'", e);
         } catch (IllegalAccessException e) {
-            logger.error("Exception modifying setting (IllegalAccessException)", e);
+            logger.error("Exception modifying '" + name + "'", e);
         }
         return false;
     }
@@ -182,19 +182,19 @@ public class Settings {
 
     protected Object getFieldValue(String name) {
         if (name == null) {
-            logger.debug("null setting name provided in getFieldValue");
+            logger.debug("null name provided in getFieldValue");
             return null;
         }
         try {
-            Field field = this.getClass().getDeclaredField(name.toLowerCase());
+            Field field = this.getClass().getDeclaredField(name);
             field.setAccessible(true);
             Object value = field.get(this);
             field.setAccessible(false);
             return value;
         } catch (NoSuchFieldException e) {
-            logger.warn("No setting field named '" + name + "' found"); // Use warn or debug
+            logger.warn("No field named '" + name + "' found"); // Use warn or debug
         } catch (IllegalAccessException e) {
-            logger.error("Unable to access setting field named '" + name + "'", e);
+            logger.error("Unable to access field named '" + name + "'", e);
         }
         return null;
     }

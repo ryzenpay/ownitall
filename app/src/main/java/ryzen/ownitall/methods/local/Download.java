@@ -62,7 +62,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local Youtube DL executable path: ");
-            Settings.load().change("youtubedlpath", Input.request().getFile(true));
+            Settings.load().change("youtubeDLPath", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting youtubedl path");
             throw e;
@@ -73,7 +73,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local FFMPEG executable path: ");
-            Settings.load().change("ffmpegpath", Input.request().getFile(true));
+            Settings.load().change("ffmpegPath", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting FFMPEG executable path");
             throw e;
