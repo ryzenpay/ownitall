@@ -78,7 +78,7 @@ public class Album extends Playlist {
         if (song.getCoverImage() == null && this.getCoverImage() != null) {
             song.setCoverImage(this.getCoverImage());
         }
-        this.addArtist(song.getArtist());
+        this.addArtists(song.getArtists());
     }
 
     /**

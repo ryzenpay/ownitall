@@ -129,7 +129,7 @@ public class Youtube extends Method {
                         // Check if the video is in the Music category
                         if ("10".equals(snippet.getCategoryId())) {
                             Song song = new Song(snippet.getTitle());
-                            song.setArtist(new Artist(snippet.getChannelTitle()));
+                            song.addArtist(new Artist(snippet.getChannelTitle()));
                             song.setDuration(Duration.parse(contentDetails.getDuration()).toSeconds(),
                                     ChronoUnit.SECONDS);
                             if (library != null) {
@@ -232,7 +232,7 @@ public class Youtube extends Method {
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();
                         Song song = new Song(snippet.getTitle());
-                        song.setArtist(new Artist(this.getVideoChannel(videoId)));
+                        song.addArtist(new Artist(this.getVideoChannel(videoId)));
                         if (library != null) {
                             Song foundSong = library.getSong(song);
                             if (foundSong != null) {

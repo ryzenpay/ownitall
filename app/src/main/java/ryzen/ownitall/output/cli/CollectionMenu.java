@@ -144,8 +144,8 @@ public class CollectionMenu {
             System.out
                     .println("    " + i + "/" + Collection.getTotalTrackCount() + " = " + likedSong.getName() + " | "
                             + MusicTools.musicTime(likedSong.getDuration()));
-            if (likedSong.getArtist() != null) {
-                System.out.println("        - Artist: " + likedSong.getArtist().toString());
+            if (likedSong.getMainArtist() != null) {
+                System.out.println("        - Artist: " + likedSong.getMainArtist().toString());
             }
             i++;
         }
@@ -168,8 +168,8 @@ public class CollectionMenu {
                 }
                 System.out.println("   " + y + "/" + playlist.size() + " = " + song.getName() + " | "
                         + MusicTools.musicTime(song.getDuration()));
-                if (song.getArtist() != null) {
-                    System.out.println("        - Artist: " + song.getArtist().toString());
+                if (song.getMainArtist() != null) {
+                    System.out.println("        - Artist: " + song.getMainArtist().toString());
                 }
                 y++;
             }
@@ -191,8 +191,8 @@ public class CollectionMenu {
                 }
                 System.out.println("   " + y + "/" + album.size() + " = " + song.getName() + " | "
                         + MusicTools.musicTime(song.getDuration()));
-                if (song.getArtist() != null) {
-                    System.out.println("        - Artist: " + song.getArtist().toString());
+                if (song.getMainArtist() != null) {
+                    System.out.println("        - Artist: " + song.getMainArtist().toString());
                 }
                 y++;
             }

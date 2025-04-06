@@ -308,7 +308,7 @@ public class Jellyfin extends Method {
             Song song = new Song(response.get("Name").asText());
             JsonNode artistNode = response.get("Artists").get(0);
             if (artistNode != null) {
-                song.setArtist(new Artist(artistNode.asText()));
+                song.addArtist(new Artist(artistNode.asText()));
             }
             JsonNode albumNode = response.get("Album");
             if (albumNode != null) {
@@ -339,8 +339,8 @@ public class Jellyfin extends Method {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("searchTerm", song.getName());
-        if (song.getArtist() != null) {
-            params.put("artists", song.getArtist().toString());
+        if (song.getMainArtist() != null) {
+            params.put("artists", song.getMainArtist().toString());
         }
         if (song.getAlbumName() != null) {
             params.put("albums", song.getAlbumName());

@@ -575,9 +575,13 @@ public class Download {
         }
         LinkedHashMap<FieldKey, String> id3Data = new LinkedHashMap<>();
         id3Data.put(FieldKey.TITLE, song.getName());
-        Artist artist = song.getArtist();
-        if (artist != null) {
-            id3Data.put(FieldKey.ARTIST, artist.getName());
+        ArrayList<Artist> artists = song.getArtists();
+        String artistList = "";
+        for (Artist artist : artists) {
+            artistList += artist.toString() + ";";
+        }
+        if (!artistList.isEmpty()) {
+            id3Data.put(FieldKey.ARTIST, artistList);
         }
         String albumName = song.getAlbumName();
         if (albumName != null) {

@@ -166,12 +166,12 @@ public class MusicBrainz extends Library {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
         params.put("release", song.getName());
-        if (song.getArtist().getName() != null) {
-            String artistId = this.searchArtist(song.getArtist());
+        if (song.getMainArtist().getName() != null) {
+            String artistId = this.searchArtist(song.getMainArtist());
             if (artistId != null) {
                 params.put("arid", artistId);
             } else {
-                params.put("artist", song.getArtist().getName());
+                params.put("artist", song.getMainArtist().getName());
             }
         }
         if (song.getDuration() != null) {
@@ -220,7 +220,7 @@ public class MusicBrainz extends Library {
             if (artistNode != null && !artistNode.isMissingNode()) {
                 Artist artist = this.getArtist(artistNode.path("id").asText());
                 if (artist != null) {
-                    song.setArtist(artist);
+                    song.addArtist(artist);
                 }
             } else {
                 logger.debug("Song missing artists: " + response.toString());

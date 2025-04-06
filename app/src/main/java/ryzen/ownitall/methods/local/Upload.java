@@ -374,7 +374,11 @@ public class Upload {
                     song.setName(songData.get(FieldKey.TITLE));
                 }
                 if (songData.get(FieldKey.ARTIST) != null) {
-                    song.setArtist(new Artist(songData.get(FieldKey.ARTIST)));
+                    String artistList = songData.get(FieldKey.ARTIST);
+                    String[] artists = artistList.split(";");
+                    for (String artist : artists) {
+                        song.addArtist(new Artist(artist));
+                    }
                 }
                 if (songData.get(FieldKey.MUSICBRAINZ_RELEASEID) != null) {
                     song.addId("mbid", songData.get(FieldKey.MUSICBRAINZ_RELEASEID));

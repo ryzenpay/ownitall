@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +21,7 @@ public class Song {
     private static final Logger logger = LogManager.getLogger();
     private static final String downloadFormat = Settings.downloadFormat;
     private String name;
-    private Artist artist;
+    private ArrayList<Artist> artists;
     private Duration duration;
     private String albumName;
     private URI coverImage;
@@ -34,6 +35,7 @@ public class Song {
     public Song(String name) {
         this.name = name;
         this.ids = new LinkedHashMap<>();
+        this.artists = new ArrayList<>();
 
     }
 
@@ -49,13 +51,14 @@ public class Song {
      * @param coverImage - string of coverimage URI
      */
     @JsonCreator
-    public Song(@JsonProperty("name") String name, @JsonProperty("artist") Artist artist,
+    public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
             @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        if (artist != null) {
-            this.setArtist(artist);
+        this.artists = new ArrayList<>();
+        if (artists != null) {
+            this.addArtists(artists);
         }
         this.ids = new LinkedHashMap<>();
         if (ids != null) {
@@ -80,11 +83,7 @@ public class Song {
             logger.debug(this.toString() + ": null song provided in merge");
             return;
         }
-        if (this.getArtist() == null && song.getArtist() != null) {
-            this.setArtist(song.getArtist());
-        } else if (song.getArtist() != null) {
-            this.getArtist().merge(artist);
-        }
+        this.addArtists(song.getArtists());
         if (this.getDuration().isZero() && !song.getDuration().isZero()) {
             this.setDuration(song.getDuration());
         }
@@ -118,17 +117,36 @@ public class Song {
         this.name = name;
     }
 
+    public void addArtists(ArrayList<Artist> artists) {
+        if (artists == null) {
+            logger.debug(this.toString() + ": null artists provided in addArtists");
+            return;
+        }
+        for (Artist artist : artists) {
+            this.addArtist(artist);
+        }
+    }
+
     /**
      * set song artist
      * 
      * @param artist - artist to set
      */
-    public void setArtist(Artist artist) {
+    public void addArtist(Artist artist) {
         if (artist == null) {
-            logger.debug(this.toString() + ": null artist provided in setArtist");
+            logger.debug(this.toString() + ": null artist provided in addArtist");
             return;
         }
-        this.artist = artist;
+        Artist foundArtist = this.getArtist(artist);
+        if (foundArtist != null) {
+            foundArtist.merge(artist);
+        } else {
+            this.artists.add(artist);
+        }
+    }
+
+    public ArrayList<Artist> getArtists() {
+        return this.artists;
     }
 
     /**
@@ -136,8 +154,24 @@ public class Song {
      * 
      * @return - constructed artist
      */
-    public Artist getArtist() {
-        return this.artist;
+    public Artist getArtist(Artist artist) {
+        if (artist == null) {
+            logger.debug(this.toString() + ": null artist provided in getArtist");
+            return null;
+        }
+        for (Artist thisArtist : this.artists) {
+            if (thisArtist.equals(artist)) {
+                return thisArtist;
+            }
+        }
+        return null;
+    }
+
+    public Artist getMainArtist() {
+        if (this.artists.isEmpty()) {
+            return null;
+        }
+        return this.artists.get(0);
     }
 
     /**
@@ -307,8 +341,8 @@ public class Song {
     @JsonIgnore
     public String toString() {
         String output = this.getName().trim();
-        if (this.artist != null) {
-            output += " - " + this.getArtist().toString().trim();
+        if (this.getMainArtist() != null) {
+            output += " - " + this.getMainArtist().toString().trim();
         }
         return output;
     }

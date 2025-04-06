@@ -157,7 +157,7 @@ public class ModifyMenu {
         }
         Song song = new Song(songName);
         if (artistName != null) {
-            song.setArtist(new Artist(artistName));
+            song.addArtist(new Artist(artistName));
         }
         if (library != null) {
             try {

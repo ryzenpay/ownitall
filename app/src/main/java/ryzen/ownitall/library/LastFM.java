@@ -107,7 +107,7 @@ public class LastFM extends Library {
                             logger.debug(album.toString() + " track missing artist: " + trackNode.toString());
                         }
                         if (songArtist != null) {
-                            song.setArtist(artist);
+                            song.addArtist(artist);
                         }
                         song = this.getSong(song);
                         if (song != null) {
@@ -144,8 +144,8 @@ public class LastFM extends Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("track", song.getName());
-        if (song.getArtist() != null) {
-            params.put("artist", song.getArtist().getName());
+        if (song.getMainArtist() != null) {
+            params.put("artist", song.getMainArtist().getName());
         }
         params.put("autocorrect", "1");
         if (this.songs.containsKey(params.toString())) {
@@ -169,7 +169,7 @@ public class LastFM extends Library {
                 if (!artistNode.isMissingNode()) {
                     Artist artist = this.getArtist(new Artist(artistNode.path("name").asText()));
                     if (artist != null) {
-                        song.setArtist(artist);
+                        song.addArtist(artist);
                     }
                 } else {
                     logger.debug(song.toString() + ": track missing artist: " + trackNode.toString());
