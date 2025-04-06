@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class LastFM extends Library {
     private static final Logger logger = LogManager.getLogger();
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
-    private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/bce322316de6b8b4e0c83d5cc9f6b9eb.png";
+    private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
 
     /**
      * default LastFM constructor

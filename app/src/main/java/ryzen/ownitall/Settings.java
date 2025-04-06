@@ -100,11 +100,20 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     /**
      * download all files in a hierachy method
+     * if true:
      * playlists get their own folders
+     * albums still have their own folders
+     * liked songs are placed in likedsongs folder
+     * if false:
      * most applications such as jellyfin use false
+     * albums still have their own folders
+     * playlists and liked songs are merged in root folder with m3u files
      */
     public static boolean downloadHierachy = false;
 
+    /**
+     * incase download hierachy is set to false but still want an m3u
+     */
     public static boolean downloadLikedsongPlaylist = true;
 
     /**

@@ -269,7 +269,9 @@ public class Spotify extends Method {
                             interruptionHandler.throwInterruption();
                             Track track = savedTrack.getTrack();
                             Song song = new Song(track.getName());
-                            song.addArtist(new Artist(track.getArtists()[0].getName()));
+                            for (ArtistSimplified artist : track.getArtists()) {
+                                song.addArtist(new Artist(artist.getName()));
+                            }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
                             Image[] images = track.getAlbum().getImages();
@@ -514,7 +516,9 @@ public class Spotify extends Method {
                             interruptionHandler.throwInterruption();
                             pb.setExtraMessage(track.getName()).step();
                             Song song = new Song(track.getName());
-                            song.addArtist(new Artist(track.getArtists()[0].getName()));
+                            for (ArtistSimplified artist : track.getArtists()) {
+                                song.addArtist(new Artist(artist.getName()));
+                            }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
                             if (library != null) {
@@ -747,7 +751,9 @@ public class Spotify extends Method {
                                 Track track = (Track) playlistTrack.getTrack();
                                 pb.setExtraMessage(track.getName()).step();
                                 song = new Song(track.getName());
-                                song.addArtist(new Artist(track.getArtists()[0].getName()));
+                                for (ArtistSimplified artist : track.getArtists()) {
+                                    song.addArtist(new Artist(artist.getName()));
+                                }
                                 song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                                 Image[] images = track.getAlbum().getImages();
                                 if (images != null && images.length > 0) {

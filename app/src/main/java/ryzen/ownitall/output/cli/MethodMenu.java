@@ -223,7 +223,7 @@ public class MethodMenu {
         ArrayList<Playlist> playlists = method.getPlaylists();
         if (playlists != null) {
             Collection.addPlaylists(playlists);
-            logger.info("Imported " + playlists.size() + " playlists from '" + method.getClass() + "'");
+            logger.info("Imported " + playlists.size() + " playlists from '" + methodName + "'");
         }
     }
 
@@ -246,7 +246,7 @@ public class MethodMenu {
         ArrayList<Album> albums = method.getAlbums();
         if (albums != null) {
             Collection.addAlbums(albums);
-            logger.info("Imported " + albums.size() + " albums from '" + method.getClass() + "'");
+            logger.info("Imported " + albums.size() + " albums from '" + methodName + "'");
         }
     }
 
