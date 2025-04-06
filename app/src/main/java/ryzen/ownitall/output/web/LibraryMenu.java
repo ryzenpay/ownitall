@@ -13,7 +13,6 @@ import ryzen.ownitall.library.Library;
 
 public class LibraryMenu {
     private static final Logger logger = LogManager.getLogger();
-    private static final Settings settings = Settings.load();
 
     @GetMapping("/library")
     public static String libraryMenu(Model model,
@@ -36,12 +35,16 @@ public class LibraryMenu {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         if (library != null) {
             Class<? extends Library> libraryClass = Library.libraries.get(library);
-            settings.change("librarytype", library);
-            if (Library.isCredentialsEmpty(libraryClass)) {
-                // TODO: prompt
-                // setCredentials(libraryClass);
+            if (libraryClass != null) {
+                Settings.load().change("libraryType", libraryClass);
+                if (Library.isCredentialsEmpty(libraryClass)) {
+                    // TODO: prompt
+                    // setCredentials(libraryClass);
+                }
+                logger.info("Successfully changed library type to '" + library + "'");
+            } else {
+                return libraryMenu(model, "Error: Unsupported library type '" + library + "'");
             }
-            logger.info("Successfully changed library type to '" + library + "'");
         }
         for (String currLibrary : Library.libraries.keySet()) {
             options.put(currLibrary, "/library/change?library=" + currLibrary);

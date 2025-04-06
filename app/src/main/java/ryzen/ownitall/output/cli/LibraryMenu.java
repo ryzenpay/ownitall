@@ -14,7 +14,6 @@ import ryzen.ownitall.util.Menu;
 public class LibraryMenu {
     private static final Logger logger = LogManager.getLogger();
     private static final Credentials credentials = Credentials.load();
-    private static final Settings settings = Settings.load();
 
     public LibraryMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -38,7 +37,7 @@ public class LibraryMenu {
             if (choice.equals("Exit")) {
                 throw new InterruptedException("Exited");
             }
-            settings.change("librarytype", choice.toLowerCase());
+            Settings.load().change("libraryType", Library.libraries.get(choice));
             initializeLibrary();
             logger.info("Successfully changed library type to '" + choice + "'");
         } catch (InterruptedException e) {
