@@ -62,7 +62,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local Youtube DL executable path: ");
-            Settings.load().change("youtubeDLPath", Input.request().getFile(true));
+            Settings.load().change("youtubeDLFile", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting youtubedl path");
             throw e;
@@ -73,7 +73,7 @@ public class Download {
         logger.info("A guide to obtaining the following variables is in the readme");
         try {
             System.out.print("Local FFMPEG executable path: ");
-            Settings.load().change("ffmpegPath", Input.request().getFile(true));
+            Settings.load().change("ffmpegFile", Input.request().getFile(true));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting FFMPEG executable path");
             throw e;
@@ -208,10 +208,10 @@ public class Download {
             while (!songFile.exists() && retries < 3) {
                 if (retries == 1) {
                     // cookies for age restriction (do not default to them)
-                    if (Settings.downloadCookieFile == null || !Settings.downloadCookieFile.exists()) {
+                    if (Settings.downloadCookieFile != null || Settings.downloadCookieFile.exists()) {
                         command.add(1, "--cookies");
                         command.add(2, Settings.downloadCookieFile.getAbsolutePath());
-                    } else if (Settings.downloadCookieBrowser.isEmpty()) {
+                    } else if (!Settings.downloadCookieBrowser.isEmpty()) {
                         command.add(1, "--cookies-from-browser");
                         command.add(2, Settings.downloadCookieBrowser);
                     }

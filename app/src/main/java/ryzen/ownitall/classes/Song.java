@@ -154,6 +154,7 @@ public class Song {
      * 
      * @return - constructed artist
      */
+    @JsonIgnore
     public Artist getArtist(Artist artist) {
         if (artist == null) {
             logger.debug(this.toString() + ": null artist provided in getArtist");
@@ -167,6 +168,7 @@ public class Song {
         return null;
     }
 
+    @JsonIgnore
     public Artist getMainArtist() {
         if (this.artists.isEmpty()) {
             return null;
