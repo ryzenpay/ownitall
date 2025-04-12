@@ -15,14 +15,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Main;
 
 @Controller
 @SpringBootApplication
 public class MainMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MainMenu.class);
     public static final String url = "http://localhost:8080";
 
     public static void main(String[] args) {
@@ -45,8 +44,7 @@ public class MainMenu {
     }
 
     @GetMapping("/")
-    public static String mainMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public static String mainMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("collection", "/collection");
         options.put("save", "/save");
@@ -55,16 +53,14 @@ public class MainMenu {
         options.put("exit", "/exit");
         model.addAttribute("menuName", "Main Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
     @GetMapping("/save")
-    public static String optionSave() {
+    public static String optionSave(Model model) {
         Main.save();
-        return "redirect:/?notification=Successfully saved";
+        model.addAttribute("info", "Successfully saved");
+        return mainMenu(model);
     }
 
     @GetMapping("/exit")

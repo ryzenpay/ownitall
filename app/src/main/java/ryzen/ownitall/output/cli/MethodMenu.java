@@ -41,27 +41,27 @@ public class MethodMenu {
         this.methodName = method.getClass().getSimpleName();
     }
 
-    private void setCredentials(Class<? extends Method> type) throws InterruptedException {
-        if (type == null) {
-            logger.debug("null type provided in setCredentials");
+    private void setCredentials(Class<? extends Method> methodClass) throws InterruptedException {
+        if (methodClass == null) {
+            logger.debug("null methodClass provided in setCredentials");
             return;
         }
-        if (!Method.isCredentialsEmpty(type)) {
+        if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
-        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(type);
+        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
                 String value = Input.request().getString();
                 if (!credentials.change(classCredentials.get(name), value)) {
                     throw new InterruptedException(
-                            "Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
+                            "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
                 }
             }
         }
-        if (Method.isCredentialsEmpty(type)) {
-            throw new InterruptedException("Unable to set credentials for '" + type.getSimpleName() + "'");
+        if (Method.isCredentialsEmpty(methodClass)) {
+            throw new InterruptedException("Unable to set credentials for '" + methodClass.getSimpleName() + "'");
         }
     }
 

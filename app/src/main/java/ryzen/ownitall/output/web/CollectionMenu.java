@@ -5,14 +5,12 @@ import java.util.LinkedHashMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class CollectionMenu {
 
     @GetMapping("/collection")
-    public static String collectionMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public static String collectionMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import", "/collection/import");
         options.put("Export", "/collection/export");
@@ -22,9 +20,6 @@ public class CollectionMenu {
         options.put("Return", "/collection/return");
         model.addAttribute("menuName", "Collection Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
@@ -42,6 +37,6 @@ public class CollectionMenu {
 
     @GetMapping("/collection/return")
     public String optionReturn(Model model) {
-        return MainMenu.mainMenu(model, null);
+        return "redirect:/";
     }
 }

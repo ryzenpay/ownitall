@@ -134,10 +134,6 @@ public class MusicTools {
         }
         if (coverImage != null) {
             try {
-                // Download the image to a temporary file
-                // TODO: support .gif
-                // just get extension at end of url
-                // default to png
                 String extension = getExtension(coverImage);
                 if (extension == null) {
                     extension = ".png";

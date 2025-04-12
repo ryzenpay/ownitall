@@ -1,91 +1,125 @@
 package ryzen.ownitall.output.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.methods.Method;
 
 @Controller
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Credentials credentials = Credentials.load();
     private Method method;
     private String methodName;
 
     @GetMapping("/method")
-    public String methodMenu(Model model, @RequestParam(value = "method", required = false) String method,
-            @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(value = "notification", required = false) String notification) {
-        if (method != null) {
-            try {
-                this.login(model, method, callback);
-                this.setMethod(method);
-            } catch (InterruptedException e) {
-                notification = "Interrupted while setting up '" + method + "': " + e;
+    public String methodMenu(Model model,
+            @RequestParam(value = "methodClass", required = false) String methodClassName,
+            @RequestParam(value = "callback", required = true) String callback) {
+        if (methodClassName != null) {
+            Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+            if (methodClass != null) {
+                try {
+                    if (Method.isCredentialsEmpty(methodClass)) {
+                        return this.loginForm(model, methodClassName, callback);
+                    } else {
+                        this.method = Method.load(methodClass);
+                        this.methodName = method.getClass().getSimpleName();
+                    }
+                } catch (InterruptedException e) {
+                    model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
+                }
+            } else {
+                model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
             }
         }
         if (this.method != null) {
-            return "/method/" + callback;
+            return "redirect:" + callback;
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         for (String currMethod : Method.methods.keySet()) {
-            options.put(currMethod, "/method?method=" + currMethod + "?callback=" + callback);
+            String uri = UriComponentsBuilder.fromPath("/method")
+                    .queryParam("methodClassName", currMethod)
+                    .queryParam("callback", callback)
+                    .toUriString();
+            options.put(currMethod, uri);
         }
-        options.put("Cancel", "/method/" + callback);
+        options.put("Cancel", callback);
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
-    // TODO: get credentials as parameters and attempt to sign in
     @GetMapping("/method/login")
-    public String login(Model model, @RequestParam(value = "method", required = true) String method,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (this.method == null) {
-            LinkedHashSet<String> fields = new LinkedHashSet<>();
-            // TODO: set all credential fields
-            fields.add("Cancel");
-            model.addAttribute("loginName", method);
-            model.addAttribute("loginFields", fields);
-            return "login";
+    public String loginForm(Model model,
+            @RequestParam(value = "methodClass", required = true) String methodClassName,
+            @RequestParam(value = "callback", required = true) String callback) {
+        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        if (methodClass == null) {
+            model.addAttribute("error", "Unsupported method provided");
+            return methodMenu(model, methodClassName, callback);
         }
-        if (this.method != null) {
-            return methodMenu(model, method, callback, "Successfully signed into " + method);
-        } else {
-            return methodMenu(model, method, callback, "failed to sign into " + method);
+        if (!Method.isCredentialsEmpty(methodClass)) {
+            model.addAttribute("info", "Found existing credentials");
+            return methodMenu(model, methodClassName, callback);
         }
+
+        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+        if (classCredentials == null || classCredentials.isEmpty()) {
+            model.addAttribute("info", "No credentials required");
+            return methodMenu(model, methodClassName, callback);
+        }
+        model.addAttribute("loginName", methodClass.getSimpleName());
+        model.addAttribute("loginFields", classCredentials.keySet());
+        model.addAttribute("methodClass", methodClass.getName());
+        model.addAttribute("callback", callback);
+        return "login";
     }
 
-    private void setMethod(String choice) throws InterruptedException {
-        Class<? extends Method> methodClass = Method.methods.get(choice);
-        try {
-            this.method = methodClass.getDeclaredConstructor().newInstance();
-            this.methodName = method.getClass().getSimpleName();
-        } catch (InstantiationException e) {
-            logger.debug("Interrupted while setting up method '" + choice + "'");
-            throw new InterruptedException(e.getMessage());
-        } catch (IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException e) {
-            logger.error("Exception instantiating method '" + choice + "'", e);
-            throw new InterruptedException(e.getMessage());
+    @PostMapping("/method/login")
+    public String login(Model model, HttpServletRequest request,
+            @RequestParam(value = "methodClass", required = true) String methodClassName,
+            @RequestParam(value = "callback", required = true) String callback) {
+        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        if (methodClass == null) {
+            model.addAttribute("error", "Unsupported method '" + methodClassName + "' provided in login");
+            return methodMenu(model, null, callback);
         }
+        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+
+        for (Map.Entry<String, String> entry : classCredentials.entrySet()) {
+            String value = request.getParameter(entry.getKey());
+            if (value == null || value.trim().isEmpty()) {
+                model.addAttribute("error", "Missing value for: " + entry.getKey());
+                return loginForm(model, methodClassName, callback);
+            }
+            if (!credentials.change(entry.getValue(), value)) {
+                model.addAttribute("error", "Failed to set credential: " + entry.getKey());
+                return loginForm(model, methodClassName, callback);
+            }
+        }
+
+        if (Method.isCredentialsEmpty(methodClass)) {
+            model.addAttribute("error", "Failed to set credentials");
+            return loginForm(model, methodClassName, callback);
+        }
+        model.addAttribute("info", "Successfully signed in");
+        return methodMenu(model, methodClassName, callback);
     }
 
     @GetMapping("/collection/import")
-    public String importMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public String importMenu(Model model) {
         if (this.method == null) {
-            return methodMenu(model, null, "import", null);
+            return methodMenu(model, null, "/collection/import");
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/collection/import/library");
@@ -95,57 +129,50 @@ public class MethodMenu {
         options.put("Return", "/method/return");
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
     @GetMapping("/collection/import/library")
     public String optionImportLibrary() {
         // TODO: library progress
-        return "redirect:/collection/method/import";
+        return "redirect:/collection";
     }
 
     @GetMapping("/collection/import/likedsongs")
     public String optionImportLikedSongs() {
         // TODO: liked songs progress
-        return "redirect:/collection/method/import";
+        return "redirect:/collection";
     }
 
     @GetMapping("/collection/import/album/choose")
     public String optionImportAlbumsMenu() {
         // TODO: albums menu
-        return "redirect:/collection/method/import";
+        return "redirect:/collection";
     }
 
     @GetMapping("/collection/import/playlist/choose")
     public String optionImportPlaylistsMenu() {
         // TODO: playlist menu
-        return "redirect:/collection/method/import";
+        return "redirect:/collection";
     }
 
     // TODO: export menu
     @GetMapping("/collection/export")
-    public String exportMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public String exportMenu(Model model) {
         if (this.method == null) {
-            return methodMenu(model, null, "export", null);
+            return methodMenu(model, null, "/collection/export");
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Return", "/method/return");
         model.addAttribute("menuName", "Export Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
     @GetMapping("/collection/sync")
     public String sync(Model model) {
         if (this.method == null) {
-            return methodMenu(model, null, "sync", null);
+            return methodMenu(model, null, "/collection/sync");
         }
         // TODO: sync
         return "redirect:/collection";
@@ -153,6 +180,6 @@ public class MethodMenu {
 
     @GetMapping("/method/return")
     public String optionReturn(Model model) {
-        return CollectionMenu.collectionMenu(model, null);
+        return "redirect:/collection";
     }
 }

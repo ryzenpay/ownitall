@@ -2,10 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Folder to Unarchive</title>
 </head>
 
 <body>
+    <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
+    <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
+    <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
     <h1>Choose Folder to Unarchive</h1>
     <form th:action="@{/tools/unarchive}" method="get">
         <div th:each="entry : ${options}">

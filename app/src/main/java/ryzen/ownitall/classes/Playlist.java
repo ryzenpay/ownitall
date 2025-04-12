@@ -133,6 +133,7 @@ public class Playlist {
         return this.coverImage;
     }
 
+    @JsonIgnore
     public String getCoverImageFileName() {
         if (this.coverImage == null) {
             return null;

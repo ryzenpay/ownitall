@@ -15,8 +15,7 @@ public class LibraryMenu {
     private static final Logger logger = LogManager.getLogger();
 
     @GetMapping("/library")
-    public static String libraryMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public static String libraryMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Change Provider", "/library/change");
         options.put("Clear Cache", "/library/cache/clear");
@@ -24,9 +23,6 @@ public class LibraryMenu {
         options.put("Return", "/library/return");
         model.addAttribute("menuName", "Library Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
@@ -43,7 +39,8 @@ public class LibraryMenu {
                 }
                 logger.info("Successfully changed library type to '" + library + "'");
             } else {
-                return libraryMenu(model, "Error: Unsupported library type '" + library + "'");
+                model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
+                return libraryMenu(model);
             }
         }
         for (String currLibrary : Library.libraries.keySet()) {
@@ -55,17 +52,19 @@ public class LibraryMenu {
     @GetMapping("/library/cache/clear")
     public static String optionClearCache(Model model) {
         Library.clear();
-        return libraryMenu(model, "Successfully cleared library cache");
+        model.addAttribute("info", "Successfully cleared library cache");
+        return libraryMenu(model);
     }
 
     @GetMapping("/library/cache")
     public static String optionCache(Model model) {
         int size = Library.getCacheSize();
-        return libraryMenu(model, "There currently are '" + size + "' cache entries");
+        model.addAttribute("info", "There currently are '" + size + "' cache entries");
+        return libraryMenu(model);
     }
 
     @GetMapping("/library/return")
     public static String optionReturn(Model model) {
-        return ToolsMenu.toolsMenu(model, null);
+        return "redirect:/tools";
     }
 }

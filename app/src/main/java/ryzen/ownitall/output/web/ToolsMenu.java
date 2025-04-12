@@ -15,8 +15,7 @@ import ryzen.ownitall.Storage;
 public class ToolsMenu {
 
     @GetMapping("/tools")
-    public static String toolsMenu(Model model,
-            @RequestParam(value = "notification", required = false) String notification) {
+    public static String toolsMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Archive", "/tools/archive");
         options.put("Unarchive", "/tools/unarchive");
@@ -25,16 +24,14 @@ public class ToolsMenu {
         options.put("Return", "/tools/return");
         model.addAttribute("menuName", "Tools Menu");
         model.addAttribute("menuOptions", options);
-        if (notification != null) {
-            model.addAttribute("notification", notification);
-        }
         return "menu";
     }
 
     @GetMapping("/tools/archive")
     public static String optionArchive(Model model) {
         Storage.archive();
-        return toolsMenu(model, "Successfully archived");
+        model.addAttribute("info", "Successfully archived");
+        return toolsMenu(model);
     }
 
     @GetMapping("/tools/unarchive")
@@ -49,21 +46,23 @@ public class ToolsMenu {
             model.addAttribute("options", options);
             return "unarchive";
         } else if (folderPath.equals("Exit")) {
-            return toolsMenu(model, null);
+            return toolsMenu(model);
         } else {
             Storage.unArchive(new File(folderPath));
-            return toolsMenu(model, "Successfully unarchived");
+            model.addAttribute("info", "Successfully unarchived");
+            return toolsMenu(model);
         }
     }
 
     @GetMapping("/tools/clearcredentials")
     public static String optionClearCredentials(Model model) {
         Credentials.load().clear();
-        return toolsMenu(model, "Successfully cleared credentials");
+        model.addAttribute("info", "Successfully cleared credentials");
+        return toolsMenu(model);
     }
 
     @GetMapping("/tools/return")
     public static String optionReturn(Model model) {
-        return MainMenu.mainMenu(model, null);
+        return "redirect:/";
     }
 }
