@@ -36,6 +36,7 @@ public class Download {
     // deezer
     // youtube (already implemented)
     // tidal
+    // PRIORITY: soularr (https://github.com/mrusse/soularr)
     private static final Logger logger = LogManager.getLogger();
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
@@ -208,7 +209,7 @@ public class Download {
             while (!songFile.exists() && retries < 3) {
                 if (retries == 1) {
                     // cookies for age restriction (do not default to them)
-                    if (Settings.downloadCookieFile != null || Settings.downloadCookieFile.exists()) {
+                    if (Settings.downloadCookieFile != null && Settings.downloadCookieFile.exists()) {
                         command.add(1, "--cookies");
                         command.add(2, Settings.downloadCookieFile.getAbsolutePath());
                     } else if (!Settings.downloadCookieBrowser.isEmpty()) {
@@ -577,8 +578,15 @@ public class Download {
         id3Data.put(FieldKey.TITLE, song.getName());
         ArrayList<Artist> artists = song.getArtists();
         String artistList = "";
-        for (Artist artist : artists) {
-            artistList += artist.toString() + ";";
+        // TODO: readme update for jellyfin, requires custom delimiter
+        // dashboard -> libraries -> <select library> -> scroll to bottom -> custom
+        // delimiter
+        if (artists.size() == 1) {
+            artistList = song.getMainArtist().getName();
+        } else {
+            for (Artist artist : artists) {
+                artistList += artist.toString() + ";";
+            }
         }
         if (!artistList.isEmpty()) {
             id3Data.put(FieldKey.ARTIST, artistList);
@@ -622,7 +630,7 @@ public class Download {
         try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(folder, playlist.getFolderName() + ".png"));
+                        new File(folder, playlist.getCoverImageFileName()));
             }
         } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
@@ -653,7 +661,7 @@ public class Download {
         try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(),
-                        new File(folder, album.getFolderName() + ".png"));
+                        new File(folder, album.getCoverImageFileName()));
             }
         } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage", e);

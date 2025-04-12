@@ -133,6 +133,13 @@ public class Playlist {
         return this.coverImage;
     }
 
+    public String getCoverImageFileName() {
+        if (this.coverImage == null) {
+            return null;
+        }
+        return this.getFolderName() + "." + MusicTools.getExtension(coverImage);
+    }
+
     /**
      * add songs to playlist
      * 

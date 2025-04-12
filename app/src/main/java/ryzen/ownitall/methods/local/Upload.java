@@ -213,7 +213,7 @@ public class Upload {
             return null;
         }
         playlist.addSongs(songs);
-        File coverFile = new File(folder, playlist.getFolderName() + ".png");
+        File coverFile = new File(folder, playlist.getCoverImageFileName());
         if (coverFile.exists()) {
             playlist.setCoverImage(coverFile.toURI());
         }
@@ -269,7 +269,7 @@ public class Upload {
                 logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath(), e);
             }
         }
-        File albumCover = new File(folder, album.getFolderName() + ".png");
+        File albumCover = new File(folder, album.getCoverImageFileName());
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
         }
@@ -377,7 +377,7 @@ public class Upload {
                     String artistList = songData.get(FieldKey.ARTIST);
                     String[] artists = artistList.split(";");
                     for (String artist : artists) {
-                        song.addArtist(new Artist(artist));
+                        song.addArtist(new Artist(artist.strip()));
                     }
                 }
                 if (songData.get(FieldKey.MUSICBRAINZ_RELEASEID) != null) {

@@ -67,6 +67,16 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
+    public static String getExtension(URI uri) {
+        if (uri == null) {
+            logger.debug("null uri provided in getExtension");
+            return null;
+        }
+        String url = uri.getPath();
+        int extensionIndex = url.lastIndexOf('.');
+        return url.substring(extensionIndex + 1).toLowerCase();
+    }
+
     /**
      * write "text" data to a file
      * 
@@ -125,7 +135,14 @@ public class MusicTools {
         if (coverImage != null) {
             try {
                 // Download the image to a temporary file
-                File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()), ".png");
+                // TODO: support .gif
+                // just get extension at end of url
+                // default to png
+                String extension = getExtension(coverImage);
+                if (extension == null) {
+                    extension = ".png";
+                }
+                File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()), extension);
                 tempFile.delete(); // to prevent throwing off the downloadimage function
                 downloadImage(coverImage, tempFile);
                 if (tempFile.exists()) {

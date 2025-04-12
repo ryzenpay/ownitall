@@ -368,7 +368,7 @@ public class Collection {
         output.append("#PLAYLIST:").append(playlist.toString()).append("\n");
         // m3u playlist cover
         if (playlist.getCoverImage() != null) {
-            output.append("#EXTIMG:").append(playlist.getFolderName() + ".png").append("\n");
+            output.append("#EXTIMG:").append(playlist.getCoverImageFileName()).append("\n");
         }
         for (Song song : playlist.getSongs()) {
             File songFile = new File(song.getFileName());
@@ -439,7 +439,7 @@ public class Collection {
             // Cover image
             if (album.getCoverImage() != null) {
                 Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(album.getFolderName() + ".png"));
+                thumb.appendChild(doc.createTextNode(album.getCoverImageFileName()));
                 rootElement.appendChild(thumb);
             }
 

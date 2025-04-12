@@ -191,6 +191,13 @@ public class Album extends Playlist {
                 return true;
             }
         }
+        // merges extended versions of albums
+        if (this.getName().toLowerCase().contains(album.getName().toLowerCase())
+                || album.getName().toLowerCase().contains(this.getName().toLowerCase())) {
+            if (album.getSongs().containsAll(this.getSongs()) || this.getSongs().containsAll(album.getSongs())) {
+                return true;
+            }
+        }
         return false;
     }
 }

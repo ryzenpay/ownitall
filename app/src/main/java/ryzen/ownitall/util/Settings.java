@@ -60,7 +60,6 @@ public class Settings {
      * 
      * @param filePath - filepath of settings file
      */
-    // TODO: doesnt save strings?
     protected void save() {
         this.setFolder();
         try {
