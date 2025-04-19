@@ -15,15 +15,13 @@
     <h1 th:text="${loginName} + ' Login'"></h1>
 
     <form th:action="@{/method/login}" method="post">
-        <input type="hidden" name="methodClass" th:value="${methodClass}">
-        <input type="hidden" name="callback" th:value="${callback}">
-
-        <div th:each="field : ${loginFields}">
-            <label th:for="${field}" th:text="${field}"></label>
-            <input type="password" th:id="${field}" th:name="${field}" required>
-            <br>
+        <div th:each="fieldName : ${loginFields}">
+            <label th:for="${fieldName}" th:text="${fieldName}"></label>
+            <input type="text" th:id="${fieldName}" th:name="${fieldName}" required />
         </div>
 
+        <input type="hidden" name="methodClass" th:value="${methodClass}" />
+        <input type="hidden" name="callback" th:value="${callback}" />
         <button type="submit">Login</button>
     </form>
 </body>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${menuName}"></title>
+    <title th:text="${title}">Default Title</title>
 </head>
 
 <body>
@@ -12,17 +12,10 @@
     <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
     <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-    <h1 th:text="${menuName}"></h1>
-    <!-- <div th:each="entry : ${menuOptions}">
-        <form th:action="@{${entry.value}}" method="get">
-            <button type="submit" th:text="${entry.key}"></button>
-            <br>
-        </form>
-    </div> -->
-    <div th:each="entry : ${menuOptions}">
-        <a class="menu-option-link" th:href="@{${entry.value}}" th:text="${entry.key}"></a>
-        <br />
-    </div>
+
+    <footer>
+        <p>OWNITALL</p>
+    </footer>
 </body>
 
 </html>
