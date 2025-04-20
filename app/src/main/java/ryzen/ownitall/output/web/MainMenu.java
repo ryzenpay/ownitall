@@ -31,7 +31,7 @@ public class MainMenu {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    private static void openBrowser() {
+    private void openBrowser() {
         System.setProperty("java.awt.headless", "false");
         if (Desktop.isDesktopSupported()) {
             try {
@@ -45,7 +45,7 @@ public class MainMenu {
     }
 
     @GetMapping("/")
-    public static String mainMenu(Model model) {
+    public String mainMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("collection", "/collection");
         options.put("save", "/save");
@@ -58,14 +58,14 @@ public class MainMenu {
     }
 
     @GetMapping("/save")
-    public static String optionSave(Model model) {
+    public String optionSave(Model model) {
         Main.save();
         model.addAttribute("info", "Successfully saved");
         return mainMenu(model);
     }
 
     @GetMapping("/exit")
-    public static String optionExit() {
+    public String optionExit() {
         logger.info("Exiting program...");
         Main.save();
         return "exit";

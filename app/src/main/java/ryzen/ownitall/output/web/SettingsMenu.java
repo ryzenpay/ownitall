@@ -12,7 +12,7 @@ import ryzen.ownitall.Settings;
 public class SettingsMenu {
 
     @GetMapping("/settings")
-    public static String settingsMenu(Model model) {
+    public String settingsMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Save Settings", "/settings/save");
         options.put("Change Setting", "/settings/change");
@@ -24,28 +24,28 @@ public class SettingsMenu {
     }
 
     @GetMapping("/settings/save")
-    public static String optionSave(Model model) {
+    public String optionSave(Model model) {
         Settings.load().save();
         model.addAttribute("info", "Successfully saved");
         return settingsMenu(model);
     }
 
     @GetMapping("/settings/change")
-    public static String optionChange(Model model) {
+    public String optionChange(Model model) {
         // TODO: change setting menu
         // look at method setCredentials
         return settingsMenu(model);
     }
 
     @GetMapping("/settings/reset")
-    public static String optionReset(Model model) {
+    public String optionReset(Model model) {
         Settings.load().clear();
         model.addAttribute("info", "Successfully reset");
         return settingsMenu(model);
     }
 
     @GetMapping("/settings/return")
-    public static String optionReturn(Model model) {
+    public String optionReturn(Model model) {
         return "redirect:/";
     }
 }

@@ -14,7 +14,7 @@
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
     <h1 th:text="${loginName} + ' Login'"></h1>
 
-    <form th:action="@{/method/login}" method="post">
+    <form th:action="@{/method/login}" method="get">
         <div th:each="fieldName : ${loginFields}">
             <label th:for="${fieldName}" th:text="${fieldName}"></label>
             <input type="text" th:id="${fieldName}" th:name="${fieldName}" required />

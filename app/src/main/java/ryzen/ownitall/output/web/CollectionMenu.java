@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class CollectionMenu {
 
     @GetMapping("/collection")
-    public static String collectionMenu(Model model) {
+    public String collectionMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import", "/collection/import");
         options.put("Export", "/collection/export");

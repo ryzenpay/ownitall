@@ -4,39 +4,37 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.methods.Method;
+import ryzen.ownitall.util.Logs;
 
 @Controller
 @SessionAttributes({ "method" })
 public class MethodMenu {
-    private static final Credentials credentials = Credentials.load();
-
-    @ModelAttribute("method")
-    public Method setMethod() {
-        return null;
-    }
-
-    // TODO: sessionattribute method is not persistant :(
     @GetMapping("/method")
     public String methodMenu(Model model,
             @RequestParam(value = "methodClass", required = false) String methodClassName,
             @RequestParam(value = "callback", required = true) String callback,
-            @ModelAttribute(value = "method") Method method) {
+            @SessionAttribute(value = "method", required = false) Method method) {
+        if (Logs.isDebug()) {
+            model.addAttribute("debug",
+                    "methodclass=" + methodClassName + ", callback=" + callback + ", method=" + method);
+        }
         if (methodClassName != null) {
             Class<? extends Method> methodClass = Method.methods.get(methodClassName);
             if (methodClass != null) {
                 try {
                     if (Method.isCredentialsEmpty(methodClass)) {
-                        return this.loginForm(model, methodClassName, callback, method);
+                        return this.login(model, methodClassName, callback, null);
                     } else {
                         method = Method.load(methodClass);
                         model.addAttribute("method", method);
@@ -53,7 +51,7 @@ public class MethodMenu {
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         for (String currMethod : Method.methods.keySet()) {
-            options.put(currMethod, "/method?methodClassName=" + currMethod + "&callback=" + callback);
+            options.put(currMethod, "/method?methodClass=" + currMethod + "&callback=" + callback);
         }
         options.put("Cancel", "/collection");
         model.addAttribute("menuName", "Method Menu");
@@ -62,24 +60,49 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/login")
-    public String loginForm(Model model,
+    public String login(Model model,
             @RequestParam(value = "methodClass", required = true) String methodClassName,
             @RequestParam(value = "callback", required = true) String callback,
-            @ModelAttribute("method") Method method) {
+            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+        if (Logs.isDebug()) {
+            model.addAttribute("debug",
+                    "methodclass=" + methodClassName + ", callback=" + callback + ", params=" + params);
+        }
         Class<? extends Method> methodClass = Method.methods.get(methodClassName);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
-            return methodMenu(model, methodClassName, callback, method);
+            return methodMenu(model, null, callback, null);
         }
         if (!Method.isCredentialsEmpty(methodClass)) {
             model.addAttribute("info", "Found existing credentials");
-            return methodMenu(model, methodClassName, callback, method);
+            return methodMenu(model, methodClassName, callback, null);
         }
-
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
-            return methodMenu(model, methodClassName, callback, method);
+            return methodMenu(model, methodClassName, callback, null);
+        }
+        if (params != null) {
+            Credentials credentials = Credentials.load();
+            for (String name : classCredentials.keySet()) {
+                String value = params.get(name);
+                if (value == null || value.trim().isEmpty()) {
+                    model.addAttribute("error",
+                            "Missing value for: '" + name + "' for '" + methodClassName + "'");
+                    break;
+                }
+                if (!credentials.change(classCredentials.get(name), value)) {
+                    model.addAttribute("error",
+                            "Failed to set credential: '" + name + "' for '" + methodClassName + "'");
+                    break;
+                }
+            }
+            if (Method.isCredentialsEmpty(methodClass)) {
+                model.addAttribute("error", "Missing credentials for '" + methodClassName + "'");
+            } else {
+                model.addAttribute("info", "Successfully signed into '" + methodClassName + "'");
+                return methodMenu(model, methodClassName, callback, null);
+            }
         }
         model.addAttribute("loginName", methodClass.getSimpleName());
         model.addAttribute("loginFields", classCredentials.keySet());
@@ -88,40 +111,9 @@ public class MethodMenu {
         return "login";
     }
 
-    @PostMapping("/method/login")
-    public String login(Model model, HttpServletRequest request,
-            @RequestParam(value = "methodClass", required = true) String methodClassName,
-            @RequestParam(value = "callback", required = true) String callback,
-            @ModelAttribute("method") Method method) {
-        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
-        if (methodClass == null) {
-            model.addAttribute("error", "Unsupported method '" + methodClassName + "' provided in login");
-            return methodMenu(model, null, callback, method);
-        }
-        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
-
-        for (Map.Entry<String, String> entry : classCredentials.entrySet()) {
-            String value = request.getParameter(entry.getKey());
-            if (value == null || value.trim().isEmpty()) {
-                model.addAttribute("error", "Missing value for: " + entry.getKey());
-                return loginForm(model, methodClassName, callback, method);
-            }
-            if (!credentials.change(entry.getValue(), value)) {
-                model.addAttribute("error", "Failed to set credential: " + entry.getKey());
-                return loginForm(model, methodClassName, callback, method);
-            }
-        }
-
-        if (Method.isCredentialsEmpty(methodClass)) {
-            model.addAttribute("error", "Failed to set credentials");
-            return loginForm(model, methodClassName, callback, method);
-        }
-        model.addAttribute("info", "Successfully signed in");
-        return methodMenu(model, methodClassName, callback, method);
-    }
-
     @GetMapping("/collection/import")
-    public String importMenu(Model model, @ModelAttribute("method") Method method) {
+    public String importMenu(Model model,
+            @SessionAttribute(value = "method", required = false) Method method) {
         if (method == null) {
             return methodMenu(model, null, "/collection/import", method);
         }
@@ -163,7 +155,7 @@ public class MethodMenu {
     // TODO: export menu
     @GetMapping("/collection/export")
     public String exportMenu(Model model,
-            @ModelAttribute("method") Method method) {
+            @SessionAttribute(value = "method", required = false) Method method) {
         if (method == null) {
             return methodMenu(model, null, "/collection/export", method);
         }
@@ -176,7 +168,7 @@ public class MethodMenu {
 
     @GetMapping("/collection/sync")
     public String sync(Model model,
-            @ModelAttribute("method") Method method) {
+            @SessionAttribute(value = "method", required = false) Method method) {
         if (method == null) {
             return methodMenu(model, null, "/collection/sync", method);
         }

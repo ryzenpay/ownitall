@@ -15,7 +15,7 @@ import ryzen.ownitall.Storage;
 public class ToolsMenu {
 
     @GetMapping("/tools")
-    public static String toolsMenu(Model model) {
+    public String toolsMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Archive", "/tools/archive");
         options.put("Unarchive", "/tools/unarchive");
@@ -28,14 +28,14 @@ public class ToolsMenu {
     }
 
     @GetMapping("/tools/archive")
-    public static String optionArchive(Model model) {
+    public String optionArchive(Model model) {
         Storage.archive();
         model.addAttribute("info", "Successfully archived");
         return toolsMenu(model);
     }
 
     @GetMapping("/tools/unarchive")
-    public static String optionUnArchive(Model model,
+    public String optionUnArchive(Model model,
             @RequestParam(value = "folderPath", required = false) String folderPath) {
         if (folderPath == null) {
             LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -55,14 +55,14 @@ public class ToolsMenu {
     }
 
     @GetMapping("/tools/clearcredentials")
-    public static String optionClearCredentials(Model model) {
+    public String optionClearCredentials(Model model) {
         Credentials.load().clear();
         model.addAttribute("info", "Successfully cleared credentials");
         return toolsMenu(model);
     }
 
     @GetMapping("/tools/return")
-    public static String optionReturn(Model model) {
+    public String optionReturn(Model model) {
         return "redirect:/";
     }
 }
