@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,6 +45,11 @@ public class MainMenu {
         }
     }
 
+    @EventListener(ContextClosedEvent.class)
+    private void exit() {
+        Main.save();
+    }
+
     @GetMapping("/")
     public String mainMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -67,7 +73,7 @@ public class MainMenu {
     @GetMapping("/exit")
     public String optionExit() {
         logger.info("Exiting program...");
-        Main.save();
+        // saving is handled by exit()
         return "exit";
     }
 }

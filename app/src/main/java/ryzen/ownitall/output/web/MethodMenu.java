@@ -1,14 +1,10 @@
 package ryzen.ownitall.output.web;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -47,13 +43,13 @@ public class MethodMenu {
             }
         }
         if (method != null) {
-            return callback;
+            return "redirect:" + callback;
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         for (String currMethod : Method.methods.keySet()) {
             options.put(currMethod, "/method?methodClass=" + currMethod + "&callback=" + callback);
         }
-        options.put("Cancel", "/collection");
+        options.put("Cancel", "/method/return");
         model.addAttribute("menuName", "Method Menu");
         model.addAttribute("menuOptions", options);
         return "menu";
@@ -111,53 +107,59 @@ public class MethodMenu {
         return "login";
     }
 
-    @GetMapping("/collection/import")
+    @GetMapping("/method/import")
     public String importMenu(Model model,
             @SessionAttribute(value = "method", required = false) Method method) {
+        if (Logs.isDebug()) {
+            model.addAttribute("debug",
+                    "method=" + method);
+        }
         if (method == null) {
-            return methodMenu(model, null, "/collection/import", method);
+            return methodMenu(model, null, "/method/import", null);
+        } else {
+            model.addAttribute("info", "Current method: " + method.getClass().getSimpleName());
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import Library", "/collection/import/library");
-        options.put("Import Liked Songs", "/collection/import/likedsongs");
-        options.put("Import Album(s)", "/collection/import/album/choose");
-        options.put("Import Playlist(s)", "/collection/import/playlist/choose");
+        options.put("Import Library", "/method/import/library");
+        options.put("Import Liked Songs", "/method/import/likedsongs");
+        options.put("Import Album(s)", "/method/import/album/choose");
+        options.put("Import Playlist(s)", "/method/import/playlist/choose");
         options.put("Return", "/method/return");
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
         return "menu";
     }
 
-    @GetMapping("/collection/import/library")
+    @GetMapping("/method/import/library")
     public String optionImportLibrary() {
         // TODO: library progress
         return "redirect:/collection";
     }
 
-    @GetMapping("/collection/import/likedsongs")
+    @GetMapping("/method/import/likedsongs")
     public String optionImportLikedSongs() {
         // TODO: liked songs progress
         return "redirect:/collection";
     }
 
-    @GetMapping("/collection/import/album/choose")
+    @GetMapping("/method/import/album/choose")
     public String optionImportAlbumsMenu() {
         // TODO: albums menu
         return "redirect:/collection";
     }
 
-    @GetMapping("/collection/import/playlist/choose")
+    @GetMapping("/method/import/playlist/choose")
     public String optionImportPlaylistsMenu() {
         // TODO: playlist menu
         return "redirect:/collection";
     }
 
     // TODO: export menu
-    @GetMapping("/collection/export")
+    @GetMapping("/method/export")
     public String exportMenu(Model model,
             @SessionAttribute(value = "method", required = false) Method method) {
         if (method == null) {
-            return methodMenu(model, null, "/collection/export", method);
+            return methodMenu(model, null, "/method/export", method);
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Return", "/method/return");
@@ -166,11 +168,11 @@ public class MethodMenu {
         return "menu";
     }
 
-    @GetMapping("/collection/sync")
+    @GetMapping("/method/sync")
     public String sync(Model model,
             @SessionAttribute(value = "method", required = false) Method method) {
         if (method == null) {
-            return methodMenu(model, null, "/collection/sync", method);
+            return methodMenu(model, null, "/method/sync", method);
         }
         // TODO: sync
         return "redirect:/collection";
