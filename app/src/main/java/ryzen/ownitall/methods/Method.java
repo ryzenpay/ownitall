@@ -33,10 +33,10 @@ public class Method {
         credentialGroups.put(Jellyfin.class, Credentials.getJellyfinCredentials());
     }
 
-    public static Method load(Class<? extends Method> methodClass) throws InterruptedException {
+    public static void setMethod(Class<? extends Method> methodClass) throws InterruptedException {
         if (methodClass == null) {
             logger.debug("null method class provided in load");
-            return null;
+            return;
         }
         if (instance == null || !methodClass.getName().equals(instance.getClass().getName())) {
             try {
@@ -50,7 +50,7 @@ public class Method {
                 throw new InterruptedException(e.getMessage());
             }
         }
-        return instance;
+        return;
     }
 
     public static Method load() {

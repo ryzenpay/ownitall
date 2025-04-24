@@ -28,7 +28,7 @@ public class MethodMenu {
                     if (Method.isCredentialsEmpty(methodClass)) {
                         return this.login(model, methodClassName, callback, null);
                     } else {
-                        Method.load(methodClass);
+                        Method.setMethod(methodClass);
                     }
                 } catch (InterruptedException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);

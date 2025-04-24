@@ -57,7 +57,7 @@ public class Library {
      * @return - new or existing Library
      */
     public static Library load() {
-        if (instance == null) {
+        if (instance == null || !instance.getClass().isInstance(Settings.libraryType)) {
             Class<? extends Library> libraryType = Settings.libraryType;
             if (libraryType != null) {
                 try {

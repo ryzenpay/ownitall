@@ -34,7 +34,7 @@ public class MethodMenu {
         if (Method.isCredentialsEmpty(methodClass)) {
             this.setCredentials(methodClass);
         }
-        Method.load(methodClass);
+        Method.setMethod(methodClass);
     }
 
     private void setCredentials(Class<? extends Method> methodClass) throws InterruptedException {
