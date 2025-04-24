@@ -28,6 +28,7 @@ data/**
 .env
 .appdata
 .cache
+.tmp
 app/logs
 logs
 fullCompile

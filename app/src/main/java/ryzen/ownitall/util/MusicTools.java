@@ -72,9 +72,19 @@ public class MusicTools {
             logger.debug("null uri provided in getExtension");
             return null;
         }
-        String url = uri.getPath();
-        int extensionIndex = url.lastIndexOf('.');
-        return url.substring(extensionIndex + 1).toLowerCase();
+        String path = uri.getPath();
+        if (path == null || path.isEmpty()) {
+            logger.debug("empty path provided for url: '" + uri + "'");
+            return null;
+        }
+        int lastSlashIndex = path.lastIndexOf('/');
+        String lastSegment = path.substring(lastSlashIndex + 1);
+        int extensionIndex = lastSegment.lastIndexOf('.');
+        if (extensionIndex == -1 || extensionIndex == lastSegment.length() - 1) {
+            // logger.debug("url has no extension: '" + uri + "'");
+            return null;
+        }
+        return lastSegment.substring(extensionIndex + 1).toLowerCase();
     }
 
     /**
@@ -136,9 +146,10 @@ public class MusicTools {
             try {
                 String extension = getExtension(coverImage);
                 if (extension == null) {
-                    extension = ".png";
+                    extension = "png";
                 }
-                File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()), extension);
+                File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()),
+                        "." + extension);
                 tempFile.delete(); // to prevent throwing off the downloadimage function
                 downloadImage(coverImage, tempFile);
                 if (tempFile.exists()) {

@@ -5,6 +5,8 @@ import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 
 public class ProgressBar implements AutoCloseable {
+    // private String title;
+    private int maxStep;
     private int step;
     private static boolean cli;
     private me.tongfei.progressbar.ProgressBar cliPb;
@@ -12,6 +14,8 @@ public class ProgressBar implements AutoCloseable {
 
     public ProgressBar(String title, int maxStep) {
         this.step = 0;
+        // this.title = title;
+        this.maxStep = maxStep;
         if (cli) {
             this.cliPb = new ProgressBarBuilder()
                     .setTaskName(title)
@@ -47,7 +51,7 @@ public class ProgressBar implements AutoCloseable {
     @Override
     public void close() {
         if (cli) {
-            cliPb.setExtraMessage("Done").step();
+            cliPb.setExtraMessage("Done").stepTo(this.maxStep);
             cliPb.close();
         }
         if (web) {

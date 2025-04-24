@@ -207,15 +207,15 @@ public class Collection {
         if (likedSongs.isEmpty()) {
             return new ArrayList<>();
         }
-        LikedSongs likedSongs = new LikedSongs();
-        likedSongs.addSongs(likedSongs.getSongs());
+        LikedSongs tmplikedSongs = new LikedSongs();
+        tmplikedSongs.addSongs(likedSongs.getSongs());
         for (Playlist playlist : playlists) {
-            likedSongs.removeSongs(playlist.getSongs());
+            tmplikedSongs.removeSongs(playlist.getSongs());
         }
         for (Album album : albums) {
-            likedSongs.removeSongs(album.getSongs());
+            tmplikedSongs.removeSongs(album.getSongs());
         }
-        return likedSongs.getSongs();
+        return tmplikedSongs.getSongs();
     }
 
     /**
