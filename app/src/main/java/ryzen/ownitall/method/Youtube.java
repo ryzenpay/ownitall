@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.method;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -33,7 +33,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Youtube extends Method {
+public class Youtube extends MethodClass {
     private static final Logger logger = LogManager.getLogger();
     private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
@@ -46,8 +46,7 @@ public class Youtube extends Method {
      * @throws InterruptedException - when user interrupts
      */
     public Youtube() throws InterruptedException {
-        super();
-        if (super.isCredentialsEmpty(Youtube.class)) {
+        if (Method.isCredentialsEmpty(Youtube.class)) {
             throw new InterruptedException("empty youtube credentials");
         }
         this.youtubeApi = this.getService();

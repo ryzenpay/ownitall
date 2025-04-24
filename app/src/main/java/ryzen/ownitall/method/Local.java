@@ -1,33 +1,22 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.method;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.methods.local.Download;
-import ryzen.ownitall.methods.local.Upload;
-import ryzen.ownitall.util.Input;
+import ryzen.ownitall.method.local.Download;
+import ryzen.ownitall.method.local.Upload;
 
-public class Local extends Method {
+public class Local extends MethodClass {
     private Download download;
     private Upload upload;
     private File localLibrary;
 
     public Local() throws InterruptedException {
-        super();
-        if ((Settings.uploadFolder == null || !Settings.uploadFolder.exists()) || this.localLibrary == null) {
-            this.setLocalLibrary();
-        }
-    }
-
-    private void setLocalLibrary() throws InterruptedException {
-        while (this.localLibrary == null || !this.localLibrary.exists()) {
-            System.out.print("Provide absolute path to local music library (folder): ");
-            this.localLibrary = Input.request().getFile(true);
-
+        if (Method.isCredentialsEmpty(Local.class)) {
+            throw new InterruptedException("empty Local credentials");
         }
     }
 

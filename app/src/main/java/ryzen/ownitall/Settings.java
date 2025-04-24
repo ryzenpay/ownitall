@@ -67,16 +67,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static Class<? extends Library> libraryType = null;
 
     /**
-     * youtube dl installation path
-     * 
-     */
-    public static File youtubeDLFile = null;
-    /**
-     * ffmpeg path (required for youtubedl)
-     * 
-     */
-    public static File ffmpegFile = null;
-    /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
@@ -127,12 +117,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static int downloadThreads = 1;
 
-    /**
-     * optional to hardcode local upload path
-     */
-    public static File uploadFolder = null;
-
-    public Settings() throws IOException {
+    private Settings() throws IOException {
         super("settings.json");
     }
 
@@ -158,8 +143,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
         super.clear();
     }
 
-    public boolean change(String name, Object value) {
-        return super.change(name, value);
+    public boolean set(String name, Object value) {
+        return super.set(name, value);
     }
 
     public LinkedHashMap<String, Object> getAll() {

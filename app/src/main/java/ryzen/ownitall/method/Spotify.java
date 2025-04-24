@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.method;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -45,7 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Desktop;
 
-public class Spotify extends Method {
+public class Spotify extends MethodClass {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
     private static final Logger logger = LogManager.getLogger();
@@ -61,8 +61,7 @@ public class Spotify extends Method {
      * @throws InterruptedException - when user interrupts
      */
     public Spotify() throws InterruptedException {
-        super();
-        if (super.isCredentialsEmpty(Spotify.class)) {
+        if (Method.isCredentialsEmpty(Spotify.class)) {
             throw new InterruptedException("empty spotify credentials");
         }
         try {

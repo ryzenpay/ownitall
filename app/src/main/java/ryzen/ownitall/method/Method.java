@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.method;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import ryzen.ownitall.classes.Playlist;
 
 public class Method {
     private static final Logger logger = LogManager.getLogger();
-    public static final LinkedHashMap<String, Class<? extends Method>> methods;
-    public static final LinkedHashMap<Class<? extends Method>, LinkedHashMap<String, String>> credentialGroups;
-    private static Method instance;
+    public static final LinkedHashMap<String, Class<? extends MethodClass>> methods;
+    public static final LinkedHashMap<Class<? extends MethodClass>, LinkedHashMap<String, String>> credentialGroups;
+    private static MethodClass instance;
     // needs to be like this for it to maintain the order
     static {
         methods = new LinkedHashMap<>();
@@ -31,9 +31,10 @@ public class Method {
         credentialGroups.put(Spotify.class, Credentials.getSpotifyCredentials());
         credentialGroups.put(Youtube.class, Credentials.getYoutubeCredentials());
         credentialGroups.put(Jellyfin.class, Credentials.getJellyfinCredentials());
+        credentialGroups.put(Local.class, Credentials.getLocalCredentials());
     }
 
-    public static void setMethod(Class<? extends Method> methodClass) throws InterruptedException {
+    public static void setMethod(Class<? extends MethodClass> methodClass) throws InterruptedException {
         if (methodClass == null) {
             logger.debug("null method class provided in load");
             return;
@@ -53,7 +54,7 @@ public class Method {
         return;
     }
 
-    public static Method load() {
+    public static MethodClass load() {
         return instance;
     }
 
@@ -64,7 +65,7 @@ public class Method {
         return instance.getClass().getSimpleName();
     }
 
-    public static boolean isCredentialsEmpty(Class<? extends Method> type) {
+    public static boolean isCredentialsEmpty(Class<? extends MethodClass> type) {
         if (type == null) {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;

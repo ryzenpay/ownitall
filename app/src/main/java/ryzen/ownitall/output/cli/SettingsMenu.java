@@ -68,7 +68,7 @@ public class SettingsMenu {
         System.out.print(
                 "Enter new '" + settingType.getSimpleName() + "' value for '" + settingName + "': ");
         Object input = Input.request().getValue(settingType);
-        return settings.change(settingName, input);
+        return settings.set(settingName, input);
     }
 
     /**

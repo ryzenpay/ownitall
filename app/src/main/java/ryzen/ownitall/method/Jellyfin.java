@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods;
+package ryzen.ownitall.method;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.ProgressBar;
 
-public class Jellyfin extends Method {
+public class Jellyfin extends MethodClass {
     private static final Logger logger = LogManager.getLogger();
     private static final Library library = Library.load();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -41,8 +41,7 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/
     public Jellyfin() throws InterruptedException {
-        super();
-        if (super.isCredentialsEmpty(Jellyfin.class)) {
+        if (Method.isCredentialsEmpty(Jellyfin.class)) {
             throw new InterruptedException("empty jellyfin credentials");
         }
         this.authenticate();

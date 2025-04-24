@@ -105,22 +105,39 @@ public class Settings {
 
     private void setAll(LinkedHashMap<String, Object> settings) {
         for (String name : settings.keySet()) {
-            try {
-                Field field = this.getClass().getDeclaredField(name);
-                int modifiers = field.getModifiers();
-                if (Modifier.isPrivate(modifiers) || Modifier.isFinal(modifiers)) {
-                    continue;
-                }
-                Object converted = objectMapper.convertValue(settings.get(name), field.getType());
-                field.setAccessible(true);
-                field.set(null, converted);
-                field.setAccessible(false);
-            } catch (IllegalAccessException e) {
-                logger.error("Failed to overwrite value for '" + name + "'", e);
-            } catch (NoSuchFieldException e) {
-                logger.debug("Failed to find '" + name + "'");
-            }
+            this.set(name, settings.get(name));
         }
+    }
+
+    /**
+     * 
+     * @param setting - desired setting to modify
+     * @return - true if modified, false if not
+     * @throws IllegalAccessException - if unaccessible setting is being modified
+     */
+
+    protected boolean set(String name, Object value) {
+        if (name == null) {
+            logger.debug("null name provided in change");
+            return false;
+        }
+        if (value == null) {
+            logger.debug("null value provided in change");
+            return false;
+        }
+        try {
+            Field setting = this.getClass().getDeclaredField(name);
+            Object converted = objectMapper.convertValue(value, setting.getType());
+            setting.setAccessible(true);
+            setting.set(this, converted);
+            setting.setAccessible(false);
+            return true;
+        } catch (NoSuchFieldException e) {
+            logger.error("Unable to find field '" + name + "'", e);
+        } catch (IllegalAccessException e) {
+            logger.error("Exception modifying '" + name + "'", e);
+        }
+        return false;
     }
 
     public Class<?> getType(String name) {
@@ -134,36 +151,6 @@ public class Settings {
             logger.debug("no variable with name '" + name + "' found");
             return null;
         }
-    }
-
-    /**
-     * 
-     * @param setting - desired setting to modify
-     * @return - true if modified, false if not
-     * @throws IllegalAccessException - if unaccessible setting is being modified
-     */
-
-    protected boolean change(String name, Object value) {
-        if (name == null) {
-            logger.debug("null name provided in change");
-            return false;
-        }
-        if (value == null) {
-            logger.debug("null value provided in change");
-            return false;
-        }
-        try {
-            Field setting = this.getClass().getDeclaredField(name);
-            setting.setAccessible(true);
-            setting.set(this, value);
-            setting.setAccessible(false);
-            return true;
-        } catch (NoSuchFieldException e) {
-            logger.error("Unable to find field '" + name + "'", e);
-        } catch (IllegalAccessException e) {
-            logger.error("Exception modifying '" + name + "'", e);
-        }
-        return false;
     }
 
     protected boolean isEmpty(String name) {

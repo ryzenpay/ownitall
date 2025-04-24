@@ -29,7 +29,7 @@ public class LibraryMenu {
         if (library != null) {
             Class<? extends Library> libraryClass = Library.libraries.get(library);
             if (libraryClass != null) {
-                Settings.load().change("libraryType", libraryClass);
+                Settings.load().set("libraryType", libraryClass);
                 if (Library.isCredentialsEmpty(libraryClass)) {
                     // TODO: prompt
                     // setCredentials(libraryClass);

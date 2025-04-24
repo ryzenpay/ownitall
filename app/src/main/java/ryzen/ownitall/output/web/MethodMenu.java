@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Credentials;
-import ryzen.ownitall.methods.Method;
+import ryzen.ownitall.method.Method;
+import ryzen.ownitall.method.MethodClass;
 import ryzen.ownitall.util.Logs;
 
 @Controller
@@ -22,7 +23,7 @@ public class MethodMenu {
                     "methodclass=" + methodClassName + ", callback=" + callback);
         }
         if (methodClassName != null) {
-            Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+            Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
             if (methodClass != null) {
                 try {
                     if (Method.isCredentialsEmpty(methodClass)) {
@@ -59,7 +60,7 @@ public class MethodMenu {
             model.addAttribute("debug",
                     "methodclass=" + methodClassName + ", callback=" + callback + ", params=" + params);
         }
-        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
             return methodMenu(model, null, callback);
@@ -82,7 +83,7 @@ public class MethodMenu {
                             "Missing value for: '" + name + "' for '" + methodClassName + "'");
                     break;
                 }
-                if (!credentials.change(classCredentials.get(name), value)) {
+                if (!credentials.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
                             "Failed to set credential: '" + name + "' for '" + methodClassName + "'");
                     break;
@@ -127,7 +128,8 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Importing '" + Method.getMethodName() + "' music");
         model.addAttribute("redirect", "/method/import");
-        // try (ProgressBar pb = new ProgressBar(this.methodName + " Import", 3)) {
+        // try (ProgressBar pb = new ProgressBar(Method.getMethodName() + " Import", 3))
+        // {
         // pb.step("Liked Songs");
         // this.importLikedSongs();
         // pb.step("Saved Albums");
@@ -138,7 +140,7 @@ public class MethodMenu {
         // model.addAttribute("debug",
         // "Interrupted while importing '" + method.getClass().getSimpleName() + "'
         // music: " + e);
-        // return importMenu(model, method);
+        // return importMenu(model);
         // }
         return "process";
     }

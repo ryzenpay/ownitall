@@ -1,5 +1,6 @@
 package ryzen.ownitall;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -69,7 +70,34 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return credentials;
     }
 
-    public Credentials() throws IOException {
+    /**
+     * Local credentials
+     * 
+     */
+    /**
+     * optional to hardcode local upload path
+     */
+    public static File localFolder = null;
+    /**
+     * youtube dl installation path
+     * 
+     */
+    public static File youtubeDLFile = null;
+    /**
+     * ffmpeg path (required for youtubedl)
+     * 
+     */
+    public static File ffmpegFile = null;
+
+    public static final LinkedHashMap<String, String> getLocalCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("Local Folder", "localFolder");
+        credentials.put("YoutubeDL File", "youtubeDLFile");
+        credentials.put("FFMPeg File", "ffmpegFile");
+        return credentials;
+    }
+
+    private Credentials() throws IOException {
         super("credentials.json");
     }
 
@@ -89,8 +117,8 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         super.save();
     }
 
-    public boolean change(String name, Object value) {
-        return super.change(name, value);
+    public boolean set(String name, Object value) {
+        return super.set(name, value);
     }
 
     public void clear() {

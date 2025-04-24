@@ -1,5 +1,6 @@
 package ryzen.ownitall.output.cli;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -11,14 +12,14 @@ import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.methods.Method;
+import ryzen.ownitall.method.Method;
+import ryzen.ownitall.method.MethodClass;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
 
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger();
-    private static final Credentials credentials = Credentials.load();
 
     public MethodMenu() throws InterruptedException {
         LibraryMenu.initializeLibrary();
@@ -26,18 +27,18 @@ public class MethodMenu {
         if (choice.equals("Exit")) {
             throw new InterruptedException("Cancelled method selection");
         }
-        Class<? extends Method> methodClass = Method.methods.get(choice);
+        Class<? extends MethodClass> methodClass = Method.methods.get(choice);
         this.initializeMethod(methodClass);
     }
 
-    private void initializeMethod(Class<? extends Method> methodClass) throws InterruptedException {
+    private void initializeMethod(Class<? extends MethodClass> methodClass) throws InterruptedException {
         if (Method.isCredentialsEmpty(methodClass)) {
             this.setCredentials(methodClass);
         }
         Method.setMethod(methodClass);
     }
 
-    private void setCredentials(Class<? extends Method> methodClass) throws InterruptedException {
+    private void setCredentials(Class<? extends MethodClass> methodClass) throws InterruptedException {
         if (methodClass == null) {
             logger.debug("null methodClass provided in setCredentials");
             return;
@@ -45,12 +46,13 @@ public class MethodMenu {
         if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
+        Credentials credentials = Credentials.load();
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
-                String value = Input.request().getString();
-                if (!credentials.change(classCredentials.get(name), value)) {
+                Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
+                if (!credentials.set(classCredentials.get(name), value)) {
                     throw new InterruptedException(
                             "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
                 }
@@ -413,7 +415,7 @@ public class MethodMenu {
 
     public void sync() {
         try {
-            Method method = Method.load();
+            MethodClass method = Method.load();
             method.syncLikedSongs();
             method.uploadLikedSongs();
             method.syncPlaylists();

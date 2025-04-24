@@ -1,4 +1,4 @@
-package ryzen.ownitall.methods.local;
+package ryzen.ownitall.method.local;
 
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -18,13 +18,15 @@ import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.method.Local;
+import ryzen.ownitall.method.Method;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
@@ -49,35 +51,10 @@ public class Download {
      * @throws InterruptedException - when user interrupts
      */
     public Download(File localLibrary) throws InterruptedException {
-        if (Settings.youtubeDLFile == null || !Settings.youtubeDLFile.exists()) {
-            this.setYoutubedlPath();
-        }
-        if (Settings.ffmpegFile == null || !Settings.ffmpegFile.exists()) {
-            this.setFfmpegPath();
+        if (Method.isCredentialsEmpty(Local.class)) {
+            throw new InterruptedException("empty jellyfin credentials");
         }
         this.localLibrary = localLibrary;
-    }
-
-    private void setYoutubedlPath() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Local Youtube DL executable path: ");
-            Settings.load().change("youtubeDLFile", Input.request().getFile(true));
-        } catch (InterruptedException e) {
-            logger.debug("Interrutped while setting youtubedl path");
-            throw e;
-        }
-    }
-
-    private void setFfmpegPath() throws InterruptedException {
-        logger.info("A guide to obtaining the following variables is in the readme");
-        try {
-            System.out.print("Local FFMPEG executable path: ");
-            Settings.load().change("ffmpegFile", Input.request().getFile(true));
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting FFMPEG executable path");
-            throw e;
-        }
     }
 
     /**
@@ -156,9 +133,9 @@ public class Download {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(Settings.youtubeDLFile.getAbsolutePath());
+        command.add(Credentials.youtubeDLFile.getAbsolutePath());
         command.add("--ffmpeg-location");
-        command.add(Settings.ffmpegFile.getAbsolutePath());
+        command.add(Credentials.ffmpegFile.getAbsolutePath());
         // command.add("--concurrent-fragments");
         // command.add(String.valueOf(settings.getDownloadThreads()));
         // set up youtube searching and only 1 result

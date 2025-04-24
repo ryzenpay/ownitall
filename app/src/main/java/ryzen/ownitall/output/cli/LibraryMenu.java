@@ -37,7 +37,7 @@ public class LibraryMenu {
             if (choice.equals("Exit")) {
                 throw new InterruptedException("Exited");
             }
-            Settings.load().change("libraryType", Library.libraries.get(choice));
+            Settings.load().set("libraryType", Library.libraries.get(choice));
             initializeLibrary();
             logger.info("Successfully changed library type to '" + choice + "'");
         } catch (InterruptedException e) {
@@ -64,7 +64,7 @@ public class LibraryMenu {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
                 String value = Input.request().getString();
-                if (!credentials.change(classCredentials.get(name), value)) {
+                if (!credentials.set(classCredentials.get(name), value)) {
                     throw new InterruptedException(
                             "Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
                 }
