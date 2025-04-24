@@ -17,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
@@ -28,7 +27,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 public class Download {
     // TODO: multiple download sources
@@ -311,18 +310,16 @@ public class Download {
                 this.writePlaylistData(likedSongsPlaylist, this.localLibrary);
             }
         }
-        try (ProgressBar pb = Progressbar.progressBar("Downloading Liked songs", songs.size() + 1);
+        try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
-                pb.setExtraMessage(song.getName()).step();
+                pb.step(song.getName());
                 this.threadDownload(song, likedSongsFolder);
             }
-            pb.setExtraMessage("cleaning up").step();
-            this.threadShutdown();
-            this.cleanFolder(likedSongsFolder);
-            pb.setExtraMessage("Done");
         }
+        this.threadShutdown();
+        this.cleanFolder(likedSongsFolder);
     }
 
     /**
@@ -370,12 +367,11 @@ public class Download {
      */
     public void downloadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
-        try (ProgressBar pb = Progressbar.progressBar("Playlist Downloads", playlists.size())) {
+        try (ProgressBar pb = new ProgressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
                 this.downloadPlaylist(playlist);
-                pb.setExtraMessage(playlist.getName()).step();
+                pb.step(playlist.getName());
             }
-            pb.setExtraMessage("Done").step();
         }
     }
 
@@ -446,19 +442,17 @@ public class Download {
             playlistFolder = this.localLibrary;
             this.writePlaylistData(playlist, playlistFolder);
         }
-        try (ProgressBar pb = Progressbar.progressBar("Downloading Playlists: " + playlist.getName(),
+        try (ProgressBar pb = new ProgressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
-                pb.setExtraMessage(song.getName()).step();
+                pb.step(song.getName());
                 this.threadDownload(song, playlistFolder);
             }
-            pb.setExtraMessage("cleaning up").step();
-            this.threadShutdown();
-            this.cleanFolder(playlistFolder);
-            pb.setExtraMessage("Done");
         }
+        this.threadShutdown();
+        this.cleanFolder(playlistFolder);
     }
 
     /**
@@ -494,12 +488,11 @@ public class Download {
      */
     public void downloadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
-        try (ProgressBar pb = Progressbar.progressBar("Album Downloads", albums.size())) {
+        try (ProgressBar pb = new ProgressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
                 this.downloadAlbum(album);
-                pb.setExtraMessage(album.getName()).step();
+                pb.step(album.getName());
             }
-            pb.setExtraMessage("Done").step();
         }
     }
 
@@ -543,19 +536,17 @@ public class Download {
         // albums are always in a folder
         File albumFolder = new File(this.localLibrary, album.getFolderName());
         albumFolder.mkdirs();
-        try (ProgressBar pb = Progressbar.progressBar("Download Album: " + album.getName(), album.size() + 1);
+        try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
                 interruptionHandler.throwInterruption();
-                pb.setExtraMessage(song.getName()).step();
+                pb.step(song.getName());
                 this.threadDownload(song, albumFolder);
             }
-            pb.setExtraMessage("cleaning up").step();
-            this.threadShutdown();
-            this.cleanFolder(albumFolder);
-            pb.setExtraMessage("Done");
         }
+        this.threadShutdown();
+        this.cleanFolder(albumFolder);
     }
 
     /**

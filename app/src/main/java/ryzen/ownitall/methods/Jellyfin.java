@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
@@ -31,7 +30,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 public class Jellyfin extends Method {
     private static final Logger logger = LogManager.getLogger();
@@ -69,7 +68,7 @@ public class Jellyfin extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("mediaTypes", "Audio");
@@ -86,7 +85,7 @@ public class Jellyfin extends Method {
                             Song song = this.getSong(id);
                             if (song != null) {
                                 likedSongs.addSong(song);
-                                pb.setExtraMessage(song.getName()).step();
+                                pb.step(song.getName());
                             }
                         }
                     }
@@ -122,14 +121,14 @@ public class Jellyfin extends Method {
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", likedSongs.size() * 2);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size() * 2);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : likedSongs.getSongs()) {
                 String songId = this.getSongId(song);
                 if (songId != null) {
                     interruptionHandler.throwInterruption();
                     this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
-                    pb.setExtraMessage(song.getName()).step();
+                    pb.step(song.getName());
                 }
             }
         }
@@ -139,7 +138,7 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "Playlist");
@@ -154,7 +153,7 @@ public class Jellyfin extends Method {
                                 itemNode.get("Name").asText());
                         if (playlist != null && !playlist.isEmpty()) {
                             playlists.add(playlist);
-                            pb.setExtraMessage(playlist.getName()).step();
+                            pb.step(playlist.getName());
                         }
                     }
                 }
@@ -208,7 +207,7 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "MusicAlbum");
@@ -228,7 +227,7 @@ public class Jellyfin extends Method {
                                 artistName);
                         if (album != null && !album.isEmpty()) {
                             albums.add(album);
-                            pb.setExtraMessage(album.getName()).step();
+                            pb.step(album.getName());
                         }
                     }
                 }

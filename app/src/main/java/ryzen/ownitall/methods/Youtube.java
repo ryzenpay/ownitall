@@ -12,7 +12,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Artist;
@@ -21,7 +20,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -108,7 +107,7 @@ public class Youtube extends Method {
         }
         LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
-        try (ProgressBar pb = Progressbar.progressBar("Liked Song", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Song", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -141,7 +140,7 @@ public class Youtube extends Method {
                                 }
                             }
                             if (song != null) {
-                                pb.setExtraMessage(song.getName()).step();
+                                pb.step(song.getName());
                                 song.addId("youtube", video.getId());
                                 likedSongs.addSong(song);
                             }
@@ -171,7 +170,7 @@ public class Youtube extends Method {
             return null;
         }
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -188,7 +187,7 @@ public class Youtube extends Method {
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (songs != null) {
-                        pb.setExtraMessage(playlist.getName()).step();
+                        pb.step(playlist.getName());
                         playlist.addSongs(songs);
                         playlists.add(playlist);
                     }
@@ -216,7 +215,7 @@ public class Youtube extends Method {
         }
         ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -244,6 +243,7 @@ public class Youtube extends Method {
                         if (song != null) {
                             song.addId("youtube", item.getContentDetails().getVideoId());
                             songs.add(song);
+                            pb.step(song.getName());
                         }
                     }
                 }

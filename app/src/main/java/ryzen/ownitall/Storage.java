@@ -11,14 +11,13 @@ import java.util.LinkedHashSet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,14 +145,13 @@ public class Storage {
      */
     public static void importCollection() {
         logger.debug("importing collection... ");
-        try (ProgressBar pb = Progressbar.progressBar("Opening Saved Data", 3)) {
-            pb.setExtraMessage("Albums");
+        try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
+            pb.step("Albums");
             Collection.addAlbums(importAlbums());
-            pb.setExtraMessage("Playlists").step();
+            pb.step("Playlists");
             Collection.addPlaylists(importPlaylists());
-            pb.setExtraMessage("Liked Songs").step();
+            pb.step("Liked Songs");
             Collection.addLikedSongs(importLikedSongs());
-            pb.setExtraMessage("Done").step();
             logger.debug("Successfully imported collection");
         }
     }
@@ -165,14 +163,13 @@ public class Storage {
      */
     public static void exportCollection() {
         logger.debug("Exporting music collection...");
-        try (ProgressBar pb = Progressbar.progressBar("Saving Data", 3)) {
-            pb.setExtraMessage("Albums");
+        try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
+            pb.step("Albums");
             exportAlbums(Collection.getAlbums());
-            pb.setExtraMessage("Playlists").step();
+            pb.step("Playlists");
             exportPlaylists(Collection.getPlaylists());
-            pb.setExtraMessage("Liked Songs").step();
+            pb.step("Liked Songs");
             exportLikedSongs(Collection.getLikedSongs());
-            pb.setExtraMessage("Done").step();
             logger.debug("Successfully exported music collection");
         }
     }

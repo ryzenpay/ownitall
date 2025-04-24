@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
@@ -18,7 +17,7 @@ import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 public class ModifyMenu {
     private static final Logger logger = LogManager.getLogger();
@@ -381,13 +380,13 @@ public class ModifyMenu {
             return;
         }
         logger.debug("updating current collection with library...");
-        try (ProgressBar pb = Progressbar.progressBar("Updating Collection", Collection.getTotalTrackCount())) {
+        try (ProgressBar pb = new ProgressBar("Updating Collection", Collection.getTotalTrackCount())) {
             for (Song song : Collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {
                     song.merge(foundSong);
                 }
-                pb.setExtraMessage(song.getName()).step();
+                pb.step(song.getName());
             }
             for (Playlist playlist : Collection.getPlaylists()) {
                 for (Song song : playlist.getSongs()) {
@@ -395,7 +394,7 @@ public class ModifyMenu {
                     if (foundSong != null) {
                         song.merge(foundSong);
                     }
-                    pb.setExtraMessage(song.getName()).step();
+                    pb.step(song.getName());
                 }
             }
             for (Album album : Collection.getAlbums()) {
@@ -403,7 +402,7 @@ public class ModifyMenu {
                 if (foundAlbum != null) {
                     album.merge(foundAlbum);
                 }
-                pb.setExtraMessage(album.getName()).stepBy(album.size());
+                pb.step(album.getName(), album.size());
             }
         } catch (InterruptedException e) {
             logger.debug("Interruption caught while verifying inventory", e);

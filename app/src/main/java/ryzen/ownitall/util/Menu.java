@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
 
 public class Menu {
     private static final Logger logger = LogManager.getLogger();
@@ -25,7 +24,7 @@ public class Menu {
         // TODO: print last log?
         // to prevent it being lost and not knowing if it happened or not
         // and then remove the "press enter to continue" elsewhere
-        if (logger.getLevel() != Level.DEBUG) {
+        if (!Logs.isDebug()) {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();

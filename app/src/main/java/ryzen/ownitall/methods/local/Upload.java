@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -17,7 +16,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 import java.time.Duration;
 
@@ -54,19 +53,19 @@ public class Upload {
      */
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = Progressbar.progressBar("Liked Songs", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", this.localLibrary.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            pb.setExtraMessage(this.localLibrary.getName()).step();
             if (Settings.downloadHierachy) {
                 File likedSongsFolder = new File(this.localLibrary, Settings.likedSongName);
                 if (likedSongsFolder.exists()) {
-                    pb.setExtraMessage(likedSongsFolder.getName()).step();
+                    pb.step(likedSongsFolder.getName());
                     ArrayList<Song> songs = getSongs(likedSongsFolder);
                     if (songs != null) {
                         likedSongs.addSongs(songs);
                     }
                 }
             } else {
+                pb.step(this.localLibrary.getName());
                 LikedSongs rootLikedSongs = getLikedSongs(this.localLibrary);
                 if (rootLikedSongs != null) {
                     likedSongs.addSongs(rootLikedSongs.getSongs());
@@ -74,7 +73,7 @@ public class Upload {
                 for (File folder : this.localLibrary.listFiles()) {
                     interruptionHandler.throwInterruption();
                     if (folder.isDirectory()) {
-                        pb.setExtraMessage(folder.getName()).step();
+                        pb.step(folder.getName());
                         LikedSongs folderLikedSongs = getLikedSongs(folder);
                         if (folderLikedSongs != null) {
                             likedSongs.addSongs(folderLikedSongs.getSongs());
@@ -92,8 +91,7 @@ public class Upload {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
@@ -120,16 +118,16 @@ public class Upload {
 
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Playlists", -1);
+        try (ProgressBar pb = new ProgressBar("Playlists", this.localLibrary.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (Settings.downloadHierachy) {
                     if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                         if (!isAlbum(file)) {
+                            pb.step(file.getName());
                             Playlist playlist = getPlaylist(file);
                             if (playlist != null) {
-                                pb.setExtraMessage(playlist.getName()).step();
                                 playlists.add(playlist);
                             }
                         }
@@ -139,9 +137,9 @@ public class Upload {
                         if (file.getName().equalsIgnoreCase(Settings.likedSongName + ".m3u")) {
                             continue;
                         }
+                        pb.step(file.getName());
                         Playlist playlist = getM3UPlaylist(file);
                         if (playlist != null) {
-                            pb.setExtraMessage(playlist.getName()).step();
                             playlists.add(playlist);
                         }
                     }
@@ -222,15 +220,15 @@ public class Upload {
 
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = Progressbar.progressBar("Albums", -1);
+        try (ProgressBar pb = new ProgressBar("Albums", this.localLibrary.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : this.localLibrary.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                     if (isAlbum(file)) {
+                        pb.step(file.getName());
                         Album album = getAlbum(file);
                         if (album != null) {
-                            pb.setExtraMessage(album.getName()).step();
                             albums.add(album);
                         }
                     }

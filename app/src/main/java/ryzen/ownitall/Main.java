@@ -13,6 +13,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logs;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.ProgressBar;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -58,9 +59,11 @@ public class Main {
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
+                ProgressBar.setWeb();
                 ryzen.ownitall.output.web.MainMenu.main(args);
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
+                ProgressBar.setCLI();
                 new ryzen.ownitall.output.cli.MainMenu();
             }
         } catch (ParseException e) {

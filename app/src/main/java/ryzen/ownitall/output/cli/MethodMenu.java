@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import me.tongfei.progressbar.ProgressBar;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
@@ -15,7 +14,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.methods.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.Progressbar;
+import ryzen.ownitall.util.ProgressBar;
 
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger();
@@ -87,14 +86,13 @@ public class MethodMenu {
 
     private void optionImportCollection() {
         logger.debug("Importing '" + this.methodName + "' music...");
-        try (ProgressBar pb = Progressbar.progressBar(this.methodName + " Import", 3)) {
-            pb.setExtraMessage("Liked Songs");
+        try (ProgressBar pb = new ProgressBar(this.methodName + " Import", 3)) {
+            pb.step("Liked Songs");
             this.importLikedSongs();
-            pb.setExtraMessage("Saved Albums").step();
+            pb.step("Saved Albums");
             this.importAlbums();
-            pb.setExtraMessage("Playlists").step();
+            pb.step("Playlists");
             this.importPlaylists();
-            pb.setExtraMessage("Done").step();
             logger.debug("done importing '" + this.methodName + "' music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + this.methodName + "' music", e);
@@ -287,14 +285,13 @@ public class MethodMenu {
     private void optionExportCollection() {
         logger.debug("Uploading '" + this.methodName + "' (" + Collection.getTotalTrackCount()
                 + ") music...");
-        try (ProgressBar pb = Progressbar.progressBar(this.methodName + " Upload", 3)) {
-            pb.setExtraMessage("Liked Songs");
+        try (ProgressBar pb = new ProgressBar(this.methodName + " Upload", 3)) {
+            pb.step("Liked Songs");
             this.exportLikedSongs();
-            pb.setExtraMessage("Saved Albums").step();
+            pb.step("Saved Albums");
             this.exportAlbums();
-            pb.setExtraMessage("Playlists").step();
+            pb.step("Playlists");
             this.exportPlaylists();
-            pb.setExtraMessage("Done").step();
             logger.debug("done uploading '" + this.methodName + "' music");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while uploading '" + this.methodName + "' music", e);
