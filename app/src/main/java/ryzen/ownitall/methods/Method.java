@@ -53,6 +53,17 @@ public class Method {
         return instance;
     }
 
+    public static Method load() {
+        return instance;
+    }
+
+    public static String getMethodName() {
+        if (instance == null) {
+            return null;
+        }
+        return instance.getClass().getSimpleName();
+    }
+
     public static boolean isCredentialsEmpty(Class<? extends Method> type) {
         if (type == null) {
             logger.debug("null type provided in isCredentialsEmpty");

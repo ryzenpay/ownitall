@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Default Title</title>
+    <title th:text="${processName}"></title>
 </head>
 
 <body>
@@ -12,10 +12,7 @@
     <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
     <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-
-    <footer>
-        <p>OWNITALL</p>
-    </footer>
+    <h1 th:text="${processName}"></h1>
 </body>
 
 </html>

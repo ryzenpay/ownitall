@@ -6,24 +6,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.methods.Method;
 import ryzen.ownitall.util.Logs;
 
 @Controller
-@SessionAttributes({ "method" })
 public class MethodMenu {
     @GetMapping("/method")
     public String methodMenu(Model model,
             @RequestParam(value = "methodClass", required = false) String methodClassName,
-            @RequestParam(value = "callback", required = true) String callback,
-            @SessionAttribute(value = "method", required = false) Method method) {
+            @RequestParam(value = "callback", required = true) String callback) {
         if (Logs.isDebug()) {
             model.addAttribute("debug",
-                    "methodclass=" + methodClassName + ", callback=" + callback + ", method=" + method);
+                    "methodclass=" + methodClassName + ", callback=" + callback);
         }
         if (methodClassName != null) {
             Class<? extends Method> methodClass = Method.methods.get(methodClassName);
@@ -32,8 +28,7 @@ public class MethodMenu {
                     if (Method.isCredentialsEmpty(methodClass)) {
                         return this.login(model, methodClassName, callback, null);
                     } else {
-                        method = Method.load(methodClass);
-                        model.addAttribute("method", method);
+                        Method.load(methodClass);
                     }
                 } catch (InterruptedException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
@@ -42,7 +37,7 @@ public class MethodMenu {
                 model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
             }
         }
-        if (method != null) {
+        if (Method.load() != null) {
             return "redirect:" + callback;
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -67,16 +62,16 @@ public class MethodMenu {
         Class<? extends Method> methodClass = Method.methods.get(methodClassName);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
-            return methodMenu(model, null, callback, null);
+            return methodMenu(model, null, callback);
         }
         if (!Method.isCredentialsEmpty(methodClass)) {
             model.addAttribute("info", "Found existing credentials");
-            return methodMenu(model, methodClassName, callback, null);
+            return methodMenu(model, methodClassName, callback);
         }
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
-            return methodMenu(model, methodClassName, callback, null);
+            return methodMenu(model, methodClassName, callback);
         }
         if (params != null) {
             Credentials credentials = Credentials.load();
@@ -97,7 +92,7 @@ public class MethodMenu {
                 model.addAttribute("error", "Missing credentials for '" + methodClassName + "'");
             } else {
                 model.addAttribute("info", "Successfully signed into '" + methodClassName + "'");
-                return methodMenu(model, methodClassName, callback, null);
+                return methodMenu(model, methodClassName, callback);
             }
         }
         model.addAttribute("loginName", methodClass.getSimpleName());
@@ -108,17 +103,11 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/import")
-    public String importMenu(Model model,
-            @SessionAttribute(value = "method", required = false) Method method) {
-        if (Logs.isDebug()) {
-            model.addAttribute("debug",
-                    "method=" + method);
+    public String importMenu(Model model) {
+        if (Method.load() == null) {
+            return methodMenu(model, null, "/method/import");
         }
-        if (method == null) {
-            return methodMenu(model, null, "/method/import", null);
-        } else {
-            model.addAttribute("info", "Current method: " + method.getClass().getSimpleName());
-        }
+        model.addAttribute("info", "Current method: " + Method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/method/import/library");
         options.put("Import Liked Songs", "/method/import/likedsongs");
@@ -131,9 +120,27 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/import/library")
-    public String optionImportLibrary() {
-        // TODO: library progress
-        return "redirect:/collection";
+    public String optionImportLibrary(Model model) {
+        if (Method.load() == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/import");
+        }
+        model.addAttribute("processName", "Importing '" + Method.getMethodName() + "' music");
+        model.addAttribute("redirect", "/method/import");
+        // try (ProgressBar pb = new ProgressBar(this.methodName + " Import", 3)) {
+        // pb.step("Liked Songs");
+        // this.importLikedSongs();
+        // pb.step("Saved Albums");
+        // this.importAlbums();
+        // pb.step("Playlists");
+        // this.importPlaylists();
+        // } catch (InterruptedException e) {
+        // model.addAttribute("debug",
+        // "Interrupted while importing '" + method.getClass().getSimpleName() + "'
+        // music: " + e);
+        // return importMenu(model, method);
+        // }
+        return "process";
     }
 
     @GetMapping("/method/import/likedsongs")
@@ -156,10 +163,9 @@ public class MethodMenu {
 
     // TODO: export menu
     @GetMapping("/method/export")
-    public String exportMenu(Model model,
-            @SessionAttribute(value = "method", required = false) Method method) {
-        if (method == null) {
-            return methodMenu(model, null, "/method/export", method);
+    public String exportMenu(Model model) {
+        if (Method.load() == null) {
+            return methodMenu(model, null, "/method/export");
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Return", "/method/return");
@@ -169,10 +175,9 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/sync")
-    public String sync(Model model,
-            @SessionAttribute(value = "method", required = false) Method method) {
-        if (method == null) {
-            return methodMenu(model, null, "/method/sync", method);
+    public String sync(Model model) {
+        if (Method.load() == null) {
+            return methodMenu(model, null, "/method/sync");
         }
         // TODO: sync
         return "redirect:/collection";
