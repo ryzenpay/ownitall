@@ -57,7 +57,7 @@ public class CollectionMenu {
 
     private void optionSync() {
         try {
-            new MethodMenu().sync();
+            new MethodMenu().syncMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrutped while setting up sync menu", e);
         }

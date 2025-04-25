@@ -31,7 +31,7 @@ public class LibraryMenu {
             if (libraryClass != null) {
                 Settings.load().set("libraryType", libraryClass);
                 if (Library.isCredentialsEmpty(libraryClass)) {
-                    // TODO: prompt
+                    // TODO: library credentials prompt
                     // setCredentials(libraryClass);
                 }
                 model.addAttribute("info", "Successfully changed library type to '" + library + "'");

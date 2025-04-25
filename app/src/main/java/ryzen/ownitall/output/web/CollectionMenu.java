@@ -12,15 +12,30 @@ public class CollectionMenu {
     @GetMapping("/collection")
     public String collectionMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import", "/method/import");
-        options.put("Export", "/method/export");
-        options.put("Sync", "/method/sync");
+        options.put("Import", "/collection/import");
+        options.put("Export", "/collection/export");
+        options.put("Sync", "/collection/sync");
         options.put("Modify", "/collection/modify");
         options.put("Browse", "/collection/browse");
         options.put("Return", "/collection/return");
         model.addAttribute("menuName", "Collection Menu");
         model.addAttribute("menuOptions", options);
         return "menu";
+    }
+
+    @GetMapping("/collection/import")
+    public String optionImport() {
+        return "redirect:/method/import?callback=/method/import";
+    }
+
+    @GetMapping("/collection/export")
+    public String optionExport() {
+        return "redirect:/method/import?callback=/method/export";
+    }
+
+    @GetMapping("/collection/sync")
+    public String optionSync() {
+        return "redirect:/method/import?callback=/method/sync";
     }
 
     @GetMapping("/collection/modify")

@@ -104,6 +104,14 @@ public class Settings {
     }
 
     private void setAll(LinkedHashMap<String, Object> settings) {
+        if (settings == null) {
+            logger.debug("null settings provided in setAll");
+            return;
+        }
+        if (settings.isEmpty()) {
+            logger.warn("no settings provided in setAll");
+            return;
+        }
         for (String name : settings.keySet()) {
             this.set(name, settings.get(name));
         }

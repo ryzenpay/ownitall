@@ -7,16 +7,18 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 
 public class Method {
+    // TODO: clear logger info messages to make it web compatible
     private static final Logger logger = LogManager.getLogger();
     public static final LinkedHashMap<String, Class<? extends MethodClass>> methods;
     public static final LinkedHashMap<Class<? extends MethodClass>, LinkedHashMap<String, String>> credentialGroups;
-    private static MethodClass instance;
+    private MethodClass instance;
     // needs to be like this for it to maintain the order
     static {
         methods = new LinkedHashMap<>();
@@ -34,7 +36,15 @@ public class Method {
         credentialGroups.put(Local.class, Credentials.getLocalCredentials());
     }
 
-    public static void setMethod(Class<? extends MethodClass> methodClass) throws InterruptedException {
+    public Method(Class<? extends MethodClass> methodClass) throws InterruptedException {
+        this.setMethod(methodClass);
+    }
+
+    public String getMethodName() {
+        return instance.getClass().getSimpleName();
+    }
+
+    public void setMethod(Class<? extends MethodClass> methodClass) throws InterruptedException {
         if (methodClass == null) {
             logger.debug("null method class provided in load");
             return;
@@ -52,17 +62,6 @@ public class Method {
             }
         }
         return;
-    }
-
-    public static MethodClass load() {
-        return instance;
-    }
-
-    public static String getMethodName() {
-        if (instance == null) {
-            return null;
-        }
-        return instance.getClass().getSimpleName();
     }
 
     public static boolean isCredentialsEmpty(Class<? extends MethodClass> type) {
@@ -84,68 +83,80 @@ public class Method {
         return false;
     }
 
-    public LikedSongs getLikedSongs() throws InterruptedException {
-        logger.warn("Unsupported method to get liked songs");
-        return null;
+    public LikedSongs importLikedSongs() throws InterruptedException {
+        return instance.getLikedSongs();
+    }
+
+    public ArrayList<Playlist> importPlaylists() throws InterruptedException {
+        return instance.getPlaylists();
+    }
+
+    public Playlist importPlaylist(String playlistId, String playlistName) throws InterruptedException {
+        if (playlistId == null) {
+            logger.debug("null playlist id provided in importPlaylist");
+            return null;
+        }
+        return instance.getPlaylist(playlistId, playlistName);
+    }
+
+    public ArrayList<Album> importAlbums() throws InterruptedException {
+        return instance.getAlbums();
+    }
+
+    public Album importAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException {
+        if (albumId == null) {
+            logger.debug("null album id provided in importAlbum");
+            return null;
+        }
+        return instance.getAlbum(albumId, albumName, albumArtistName);
+    }
+
+    public void exportLikedSongs() throws InterruptedException {
+        instance.uploadLikedSongs();
+    }
+
+    public void exportPlaylists() throws InterruptedException {
+        instance.uploadPlaylists();
+    }
+
+    public void exportPlaylist(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided to exportPlaylist");
+            return;
+        }
+        instance.uploadPlaylist(playlist);
+    }
+
+    public void exportAlbums() throws InterruptedException {
+        instance.uploadAlbums();
+    }
+
+    public void exportAlbum(Album album) throws InterruptedException {
+        if (album == null) {
+            logger.debug("null album provided to exportPlaylist");
+            return;
+        }
+        instance.uploadAlbum(album);
     }
 
     public void syncLikedSongs() throws InterruptedException {
-        logger.warn("Unsupported method to sync liked songs");
-    }
-
-    public void uploadLikedSongs() throws InterruptedException {
-        logger.warn("Unsupported method to upload liked songs");
-    }
-
-    public ArrayList<Playlist> getPlaylists() throws InterruptedException {
-        logger.warn("Unsupported method to get playlists");
-        return null;
+        instance.syncLikedSongs();
+        instance.uploadLikedSongs();
     }
 
     public void syncPlaylists() throws InterruptedException {
-        logger.warn("Unsupported method to sync playlists");
-    }
-
-    public void uploadPlaylists() throws InterruptedException {
-        logger.warn("Unsupported method to upload playlists");
-    }
-
-    public Playlist getPlaylist(String playlistId, String playlistName) throws InterruptedException {
-        logger.warn("Unsupported method to get playlist");
-        return null;
-    }
-
-    public void syncPlaylist(Playlist playlist) throws InterruptedException {
-        logger.warn("Unsupported method to sync playlist");
-    }
-
-    public void uploadPlaylist(Playlist playlist) throws InterruptedException {
-        logger.warn("Unsupported method to upload playlist");
-    }
-
-    public ArrayList<Album> getAlbums() throws InterruptedException {
-        logger.warn("Unsupported method to get albums");
-        return null;
+        instance.syncPlaylists();
+        for (Playlist playlist : Collection.getPlaylists()) {
+            instance.syncPlaylist(playlist);
+            instance.uploadPlaylist(playlist);
+        }
     }
 
     public void syncAlbums() throws InterruptedException {
-        logger.warn("Unsupported method to sync albums");
-    }
-
-    public void uploadAlbums() throws InterruptedException {
-        logger.warn("Unsupported method to upload albums");
-    }
-
-    public Album getAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException {
-        logger.warn("Unsupported method to get album");
-        return null;
-    }
-
-    public void syncAlbum(Album album) throws InterruptedException {
-        logger.warn("Unsupported method to sync album");
-    }
-
-    public void uploadAlbum(Album album) throws InterruptedException {
-        logger.warn("Unsupported method to upload album");
+        instance.syncAlbums();
+        for (Album album : Collection.getAlbums()) {
+            instance.syncAlbum(album);
+            instance.uploadAlbum(album);
+        }
     }
 }

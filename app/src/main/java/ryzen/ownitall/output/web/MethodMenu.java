@@ -14,6 +14,8 @@ import ryzen.ownitall.util.Logs;
 
 @Controller
 public class MethodMenu {
+    private Method method;
+
     @GetMapping("/method")
     public String methodMenu(Model model,
             @RequestParam(value = "methodClass", required = false) String methodClassName,
@@ -29,7 +31,7 @@ public class MethodMenu {
                     if (Method.isCredentialsEmpty(methodClass)) {
                         return this.login(model, methodClassName, callback, null);
                     } else {
-                        Method.setMethod(methodClass);
+                        this.method = new Method(methodClass);
                     }
                 } catch (InterruptedException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
@@ -38,7 +40,7 @@ public class MethodMenu {
                 model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
             }
         }
-        if (Method.load() != null) {
+        if (this.method != null) {
             return "redirect:" + callback;
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -105,10 +107,10 @@ public class MethodMenu {
 
     @GetMapping("/method/import")
     public String importMenu(Model model) {
-        if (Method.load() == null) {
+        if (this.method == null) {
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("info", "Current method: " + Method.getMethodName());
+        model.addAttribute("info", "Current method: " + this.method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/method/import/library");
         options.put("Import Liked Songs", "/method/import/likedsongs");
@@ -122,11 +124,11 @@ public class MethodMenu {
 
     @GetMapping("/method/import/library")
     public String optionImportLibrary(Model model) {
-        if (Method.load() == null) {
+        if (this.method == null) {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + Method.getMethodName() + "' music");
+        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' music");
         model.addAttribute("redirect", "/method/import");
         // try (ProgressBar pb = new ProgressBar(Method.getMethodName() + " Import", 3))
         // {
@@ -166,7 +168,8 @@ public class MethodMenu {
     // TODO: export menu
     @GetMapping("/method/export")
     public String exportMenu(Model model) {
-        if (Method.load() == null) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -178,7 +181,8 @@ public class MethodMenu {
 
     @GetMapping("/method/sync")
     public String sync(Model model) {
-        if (Method.load() == null) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
         // TODO: sync
@@ -187,6 +191,11 @@ public class MethodMenu {
 
     @GetMapping("/method/return")
     public String optionReturn(Model model) {
+        if (this.method != null) {
+            // reset so they can change method as they back out (its persistent due to
+            // springboot)
+            this.method = null;
+        }
         return "redirect:/collection";
     }
 }
