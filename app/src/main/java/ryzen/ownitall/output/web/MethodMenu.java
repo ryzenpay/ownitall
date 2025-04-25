@@ -116,32 +116,32 @@ public class MethodMenu {
         }
         model.addAttribute("info", "Current method: " + this.method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import Library", "/method/import/library");
+        options.put("Import Library", "/method/import/collection");
         options.put("Import Liked Songs", "/method/import/likedsongs");
-        options.put("Import Album(s)", "/method/import/album/choose");
-        options.put("Import Playlist(s)", "/method/import/playlist/choose");
+        options.put("Import Album(s)", "/method/import/albums");
+        options.put("Import Playlist(s)", "/method/import/playlists");
         options.put("Return", "/method/return");
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
         return "menu";
     }
 
-    @GetMapping("/method/import/library")
+    @GetMapping("/method/import/collection")
     public String optionImportCollection(Model model) {
         if (this.method == null) {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' music");
-        model.addAttribute("processFunction", "/method/import/library");
+        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processFunction", "/method/import/collection");
         model.addAttribute("redirect", "/method/import");
         return "process";
     }
 
-    @PostMapping("/method/import/library")
-    public void importLibrary(Model model) {
+    @PostMapping("/method/import/collection")
+    public void importCollection() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/library");
+            logger.debug("method was not initialized before /method/import/collection");
             return;
         }
         try {
@@ -149,54 +149,329 @@ public class MethodMenu {
             method.importAlbums();
             method.importPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'music: ", e);
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection: ", e);
         }
     }
 
     @GetMapping("/method/import/likedsongs")
-    public String optionImportLikedSongs() {
-        // TODO: liked songs progress
-        return "redirect:/collection";
+    public String optionImportLikedSongs(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/import");
+        }
+        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processFunction", "/method/import/likedsongs");
+        model.addAttribute("redirect", "/method/import");
+        return "process";
     }
 
-    @GetMapping("/method/import/album/choose")
-    public String optionImportAlbumsMenu() {
-        // TODO: albums menu
-        return "redirect:/collection";
+    @PostMapping("/method/import/likedsongs")
+    public void importLikedSongs() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/import/likedsongs");
+            return;
+        }
+        try {
+            method.importLikedSongs();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+        }
     }
 
-    @GetMapping("/method/import/playlist/choose")
-    public String optionImportPlaylistsMenu() {
-        // TODO: playlist menu
-        return "redirect:/collection";
+    // TODO: import individual album
+    @GetMapping("/method/import/albums")
+    public String optionImportAlbums(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/import");
+        }
+        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processFunction", "/method/import/albums");
+        model.addAttribute("redirect", "/method/import");
+        return "process";
     }
 
-    // TODO: export menu
+    @PostMapping("/method/import/albums")
+    public void importAlbums() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/import/albums");
+            return;
+        }
+        try {
+            method.importAlbums();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums: ", e);
+        }
+    }
+
+    // TODO: import individual playlist
+    @GetMapping("/method/import/playlists")
+    public String optionImportPlaylists(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/import");
+        }
+        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processFunction", "/method/import/playlists");
+        model.addAttribute("redirect", "/method/import");
+        return "process";
+    }
+
+    @PostMapping("/method/import/playlists")
+    public void importPlaylists() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/import/playlists");
+            return;
+        }
+        try {
+            method.importPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists: ", e);
+        }
+    }
+
     @GetMapping("/method/export")
     public String exportMenu(Model model) {
         if (this.method == null) {
-            model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
+        model.addAttribute("info", "Current method: " + this.method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("Export Library", "/method/export/collection");
+        options.put("Export Liked Songs", "/method/export/likedsongs");
+        options.put("Export Album(s)", "/method/export/albums");
+        options.put("Export Playlist(s)", "/method/export/playlists");
         options.put("Return", "/method/return");
         model.addAttribute("menuName", "Export Menu");
         model.addAttribute("menuOptions", options);
         return "menu";
     }
 
+    @GetMapping("/method/export/collection")
+    public String optionExportCollection(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/export");
+        }
+        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processFunction", "/method/export/collection");
+        model.addAttribute("redirect", "/method/export");
+        return "process";
+    }
+
+    @PostMapping("/method/export/collection")
+    public void exportCollection() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/export/collection");
+            return;
+        }
+        try {
+            method.exportLikedSongs();
+            method.exportAlbums();
+            method.exportPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'collection: ", e);
+        }
+    }
+
+    @GetMapping("/method/export/likedsongs")
+    public String optionExportLikedSongs(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/export");
+        }
+        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processFunction", "/method/export/likedsongs");
+        model.addAttribute("redirect", "/method/export");
+        return "process";
+    }
+
+    @PostMapping("/method/export/likedsongs")
+    public void exportLikedSongs() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/import/likedsongs");
+            return;
+        }
+        try {
+            method.exportLikedSongs();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+        }
+    }
+
+    // TODO: export individual album
+    @GetMapping("/method/export/albums")
+    public String optionExportAlbums(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/export");
+        }
+        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processFunction", "/method/export/albums");
+        model.addAttribute("redirect", "/method/export");
+        return "process";
+    }
+
+    @PostMapping("/method/export/albums")
+    public void exportAlbums() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/export/albums");
+            return;
+        }
+        try {
+            method.exportAlbums();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums: ", e);
+        }
+    }
+
+    // TODO: export individual playlist
+    @GetMapping("/method/export/playlists")
+    public String optionExportPlaylists(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/export");
+        }
+        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processFunction", "/method/export/playlists");
+        model.addAttribute("redirect", "/method/export");
+        return "process";
+    }
+
+    @PostMapping("/method/export/playlists")
+    public void exportPlaylists() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/export/playlists");
+            return;
+        }
+        try {
+            method.exportPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists: ", e);
+        }
+    }
+
     @GetMapping("/method/sync")
-    public String sync(Model model) {
+    public String syncMenu(Model model) {
+        if (this.method == null) {
+            return methodMenu(model, null, "/method/sync");
+        }
+        model.addAttribute("info", "Current method: " + this.method.getMethodName());
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("Sync Library", "/method/sync/collection");
+        options.put("Sync Liked Songs", "/method/sync/likedsongs");
+        options.put("Sync Albums", "/method/sync/albums");
+        options.put("Sync Playlists", "/method/sync/playlists");
+        options.put("Return", "/method/return");
+        model.addAttribute("menuName", "Sync Menu");
+        model.addAttribute("menuOptions", options);
+        return "menu";
+    }
+
+    @GetMapping("/method/sync/collection")
+    public String optionSyncCollection(Model model) {
         if (this.method == null) {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
-        // TODO: sync
-        return "redirect:/collection";
+        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processFunction", "/method/sync/collection");
+        model.addAttribute("redirect", "/method/sync");
+        return "process";
+    }
+
+    @PostMapping("/method/sync/collection")
+    public void syncCollection() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/sync/collection");
+            return;
+        }
+        try {
+            method.syncLikedSongs();
+            method.syncAlbums();
+            method.syncPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection: ", e);
+        }
+    }
+
+    @GetMapping("/method/sync/likedsongs")
+    public String optionSyncLikedSongs(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/sync");
+        }
+        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processFunction", "/method/sync/likedsongs");
+        model.addAttribute("redirect", "/method/sync");
+        return "process";
+    }
+
+    @PostMapping("/method/sync/likedsongs")
+    public void syncLikedSongs() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/sync/likedsongs");
+            return;
+        }
+        try {
+            method.syncLikedSongs();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+        }
+    }
+
+    @GetMapping("/method/sync/albums")
+    public String optionSyncAlbums(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/sync");
+        }
+        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processFunction", "/method/sync/albums");
+        model.addAttribute("redirect", "/method/sync");
+        return "process";
+    }
+
+    @PostMapping("/method/sync/albums")
+    public void syncAlbums() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/sync/albums");
+            return;
+        }
+        try {
+            method.syncAlbums();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums: ", e);
+        }
+    }
+
+    @GetMapping("/method/sync/playlists")
+    public String optionSyncPlaylists(Model model) {
+        if (this.method == null) {
+            model.addAttribute("error", "Method was not initialized");
+            return methodMenu(model, null, "/method/sync");
+        }
+        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processFunction", "/method/sync/playlists");
+        model.addAttribute("redirect", "/method/sync");
+        return "process";
+    }
+
+    @PostMapping("/method/sync/playlists")
+    public void syncPlaylists() {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/sync/playlists");
+            return;
+        }
+        try {
+            method.syncPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists: ", e);
+        }
     }
 
     @GetMapping("/method/return")
-    public String optionReturn(Model model) {
+    public String optionReturn() {
         if (this.method != null) {
             // reset so they can change method as they back out (its persistent due to
             // springboot)

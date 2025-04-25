@@ -52,7 +52,7 @@ public class ToolsMenu {
                     model.addAttribute("error", "Exception converting file path: " + e);
                 }
             }
-            options.put("Exit", "/tools");
+            options.put("Cancel", "/tools");
             model.addAttribute("menuName", "Choose Folder to Unarchive");
             model.addAttribute("menuOptions", options);
             return "menu";

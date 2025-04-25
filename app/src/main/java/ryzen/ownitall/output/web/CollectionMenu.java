@@ -25,17 +25,17 @@ public class CollectionMenu {
 
     @GetMapping("/collection/import")
     public String optionImport() {
-        return "redirect:/method/import?callback=/method/import";
+        return "redirect:/method/import";
     }
 
     @GetMapping("/collection/export")
     public String optionExport() {
-        return "redirect:/method/import?callback=/method/export";
+        return "redirect:/method/export";
     }
 
     @GetMapping("/collection/sync")
     public String optionSync() {
-        return "redirect:/method/import?callback=/method/sync";
+        return "redirect:/method/sync";
     }
 
     @GetMapping("/collection/modify")
