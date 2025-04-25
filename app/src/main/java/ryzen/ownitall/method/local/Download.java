@@ -25,11 +25,11 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Local;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.ProgressBar;
 
 public class Download {
     // TODO: multiple download sources

@@ -15,7 +15,6 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.MethodClass;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.ProgressBar;
 
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger();

@@ -5,21 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${processName}"></title>
-    <style>
-        .progress-container {
-            width: 100%;
-            background-color: #f3f3f3;
-        }
-
-        .progress-bar {
-            width: 1%;
-            height: 30px;
-            background-color: #4caf50;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-        }
-    </style>
 </head>
 
 <body>
@@ -53,18 +38,15 @@
 
         function cancelProcess() {
             fetch("/method/cancel", {
-                method: "GET" // default, so we can ignore
+                method: "GET"
             })
+            document.getElementById('cancel-button').style.display = 'none';
+            document.getElementById('back-button').style.display = 'block';
         }
 
         function goBack() {
             window.location.href = "$redirect";
         }
-
-        // Simulate progress steps in real application, you would use AJAX to update progress dynamically
-        setTimeout(() => updateProgressBar(33), 1000);
-        setTimeout(() => updateProgressBar(33), 2000);
-        setTimeout(() => updateProgressBar(34), 3000);
     </script>
 </body>
 

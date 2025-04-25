@@ -32,9 +32,9 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.ProgressBar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -382,7 +382,7 @@ public class Spotify extends MethodClass {
                         .build();
                 try {
                     saveTracksForUserRequest.execute();
-                    pb.step("", currentIds.length);
+                    pb.step(currentIds.length);
                     logger.debug("added liked songs (" + currentIds.length + "): " + currentIds.toString());
                     offset += limit;
                     if (offset > currentIds.length) {
@@ -617,7 +617,7 @@ public class Spotify extends MethodClass {
                         .saveAlbumsForCurrentUser(currentAlbumIds)
                         .build();
                 try {
-                    pb.step("", currentAlbumIds.length);
+                    pb.step(currentAlbumIds.length);
                     saveAlbumsForCurrentUserRequest.execute();
                     offset += limit;
                     if (limit > currentAlbumIds.length) {

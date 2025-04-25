@@ -29,8 +29,8 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.ProgressBar;
 
 public class Jellyfin extends MethodClass {
     private static final Logger logger = LogManager.getLogger();

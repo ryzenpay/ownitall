@@ -17,7 +17,6 @@ import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.ProgressBar;
 
 public class ModifyMenu {
     private static final Logger logger = LogManager.getLogger();
