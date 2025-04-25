@@ -351,11 +351,12 @@ public class Spotify extends MethodClass {
 
     @Override
     public void uploadLikedSongs() throws InterruptedException {
-        LikedSongs likedSongs = this.getLikedSongs();
-        if (likedSongs == null) {
-            return;
+        LikedSongs likedSongs = new LikedSongs();
+        likedSongs.addSongs(Collection.getLikedSongs().getSongs());
+        LikedSongs currLikedSongs = this.getLikedSongs();
+        if (currLikedSongs != null) {
+            likedSongs.removeSongs(currLikedSongs.getSongs());
         }
-        likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
         ArrayList<String> songIds = new ArrayList<>();
         for (Song song : likedSongs.getSongs()) {
             String id = this.getTrackId(song);
@@ -370,7 +371,7 @@ public class Spotify extends MethodClass {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size());
+        try (ProgressBar pb = new ProgressBar("Liked Songs", songIds.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();

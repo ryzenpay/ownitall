@@ -120,7 +120,7 @@ public class Jellyfin extends MethodClass {
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size() * 2);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : likedSongs.getSongs()) {
                 String songId = this.getSongId(song);
