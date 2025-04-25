@@ -5,6 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${processName}"></title>
+    <script type="text/javascript">
+        async function performFunction() {
+            try {
+                const response = await fetch('${processFunction}', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    console.log('Executed ${processFunction}');
+                    showProcessText();
+                } else {
+                    console.error('${processFunction} request failed.');
+                }
+            } catch (error) {
+                console.error('Error during shutdown:', error);
+            }
+        }
+
+        function showProcessText() {
+            let textBlock = document.createElement('div');
+            textBlock.innerText = '${processName} is in action...';
+            document.body.appendChild(textBlock);
+        }
+        window.onload = performFunction;
+    </script>
 </head>
 
 <body>
@@ -45,7 +69,7 @@
         }
 
         function goBack() {
-            window.location.href = "$redirect";
+            window.location.href = "@{${redirect}}";
         }
     </script>
 </body>

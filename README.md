@@ -10,6 +10,7 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 -[x] non-interactive mode (for automation)  
 -[x] syncronization between libraries (put them all into ownitall and then have the same library elsewhere)  
 -[ ]  Web GUI
+-[ ] automation (cronjob, ...)
 
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
@@ -17,7 +18,9 @@ all there currently is, is the automated javadoc documentation: https://ryzenpay
 ## Flags
 - -h : help command, and will display all current flags (this list might be out of date)  
 - -i : non interactive mode which requires a string parameter in the format of ex: `1,1,4,1,0,3,2,C:\\Users\\ryzen\\Music,0,0`  
-        - agreements are accepted, enter is automatically passed and if windows filenames need to have `\\`  
+        - agreements are automatically accepted  
+        - enter is automatically passed  
+        - if windows filenames need to have `\\`, just `/` for linux
 - -l : log level, supports: debug, info, off  
 - -w : web gui (rather than default cli gui)  
 

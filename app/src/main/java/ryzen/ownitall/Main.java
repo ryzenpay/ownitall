@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logs;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;

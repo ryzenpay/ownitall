@@ -2,9 +2,12 @@ package ryzen.ownitall.output.web;
 
 import java.util.LinkedHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Credentials;
@@ -14,6 +17,7 @@ import ryzen.ownitall.util.Logs;
 
 @Controller
 public class MethodMenu {
+    private static final Logger logger = LogManager.getLogger();
     private Method method;
 
     @GetMapping("/method")
@@ -123,28 +127,30 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/import/library")
-    public String optionImportLibrary(Model model) {
+    public String optionImportCollection(Model model) {
         if (this.method == null) {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
         model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' music");
+        model.addAttribute("processFunction", "/method/import/library");
         model.addAttribute("redirect", "/method/import");
-        // try (ProgressBar pb = new ProgressBar(Method.getMethodName() + " Import", 3))
-        // {
-        // pb.step("Liked Songs");
-        // this.importLikedSongs();
-        // pb.step("Saved Albums");
-        // this.importAlbums();
-        // pb.step("Playlists");
-        // this.importPlaylists();
-        // } catch (InterruptedException e) {
-        // model.addAttribute("debug",
-        // "Interrupted while importing '" + method.getClass().getSimpleName() + "'
-        // music: " + e);
-        // return importMenu(model);
-        // }
         return "process";
+    }
+
+    @PostMapping("/method/import/library")
+    public void importLibrary(Model model) {
+        if (this.method == null) {
+            logger.debug("method was not initialized before /method/import/library");
+            return;
+        }
+        try {
+            method.importLikedSongs();
+            method.importAlbums();
+            method.importPlaylists();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'music: ", e);
+        }
     }
 
     @GetMapping("/method/import/likedsongs")

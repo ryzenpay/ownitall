@@ -1,6 +1,11 @@
 package ryzen.ownitall.output.web;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
 import org.springframework.stereotype.Controller;
@@ -40,16 +45,22 @@ public class ToolsMenu {
         if (folderPath == null) {
             LinkedHashMap<String, String> options = new LinkedHashMap<>();
             for (File file : Storage.getArchiveFolders()) {
-                options.put(file.getName(), file.getAbsolutePath());
+                try {
+                    String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
+                    options.put(file.getName(), "/tools/unarchive?folderPath=" + path);
+                } catch (UnsupportedEncodingException e) {
+                    model.addAttribute("error", "Exception converting file path: " + e);
+                }
             }
-            options.put("Exit", "Exit");
-            model.addAttribute("options", options);
-            return "unarchive";
+            options.put("Exit", "/tools");
+            model.addAttribute("menuName", "Choose Folder to Unarchive");
+            model.addAttribute("menuOptions", options);
+            return "menu";
         } else if (folderPath.equals("Exit")) {
             return toolsMenu(model);
         } else {
             Storage.unArchive(new File(folderPath));
-            model.addAttribute("info", "Successfully unarchived");
+            model.addAttribute("info", "Successfully unarchived '" + folderPath + "'");
             return toolsMenu(model);
         }
     }

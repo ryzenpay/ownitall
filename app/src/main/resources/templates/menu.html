@@ -13,12 +13,6 @@
     <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
     <h1 th:text="${menuName}"></h1>
-    <!-- <div th:each="entry : ${menuOptions}">
-        <form th:action="@{${entry.value}}" method="get">
-            <button type="submit" th:text="${entry.key}"></button>
-            <br>
-        </form>
-    </div> -->
     <div th:each="entry : ${menuOptions}">
         <a class="menu-option-link" th:href="@{${entry.value}}" th:text="${entry.key}"></a>
         <br />
