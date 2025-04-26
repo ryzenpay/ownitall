@@ -15,7 +15,7 @@
         <a class="menu-option-link" th:href="@{${entry.value}}" th:text="${entry.key}"></a>
         <br />
     </div>
-    <button type="button" th:onclick="window.location.href=@{${callback}}">Return</button>
+    <a th:href="@{${callback}}">Return</a>
 </body>
 
 </html>

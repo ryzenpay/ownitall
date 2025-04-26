@@ -21,7 +21,7 @@
         <input type="hidden" name="methodClass" th:value="${methodClass}" />
         <input type="hidden" name="callback" th:value="${callback}" />
         <button type="submit">Login</button>
-        <button type="button" th:onclick="window.location.href=@{${callback}}">Cancel</button>
+        <a th:href="@{${callback}}">Return</a>
     </form>
 </body>
 

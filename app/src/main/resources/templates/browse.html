@@ -11,7 +11,7 @@
 <body>
     <div th:insert="~{templates :: logging}"></div>
     <h1>Music Library</h1>
-    <button type="button" th:onclick="window.location.href=@{${callback}}">Return</button>
+    <a th:href="@{${callback}}">Return</a>
 
     <div class="likedsongs">
         <h2 th:text="'Liked songs (' + ${likedsongs.size()} + ')'"></h2>
