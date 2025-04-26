@@ -1,0 +1,70 @@
+.alert-info {
+    background-color: #e7f3fe;
+    color: #31708f;
+}
+
+.alert-debug {
+    background-color: #f2f2f2;
+    color: #a68e5f;
+}
+
+.alert-warning {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+}
+
+.alert-error {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Common styling for sections */
+.likedsongs,
+.albums,
+.playlists,
+.playlist,
+.album {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.album .details,
+.playlist .details {
+    flex: 1;
+}
+
+/* Cover image styling common to both album and playlist */
+img.coverImage {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+}
+
+/* Specific styling for songs */
+.song {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+/* Cover image styling specific to songs */
+.song img.coverImage {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+}
+
+/* Song details styling */
+.song .details {
+    flex: 1;
+}

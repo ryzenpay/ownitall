@@ -27,10 +27,6 @@ public class MethodMenu {
             throw new InterruptedException("Cancelled method selection");
         }
         Class<? extends MethodClass> methodClass = Method.methods.get(choice);
-        this.initializeMethod(methodClass);
-    }
-
-    private void initializeMethod(Class<? extends MethodClass> methodClass) throws InterruptedException {
         if (method != null) {
             if (method.getMethodName().equals(methodClass.getSimpleName())) {
                 return;
@@ -39,7 +35,15 @@ public class MethodMenu {
         if (Method.isCredentialsEmpty(methodClass)) {
             this.setCredentials(methodClass);
         }
-        method = new Method(methodClass);
+        try {
+            method = new Method(methodClass);
+        } catch (InterruptedException e) {
+            logger.info("Interrupted while setting up method, could be due to invalid credentials", e);
+            Method.clearCredentials(methodClass);
+            this.setCredentials(methodClass);
+        } finally {
+            method = new Method(methodClass);
+        }
     }
 
     private void setCredentials(Class<? extends MethodClass> methodClass) throws InterruptedException {

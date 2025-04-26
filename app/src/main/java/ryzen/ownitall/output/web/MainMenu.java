@@ -57,9 +57,9 @@ public class MainMenu {
         options.put("save", "/save");
         options.put("tools", "/tools");
         options.put("settings", "/settings");
-        options.put("exit", "/exit");
         model.addAttribute("menuName", "Main Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/exit");
         return "menu";
     }
 

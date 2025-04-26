@@ -9,7 +9,7 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 # Current goals  
 -[x] non-interactive mode (for automation)  
 -[x] syncronization between libraries (put them all into ownitall and then have the same library elsewhere)  
--[ ]  Web GUI
+-[ ]  Web GUI  
 -[ ] automation (cronjob, ...)
 
 # documentation  

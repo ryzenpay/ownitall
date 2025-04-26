@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import ryzen.ownitall.Collection;
+
 @Controller
 public class CollectionMenu {
 
@@ -17,9 +19,9 @@ public class CollectionMenu {
         options.put("Sync", "/collection/sync");
         options.put("Modify", "/collection/modify");
         options.put("Browse", "/collection/browse");
-        options.put("Return", "/collection/return");
         model.addAttribute("menuName", "Collection Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/collection/return");
         return "menu";
     }
 
@@ -45,9 +47,12 @@ public class CollectionMenu {
     }
 
     @GetMapping("/collection/browse")
-    public String optionBrowse() {
-        // TODO: browse (print inventory)
-        return "redirect:/collection";
+    public String optionBrowse(Model model) {
+        model.addAttribute("playlists", Collection.getPlaylists());
+        model.addAttribute("albums", Collection.getAlbums());
+        model.addAttribute("likedsongs", Collection.getLikedSongs());
+        model.addAttribute("callback", "/collection");
+        return "browse";
     }
 
     @GetMapping("/collection/return")

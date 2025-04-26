@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
     <title th:text="${processName}"></title>
     <script type="text/javascript">
         async function performFunction() {
@@ -32,10 +33,7 @@
 </head>
 
 <body>
-    <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
-    <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
-    <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
-    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:insert="~{templates :: logging}"></div>
     <h1 th:text="${processName}"></h1>
 
     <div class="progress-container">
@@ -43,7 +41,7 @@
     </div>
 
     <button id="cancel-button" onclick="cancelProcess()">Cancel</button>
-    <button id="back-button" style="display: none;" onclick="goBack()">Back</button>
+    <button id="back-button" style="display: none;" th:onclick="window.location.href=@{${callback}}">Return</button>
 
     <script>
         let progress = 0;
@@ -68,9 +66,6 @@
             document.getElementById('back-button').style.display = 'block';
         }
 
-        function goBack() {
-            window.location.href = "@{${redirect}}";
-        }
     </script>
 </body>
 

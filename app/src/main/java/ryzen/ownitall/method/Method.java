@@ -14,7 +14,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 
 public class Method {
-    // TODO: clear logger info messages to make it web compatible
     private static final Logger logger = LogManager.getLogger();
     public static final LinkedHashMap<String, Class<? extends MethodClass>> methods;
     public static final LinkedHashMap<Class<? extends MethodClass>, LinkedHashMap<String, String>> credentialGroups;

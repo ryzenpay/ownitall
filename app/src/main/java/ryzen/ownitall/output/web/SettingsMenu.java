@@ -17,9 +17,9 @@ public class SettingsMenu {
         options.put("Save Settings", "/settings/save");
         options.put("Change Setting", "/settings/change");
         options.put("Clear Cache", "/settings/reset");
-        options.put("Return", "/settings/return");
         model.addAttribute("menuName", "Settings Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/settings/return");
         return "menu";
     }
 

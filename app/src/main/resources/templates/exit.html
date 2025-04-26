@@ -1,10 +1,10 @@
-<!-- src/main/resources/templates/exit.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
     <title>Exiting...</title>
     <script type="text/javascript">
         async function performShutdown() {
@@ -34,10 +34,7 @@
 </head>
 
 <body>
-    <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
-    <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
-    <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
-    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:insert="~{templates :: logging}"></div>
     <h1>Exiting...</h1>
 </body>
 

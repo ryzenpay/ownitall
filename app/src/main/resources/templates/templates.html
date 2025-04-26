@@ -1,0 +1,8 @@
+<!-- logging-messages.html -->
+<div th:fragment="logging">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
+    <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
+    <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
+    <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+</div>

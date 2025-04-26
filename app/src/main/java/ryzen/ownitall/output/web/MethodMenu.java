@@ -57,9 +57,9 @@ public class MethodMenu {
         for (String currMethod : Method.methods.keySet()) {
             options.put(currMethod, "/method?methodClass=" + currMethod + "&callback=" + callback);
         }
-        options.put("Cancel", "/method/return");
         model.addAttribute("menuName", "Method Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/return");
         return "menu";
     }
 
@@ -149,9 +149,9 @@ public class MethodMenu {
         options.put("Import Liked Songs", "/method/import/likedsongs");
         options.put("Import Album(s)", "/method/import/albums");
         options.put("Import Playlist(s)", "/method/import/playlists");
-        options.put("Return", "/method/return");
         model.addAttribute("menuName", "Import Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/return");
         return "menu";
     }
 
@@ -270,9 +270,9 @@ public class MethodMenu {
         options.put("Export Liked Songs", "/method/export/likedsongs");
         options.put("Export Album(s)", "/method/export/albums");
         options.put("Export Playlist(s)", "/method/export/playlists");
-        options.put("Return", "/method/return");
         model.addAttribute("menuName", "Export Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/return");
         return "menu";
     }
 
@@ -391,9 +391,9 @@ public class MethodMenu {
         options.put("Sync Liked Songs", "/method/sync/likedsongs");
         options.put("Sync Albums", "/method/sync/albums");
         options.put("Sync Playlists", "/method/sync/playlists");
-        options.put("Return", "/method/return");
         model.addAttribute("menuName", "Sync Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/return");
         return "menu";
     }
 

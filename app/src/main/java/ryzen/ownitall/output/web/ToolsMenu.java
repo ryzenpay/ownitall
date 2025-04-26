@@ -2,8 +2,6 @@ package ryzen.ownitall.output.web;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -26,9 +24,9 @@ public class ToolsMenu {
         options.put("Unarchive", "/tools/unarchive");
         options.put("Library", "/library");
         options.put("Reset Credentials", "/tools/clearcredentials");
-        options.put("Return", "/tools/return");
         model.addAttribute("menuName", "Tools Menu");
         model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/tools/return");
         return "menu";
     }
 
@@ -52,9 +50,9 @@ public class ToolsMenu {
                     model.addAttribute("error", "Exception converting file path: " + e);
                 }
             }
-            options.put("Cancel", "/tools");
             model.addAttribute("menuName", "Choose Folder to Unarchive");
             model.addAttribute("menuOptions", options);
+            model.addAttribute("callback", "/tools");
             return "menu";
         } else if (folderPath.equals("Exit")) {
             return toolsMenu(model);
