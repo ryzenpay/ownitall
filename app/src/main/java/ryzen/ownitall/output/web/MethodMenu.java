@@ -33,12 +33,18 @@ public class MethodMenu {
             if (methodClass != null) {
                 try {
                     if (Method.isCredentialsEmpty(methodClass)) {
-                        return this.login(model, methodClassName, callback, null);
+                        return this.loginForm(model, methodClassName, callback);
                     } else {
                         this.method = new Method(methodClass);
                     }
                 } catch (InterruptedException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
+                    if (Method.clearCredentials(methodClass)) {
+                        return this.loginForm(model, methodClassName, callback);
+                    } else {
+                        model.addAttribute("error", "Interrupted while setting up '" + methodClassName
+                                + ", and unable to clear credentials");
+                    }
                 }
             } else {
                 model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
@@ -58,28 +64,49 @@ public class MethodMenu {
     }
 
     @GetMapping("/method/login")
-    public String login(Model model,
+    public String loginForm(Model model,
             @RequestParam(value = "methodClass", required = true) String methodClassName,
-            @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+            @RequestParam(value = "callback", required = true) String callback) {
+
         if (Logs.isDebug()) {
             model.addAttribute("debug",
-                    "methodclass=" + methodClassName + ", callback=" + callback + ", params=" + params);
+                    "methodclass=" + methodClassName + ", callback=" + callback);
         }
+
         Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
             return methodMenu(model, null, callback);
         }
+
         if (!Method.isCredentialsEmpty(methodClass)) {
             model.addAttribute("info", "Found existing credentials");
             return methodMenu(model, methodClassName, callback);
         }
+
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return methodMenu(model, methodClassName, callback);
         }
+
+        model.addAttribute("loginName", methodClass.getSimpleName());
+        model.addAttribute("loginFields", classCredentials.keySet());
+        model.addAttribute("methodClass", methodClassName);
+        model.addAttribute("callback", callback);
+
+        return "login";
+    }
+
+    @PostMapping("/method/login")
+    public String login(Model model,
+            @RequestParam(value = "methodClass", required = true) String methodClassName,
+            @RequestParam(value = "callback", required = true) String callback,
+            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+
+        Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
+        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+
         if (params != null) {
             Credentials credentials = Credentials.load();
             for (String name : classCredentials.keySet()) {
@@ -102,10 +129,12 @@ public class MethodMenu {
                 return methodMenu(model, methodClassName, callback);
             }
         }
+
         model.addAttribute("loginName", methodClass.getSimpleName());
         model.addAttribute("loginFields", classCredentials.keySet());
         model.addAttribute("methodClass", methodClassName);
         model.addAttribute("callback", callback);
+
         return "login";
     }
 

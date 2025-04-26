@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Credentials;
@@ -35,7 +36,7 @@ public class LibraryMenu {
             if (libraryClass != null) {
                 Settings.load().set("libraryType", libraryClass);
                 if (Library.isCredentialsEmpty(libraryClass)) {
-                    return login(model, library, "/library/change", null);
+                    return loginForm(model, library, "/library/change");
                 }
                 model.addAttribute("info", "Successfully changed library type to '" + library + "'");
             } else {
@@ -52,28 +53,49 @@ public class LibraryMenu {
     }
 
     @GetMapping("/library/login")
-    public String login(Model model,
+    public String loginForm(Model model,
             @RequestParam(value = "methodClass", required = true) String libraryClassName,
-            @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+            @RequestParam(value = "callback", required = true) String callback) {
+
         if (Logs.isDebug()) {
             model.addAttribute("debug",
-                    "libraryclass=" + libraryClassName + ", callback=" + callback + ", params=" + params);
+                    "libraryclass=" + libraryClassName + ", callback=" + callback);
         }
+
         Class<? extends Library> libraryClass = Library.libraries.get(libraryClassName);
         if (libraryClass == null) {
             model.addAttribute("error", "Unsupported library provided");
             return optionChange(model, null);
         }
+
         if (!Library.isCredentialsEmpty(libraryClass)) {
             model.addAttribute("info", "Found existing credentials");
             return optionChange(model, libraryClassName);
         }
+
         LinkedHashMap<String, String> classCredentials = Library.credentialGroups.get(libraryClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return optionChange(model, libraryClassName);
         }
+
+        model.addAttribute("loginName", libraryClass.getSimpleName());
+        model.addAttribute("loginFields", classCredentials.keySet());
+        model.addAttribute("methodClass", libraryClassName);
+        model.addAttribute("callback", callback);
+
+        return "login";
+    }
+
+    @PostMapping("/library/login")
+    public String login(Model model,
+            @RequestParam(value = "methodClass", required = true) String libraryClassName,
+            @RequestParam(value = "callback", required = true) String callback,
+            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+
+        Class<? extends Library> libraryClass = Library.libraries.get(libraryClassName);
+        LinkedHashMap<String, String> classCredentials = Library.credentialGroups.get(libraryClass);
+
         if (params != null) {
             Credentials credentials = Credentials.load();
             for (String name : classCredentials.keySet()) {
@@ -96,10 +118,12 @@ public class LibraryMenu {
                 return optionChange(model, libraryClassName);
             }
         }
+
         model.addAttribute("loginName", libraryClass.getSimpleName());
         model.addAttribute("loginFields", classCredentials.keySet());
         model.addAttribute("methodClass", libraryClassName);
         model.addAttribute("callback", callback);
+
         return "login";
     }
 

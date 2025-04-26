@@ -83,6 +83,25 @@ public class Method {
         return false;
     }
 
+    public static boolean clearCredentials(Class<? extends MethodClass> type) {
+        if (type == null) {
+            logger.debug("null type provided in clearCredentials");
+            return true;
+        }
+        Credentials credentials = Credentials.load();
+        LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
+        if (credentialVars == null) {
+            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
+            return false;
+        }
+        for (String varName : credentialVars.values()) {
+            if (!credentials.set(varName, "")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public LikedSongs importLikedSongs() throws InterruptedException {
         return instance.getLikedSongs();
     }
