@@ -10,7 +10,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class SettingsMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(SettingsMenu.class);
 
     public SettingsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

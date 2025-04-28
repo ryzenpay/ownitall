@@ -21,7 +21,7 @@ import ryzen.ownitall.util.Logs;
 
 @Controller
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
     @GetMapping("/method")

@@ -27,7 +27,7 @@ import org.jaudiotagger.tag.reference.ID3V2Version;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 public class MusicTools {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MusicTools.class);
 
     /**
      * convert duration into music time (mm:ss)

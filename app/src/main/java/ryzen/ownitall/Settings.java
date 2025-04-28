@@ -15,7 +15,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     private static Settings instance;
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Settings.class);
 
     // the defaults: (non final & protected for the ones that can be changed by
     // user)

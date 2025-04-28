@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Storage {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Storage.class);
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     /**

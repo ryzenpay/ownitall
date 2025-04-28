@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class InterruptionHandler implements AutoCloseable {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(InterruptionHandler.class);
     private SignalHandler signalHandler;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
 

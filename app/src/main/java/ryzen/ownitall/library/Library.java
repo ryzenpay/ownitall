@@ -23,7 +23,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
 public class Library {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
     public static final LinkedHashMap<Class<? extends Library>, LinkedHashMap<String, String>> credentialGroups;

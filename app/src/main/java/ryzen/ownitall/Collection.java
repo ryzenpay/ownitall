@@ -23,7 +23,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
 public class Collection {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Collection.class);
     private static LikedSongs likedSongs = new LikedSongs();
     private static ArrayList<Playlist> playlists = new ArrayList<>();
     private static ArrayList<Album> albums = new ArrayList<>();

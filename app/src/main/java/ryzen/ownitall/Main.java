@@ -17,7 +17,7 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 public class Main {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
     /**
      * main function launching the main ownitall menu

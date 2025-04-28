@@ -17,7 +17,7 @@ import ryzen.ownitall.method.Method;
 //TODO: update readme
 // port forwarding?
 public class SoulSeek extends Download {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(SoulSeek.class);
 
     public SoulSeek() throws InterruptedException {
         if (Method.isCredentialsEmpty(SoulSeek.class)) {

@@ -15,7 +15,7 @@ import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
 public class Method {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Method.class);
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
     public static final LinkedHashMap<Class<? extends Method>, LinkedHashMap<String, String>> credentialGroups;
     // TODO: interface functions of they are only import/export

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Settings {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Settings.class);
     private static final ObjectMapper objectMapper = new ObjectMapper()
             // needed to include null values
             .setSerializationInclusion(JsonInclude.Include.ALWAYS);

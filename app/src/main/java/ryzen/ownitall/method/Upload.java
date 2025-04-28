@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 public class Upload extends Method {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Upload.class);
     private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
         {

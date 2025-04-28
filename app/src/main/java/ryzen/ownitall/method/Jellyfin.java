@@ -32,7 +32,7 @@ import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 
 public class Jellyfin extends Method {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Jellyfin.class);
     private static final Library library = Library.load();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private String userId;

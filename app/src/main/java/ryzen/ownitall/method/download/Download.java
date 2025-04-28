@@ -35,7 +35,7 @@ public class Download extends Method {
     // youtube (already implemented)
     // tidal
     // PRIORITY: soulseek
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Download.class);
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));

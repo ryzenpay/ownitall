@@ -19,7 +19,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class ModifyMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ModifyMenu.class);
     private static final Library library = Library.load();
 
     public ModifyMenu() {

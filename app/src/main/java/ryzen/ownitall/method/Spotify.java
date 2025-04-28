@@ -47,7 +47,7 @@ import java.awt.Desktop;
 public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";

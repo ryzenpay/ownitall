@@ -16,7 +16,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
     public MethodMenu() throws InterruptedException {

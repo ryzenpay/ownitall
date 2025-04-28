@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Input {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
     private static Scanner scanner;
     private static Queue<String> nonInteractive = new LinkedList<>();
