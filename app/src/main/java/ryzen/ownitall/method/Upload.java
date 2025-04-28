@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.local;
+package ryzen.ownitall.method;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
-public class Upload {
+public class Upload extends Method {
     private static final Logger logger = LogManager.getLogger();
     private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
@@ -36,8 +36,10 @@ public class Upload {
     };
     private File localLibrary;
 
-    public Upload(File localLibrary) {
-        this.localLibrary = localLibrary;
+    public Upload() throws InterruptedException {
+        if (Method.isCredentialsEmpty(Upload.class)) {
+            throw new InterruptedException("empty spotify credentials");
+        }
     }
 
     /**
@@ -51,6 +53,7 @@ public class Upload {
      * @return - constructed likedsongs
      * @throws InterruptedException - when user interrupts
      */
+    @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
         try (ProgressBar pb = new ProgressBar("Liked Songs", this.localLibrary.listFiles().length);
@@ -116,6 +119,7 @@ public class Upload {
         return likedSongs;
     }
 
+    @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
         try (ProgressBar pb = new ProgressBar("Playlists", this.localLibrary.listFiles().length);
@@ -126,7 +130,7 @@ public class Upload {
                     if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                         if (!isAlbum(file)) {
                             pb.step(file.getName());
-                            Playlist playlist = getPlaylist(file);
+                            Playlist playlist = this.getPlaylist(file.getAbsolutePath(), null);
                             if (playlist != null) {
                                 playlists.add(playlist);
                             }
@@ -199,12 +203,21 @@ public class Upload {
         return playlist;
     }
 
-    public static Playlist getPlaylist(File folder) throws InterruptedException {
-        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+    @Override
+    public Playlist getPlaylist(String path, String name) throws InterruptedException {
+        if (path == null) {
             logger.debug("null folder, non existing or non folder provided in getPlaylist");
             return null;
         }
-        Playlist playlist = new Playlist(folder.getName());
+        File folder = new File(path);
+        if (!folder.exists() || !folder.isDirectory()) {
+            logger.debug("non existing or non folder provided in getPlaylist");
+            return null;
+        }
+        if (name == null) {
+            name = folder.getName();
+        }
+        Playlist playlist = new Playlist(name);
         ArrayList<Song> songs = getSongs(folder);
         if (songs == null || songs.isEmpty()) {
             logger.debug("no songs found in playlist: '" + folder.getAbsolutePath() + "'");
@@ -218,6 +231,7 @@ public class Upload {
         return playlist;
     }
 
+    @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
         try (ProgressBar pb = new ProgressBar("Albums", this.localLibrary.listFiles().length);
@@ -227,7 +241,7 @@ public class Upload {
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                     if (isAlbum(file)) {
                         pb.step(file.getName());
-                        Album album = getAlbum(file);
+                        Album album = this.getAlbum(file.getAbsolutePath(), null, null);
                         if (album != null) {
                             albums.add(album);
                         }
@@ -245,11 +259,19 @@ public class Upload {
      * @return - constructed Album without songs
      * @throws InterruptedException - when user interrupts
      */
-    public static Album getAlbum(File folder) throws InterruptedException {
-        // parse nfo file?
-        if (folder == null || !folder.exists() || !folder.isDirectory()) {
-            logger.debug("null folder or non existant or non directory folder provided in construct Album");
+    @Override
+    public Album getAlbum(String path, String name, String albumArtistName) throws InterruptedException {
+        if (path == null) {
+            logger.debug("null path provided in getAlbum");
             return null;
+        }
+        File folder = new File(path);
+        if (!folder.exists() || !folder.isDirectory()) {
+            logger.debug("non existant or non directory provided in getAlbum");
+            return null;
+        }
+        if (name == null) {
+            name = folder.getName();
         }
         Album album = new Album(folder.getName());
         ArrayList<Song> songs = getSongs(folder);

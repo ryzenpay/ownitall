@@ -33,7 +33,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Youtube extends MethodClass {
+public class Youtube extends Method {
     private static final Logger logger = LogManager.getLogger();
     private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;

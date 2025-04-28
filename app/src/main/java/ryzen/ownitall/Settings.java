@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.method.download.Download;
+import ryzen.ownitall.method.download.YT_dl;
 
 public class Settings extends ryzen.ownitall.util.Settings {
 
@@ -62,10 +64,16 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static boolean libraryVerified = true;
 
     /**
-     * int representative of which library to use
+     * class representative of which library to use
+     * null for none
      */
     public static Class<? extends Library> libraryType = null;
 
+    /**
+     * class representative of which download class to use
+     * default is YT_dl.class
+     */
+    public static Class<? extends Download> downloadType = YT_dl.class;
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
@@ -73,20 +81,15 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static String downloadFormat = "mp3";
 
     /**
-     * optional to hardcode local download path
-     */
-    public static File downloadFolder = null;
-
-    /**
      * option to hardcode cookies file
      */
-    public static File downloadCookieFile = null;
+    public static File yt_dlCookieFile = null;
 
     /**
      * option to hardcode browser to get cookies from
      * options: chrome, firefox, check yt-dlp docs,...
      */
-    public static String downloadCookieBrowser = "";
+    public static String yt_dlCookieBrowser = "";
 
     /**
      * download all files in a hierachy method
@@ -111,7 +114,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
-    public static int downloadQuality = 5;
+    public static int yt_dlQuality = 5;
     /**
      * enable yt-dlp threading
      */

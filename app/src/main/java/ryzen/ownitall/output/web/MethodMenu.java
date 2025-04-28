@@ -1,5 +1,6 @@
 package ryzen.ownitall.output.web;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,9 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
-import ryzen.ownitall.method.MethodClass;
 import ryzen.ownitall.util.Logs;
 
 @Controller
@@ -29,13 +33,13 @@ public class MethodMenu {
                     "methodclass=" + methodClassName + ", callback=" + callback);
         }
         if (methodClassName != null) {
-            Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
+            Class<? extends Method> methodClass = Method.methods.get(methodClassName);
             if (methodClass != null) {
                 try {
                     if (Method.isCredentialsEmpty(methodClass)) {
                         return this.loginForm(model, methodClassName, callback);
                     } else {
-                        this.method = new Method(methodClass);
+                        this.method = Method.initMethod(methodClass);
                     }
                 } catch (InterruptedException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
@@ -73,7 +77,7 @@ public class MethodMenu {
                     "methodclass=" + methodClassName + ", callback=" + callback);
         }
 
-        Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
+        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
             return methodMenu(model, null, callback);
@@ -104,7 +108,7 @@ public class MethodMenu {
             @RequestParam(value = "callback", required = true) String callback,
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
-        Class<? extends MethodClass> methodClass = Method.methods.get(methodClassName);
+        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
 
         if (params != null) {
@@ -143,7 +147,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("info", "Current method: " + this.method.getMethodName());
+        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/method/import/collection");
         options.put("Import Liked Songs", "/method/import/likedsongs");
@@ -161,7 +165,7 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/import/collection");
         model.addAttribute("redirect", "/method/import");
         return "process";
@@ -174,9 +178,9 @@ public class MethodMenu {
             return;
         }
         try {
-            method.importLikedSongs();
-            method.importAlbums();
-            method.importPlaylists();
+            method.uploadLikedSongs();
+            method.uploadAlbums();
+            method.uploadPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection: ", e);
         }
@@ -188,22 +192,29 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/import/likedsongs");
         model.addAttribute("redirect", "/method/import");
         return "process";
     }
 
     @PostMapping("/method/import/likedsongs")
-    public void importLikedSongs() {
+    // TODO: use response int
+    public int importLikedSongs() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/likedsongs");
-            return;
+            return -1;
         }
         try {
-            method.importLikedSongs();
+            LikedSongs likedSongs = method.getLikedSongs();
+            if (likedSongs != null) {
+                Collection.addLikedSongs(likedSongs);
+                return likedSongs.size();
+            }
+            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+            return -1;
         }
     }
 
@@ -214,22 +225,28 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/import/albums");
         model.addAttribute("redirect", "/method/import");
         return "process";
     }
 
     @PostMapping("/method/import/albums")
-    public void importAlbums() {
+    public int importAlbums() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/albums");
-            return;
+            return -1;
         }
         try {
-            method.importAlbums();
+            ArrayList<Album> albums = method.getAlbums();
+            if (albums != null) {
+                Collection.addAlbums(albums);
+                return albums.size();
+            }
+            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums: ", e);
+            return -1;
         }
     }
 
@@ -240,22 +257,28 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("processName", "Importing '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/import/playlists");
         model.addAttribute("redirect", "/method/import");
         return "process";
     }
 
     @PostMapping("/method/import/playlists")
-    public void importPlaylists() {
+    public int importPlaylists() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/playlists");
-            return;
+            return -1;
         }
         try {
-            method.importPlaylists();
+            ArrayList<Playlist> playlists = method.getPlaylists();
+            if (playlists != null) {
+                Collection.addPlaylists(playlists);
+                return playlists.size();
+            }
+            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists: ", e);
+            return -1;
         }
     }
 
@@ -264,7 +287,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("info", "Current method: " + this.method.getMethodName());
+        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Export Library", "/method/export/collection");
         options.put("Export Liked Songs", "/method/export/likedsongs");
@@ -282,24 +305,26 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/export/collection");
         model.addAttribute("redirect", "/method/export");
         return "process";
     }
 
     @PostMapping("/method/export/collection")
-    public void exportCollection() {
+    public boolean exportCollection() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/collection");
-            return;
+            return false;
         }
         try {
-            method.exportLikedSongs();
-            method.exportAlbums();
-            method.exportPlaylists();
+            method.uploadLikedSongs();
+            method.uploadAlbums();
+            method.uploadPlaylists();
+            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'collection: ", e);
+            return false;
         }
     }
 
@@ -309,22 +334,24 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/export/likedsongs");
         model.addAttribute("redirect", "/method/export");
         return "process";
     }
 
     @PostMapping("/method/export/likedsongs")
-    public void exportLikedSongs() {
+    public boolean exportLikedSongs() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/likedsongs");
-            return;
+            return false;
         }
         try {
-            method.exportLikedSongs();
+            method.uploadLikedSongs();
+            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+            return false;
         }
     }
 
@@ -335,22 +362,24 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/export/albums");
         model.addAttribute("redirect", "/method/export");
         return "process";
     }
 
     @PostMapping("/method/export/albums")
-    public void exportAlbums() {
+    public boolean exportAlbums() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/albums");
-            return;
+            return false;
         }
         try {
-            method.exportAlbums();
+            method.uploadAlbums();
+            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums: ", e);
+            return false;
         }
     }
 
@@ -361,22 +390,24 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/export/playlists");
         model.addAttribute("redirect", "/method/export");
         return "process";
     }
 
     @PostMapping("/method/export/playlists")
-    public void exportPlaylists() {
+    public boolean exportPlaylists() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/playlists");
-            return;
+            return false;
         }
         try {
-            method.exportPlaylists();
+            method.uploadPlaylists();
+            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists: ", e);
+            return false;
         }
     }
 
@@ -385,7 +416,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("info", "Current method: " + this.method.getMethodName());
+        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Sync Library", "/method/sync/collection");
         options.put("Sync Liked Songs", "/method/sync/likedsongs");
@@ -403,7 +434,7 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' collection");
+        model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/sync/collection");
         model.addAttribute("redirect", "/method/sync");
         return "process";
@@ -430,7 +461,7 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' liked songs");
+        model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/sync/likedsongs");
         model.addAttribute("redirect", "/method/sync");
         return "process";
@@ -455,7 +486,7 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("processName", "Syncronizing '" + this.method.getMethodName() + "' albums");
+        model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/sync/albums");
         model.addAttribute("redirect", "/method/sync");
         return "process";
@@ -480,7 +511,7 @@ public class MethodMenu {
             model.addAttribute("error", "Method was not initialized");
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("processName", "Exporting '" + this.method.getMethodName() + "' playlists");
+        model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/sync/playlists");
         model.addAttribute("redirect", "/method/sync");
         return "process";

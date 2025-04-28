@@ -45,7 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Desktop;
 
-public class Spotify extends MethodClass {
+public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
     private static final Logger logger = LogManager.getLogger();

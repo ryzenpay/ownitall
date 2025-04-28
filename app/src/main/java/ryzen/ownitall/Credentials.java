@@ -78,21 +78,29 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * optional to hardcode local upload path
      */
     public static File localFolder = null;
-    /**
-     * youtube dl installation path
-     * 
-     */
-    public static File youtubeDLFile = null;
+
+    public static final LinkedHashMap<String, String> getUploadCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("Local Folder", "localFolder");
+        return credentials;
+    }
+
     /**
      * ffmpeg path (required for youtubedl)
      * 
      */
     public static File ffmpegFile = null;
 
-    public static final LinkedHashMap<String, String> getLocalCredentials() {
+    /**
+     * youtube dl installation path
+     * 
+     */
+    public static File yt_dlFile = null;
+
+    public static final LinkedHashMap<String, String> getYT_dlCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Local Folder", "localFolder");
-        credentials.put("YoutubeDL File", "youtubeDLFile");
+        credentials.putAll(getUploadCredentials());
+        credentials.put("YT_dl File", "yt_dlFile");
         credentials.put("FFMPeg File", "ffmpegFile");
         return credentials;
     }
