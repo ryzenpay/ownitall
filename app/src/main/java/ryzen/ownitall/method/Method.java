@@ -11,6 +11,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
 public class Method {
@@ -25,6 +26,7 @@ public class Method {
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
         methods.put("YT-dlp (download)", YT_dl.class);
+        methods.put("SoulSeek (download)", SoulSeek.class);
     }
 
     static {
@@ -34,6 +36,7 @@ public class Method {
         credentialGroups.put(Jellyfin.class, Settings.getJellyfinCredentials());
         credentialGroups.put(Upload.class, Settings.getUploadCredentials());
         credentialGroups.put(YT_dl.class, Settings.getYT_dlCredentials());
+        credentialGroups.put(SoulSeek.class, Settings.getSoulSeekCredentials());
     }
 
     public static Method initMethod(Class<? extends Method> methodClass) throws InterruptedException {

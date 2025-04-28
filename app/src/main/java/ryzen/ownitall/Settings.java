@@ -166,6 +166,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static String jellyfinUsername = "";
     public static String jellyfinPassword = "";
 
+    // TODO: better grouping
+    // interfaces maybe?
     public static final LinkedHashMap<String, String> getJellyfinCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.put("JellyFin URL", "jellyfinURL");
@@ -204,8 +206,28 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static final LinkedHashMap<String, String> getYT_dlCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
         credentials.putAll(getUploadCredentials());
-        credentials.put("YT_dl File", "yt_dlFile");
+        credentials.put("YT-dl File", "yt_dlFile");
         credentials.put("FFMPeg File", "ffmpegFile");
+        return credentials;
+    }
+
+    /**
+     * soulseek dl installation path
+     */
+    public static File soulSeekFile = null;
+
+    public static String soulSeekUsername = "";
+
+    public static String soulSeekPassword = "";
+
+    public static int soulSeekBitRate = 320;
+
+    public static final LinkedHashMap<String, String> getSoulSeekCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.putAll(getUploadCredentials());
+        credentials.put("SoulSeek dl File", "soulSeekFile");
+        credentials.put("SoulSeek Username", "soulSeekUsername");
+        credentials.put("SoulSeek Password", "soulSeekPassword");
         return credentials;
     }
 
