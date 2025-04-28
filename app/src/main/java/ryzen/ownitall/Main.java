@@ -49,7 +49,6 @@ public class Main {
                 Logs.setLogLevel(level);
             }
             Settings.load();
-            Credentials.load();
             Storage.importCollection();
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
@@ -71,9 +70,6 @@ public class Main {
     public static void save() {
         Collection.save();
         Settings.load().save();
-        if (Settings.saveCredentials) {
-            Credentials.load().save();
-        }
         if (Library.checkInstance()) {
             Library.load();
         }

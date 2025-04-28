@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
@@ -51,9 +50,9 @@ public class YT_dl extends Download {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(Credentials.yt_dlFile.getAbsolutePath());
+        command.add(Settings.yt_dlFile.getAbsolutePath());
         command.add("--ffmpeg-location");
-        command.add(Credentials.ffmpegFile.getAbsolutePath());
+        command.add(Settings.ffmpegFile.getAbsolutePath());
         // command.add("--concurrent-fragments");
         // command.add(String.valueOf(settings.getDownloadThreads()));
         // set up youtube searching and only 1 result

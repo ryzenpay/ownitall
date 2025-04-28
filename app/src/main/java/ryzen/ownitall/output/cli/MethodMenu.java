@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -53,13 +53,13 @@ public class MethodMenu {
         if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
-        Credentials credentials = Credentials.load();
+        Settings settings = Settings.load();
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
-                Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
-                if (!credentials.set(classCredentials.get(name), value)) {
+                Object value = Input.request().getValue(settings.getType(classCredentials.get(name)));
+                if (!settings.set(classCredentials.get(name), value)) {
                     throw new InterruptedException(
                             "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
                 }

@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Storage;
+import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
@@ -68,7 +68,9 @@ public class ToolsMenu {
             System.out.print("Are you sure you wan to clear Credentials (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing Credentials...");
-                Credentials.load().clear();
+                for (Class<? extends Method> methodClass : Method.methods.values()) {
+                    Method.clearCredentials(methodClass);
+                }
                 logger.info("Done clearing Credentials");
             }
         } catch (InterruptedException e) {

@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -36,7 +35,7 @@ public class Download extends Method {
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
-    protected File localLibrary = Credentials.localFolder;
+    protected File localLibrary = Settings.localFolder;
     public static final LinkedHashMap<String, Class<? extends Download>> methods;
     static {
         methods = new LinkedHashMap<>();

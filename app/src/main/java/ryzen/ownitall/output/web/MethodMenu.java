@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -112,7 +112,7 @@ public class MethodMenu {
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
 
         if (params != null) {
-            Credentials credentials = Credentials.load();
+            Settings settings = Settings.load();
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
@@ -120,7 +120,7 @@ public class MethodMenu {
                             "Missing value for: '" + name + "' for '" + methodClassName + "'");
                     break;
                 }
-                if (!credentials.set(classCredentials.get(name), value)) {
+                if (!settings.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
                             "Failed to set credential: '" + name + "' for '" + methodClassName + "'");
                     break;

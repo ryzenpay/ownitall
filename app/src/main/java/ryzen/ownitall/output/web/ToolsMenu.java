@@ -11,8 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Storage;
+import ryzen.ownitall.method.Method;
 
 @Controller
 public class ToolsMenu {
@@ -65,7 +65,9 @@ public class ToolsMenu {
 
     @GetMapping("/tools/clearcredentials")
     public String optionClearCredentials(Model model) {
-        Credentials.load().clear();
+        for (Class<? extends Method> methodClass : Method.methods.values()) {
+            Method.clearCredentials(methodClass);
+        }
         model.addAttribute("info", "Successfully cleared credentials");
         return toolsMenu(model);
     }

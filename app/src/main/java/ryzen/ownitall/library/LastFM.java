@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
@@ -351,7 +351,7 @@ public class LastFM extends Library {
         try {
             StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append("?method=").append(type);
-            urlBuilder.append("&api_key=").append(Credentials.lastFMApiKey);
+            urlBuilder.append("&api_key=").append(Settings.lastFMApiKey);
             urlBuilder.append("&format=json");
             urlBuilder.append(query);
             URI url = new URI(urlBuilder.toString());

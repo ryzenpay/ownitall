@@ -12,7 +12,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
@@ -63,7 +62,8 @@ public class Youtube extends Method {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
             return new com.google.api.services.youtube.YouTube.Builder(httpTransport, this.JSON_FACTORY, credential)
-                    .setApplicationName(Credentials.youtubeApplicatioName)
+                    .setApplicationName(
+                            Settings.youtubeApplicatioName)
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Exception logging in with youtube api", e);
@@ -82,8 +82,9 @@ public class Youtube extends Method {
         // Create GoogleClientSecrets from the stored client secret
         GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
                 .setInstalled(new GoogleClientSecrets.Details()
-                        .setClientId(Credentials.youtubeClientID)
-                        .setClientSecret(Credentials.youtubeClientSecret));
+                        .setClientId(
+                                Settings.youtubeClientID)
+                        .setClientSecret(Settings.youtubeClientSecret));
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(

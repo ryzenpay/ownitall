@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -66,9 +65,12 @@ public class Spotify extends Method {
         }
         try {
             this.spotifyApi = new SpotifyApi.Builder()
-                    .setClientId(Credentials.spotifyClientID)
-                    .setClientSecret(Credentials.spotifyClientSecret)
-                    .setRedirectUri(new URI(Credentials.spotifyRedirectURL))
+                    .setClientId(
+                            Settings.spotifyClientID)
+                    .setClientSecret(
+                            Settings.spotifyClientSecret)
+                    .setRedirectUri(new URI(
+                            Settings.spotifyRedirectURL))
                     .build();
         } catch (URISyntaxException e) {
             throw new InterruptedException(e.getMessage());
@@ -494,8 +496,7 @@ public class Spotify extends Method {
             return null;
         }
         int offset = 0;
-        try (ProgressBar pb = new ProgressBar(albumId, -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             ArrayList<Song> songs = new ArrayList<>();
             int limit = Settings.spotifySongLimit;
             boolean hasMore = true;
@@ -513,7 +514,6 @@ public class Spotify extends Method {
                     } else {
                         for (TrackSimplified track : items) {
                             interruptionHandler.throwInterruption();
-                            pb.step(track.getName());
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
                                 song.addArtist(new Artist(artist.getName()));

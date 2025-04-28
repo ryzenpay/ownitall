@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Logs;
@@ -98,7 +97,7 @@ public class LibraryMenu {
         LinkedHashMap<String, String> classCredentials = Library.credentialGroups.get(libraryClass);
 
         if (params != null) {
-            Credentials credentials = Credentials.load();
+            Settings settings = Settings.load();
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
@@ -106,7 +105,7 @@ public class LibraryMenu {
                             "Missing value for: '" + name + "' for '" + libraryClassName + "'");
                     break;
                 }
-                if (!credentials.set(classCredentials.get(name), value)) {
+                if (!settings.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
                             "Failed to set credential: '" + name + "' for '" + libraryClassName + "'");
                     break;

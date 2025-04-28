@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
@@ -46,7 +45,7 @@ public class Library {
     }
     static {
         credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(LastFM.class, Credentials.getLastFMCredentials());
+        credentialGroups.put(LastFM.class, Settings.getLastFMCredentials());
     }
 
     /**
@@ -131,14 +130,14 @@ public class Library {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
         }
-        Credentials credentials = Credentials.load();
         LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
+        Settings settings = Settings.load();
         for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
+            if (settings.isEmpty(varName)) {
                 return true;
             }
         }

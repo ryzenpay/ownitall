@@ -130,7 +130,7 @@ public class Settings {
             return false;
         }
         if (value == null) {
-            logger.debug("null value provided in change");
+            logger.debug("null value provided in change for '" + name + "'");
             return false;
         }
         try {

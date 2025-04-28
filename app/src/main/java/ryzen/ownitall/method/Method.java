@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -17,22 +17,23 @@ public class Method {
     private static final Logger logger = LogManager.getLogger();
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
     public static final LinkedHashMap<Class<? extends Method>, LinkedHashMap<String, String>> credentialGroups;
-    // needs to be like this for it to maintain the order
+    // TODO: interface functions of they are only import/export
     static {
         methods = new LinkedHashMap<>();
         methods.put("Jellyfin", Jellyfin.class);
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("YT-dlp", YT_dl.class);
+        methods.put("YT-dlp (download)", YT_dl.class);
     }
 
     static {
         credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(Spotify.class, Credentials.getSpotifyCredentials());
-        credentialGroups.put(Youtube.class, Credentials.getYoutubeCredentials());
-        credentialGroups.put(Jellyfin.class, Credentials.getJellyfinCredentials());
-        credentialGroups.put(Upload.class, Credentials.getUploadCredentials());
+        credentialGroups.put(Spotify.class, Settings.getSpotifyCredentials());
+        credentialGroups.put(Youtube.class, Settings.getYoutubeCredentials());
+        credentialGroups.put(Jellyfin.class, Settings.getJellyfinCredentials());
+        credentialGroups.put(Upload.class, Settings.getUploadCredentials());
+        credentialGroups.put(YT_dl.class, Settings.getYT_dlCredentials());
     }
 
     public static Method initMethod(Class<? extends Method> methodClass) throws InterruptedException {
@@ -62,14 +63,14 @@ public class Method {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
         }
-        Credentials credentials = Credentials.load();
+        Settings settings = Settings.load();
         LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
         for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
+            if (settings.isEmpty(varName)) {
                 return true;
             }
         }
@@ -81,14 +82,14 @@ public class Method {
             logger.debug("null type provided in clearCredentials");
             return true;
         }
-        Credentials credentials = Credentials.load();
+        Settings settings = Settings.load();
         LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
         for (String varName : credentialVars.values()) {
-            if (!credentials.set(varName, "")) {
+            if (!settings.set(varName, "")) {
                 return false;
             }
         }
