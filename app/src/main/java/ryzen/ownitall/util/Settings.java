@@ -166,7 +166,7 @@ public class Settings {
             logger.debug("null name provided in isEmpty");
             return true;
         }
-        Object value = this.getFieldValue(name);
+        Object value = this.get(name);
         if (value == null || value.toString().isEmpty()) {
             return true;
         } else {
@@ -174,7 +174,7 @@ public class Settings {
         }
     }
 
-    protected Object getFieldValue(String name) {
+    protected Object get(String name) {
         if (name == null) {
             logger.debug("null name provided in getFieldValue");
             return null;

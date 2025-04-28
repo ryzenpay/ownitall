@@ -75,6 +75,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static String downloadFormat = "mp3";
 
+    public static LinkedHashMap<String, String> getDownloadCredentials() {
+        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
+        credentials.put("Local Folder", "localFolder");
+        credentials.put("Download Class", "downloadType");
+        credentials.put("Download Format", "downloadFormat");
+        return credentials;
+    }
+
     /**
      * option to hardcode cookies file
      */
@@ -267,5 +275,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public boolean isEmpty(String name) {
         return super.isEmpty(name);
+    }
+
+    public Object get(String name) {
+        return super.get(name);
     }
 }

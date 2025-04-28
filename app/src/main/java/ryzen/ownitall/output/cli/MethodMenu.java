@@ -57,6 +57,10 @@ public class MethodMenu {
         LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
+                if (!settings.isEmpty(classCredentials.get(name))) {
+                    // skip already set values
+                    continue;
+                }
                 System.out.print("Enter '" + name + "': ");
                 Object value = Input.request().getValue(settings.getType(classCredentials.get(name)));
                 if (!settings.set(classCredentials.get(name), value)) {

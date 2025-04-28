@@ -13,9 +13,9 @@
     <h1 th:text="${loginName} + ' Login'"></h1>
 
     <form th:action="@{/method/login}" method="post">
-        <div th:each="fieldName : ${loginFields}">
-            <label th:for="${fieldName}" th:text="${fieldName}"></label>
-            <input type="text" th:id="${fieldName}" th:name="${fieldName}" required />
+        <div th:each="field : ${loginFields}">
+            <label th:for="${field.key}" th:text="${field.key}"></label>
+            <input type="text" th:id="${field.key}" th:name="${field.key}" th:value="${field.value}" required />
         </div>
 
         <input type="hidden" name="methodClass" th:value="${methodClass}" />

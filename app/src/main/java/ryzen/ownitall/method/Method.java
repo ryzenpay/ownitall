@@ -11,6 +11,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
@@ -25,8 +26,7 @@ public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("YT-dlp (download)", YT_dl.class);
-        methods.put("SoulSeek (download)", SoulSeek.class);
+        methods.put("Download", Download.class);
     }
 
     static {
@@ -35,6 +35,7 @@ public class Method {
         credentialGroups.put(Youtube.class, Settings.getYoutubeCredentials());
         credentialGroups.put(Jellyfin.class, Settings.getJellyfinCredentials());
         credentialGroups.put(Upload.class, Settings.getUploadCredentials());
+        credentialGroups.put(Download.class, Settings.getDownloadCredentials());
         credentialGroups.put(YT_dl.class, Settings.getYT_dlCredentials());
         credentialGroups.put(SoulSeek.class, Settings.getSoulSeekCredentials());
     }

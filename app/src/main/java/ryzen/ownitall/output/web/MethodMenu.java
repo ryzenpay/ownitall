@@ -93,12 +93,15 @@ public class MethodMenu {
             model.addAttribute("info", "No credentials required");
             return methodMenu(model, methodClassName, callback);
         }
-
+        LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
+        Settings settings = Settings.load();
+        for (String name : classCredentials.keySet()) {
+            currentCredentials.put(name, settings.get(classCredentials.get(name)).toString());
+        }
         model.addAttribute("loginName", methodClass.getSimpleName());
-        model.addAttribute("loginFields", classCredentials.keySet());
+        model.addAttribute("loginFields", currentCredentials);
         model.addAttribute("methodClass", methodClassName);
         model.addAttribute("callback", callback);
-
         return "login";
     }
 

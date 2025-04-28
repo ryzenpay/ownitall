@@ -101,6 +101,8 @@ sourceSets {
         }
     }
 }
+//TODO: needs fixes, not using all imported classes
+//example: jackson with duration
 tasks.register<Jar>("compile") {
     archiveClassifier.set("uber")
     archiveFileName.set("ownitall.jar")
