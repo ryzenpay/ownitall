@@ -85,6 +85,7 @@ public class Spotify extends Method {
      * @return - the oauth code with permissions
      * @throws InterruptedException - when user interrupts
      */
+    // TODO: make it work without an actual website (ex: .local.lan)
     private void requestCode() throws InterruptedException {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)

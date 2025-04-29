@@ -53,7 +53,7 @@ public class Main {
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
-                Input.request(trace);
+                Input.setNonInteractive(trace);
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");

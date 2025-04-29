@@ -59,7 +59,7 @@ public class CollectionMenu {
         try {
             new MethodMenu().syncMenu();
         } catch (InterruptedException e) {
-            logger.debug("Interrutped while setting up sync menu", e);
+            logger.debug("Interrupted while setting up sync menu", e);
         }
     }
 

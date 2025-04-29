@@ -26,11 +26,6 @@ public class MethodMenu {
             throw new InterruptedException("Cancelled method selection");
         }
         Class<? extends Method> methodClass = Method.methods.get(choice);
-        if (method != null) {
-            if (method.getClass().isInstance(methodClass)) {
-                return;
-            }
-        }
         if (Method.isCredentialsEmpty(methodClass)) {
             this.setCredentials(methodClass);
         }

@@ -62,13 +62,28 @@ java {
 application {
     mainClass = "ryzen.ownitall.Main"
 }
-
-// remove this to not have any logs in terminal
-tasks.withType<JavaExec> {
-    systemProperty("consoleLogLevel", "INFO")
+// Configure source sets to use the correct package structure
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/java")
+        }
+    }
+    test {
+        java {
+            srcDirs("src/test/java")
+        }
+    }
 }
 tasks.named<JavaExec>("run") {
-    standardInput = System.`in` //to allow scanner
+    environment("org.gradle.console", "plain")
+}
+
+tasks.register<JavaExec>("run-debug") {
+    args("l", "debug")
+}
+tasks.register<JavaExec>("run-web") {
+    args("-l", "debug", "-w")
 }
 
 tasks.named<Test>("test") {
@@ -86,19 +101,6 @@ tasks.javadoc {
         windowTitle = "Own It All API"
         header = "<b>Own It All</b>"
         docTitle = "Own It All java documentation"
-    }
-}
-// Configure source sets to use the correct package structure
-sourceSets {
-    main {
-        java {
-            srcDirs("src/main/java")
-        }
-    }
-    test {
-        java {
-            srcDirs("src/test/java")
-        }
     }
 }
 //TODO: needs fixes, not using all imported classes

@@ -35,24 +35,15 @@ public class Input {
         return instance;
     }
 
-    /**
-     * instance loader for input with predefined input
-     * 
-     * @return - new or existing instance of input
-     */
-    public static Input request(String params) {
+    public static void setNonInteractive(String params) {
         if (params == null) {
             logger.error("null params provided in input request");
-            return null;
-        }
-        if (instance == null) {
-            instance = new Input();
+            return;
         }
         String[] inputParams = params.split(",");
         for (String param : inputParams) {
             nonInteractive.add(param);
         }
-        return instance;
     }
 
     /**
@@ -209,9 +200,6 @@ public class Input {
      * @throws InterruptedException - when user interrupts
      */
     public boolean getAgreement() throws InterruptedException {
-        if (!nonInteractive.isEmpty()) {
-            return true;
-        }
         while (true) {
             char choice = getChar();
             if (Character.toLowerCase(choice) == 'y') {
@@ -272,6 +260,17 @@ public class Input {
         this.getString();
     }
 
+    public Class<?> getClassStr() throws InterruptedException {
+        while (true) {
+            String className = getString();
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                System.err.print("Class not found, enter Full Class Name: ");
+            }
+        }
+    }
+
     public Object getValue(Class<?> type) throws InterruptedException {
         if (type == boolean.class) {
             return this.getBool();
@@ -288,8 +287,11 @@ public class Input {
         } else if (type == File.class) {
             return this.getFile(false);
         } else {
-            logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is currently not supported");
-            return null;
+            // TODO: this stinks
+            return this.getClassStr();
+            // logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is
+            // currently not supported");
+            // return null;
         }
     }
 }

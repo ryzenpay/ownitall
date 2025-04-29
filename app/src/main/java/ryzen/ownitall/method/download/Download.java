@@ -46,6 +46,8 @@ public class Download extends Method {
             throw new InterruptedException("empty Download credentials");
         }
         try {
+            // TODO: check if settings.downloadType credentials are set
+            // needs to be done in methodmenu or wherever
             instance = Settings.downloadType.getDeclaredConstructor().newInstance();
         } catch (InstantiationException e) {
             logger.error("Interrupted while setting up download '" + Settings.downloadType.getSimpleName() + "'", e);
