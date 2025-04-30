@@ -35,8 +35,7 @@ public class MethodMenu {
             logger.info("Interrupted while setting up method, could be due to invalid credentials", e);
             Method.clearCredentials(methodClass);
             this.setCredentials(methodClass);
-        } finally {
-            method = Method.initMethod(methodClass);
+            Method.initMethod(methodClass);
         }
     }
 

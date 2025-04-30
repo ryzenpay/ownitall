@@ -96,12 +96,6 @@ public class SoulSeek extends Download {
                     if (exitCode == 2) {
                         logger.debug("Error with user provided options: " + command.toString());
                         break;
-                    } else if (exitCode == 100) {
-                        logger.error("Your yt-dlp needs to update");
-                        break;
-                    } else if (exitCode == 101) {
-                        logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
-                        break;
                     } else {
                         logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
                         logger.error(command.toString());

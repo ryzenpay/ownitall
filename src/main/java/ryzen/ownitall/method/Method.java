@@ -25,6 +25,8 @@ abstract public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
+        // TODO: hardcoded to what is defaulted in settings
+        // because it loads at startup before settings initializes
         methods.put("Download", Settings.downloadType);
     }
 
@@ -44,6 +46,7 @@ abstract public class Method {
             return null;
         }
         try {
+            logger.debug("Initializing '" + methodClass + "' method");
             return methodClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException e) {
             logger.error("Interrupted while setting up method '" + methodClass.getSimpleName() + "'", e);
