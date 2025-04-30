@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
+    <title th:text="${menuName}"></title>
+</head>
+
+<body>
+    <div th:insert="~{templates :: logging}"></div>
+    <h1 th:text="${menuName}"></h1>
+    <div th:each="entry : ${menuOptions}">
+        <a class="menu-option-link" th:href="@{${entry.value}}" th:text="${entry.key}"></a>
+        <br />
+    </div>
+    <a th:href="@{${callback}}">Return</a>
+</body>
+
+</html>

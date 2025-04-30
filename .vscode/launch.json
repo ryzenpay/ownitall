@@ -6,7 +6,7 @@
             "name": "production",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
+            "projectName": "ownitall",
             "args": [
                 "-l",
                 "info"
@@ -17,7 +17,7 @@
             "name": "debug",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
+            "projectName": "ownitall",
             "args": [
                 "-l",
                 "debug"
@@ -28,7 +28,7 @@
             "name": "no logs",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
+            "projectName": "ownitall",
             "args": [
                 "-l",
                 "off"
@@ -39,7 +39,7 @@
             "name": "spotify to local sync",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
+            "projectName": "ownitall",
             "args": [
                 "-i",
                 "1,1,4,1,0,3,2,C:\\Users\\ryzen\\Music,0,0"
@@ -50,7 +50,7 @@
             "name": "web debug",
             "request": "launch",
             "mainClass": "ryzen.ownitall.Main",
-            "projectName": "app",
+            "projectName": "ownitall",
             "args": [
                 "-w",
                 "-l",

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
+    <title th:text="${processName}"></title>
+    <script type="text/javascript">
+        async function performFunction() {
+            try {
+                const response = await fetch('${processFunction}', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    console.log('Executed ${processFunction}');
+                    showProcessText();
+                } else {
+                    console.error('${processFunction} request failed.');
+                }
+            } catch (error) {
+                console.error('Error during shutdown:', error);
+            }
+        }
+
+        function showProcessText() {
+            let textBlock = document.createElement('div');
+            textBlock.innerText = '${processName} is in action...';
+            document.body.appendChild(textBlock);
+        }
+        window.onload = performFunction;
+    </script>
+</head>
+
+<body>
+    <div th:insert="~{templates :: logging}"></div>
+    <h1 th:text="${processName}"></h1>
+
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar">0%</div>
+    </div>
+
+    <button id="cancel-button" onclick="cancelProcess()">Cancel</button>
+    <a id="back-button" style="display: none;" th:href="@{${callback}}">Return</a>
+    <script>
+        let progress = 0;
+
+        function updateProgressBar(step) {
+            let progressBar = document.getElementById('progress-bar');
+            progress += step;
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = progress + '%';
+
+            if (progress >= 100) {
+                document.getElementById('cancel-button').style.display = 'none';
+                document.getElementById('back-button').style.display = 'block';
+            }
+        }
+
+        function cancelProcess() {
+            fetch("/method/cancel", {
+                method: "GET"
+            })
+            document.getElementById('cancel-button').style.display = 'none';
+            document.getElementById('back-button').style.display = 'block';
+        }
+
+    </script>
+</body>
+
+</html>

@@ -88,14 +88,15 @@ the current format to importing your local music library is currently strict
         - default is playlist  
     - cover image of an and playlist album needs to be a file called "`<playlist/album name>`.png" in the folder  
 
-# Gradle and compiling
+# Maven and compiling
 ## generate javadoc documentation
 to update the javadoc documentation, run the command `./gradlew javadoc` in the root of the repository  
 please fix any of the errors it throws as they show incomplete documentation  
 
 ## Compile new jar file
-to generate a new compiled jar file from source, run the command `./gradlew compile` in the root of the repository  
-a jar file named `ownitall.jar` will be made and can be ran with the following:  `java -jar .\ownitall.jar`  
+run the command `mvn package`  
+look for the compiled `.jar` file in `target`  
+run the compiled with `java -jar target/ownitall-<VERSION>.jar`
 
 ## JRE Requirements
 current java version is 17, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
