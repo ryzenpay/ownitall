@@ -90,7 +90,7 @@ the current format to importing your local music library is currently strict
 
 # Maven and compiling
 ## generate javadoc documentation
-to update the javadoc documentation, run the command `./gradlew javadoc` in the root of the repository  
+to update the javadoc documentation, run the command `mvn doc` in the root of the repository  
 please fix any of the errors it throws as they show incomplete documentation  
 
 ## Compile new jar file
