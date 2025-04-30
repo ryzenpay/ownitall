@@ -2,6 +2,7 @@ package ryzen.ownitall.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -288,6 +289,8 @@ public class MusicTools {
         }
         try (InputStream in = url.toURL().openStream()) {
             Files.copy(in, file.toPath());
+        } catch (FileNotFoundException e) {
+            logger.debug("Image at url '" + url + "' not found");
         }
     }
 

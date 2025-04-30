@@ -2,7 +2,6 @@ package ryzen.ownitall.method.download;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -38,7 +37,6 @@ public class Download extends Method {
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
-    protected static final File localLibrary = Settings.localFolder;
 
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
@@ -247,9 +245,9 @@ public class Download extends Method {
         logger.debug("Getting local liked songs to remove mismatches");
         Upload upload = new Upload();
         LikedSongs likedSongs = upload.getLikedSongs();
-        File songFolder = localLibrary;
+        File songFolder = Settings.localFolder;
         if (Settings.downloadHierachy) {
-            songFolder = new File(localLibrary, Settings.likedSongName);
+            songFolder = new File(Settings.localFolder, Settings.likedSongName);
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
@@ -283,15 +281,15 @@ public class Download extends Method {
         File likedSongsFolder;
         if (Settings.downloadHierachy) {
             songs = Collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(localLibrary, Settings.likedSongName);
+            likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
             likedSongsFolder.mkdirs();
         } else {
             songs = Collection.getStandaloneLikedSongs();
-            likedSongsFolder = localLibrary;
+            likedSongsFolder = Settings.localFolder;
             if (Settings.downloadLikedsongPlaylist) {
                 Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
                 likedSongsPlaylist.addSongs(Collection.getLikedSongs().getSongs());
-                this.writePlaylistData(likedSongsPlaylist, localLibrary);
+                this.writePlaylistData(likedSongsPlaylist, Settings.localFolder);
             }
         }
         try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
@@ -320,7 +318,7 @@ public class Download extends Method {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
                 if (Settings.downloadHierachy) {
-                    File playlistFolder = new File(localLibrary, playlist.getFolderName());
+                    File playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
                     if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
@@ -331,7 +329,7 @@ public class Download extends Method {
                 } else {
                     // deletes all playlists songs
                     this.syncPlaylist(new Playlist(playlist.getName()));
-                    File m3uFile = new File(localLibrary, playlist.getFolderName() + ".m3u");
+                    File m3uFile = new File(Settings.localFolder, playlist.getFolderName() + ".m3u");
                     if (m3uFile.delete()) {
                         logger.info(
                                 "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
@@ -374,14 +372,14 @@ public class Download extends Method {
             return;
         }
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
-        File playlistFolder = localLibrary;
+        File playlistFolder = Settings.localFolder;
         Playlist localPlaylist = null;
         Upload upload = new Upload();
         if (Settings.downloadHierachy) {
-            playlistFolder = new File(localLibrary, playlist.getFolderName());
+            playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
             localPlaylist = upload.getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
         } else {
-            File m3uFile = new File(localLibrary, playlist.getFolderName() + ".m3u");
+            File m3uFile = new File(Settings.localFolder, playlist.getFolderName() + ".m3u");
             if (m3uFile.exists()) {
                 localPlaylist = Upload.getM3UPlaylist(m3uFile);
             }
@@ -424,11 +422,11 @@ public class Download extends Method {
         File playlistFolder;
         if (Settings.downloadHierachy) {
             songs = playlist.getSongs();
-            playlistFolder = new File(localLibrary, playlist.getFolderName());
+            playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
             songs = Collection.getStandalonePlaylistSongs(playlist);
-            playlistFolder = localLibrary;
+            playlistFolder = Settings.localFolder;
             this.writePlaylistData(playlist, playlistFolder);
         }
         try (ProgressBar pb = new ProgressBar("Downloading Playlists: " + playlist.getName(),
@@ -457,7 +455,7 @@ public class Download extends Method {
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : albums) {
-                File albumFolder = new File(localLibrary, album.getFolderName());
+                File albumFolder = new File(Settings.localFolder, album.getFolderName());
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
                         logger.info(
@@ -494,7 +492,7 @@ public class Download extends Method {
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(localLibrary, album.getFolderName());
+        File albumFolder = new File(Settings.localFolder, album.getFolderName());
         Upload upload = new Upload();
         Album localAlbum = upload.getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
@@ -529,7 +527,7 @@ public class Download extends Method {
             return;
         }
         // albums are always in a folder
-        File albumFolder = new File(localLibrary, album.getFolderName());
+        File albumFolder = new File(Settings.localFolder, album.getFolderName());
         albumFolder.mkdirs();
         try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {

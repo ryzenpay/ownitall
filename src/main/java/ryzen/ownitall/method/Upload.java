@@ -34,7 +34,6 @@ public class Upload extends Method {
             add("wav");
         }
     };
-    private File localLibrary;
 
     public Upload() throws InterruptedException {
         if (Method.isCredentialsEmpty(Upload.class)) {
@@ -57,10 +56,10 @@ public class Upload extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", this.localLibrary.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (Settings.downloadHierachy) {
-                File likedSongsFolder = new File(this.localLibrary, Settings.likedSongName);
+                File likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
                 if (likedSongsFolder.exists()) {
                     pb.step(likedSongsFolder.getName());
                     ArrayList<Song> songs = getSongs(likedSongsFolder);
@@ -69,12 +68,12 @@ public class Upload extends Method {
                     }
                 }
             } else {
-                pb.step(this.localLibrary.getName());
-                LikedSongs rootLikedSongs = getLikedSongs(this.localLibrary);
+                pb.step(Settings.localFolder.getName());
+                LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
                 if (rootLikedSongs != null) {
                     likedSongs.addSongs(rootLikedSongs.getSongs());
                 }
-                for (File folder : this.localLibrary.listFiles()) {
+                for (File folder : Settings.localFolder.listFiles()) {
                     interruptionHandler.throwInterruption();
                     if (folder.isDirectory()) {
                         pb.step(folder.getName());
@@ -123,9 +122,9 @@ public class Upload extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", this.localLibrary.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Playlists", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : this.localLibrary.listFiles()) {
+            for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (Settings.downloadHierachy) {
                     if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
@@ -225,19 +224,22 @@ public class Upload extends Method {
             return null;
         }
         playlist.addSongs(songs);
-        File coverFile = new File(folder, playlist.getCoverImageFileName());
-        if (coverFile.exists()) {
-            playlist.setCoverImage(coverFile.toURI());
-        }
+        // TODO: doesnt work cuz of variable extension
+        // also fix in getAlbum()
+        // WRAAAAAA
+        // File coverFile = new File(folder, playlist.getCoverImageFileName());
+        // if (coverFile.exists()) {
+        // playlist.setCoverImage(coverFile.toURI());
+        // }
         return playlist;
     }
 
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Albums", this.localLibrary.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Albums", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : this.localLibrary.listFiles()) {
+            for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                     if (isAlbum(file)) {
@@ -290,10 +292,11 @@ public class Upload extends Method {
                 logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath(), e);
             }
         }
-        File albumCover = new File(folder, album.getCoverImageFileName());
-        if (albumCover.exists()) {
-            album.setCoverImage(albumCover.toURI());
-        }
+        // check getPlaylist()
+        // File albumCover = new File(folder, album.getCoverImageFileName());
+        // if (albumCover.exists()) {
+        // album.setCoverImage(albumCover.toURI());
+        // }
         if (library != null) {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {
