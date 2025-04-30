@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.util.Logs;
 
 //https://github.com/fiso64/slsk-batchdl
 //TODO: update readme
@@ -24,6 +25,8 @@ public class SoulSeek extends Download {
             logger.debug("Empty SoulSeek credentials found");
             throw new InterruptedException("empty SoulSeek credentials");
         }
+        // TODO: no threading support?
+        downloadThreads = 1;
     }
 
     /**
@@ -54,10 +57,14 @@ public class SoulSeek extends Download {
         command.add("--no-write-index");
         command.add("--min-bitrate");
         command.add(String.valueOf(Settings.soulSeekBitRate));
-        command.add("--interactive");
-        command.add("false");
         command.add("--name-format");
         command.add(song.getFileName());
+        command.add("--fast-search");
+        command.add("--concurrent-downloads");
+        command.add(String.valueOf(Settings.downloadThreads));
+        if (Logs.isDebug()) {
+            command.add("-v");
+        }
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags
@@ -90,7 +97,6 @@ public class SoulSeek extends Download {
                         completeLog.append(line).append("\n");
                     }
                 }
-
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     if (exitCode == 2) {

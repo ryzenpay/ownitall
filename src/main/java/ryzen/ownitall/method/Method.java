@@ -14,6 +14,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
+@SuppressWarnings("static-access")
 abstract public class Method {
     private static final Logger logger = LogManager.getLogger(Method.class);
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
@@ -27,7 +28,7 @@ abstract public class Method {
         methods.put("Upload", Upload.class);
         // TODO: hardcoded to what is defaulted in settings
         // because it loads at startup before settings initializes
-        methods.put("Download", Settings.downloadType);
+        methods.put("Download", Settings.load().downloadType);
     }
 
     static {

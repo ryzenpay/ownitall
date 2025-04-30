@@ -37,6 +37,7 @@ public class Download extends Method {
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
+    protected static int downloadThreads = Settings.downloadThreads;
 
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
@@ -63,7 +64,6 @@ public class Download extends Method {
      * setup threading
      */
     public void threadInit() {
-        int downloadThreads = Settings.downloadThreads;
         this.executor = new ThreadPoolExecutor(
                 downloadThreads,
                 downloadThreads,
@@ -299,6 +299,9 @@ public class Download extends Method {
                 pb.step(song.getName());
                 this.threadDownload(song, likedSongsFolder);
             }
+        } catch (InterruptedException e) {
+            this.executor.shutdownNow();
+            throw e;
         }
         this.threadShutdown();
         this.cleanFolder(likedSongsFolder);
@@ -437,6 +440,9 @@ public class Download extends Method {
                 pb.step(song.getName());
                 this.threadDownload(song, playlistFolder);
             }
+        } catch (InterruptedException e) {
+            this.executor.shutdownNow();
+            throw e;
         }
         this.threadShutdown();
         this.cleanFolder(playlistFolder);
@@ -537,6 +543,9 @@ public class Download extends Method {
                 pb.step(song.getName());
                 this.threadDownload(song, albumFolder);
             }
+        } catch (InterruptedException e) {
+            this.executor.shutdownNow();
+            throw e;
         }
         this.threadShutdown();
         this.cleanFolder(albumFolder);
