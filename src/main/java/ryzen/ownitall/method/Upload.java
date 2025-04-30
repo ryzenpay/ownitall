@@ -38,7 +38,8 @@ public class Upload extends Method {
 
     public Upload() throws InterruptedException {
         if (Method.isCredentialsEmpty(Upload.class)) {
-            throw new InterruptedException("empty spotify credentials");
+            logger.debug("Empty upload credentials");
+            throw new InterruptedException("empty upload credentials");
         }
     }
 

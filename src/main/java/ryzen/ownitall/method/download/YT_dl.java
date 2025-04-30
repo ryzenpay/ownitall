@@ -24,6 +24,7 @@ public class YT_dl extends Download {
      */
     public YT_dl() throws InterruptedException {
         if (Method.isCredentialsEmpty(YT_dl.class)) {
+            logger.debug("Empty YT_dl credentials found");
             throw new InterruptedException("empty YT_dl credentials");
         }
     }

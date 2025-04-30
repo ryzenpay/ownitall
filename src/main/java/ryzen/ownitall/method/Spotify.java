@@ -61,6 +61,7 @@ public class Spotify extends Method {
      */
     public Spotify() throws InterruptedException {
         if (Method.isCredentialsEmpty(Spotify.class)) {
+            logger.debug("Empty spotify credentials");
             throw new InterruptedException("empty spotify credentials");
         }
         try {

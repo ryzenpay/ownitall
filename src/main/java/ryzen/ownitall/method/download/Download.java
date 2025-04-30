@@ -38,40 +38,21 @@ public class Download extends Method {
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
-    protected File localLibrary = Settings.localFolder;
-    private Download instance;
-
-    public Download() throws InterruptedException {
-        if (Method.isCredentialsEmpty(Download.class)) {
-            throw new InterruptedException("empty Download credentials");
-        }
-        try {
-            // TODO: check if settings.downloadType credentials are set
-            // needs to be done in methodmenu or wherever
-            instance = Settings.downloadType.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException e) {
-            logger.error("Interrupted while setting up download '" + Settings.downloadType.getSimpleName() + "'", e);
-            throw new InterruptedException(e.getMessage());
-        } catch (IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException e) {
-            logger.error("Exception creating download '" + Settings.downloadType.getSimpleName() + "'", e);
-            throw new InterruptedException(e.getMessage());
-        }
-    }
+    protected static final File localLibrary = Settings.localFolder;
 
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or path provided in threadDownload");
             return;
         }
-        if (instance.executor == null || instance.executor.isShutdown()) {
-            instance.threadInit();
+        if (this.executor == null || this.executor.isShutdown()) {
+            this.threadInit();
         }
         while (true) {
             try {
                 // Attempt to execute the task
-                instance.executor.execute(() -> {
-                    instance.downloadSong(song, path);
+                this.executor.execute(() -> {
+                    this.downloadSong(song, path);
                 });
                 break;
             } catch (RejectedExecutionException e) {
@@ -85,7 +66,7 @@ public class Download extends Method {
      */
     public void threadInit() {
         int downloadThreads = Settings.downloadThreads;
-        instance.executor = new ThreadPoolExecutor(
+        this.executor = new ThreadPoolExecutor(
                 downloadThreads,
                 downloadThreads,
                 0L,
@@ -99,16 +80,16 @@ public class Download extends Method {
      * @throws InterruptedException - if user interrupts while waiting
      */
     public void threadShutdown() throws InterruptedException {
-        if (instance.executor == null || instance.executor.isShutdown()) {
+        if (this.executor == null || this.executor.isShutdown()) {
             return;
         }
-        instance.executor.shutdown();
+        this.executor.shutdown();
         logger.debug("Awaiting current threads to shutdown (max 10 min)");
         try {
-            instance.executor.awaitTermination(10, TimeUnit.MINUTES);
+            this.executor.awaitTermination(10, TimeUnit.MINUTES);
             logger.debug("All threads shut down");
         } catch (InterruptedException e) {
-            instance.executor.shutdownNow();
+            this.executor.shutdownNow();
             logger.debug("All threads forcibly shut down");
             throw e;
         }
@@ -266,9 +247,9 @@ public class Download extends Method {
         logger.debug("Getting local liked songs to remove mismatches");
         Upload upload = new Upload();
         LikedSongs likedSongs = upload.getLikedSongs();
-        File songFolder = instance.localLibrary;
+        File songFolder = localLibrary;
         if (Settings.downloadHierachy) {
-            songFolder = new File(instance.localLibrary, Settings.likedSongName);
+            songFolder = new File(localLibrary, Settings.likedSongName);
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
@@ -302,15 +283,15 @@ public class Download extends Method {
         File likedSongsFolder;
         if (Settings.downloadHierachy) {
             songs = Collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(instance.localLibrary, Settings.likedSongName);
+            likedSongsFolder = new File(localLibrary, Settings.likedSongName);
             likedSongsFolder.mkdirs();
         } else {
             songs = Collection.getStandaloneLikedSongs();
-            likedSongsFolder = instance.localLibrary;
+            likedSongsFolder = localLibrary;
             if (Settings.downloadLikedsongPlaylist) {
                 Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
                 likedSongsPlaylist.addSongs(Collection.getLikedSongs().getSongs());
-                instance.writePlaylistData(likedSongsPlaylist, instance.localLibrary);
+                this.writePlaylistData(likedSongsPlaylist, localLibrary);
             }
         }
         try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
@@ -318,11 +299,11 @@ public class Download extends Method {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
                 pb.step(song.getName());
-                instance.threadDownload(song, likedSongsFolder);
+                this.threadDownload(song, likedSongsFolder);
             }
         }
-        instance.threadShutdown();
-        instance.cleanFolder(likedSongsFolder);
+        this.threadShutdown();
+        this.cleanFolder(likedSongsFolder);
     }
 
     /**
@@ -339,7 +320,7 @@ public class Download extends Method {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
                 if (Settings.downloadHierachy) {
-                    File playlistFolder = new File(instance.localLibrary, playlist.getFolderName());
+                    File playlistFolder = new File(localLibrary, playlist.getFolderName());
                     if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
@@ -349,8 +330,8 @@ public class Download extends Method {
                     }
                 } else {
                     // deletes all playlists songs
-                    instance.syncPlaylist(new Playlist(playlist.getName()));
-                    File m3uFile = new File(instance.localLibrary, playlist.getFolderName() + ".m3u");
+                    this.syncPlaylist(new Playlist(playlist.getName()));
+                    File m3uFile = new File(localLibrary, playlist.getFolderName() + ".m3u");
                     if (m3uFile.delete()) {
                         logger.info(
                                 "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
@@ -374,7 +355,7 @@ public class Download extends Method {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
         try (ProgressBar pb = new ProgressBar("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
-                instance.uploadPlaylist(playlist);
+                this.uploadPlaylist(playlist);
                 pb.step(playlist.getName());
             }
         }
@@ -393,14 +374,14 @@ public class Download extends Method {
             return;
         }
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
-        File playlistFolder = instance.localLibrary;
+        File playlistFolder = localLibrary;
         Playlist localPlaylist = null;
         Upload upload = new Upload();
         if (Settings.downloadHierachy) {
-            playlistFolder = new File(instance.localLibrary, playlist.getFolderName());
+            playlistFolder = new File(localLibrary, playlist.getFolderName());
             localPlaylist = upload.getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
         } else {
-            File m3uFile = new File(instance.localLibrary, playlist.getFolderName() + ".m3u");
+            File m3uFile = new File(localLibrary, playlist.getFolderName() + ".m3u");
             if (m3uFile.exists()) {
                 localPlaylist = Upload.getM3UPlaylist(m3uFile);
             }
@@ -443,12 +424,12 @@ public class Download extends Method {
         File playlistFolder;
         if (Settings.downloadHierachy) {
             songs = playlist.getSongs();
-            playlistFolder = new File(instance.localLibrary, playlist.getFolderName());
+            playlistFolder = new File(localLibrary, playlist.getFolderName());
             playlistFolder.mkdirs();
         } else {
             songs = Collection.getStandalonePlaylistSongs(playlist);
-            playlistFolder = instance.localLibrary;
-            instance.writePlaylistData(playlist, playlistFolder);
+            playlistFolder = localLibrary;
+            this.writePlaylistData(playlist, playlistFolder);
         }
         try (ProgressBar pb = new ProgressBar("Downloading Playlists: " + playlist.getName(),
                 playlist.size() + 1);
@@ -456,11 +437,11 @@ public class Download extends Method {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
                 pb.step(song.getName());
-                instance.threadDownload(song, playlistFolder);
+                this.threadDownload(song, playlistFolder);
             }
         }
-        instance.threadShutdown();
-        instance.cleanFolder(playlistFolder);
+        this.threadShutdown();
+        this.cleanFolder(playlistFolder);
     }
 
     /**
@@ -476,7 +457,7 @@ public class Download extends Method {
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : albums) {
-                File albumFolder = new File(instance.localLibrary, album.getFolderName());
+                File albumFolder = new File(localLibrary, album.getFolderName());
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
                         logger.info(
@@ -500,7 +481,7 @@ public class Download extends Method {
         ArrayList<Album> albums = Collection.getAlbums();
         try (ProgressBar pb = new ProgressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
-                instance.uploadAlbum(album);
+                this.uploadAlbum(album);
                 pb.step(album.getName());
             }
         }
@@ -513,7 +494,7 @@ public class Download extends Method {
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(instance.localLibrary, album.getFolderName());
+        File albumFolder = new File(localLibrary, album.getFolderName());
         Upload upload = new Upload();
         Album localAlbum = upload.getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
@@ -548,18 +529,18 @@ public class Download extends Method {
             return;
         }
         // albums are always in a folder
-        File albumFolder = new File(instance.localLibrary, album.getFolderName());
+        File albumFolder = new File(localLibrary, album.getFolderName());
         albumFolder.mkdirs();
         try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            instance.writeAlbumData(album, albumFolder);
+            this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {
                 interruptionHandler.throwInterruption();
                 pb.step(song.getName());
-                instance.threadDownload(song, albumFolder);
+                this.threadDownload(song, albumFolder);
             }
         }
-        instance.threadShutdown();
-        instance.cleanFolder(albumFolder);
+        this.threadShutdown();
+        this.cleanFolder(albumFolder);
     }
 }

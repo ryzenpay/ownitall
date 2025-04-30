@@ -46,6 +46,7 @@ public class Youtube extends Method {
      */
     public Youtube() throws InterruptedException {
         if (Method.isCredentialsEmpty(Youtube.class)) {
+            logger.debug("Empty youtube credentials");
             throw new InterruptedException("empty youtube credentials");
         }
         this.youtubeApi = this.getService();

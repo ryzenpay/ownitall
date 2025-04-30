@@ -32,7 +32,8 @@ public class LastFM extends Library {
      */
     public LastFM() throws InterruptedException {
         super();
-        if (super.isCredentialsEmpty(LastFM.class)) {
+        if (Library.isCredentialsEmpty(LastFM.class)) {
+            logger.debug("Empty LastFM credentials");
             throw new InterruptedException("Empty LastFM credentials");
         }
         this.queryDiff = 10;

@@ -11,11 +11,10 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
-public class Method {
+abstract public class Method {
     private static final Logger logger = LogManager.getLogger(Method.class);
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
     public static final LinkedHashMap<Class<? extends Method>, LinkedHashMap<String, String>> credentialGroups;
@@ -26,7 +25,7 @@ public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("Download", Download.class);
+        methods.put("Download", Settings.downloadType);
     }
 
     static {
@@ -35,7 +34,6 @@ public class Method {
         credentialGroups.put(Youtube.class, Settings.getYoutubeCredentials());
         credentialGroups.put(Jellyfin.class, Settings.getJellyfinCredentials());
         credentialGroups.put(Upload.class, Settings.getUploadCredentials());
-        credentialGroups.put(Download.class, Settings.getDownloadCredentials());
         credentialGroups.put(YT_dl.class, Settings.getYT_dlCredentials());
         credentialGroups.put(SoulSeek.class, Settings.getSoulSeekCredentials());
     }
@@ -46,8 +44,7 @@ public class Method {
             return null;
         }
         try {
-            Method method = methodClass.getDeclaredConstructor().newInstance();
-            return method;
+            return methodClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException e) {
             logger.error("Interrupted while setting up method '" + methodClass.getSimpleName() + "'", e);
             throw new InterruptedException(e.getMessage());
@@ -97,6 +94,7 @@ public class Method {
                 return false;
             }
         }
+        logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
         return true;
     }
 

@@ -21,6 +21,7 @@ public class SoulSeek extends Download {
 
     public SoulSeek() throws InterruptedException {
         if (Method.isCredentialsEmpty(SoulSeek.class)) {
+            logger.debug("Empty SoulSeek credentials found");
             throw new InterruptedException("empty SoulSeek credentials");
         }
     }

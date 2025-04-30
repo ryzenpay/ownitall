@@ -213,7 +213,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getYT_dlCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.putAll(getUploadCredentials());
+        credentials.putAll(getDownloadCredentials());
         credentials.put("YT-dl File", "yt_dlFile");
         credentials.put("FFMPeg File", "ffmpegFile");
         return credentials;
@@ -232,7 +232,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public static final LinkedHashMap<String, String> getSoulSeekCredentials() {
         LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.putAll(getUploadCredentials());
+        credentials.putAll(getDownloadCredentials());
         credentials.put("SoulSeek dl File", "soulSeekFile");
         credentials.put("SoulSeek Username", "soulSeekUsername");
         credentials.put("SoulSeek Password", "soulSeekPassword");

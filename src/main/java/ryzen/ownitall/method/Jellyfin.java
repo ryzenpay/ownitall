@@ -41,6 +41,7 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/
     public Jellyfin() throws InterruptedException {
         if (Method.isCredentialsEmpty(Jellyfin.class)) {
+            logger.debug("Empty jellyfin credentials");
             throw new InterruptedException("empty jellyfin credentials");
         }
         this.authenticate();
