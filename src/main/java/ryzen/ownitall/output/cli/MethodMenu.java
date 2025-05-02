@@ -1,5 +1,6 @@
 package ryzen.ownitall.output.cli;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -19,13 +20,14 @@ public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
-    public MethodMenu() throws InterruptedException {
+    public void setMethod(Class<? extends Annotation> annotation) throws InterruptedException {
         LibraryMenu.initializeLibrary();
-        String choice = Menu.optionMenu(Method.methods.keySet(), "METHODS");
+        LinkedHashMap<String, Class<? extends Method>> methods = Method.getMethods(annotation);
+        String choice = Menu.optionMenu(methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException("Cancelled method selection");
         }
-        Class<? extends Method> methodClass = Method.methods.get(choice);
+        Class<? extends Method> methodClass = methods.get(choice);
         if (Method.isCredentialsEmpty(methodClass)) {
             this.setCredentials(methodClass);
         }
@@ -68,7 +70,8 @@ public class MethodMenu {
         }
     }
 
-    public void importMenu() {
+    public void importMenu() throws InterruptedException {
+        this.setMethod(Method.Import.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
@@ -254,7 +257,8 @@ public class MethodMenu {
         }
     }
 
-    public void exportMenu() {
+    public void exportMenu() throws InterruptedException {
+        this.setMethod(Method.Export.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);
@@ -370,7 +374,8 @@ public class MethodMenu {
         }
     }
 
-    public void syncMenu() {
+    public void syncMenu() throws InterruptedException {
+        this.setMethod(Method.Export.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Sync Library", this::optionSyncCollection);
         options.put("Sync liked songs", this::optionSyncLikedSongs);

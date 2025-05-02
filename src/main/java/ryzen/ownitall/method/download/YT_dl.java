@@ -13,6 +13,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
 
+@Method.Export
 public class YT_dl extends Download {
     private static final Logger logger = LogManager.getLogger(YT_dl.class);
 

@@ -18,6 +18,7 @@ import ryzen.ownitall.util.Logs;
 //https://github.com/fiso64/slsk-batchdl
 //TODO: update readme
 // port forwarding?
+@Method.Export
 public class SoulSeek extends Download {
     private static final Logger logger = LogManager.getLogger(SoulSeek.class);
 

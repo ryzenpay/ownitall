@@ -1,5 +1,6 @@
 package ryzen.ownitall.method;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,6 +41,16 @@ abstract public class Method {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Export {
+    }
+
+    public static LinkedHashMap<String, Class<? extends Method>> getMethods(Class<? extends Annotation> annotation) {
+        LinkedHashMap<String, Class<? extends Method>> importMethods = new LinkedHashMap<>();
+        for (String methodName : methods.keySet()) {
+            if (methods.get(methodName).isAnnotationPresent(annotation)) {
+                importMethods.put(methodName, methods.get(methodName));
+            }
+        }
+        return importMethods;
     }
 
     public static Method initMethod(Class<? extends Method> methodClass) throws InterruptedException {
