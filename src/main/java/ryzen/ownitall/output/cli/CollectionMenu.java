@@ -9,6 +9,7 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
@@ -41,7 +42,7 @@ public class CollectionMenu {
 
     private void optionImport() {
         try {
-            new MethodMenu().importMenu();
+            new MethodMenu(Method.Import.class).importMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up import menu", e);
         }
@@ -49,7 +50,7 @@ public class CollectionMenu {
 
     private void optionExport() {
         try {
-            new MethodMenu().exportMenu();
+            new MethodMenu(Method.Export.class).exportMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up export menu", e);
         }
@@ -57,7 +58,7 @@ public class CollectionMenu {
 
     private void optionSync() {
         try {
-            new MethodMenu().syncMenu();
+            new MethodMenu(Method.Export.class).syncMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up sync menu", e);
         }

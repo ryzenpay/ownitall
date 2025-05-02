@@ -20,7 +20,7 @@ public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
-    public void setMethod(Class<? extends Annotation> annotation) throws InterruptedException {
+    public MethodMenu(Class<? extends Annotation> annotation) throws InterruptedException {
         LibraryMenu.initializeLibrary();
         LinkedHashMap<String, Class<? extends Method>> methods = Method.getMethods(annotation);
         String choice = Menu.optionMenu(methods.keySet(), "METHODS");
@@ -71,7 +71,6 @@ public class MethodMenu {
     }
 
     public void importMenu() throws InterruptedException {
-        this.setMethod(Method.Import.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
         options.put("Import liked songs", this::optionImportLikedSongs);
@@ -258,7 +257,6 @@ public class MethodMenu {
     }
 
     public void exportMenu() throws InterruptedException {
-        this.setMethod(Method.Export.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
         options.put("Export Liked Songs", this::optionExportLikedSongs);
@@ -375,7 +373,6 @@ public class MethodMenu {
     }
 
     public void syncMenu() throws InterruptedException {
-        this.setMethod(Method.Export.class);
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Sync Library", this::optionSyncCollection);
         options.put("Sync liked songs", this::optionSyncLikedSongs);
