@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"ryzen.ownitall"},{"l":"ryzen.ownitall.classes"},{"l":"ryzen.ownitall.library"},{"l":"ryzen.ownitall.method"},{"l":"ryzen.ownitall.method.download"},{"l":"ryzen.ownitall.output.cli"},{"l":"ryzen.ownitall.output.web"},{"l":"ryzen.ownitall.util"}];updateSearchResults();

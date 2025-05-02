@@ -11,9 +11,19 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
+/**
+ * <p>LibraryMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class LibraryMenu {
     private static final Logger logger = LogManager.getLogger(LibraryMenu.class);
 
+    /**
+     * <p>Constructor for LibraryMenu.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public LibraryMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         // main menu
@@ -44,6 +54,11 @@ public class LibraryMenu {
         }
     }
 
+    /**
+     * <p>initializeLibrary.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public static void initializeLibrary() throws InterruptedException {
         if (Settings.libraryType == null) {
             return;

@@ -32,6 +32,11 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 
+/**
+ * <p>Jellyfin class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Import
 @Method.Export
 public class Jellyfin extends Method {
@@ -42,6 +47,11 @@ public class Jellyfin extends Method {
     private String accessToken;
 
     // https://api.jellyfin.org/
+    /**
+     * <p>Constructor for Jellyfin.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public Jellyfin() throws InterruptedException {
         if (Method.isCredentialsEmpty(Jellyfin.class)) {
             logger.debug("Empty jellyfin credentials");
@@ -67,6 +77,7 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    /** {@inheritDoc} */
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
@@ -100,6 +111,7 @@ public class Jellyfin extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting jellyfin liked songs to remove mismatches");
@@ -120,6 +132,7 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/UserLibrary/operation/MarkFavoriteItem
+    /** {@inheritDoc} */
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
@@ -137,6 +150,7 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    /** {@inheritDoc} */
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
@@ -167,6 +181,7 @@ public class Jellyfin extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Playlist getPlaylist(String playlistId, String playlistName) throws InterruptedException {
         if (playlistId == null) {
@@ -182,6 +197,13 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist
+    /**
+     * <p>getPlaylistSongs.</p>
+     *
+     * @param playlistId a {@link java.lang.String} object
+     * @return a {@link java.util.ArrayList} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {
             logger.debug("Null or empty playlist id provided in getPlaylistSongs");
@@ -206,6 +228,7 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    /** {@inheritDoc} */
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
@@ -241,6 +264,7 @@ public class Jellyfin extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Album getAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException {
         if (albumId == null) {
@@ -267,6 +291,13 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    /**
+     * <p>getAlbumSongs.</p>
+     *
+     * @param albumId a {@link java.lang.String} object
+     * @return a {@link java.util.ArrayList} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public ArrayList<Song> getAlbumSongs(String albumId) throws InterruptedException {
         if (albumId == null) {
             logger.debug("empty or null albumId provided in getAlbumSongs");
@@ -299,6 +330,13 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/UserLibrary/operation/GetItem
+    /**
+     * <p>getSong.</p>
+     *
+     * @param songId a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Song getSong(String songId) throws InterruptedException {
         if (songId == null) {
             logger.debug("empty or null songId provided in getSong");
@@ -333,6 +371,12 @@ public class Jellyfin extends Method {
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
+    /**
+     * <p>getSongId.</p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link java.lang.String} object
+     */
     public String getSongId(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongId");

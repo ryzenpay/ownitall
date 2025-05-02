@@ -28,6 +28,11 @@ import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 
+/**
+ * <p>Download class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Export
 public class Download extends Method {
     // more download sources
@@ -38,8 +43,16 @@ public class Download extends Method {
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
+    /** Constant <code>downloadThreads=Settings.downloadThreads</code> */
     protected static int downloadThreads = Settings.downloadThreads;
 
+    /**
+     * <p>threadDownload.</p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @param path a {@link java.io.File} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public void threadDownload(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or path provided in threadDownload");
@@ -75,8 +88,8 @@ public class Download extends Method {
 
     /**
      * shut down all threads
-     * 
-     * @throws InterruptedException - if user interrupts while waiting
+     *
+     * @throws java.lang.InterruptedException - if user interrupts while waiting
      */
     public void threadShutdown() throws InterruptedException {
         if (this.executor == null || this.executor.isShutdown()) {
@@ -94,6 +107,12 @@ public class Download extends Method {
         }
     }
 
+    /**
+     * <p>downloadSong.</p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @param path a {@link java.io.File} object
+     */
     public void downloadSong(Song song, File path) {
         logger.warn("Unsupported download method to downloadSong");
     }
@@ -101,7 +120,7 @@ public class Download extends Method {
     /**
      * write song metadata
      * wrapper for MusicTools metadata writer
-     * 
+     *
      * @param song     - song to get metadata details from
      * @param songFile - song file to write metadata to
      */
@@ -148,7 +167,7 @@ public class Download extends Method {
 
     /**
      * write playlist m3u data including coverimage
-     * 
+     *
      * @param playlist - playlist to get data from
      * @param folder   - folder to place m3u file in
      */
@@ -179,7 +198,7 @@ public class Download extends Method {
 
     /**
      * write album nfo data including coverimage
-     * 
+     *
      * @param album  - album to get data from
      * @param folder - folder to place nfo file in
      */
@@ -214,7 +233,7 @@ public class Download extends Method {
      * - png
      * - nfo
      * these are specified in "whitelist"
-     * 
+     *
      * @param folder - folder to clean up files from
      */
     public void cleanFolder(File folder) {
@@ -237,9 +256,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * clean up local liked songs before downloading
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void syncLikedSongs() throws InterruptedException {
@@ -272,9 +291,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * orchestrator of DownloadSong for all standalone liked songs
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void uploadLikedSongs() throws InterruptedException {
@@ -309,9 +328,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * deletes entire playlists which are not in collection
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void syncPlaylists() throws InterruptedException {
@@ -348,9 +367,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * orchestrator of downloadPlaylist
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void uploadPlaylists() throws InterruptedException {
@@ -364,10 +383,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * cleans up individual songs in a playlist
-     * 
-     * @param playlist - playlist to clean up
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void syncPlaylist(Playlist playlist) throws InterruptedException {
@@ -411,10 +429,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * orchestrator for downloading a playlist
-     * 
-     * @param playlist - constructed playlist to download
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void uploadPlaylist(Playlist playlist) throws InterruptedException {
@@ -450,9 +467,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * deletes entire albums which are not in collection
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void syncAlbums() throws InterruptedException {
@@ -477,9 +494,9 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * orchestrator for downloadAlbum
-     * 
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public void uploadAlbums() throws InterruptedException {
@@ -492,6 +509,7 @@ public class Download extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncAlbum(Album album) throws InterruptedException {
         if (album == null) {
@@ -521,11 +539,10 @@ public class Download extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * download an album
      * has its own folder
-     * 
-     * @param album - album to download
-     * @throws InterruptedException - when the user interrupts
      */
     @Override
     public void uploadAlbum(Album album) throws InterruptedException {

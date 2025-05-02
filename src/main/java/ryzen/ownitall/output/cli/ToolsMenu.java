@@ -11,9 +11,17 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
+/**
+ * <p>ToolsMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class ToolsMenu {
     private static final Logger logger = LogManager.getLogger(ToolsMenu.class);
 
+    /**
+     * <p>Constructor for ToolsMenu.</p>
+     */
     public ToolsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Archive", this::optionArchive);

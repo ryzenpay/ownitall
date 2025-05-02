@@ -20,6 +20,11 @@ import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * <p>MusicBrainz class.</p>
+ *
+ * @author ryzen
+ */
 public class MusicBrainz extends Library {
     private static final Logger logger = LogManager.getLogger(MusicBrainz.class);
     private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
@@ -34,6 +39,7 @@ public class MusicBrainz extends Library {
         this.queryDiff = 1000;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Album getAlbum(Album album) throws InterruptedException {
         String id = this.searchAlbum(album);
@@ -81,6 +87,13 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    /**
+     * <p>getAlbum.</p>
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Album} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Album getAlbum(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getAlbum");
@@ -146,6 +159,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Song getSong(Song song) throws InterruptedException {
         String id = this.searchSong(song);
@@ -198,6 +212,13 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    /**
+     * <p>getSong.</p>
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Song getSong(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getSong");
@@ -239,6 +260,7 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
         String id = this.searchArtist(artist);
@@ -248,6 +270,13 @@ public class MusicBrainz extends Library {
         return this.getArtist(id);
     }
 
+    /**
+     * <p>searchArtist.</p>
+     *
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public String searchArtist(Artist artist) throws InterruptedException {
         if (artist == null) {
             logger.debug("null artist passed in searchArtist");
@@ -275,6 +304,13 @@ public class MusicBrainz extends Library {
         return null;
     }
 
+    /**
+     * <p>getArtist.</p>
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Artist} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Artist getArtist(String id) throws InterruptedException {
         if (id == null || id.isEmpty()) {
             logger.debug("null or empty id provided in getArtist");

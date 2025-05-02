@@ -13,6 +13,11 @@ import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
+/**
+ * <p>Settings class.</p>
+ *
+ * @author ryzen
+ */
 public class Settings extends ryzen.ownitall.util.Settings {
     private static Settings instance;
     private static final Logger logger = LogManager.getLogger(Settings.class);
@@ -24,13 +29,20 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * default file names (without extensions)
      */
     public static File dataFolder = new File("data");
+    /** Constant <code>likedSongName="liked songs"</code> */
     public static String likedSongName = "liked songs";
+    /** Constant <code>albumFile="albums"</code> */
     public static String albumFile = "albums";
+    /** Constant <code>likedSongFile="likedsongs"</code> */
     public static String likedSongFile = "likedsongs";
+    /** Constant <code>playlistFile="playlists"</code> */
     public static String playlistFile = "playlists";
+    /** Constant <code>artistFile="artists"</code> */
     public static String artistFile = "artists";
+    /** Constant <code>songFile="songs"</code> */
     public static String songFile = "songs";
 
+    /** Constant <code>cacheFolder</code> */
     public static File cacheFolder = new File(".cache");
 
     /**
@@ -44,13 +56,16 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * to limit number of songs in each spotify API batch query
      */
     public static int spotifySongLimit = 50;
+    /** Constant <code>spotifyAlbumLimit=20</code> */
     public static int spotifyAlbumLimit = 20;
+    /** Constant <code>spotifyPlaylistLimit=20</code> */
     public static int spotifyPlaylistLimit = 20;
 
     /**
      * to limit number of songs in each youtube API batch query
      */
     public static Long youtubeSongLimit = 50L;
+    /** Constant <code>youtubePlaylistLimit</code> */
     public static Long youtubePlaylistLimit = 20L;
 
     /**
@@ -138,12 +153,18 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static int downloadThreads = 1;
 
+    /** Constant <code>soulSeekBitRate=320</code> */
     public static int soulSeekBitRate = 320;
 
     private Settings() throws IOException {
         super("settings.json");
     }
 
+    /**
+     * <p>load.</p>
+     *
+     * @return a {@link ryzen.ownitall.Settings} object
+     */
     public static Settings load() {
         if (instance == null) {
             try {
@@ -157,31 +178,46 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return instance;
     }
 
+    /**
+     * <p>save.</p>
+     */
     public void save() {
         super.save();
     }
 
+    /**
+     * <p>clear.</p>
+     */
     public void clear() {
         instance = null;
         super.clear();
     }
 
+    /** {@inheritDoc} */
     public boolean set(String name, Object value) {
         return super.set(name, value);
     }
 
+    /**
+     * <p>getAll.</p>
+     *
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public LinkedHashMap<String, Object> getAll() {
         return super.getAll();
     }
 
+    /** {@inheritDoc} */
     public boolean isEmpty(String name) {
         return super.isEmpty(name);
     }
 
+    /** {@inheritDoc} */
     public Object get(String name) {
         return super.get(name);
     }
 
+    /** {@inheritDoc} */
     public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
         return super.getGroup(groupClass);
     }

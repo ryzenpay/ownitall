@@ -22,6 +22,11 @@ import ryzen.ownitall.util.Input;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * <p>Storage class.</p>
+ *
+ * @author ryzen
+ */
 public class Storage {
     private static final Logger logger = LogManager.getLogger(Storage.class);
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -67,6 +72,11 @@ public class Storage {
         logger.info("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
     }
 
+    /**
+     * <p>getArchiveFolders.</p>
+     *
+     * @return a {@link java.util.LinkedHashSet} object
+     */
     public static LinkedHashSet<File> getArchiveFolders() {
         LinkedHashSet<File> archiveFolders = new LinkedHashSet<>();
         for (File file : Settings.dataFolder.listFiles()) {
@@ -81,6 +91,8 @@ public class Storage {
      * display a menu of all archived files (folders and dates) and give an option
      * to unarchive
      * also archives current files with todays date to prevent data loss
+     *
+     * @param unarchiveFolder a {@link java.io.File} object
      */
     public static void unArchive(File unarchiveFolder) {
         if (unarchiveFolder == null || !unarchiveFolder.exists()) {
@@ -128,6 +140,9 @@ public class Storage {
         }
     }
 
+    /**
+     * <p>clearInventoryFiles.</p>
+     */
     public static void clearInventoryFiles() {
         setDataFolder();
         for (File file : Settings.dataFolder.listFiles()) {
@@ -141,7 +156,6 @@ public class Storage {
     /**
      * import collection from files
      * orchestrates import albums, playlists and liked songs
-     * 
      */
     public static void importCollection() {
         logger.debug("importing collection... ");
@@ -159,7 +173,6 @@ public class Storage {
     /**
      * save collection to local files
      * orchestrates export albums, playlists and liked songs
-     * 
      */
     public static void exportCollection() {
         logger.debug("Exporting music collection...");
@@ -176,7 +189,7 @@ public class Storage {
 
     /**
      * save all albums
-     * 
+     *
      * @param albums - linkedhashset of constructed Album
      */
     public static void exportAlbums(ArrayList<Album> albums) {
@@ -195,7 +208,7 @@ public class Storage {
 
     /**
      * import saved albums
-     * 
+     *
      * @return - linkedhashset of constructed Album
      */
     public static ArrayList<Album> importAlbums() {
@@ -217,7 +230,7 @@ public class Storage {
 
     /**
      * save all playlists
-     * 
+     *
      * @param playlists - linkedhashset of constructed Playlist
      */
     public static void exportPlaylists(ArrayList<Playlist> playlists) {
@@ -236,7 +249,7 @@ public class Storage {
 
     /**
      * import all saved playlists
-     * 
+     *
      * @return - linkedhashset of constructed Playlist
      */
     public static ArrayList<Playlist> importPlaylists() {
@@ -259,7 +272,7 @@ public class Storage {
 
     /**
      * save all liked songs
-     * 
+     *
      * @param likedSongs - constructed LikedSongs
      */
     public static void exportLikedSongs(LikedSongs likedSongs) {
@@ -278,7 +291,7 @@ public class Storage {
 
     /**
      * import all saved liked songs
-     * 
+     *
      * @return - constructed LikedSongs
      */
     public static LikedSongs importLikedSongs() {
@@ -297,6 +310,12 @@ public class Storage {
         }
     }
 
+    /**
+     * <p>cacheAlbums.</p>
+     *
+     * @param albums a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public static LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
         setCacheFolder();
         File albumFile = new File(Settings.cacheFolder, Settings.albumFile + ".json");
@@ -322,6 +341,12 @@ public class Storage {
         return cachedAlbums;
     }
 
+    /**
+     * <p>cacheArtists.</p>
+     *
+     * @param artists a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public static LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
         setCacheFolder();
         File artistFile = new File(Settings.cacheFolder, Settings.artistFile + ".json");
@@ -347,6 +372,12 @@ public class Storage {
         return cachedArtists;
     }
 
+    /**
+     * <p>cacheSongs.</p>
+     *
+     * @param songs a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public static LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
         setCacheFolder();
         File songFile = new File(Settings.cacheFolder, Settings.songFile + ".json");
@@ -372,6 +403,12 @@ public class Storage {
         return cachedSongs;
     }
 
+    /**
+     * <p>cacheIds.</p>
+     *
+     * @param ids a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public static LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
         setCacheFolder();
         File idFile = new File(Settings.cacheFolder, "ids.json");

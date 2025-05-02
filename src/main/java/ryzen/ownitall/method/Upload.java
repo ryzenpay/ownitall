@@ -24,6 +24,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
+/**
+ * <p>Upload class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Import
 public class Upload extends Method {
     private static final Logger logger = LogManager.getLogger(Upload.class);
@@ -36,6 +41,11 @@ public class Upload extends Method {
         }
     };
 
+    /**
+     * <p>Constructor for Upload.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public Upload() throws InterruptedException {
         if (Method.isCredentialsEmpty(Upload.class)) {
             logger.debug("Empty upload credentials");
@@ -44,15 +54,14 @@ public class Upload extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Get local liked songs and put them in collection
      * current criteria:
      * - exclude all below and only look at metadata rating if download hierachy set
      * to false
      * - songs in root folder (library path)
      * - folder named "liked songs" (changeable in settings)
-     * 
-     * @return - constructed likedsongs
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
@@ -89,6 +98,13 @@ public class Upload extends Method {
         return likedSongs;
     }
 
+    /**
+     * <p>getLikedSongs.</p>
+     *
+     * @param folder a {@link java.io.File} object
+     * @return a {@link ryzen.ownitall.classes.LikedSongs} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public static LikedSongs getLikedSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
             logger.debug("null, non existant or non folder passed in getLikedSongs");
@@ -120,6 +136,7 @@ public class Upload extends Method {
         return likedSongs;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
@@ -154,6 +171,13 @@ public class Upload extends Method {
         return playlists;
     }
 
+    /**
+     * <p>getM3UPlaylist.</p>
+     *
+     * @param file a {@link java.io.File} object
+     * @return a {@link ryzen.ownitall.classes.Playlist} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public static Playlist getM3UPlaylist(File file) throws InterruptedException {
         if (file == null || file.isDirectory()) {
             logger.debug("folder is null or non file in processM3u");
@@ -204,6 +228,7 @@ public class Upload extends Method {
         return playlist;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Playlist getPlaylist(String path, String name) throws InterruptedException {
         if (path == null) {
@@ -235,6 +260,7 @@ public class Upload extends Method {
         return playlist;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
@@ -256,13 +282,7 @@ public class Upload extends Method {
         return albums;
     }
 
-    /**
-     * construct Album class from an album folder
-     * 
-     * @param folder - folder to get files from
-     * @return - constructed Album without songs
-     * @throws InterruptedException - when user interrupts
-     */
+    /** {@inheritDoc} */
     @Override
     public Album getAlbum(String path, String name, String albumArtistName) throws InterruptedException {
         if (path == null) {
@@ -312,10 +332,10 @@ public class Upload extends Method {
     /**
      * function to check if folder is an album
      * current criteria: all mp3's with metadata say the same album
-     * 
+     *
      * @param folder - folder of the playlist/album
      * @return - true if album, false if playlist
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public static boolean isAlbum(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory() || folder.list().length <= 1) {
@@ -350,10 +370,10 @@ public class Upload extends Method {
 
     /**
      * get all songs in a folder
-     * 
+     *
      * @param folder - folder to get all songs from
      * @return - linkedhashset of constructed songs
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public static ArrayList<Song> getSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
@@ -377,10 +397,10 @@ public class Upload extends Method {
 
     /**
      * getting metadata from music file
-     * 
+     *
      * @param file - file to get metadata from
      * @return - constructed Song
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public static Song getSong(File file) throws InterruptedException {
         if (file == null || !file.exists()) {

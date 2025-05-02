@@ -45,11 +45,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Desktop;
 
+/**
+ * <p>Spotify class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Export
 @Method.Import
 public class Spotify extends Method {
-    // TODO: refresh token after 30 min, use library timeout manager as time
-    // context, look at git history for previous refresh function
     private static final Logger logger = LogManager.getLogger(Spotify.class);
     private static final Library library = Library.load();
     // read and write scope
@@ -59,8 +62,8 @@ public class Spotify extends Method {
 
     /**
      * Default spotify constructor asking for user input
-     * 
-     * @throws InterruptedException - when user interrupts
+     *
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public Spotify() throws InterruptedException {
         if (Method.isCredentialsEmpty(Spotify.class)) {
@@ -130,7 +133,7 @@ public class Spotify extends Method {
 
     /**
      * refresh the spotify api token incase of expiring
-     * 
+     *
      * @return - true if succesfully refreshed, false if not
      */
     public boolean refreshToken() {
@@ -148,8 +151,8 @@ public class Spotify extends Method {
 
     /**
      * start temporary local server to "intercept" spotify api code
-     * 
-     * @throws InterruptedException - when user interrupts
+     *
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public void startLocalServer() throws InterruptedException {
         try (ServerSocket serverSocket = new ServerSocket(8888)) {
@@ -244,10 +247,9 @@ public class Spotify extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Get all liked songs from current spotify account and add them to collection
-     * 
-     * @return - constructed likedsongs
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
@@ -311,6 +313,7 @@ public class Spotify extends Method {
         return likedSongs;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting spotify liked songs to remove mismatches");
@@ -356,6 +359,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
@@ -407,10 +411,9 @@ public class Spotify extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get all current user saved albums and add them to collection
-     * 
-     * @return - arraylist of albums
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
@@ -460,6 +463,7 @@ public class Spotify extends Method {
         return albums;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Album getAlbum(String albumId, String albumName, String artistName) throws InterruptedException {
         if (albumId == null || albumName == null) {
@@ -490,10 +494,10 @@ public class Spotify extends Method {
 
     /**
      * get all songs in an album
-     * 
+     *
      * @param albumId - spotify album id
      * @return - linkedhashset of songs
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public ArrayList<Song> getAlbumSongs(String albumId) throws InterruptedException {
         if (albumId == null) {
@@ -552,6 +556,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncAlbums() throws InterruptedException {
         ArrayList<Album> albums = this.getAlbums();
@@ -596,6 +601,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
@@ -640,11 +646,10 @@ public class Spotify extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get all playlists contributed by current spotify user and add them to
      * collection
-     * 
-     * @return - arraylist of playlists
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
@@ -702,6 +707,7 @@ public class Spotify extends Method {
         return playlists;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Playlist getPlaylist(String playlistId, String playlistName) throws InterruptedException {
         if (playlistId == null || playlistName == null) {
@@ -720,10 +726,10 @@ public class Spotify extends Method {
 
     /**
      * get all songs from a playlist
-     * 
+     *
      * @param playlistId - spotify ID for a playlist
      * @return - constructed array of Songs
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public ArrayList<Song> getPlaylistSongs(String playlistId) throws InterruptedException {
         if (playlistId == null) {
@@ -807,6 +813,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncPlaylists() throws InterruptedException {
         logger.debug("Getting spotify playlists to remove mismatches");
@@ -821,6 +828,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
@@ -832,6 +840,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
@@ -897,6 +906,7 @@ public class Spotify extends Method {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
@@ -963,6 +973,13 @@ public class Spotify extends Method {
         }
     }
 
+    /**
+     * <p>getTrackId.</p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public String getTrackId(Song song) throws InterruptedException {
         if (song == null) {
             logger.debug("null song provided in getTrackId");
@@ -993,6 +1010,13 @@ public class Spotify extends Method {
         }
     }
 
+    /**
+     * <p>getPlaylistId.</p>
+     *
+     * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public String getPlaylistId(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("null playlist provided in getPlaylistId");
@@ -1042,6 +1066,13 @@ public class Spotify extends Method {
         return null;
     }
 
+    /**
+     * <p>getAlbumId.</p>
+     *
+     * @param album a {@link ryzen.ownitall.classes.Album} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public String getAlbumId(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in getAlbumId");

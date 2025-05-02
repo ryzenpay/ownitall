@@ -10,13 +10,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * <p>Album class.</p>
+ *
+ * @author ryzen
+ */
 public class Album extends Playlist {
     private static final Logger logger = LogManager.getLogger(Album.class);
     private ArrayList<Artist> artists;
 
     /**
      * Default constructor of album without album cover
-     * 
+     *
      * @param name - album name
      */
     public Album(String name) {
@@ -26,7 +31,7 @@ public class Album extends Playlist {
 
     /**
      * full album constructor
-     * 
+     *
      * @param name       - album name
      * @param songs      - linkedhashset of songs
      * @param coverImage - cover art
@@ -48,7 +53,7 @@ public class Album extends Playlist {
     /**
      * merge two albums together
      * used when adding to linkedhashset and one already exists
-     * 
+     *
      * @param album - album to merge into current
      */
     public void merge(Album album) {
@@ -61,10 +66,10 @@ public class Album extends Playlist {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * add song to album
      * also adds artists from song into current album artists
-     * 
-     * @param song - song to add
      */
     @Override
     public void addSong(Song song) {
@@ -83,7 +88,7 @@ public class Album extends Playlist {
 
     /**
      * add artists to album artists
-     * 
+     *
      * @param artists - linkedhashset of artist to add
      */
     public void addArtists(ArrayList<Artist> artists) {
@@ -98,7 +103,7 @@ public class Album extends Playlist {
 
     /**
      * add artist to album
-     * 
+     *
      * @param artist - constructed artist to add
      */
     public void addArtist(Artist artist) {
@@ -120,13 +125,19 @@ public class Album extends Playlist {
 
     /**
      * get all album artists
-     * 
+     *
      * @return - linkedhashset of artist
      */
     public ArrayList<Artist> getArtists() {
         return this.artists;
     }
 
+    /**
+     * <p>getArtist.</p>
+     *
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
+     * @return a {@link ryzen.ownitall.classes.Artist} object
+     */
     public Artist getArtist(Artist artist) {
         if (artist == null) {
             logger.debug(this.toString() + ": null artist provided in getArtist");
@@ -142,7 +153,7 @@ public class Album extends Playlist {
 
     /**
      * get album main artist
-     * 
+     *
      * @return - first artist in album
      */
     @JsonIgnore
@@ -153,6 +164,7 @@ public class Album extends Playlist {
         return this.artists.get(0);
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public String toString() {
@@ -163,6 +175,7 @@ public class Album extends Playlist {
         return output;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public boolean equals(Object object) {

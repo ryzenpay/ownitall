@@ -16,12 +16,17 @@ import ryzen.ownitall.util.Menu;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
+/**
+ * <p>Main class.</p>
+ *
+ * @author ryzen
+ */
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     /**
      * main function launching the main ownitall menu
-     * 
+     *
      * @param args - possible arguments to pass (not defined)
      */
     public static void main(String[] args) {
@@ -66,6 +71,9 @@ public class Main {
         }
     }
 
+    /**
+     * <p>save.</p>
+     */
     public static void save() {
         Collection.save();
         Settings.load().save();

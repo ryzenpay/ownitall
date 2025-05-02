@@ -33,6 +33,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * <p>Youtube class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Import
 @Method.Export
 public class Youtube extends Method {
@@ -44,8 +49,8 @@ public class Youtube extends Method {
 
     /**
      * default youtube constructor asking for user input
-     * 
-     * @throws InterruptedException - when user interrupts
+     *
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public Youtube() throws InterruptedException {
         if (Method.isCredentialsEmpty(Youtube.class)) {
@@ -99,10 +104,9 @@ public class Youtube extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * save all youtube liked songs to collection
-     * 
-     * @return - constructed likedsongs
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
@@ -160,12 +164,11 @@ public class Youtube extends Method {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get saved youtube playlists
      * current criteria:
      * - gets all videos from any playlist with category id 10
-     * 
-     * @return - arraylist of playlists
-     * @throws InterruptedException - when user interrupts
      */
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {

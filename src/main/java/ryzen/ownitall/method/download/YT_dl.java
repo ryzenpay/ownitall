@@ -13,6 +13,11 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
 
+/**
+ * <p>YT_dl class.</p>
+ *
+ * @author ryzen
+ */
 @Method.Export
 public class YT_dl extends Download {
     private static final Logger logger = LogManager.getLogger(YT_dl.class);
@@ -20,8 +25,8 @@ public class YT_dl extends Download {
     /**
      * default download constructor
      * setting all settings / credentials
-     * 
-     * @throws InterruptedException - when user interrupts
+     *
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public YT_dl() throws InterruptedException {
         if (Method.isCredentialsEmpty(YT_dl.class)) {
@@ -31,10 +36,9 @@ public class YT_dl extends Download {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * download a specified song
-     * 
-     * @param song - constructed song
-     * @param path - folder of where to place
      */
     @Override
     public void downloadSong(Song song, File path) {

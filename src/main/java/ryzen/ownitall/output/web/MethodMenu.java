@@ -20,11 +20,24 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Logs;
 
+/**
+ * <p>MethodMenu class.</p>
+ *
+ * @author ryzen
+ */
 @Controller
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
+    /**
+     * <p>methodMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param methodClassName a {@link java.lang.String} object
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method")
     public String methodMenu(Model model,
             @RequestParam(value = "methodClass", required = false) String methodClassName,
@@ -68,6 +81,14 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>loginForm.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param methodClassName a {@link java.lang.String} object
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/login")
     public String loginForm(Model model,
             @RequestParam(value = "methodClass", required = true) String methodClassName,
@@ -106,6 +127,15 @@ public class MethodMenu {
         return "login";
     }
 
+    /**
+     * <p>login.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param methodClassName a {@link java.lang.String} object
+     * @param callback a {@link java.lang.String} object
+     * @param params a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.lang.String} object
+     */
     @PostMapping("/method/login")
     public String login(Model model,
             @RequestParam(value = "methodClass", required = true) String methodClassName,
@@ -146,6 +176,12 @@ public class MethodMenu {
         return "login";
     }
 
+    /**
+     * <p>importMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/import")
     public String importMenu(Model model) {
         if (this.method == null) {
@@ -163,6 +199,12 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionImportCollection.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/import/collection")
     public String optionImportCollection(Model model) {
         if (this.method == null) {
@@ -175,6 +217,9 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>importCollection.</p>
+     */
     @PostMapping("/method/import/collection")
     public void importCollection() {
         if (this.method == null) {
@@ -190,6 +235,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionImportLikedSongs.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/import/likedsongs")
     public String optionImportLikedSongs(Model model) {
         if (this.method == null) {
@@ -202,6 +253,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>importLikedSongs.</p>
+     *
+     * @return a int
+     */
     @PostMapping("/method/import/likedsongs")
     // TODO: use response int
     public int importLikedSongs() {
@@ -223,6 +279,12 @@ public class MethodMenu {
     }
 
     // TODO: import individual album
+    /**
+     * <p>optionImportAlbums.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/import/albums")
     public String optionImportAlbums(Model model) {
         if (this.method == null) {
@@ -235,6 +297,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>importAlbums.</p>
+     *
+     * @return a int
+     */
     @PostMapping("/method/import/albums")
     public int importAlbums() {
         if (this.method == null) {
@@ -255,6 +322,12 @@ public class MethodMenu {
     }
 
     // TODO: import individual playlist
+    /**
+     * <p>optionImportPlaylists.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/import/playlists")
     public String optionImportPlaylists(Model model) {
         if (this.method == null) {
@@ -267,6 +340,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>importPlaylists.</p>
+     *
+     * @return a int
+     */
     @PostMapping("/method/import/playlists")
     public int importPlaylists() {
         if (this.method == null) {
@@ -286,6 +364,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>exportMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/export")
     public String exportMenu(Model model) {
         if (this.method == null) {
@@ -303,6 +387,12 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionExportCollection.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/export/collection")
     public String optionExportCollection(Model model) {
         if (this.method == null) {
@@ -315,6 +405,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>exportCollection.</p>
+     *
+     * @return a boolean
+     */
     @PostMapping("/method/export/collection")
     public boolean exportCollection() {
         if (this.method == null) {
@@ -332,6 +427,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionExportLikedSongs.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/export/likedsongs")
     public String optionExportLikedSongs(Model model) {
         if (this.method == null) {
@@ -344,6 +445,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>exportLikedSongs.</p>
+     *
+     * @return a boolean
+     */
     @PostMapping("/method/export/likedsongs")
     public boolean exportLikedSongs() {
         if (this.method == null) {
@@ -360,6 +466,12 @@ public class MethodMenu {
     }
 
     // TODO: export individual album
+    /**
+     * <p>optionExportAlbums.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/export/albums")
     public String optionExportAlbums(Model model) {
         if (this.method == null) {
@@ -372,6 +484,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>exportAlbums.</p>
+     *
+     * @return a boolean
+     */
     @PostMapping("/method/export/albums")
     public boolean exportAlbums() {
         if (this.method == null) {
@@ -388,6 +505,12 @@ public class MethodMenu {
     }
 
     // TODO: export individual playlist
+    /**
+     * <p>optionExportPlaylists.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/export/playlists")
     public String optionExportPlaylists(Model model) {
         if (this.method == null) {
@@ -400,6 +523,11 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>exportPlaylists.</p>
+     *
+     * @return a boolean
+     */
     @PostMapping("/method/export/playlists")
     public boolean exportPlaylists() {
         if (this.method == null) {
@@ -415,6 +543,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>syncMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/sync")
     public String syncMenu(Model model) {
         if (this.method == null) {
@@ -432,6 +566,12 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionSyncCollection.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/sync/collection")
     public String optionSyncCollection(Model model) {
         if (this.method == null) {
@@ -444,6 +584,9 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>syncCollection.</p>
+     */
     @PostMapping("/method/sync/collection")
     public void syncCollection() {
         if (this.method == null) {
@@ -459,6 +602,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionSyncLikedSongs.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/sync/likedsongs")
     public String optionSyncLikedSongs(Model model) {
         if (this.method == null) {
@@ -471,6 +620,9 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>syncLikedSongs.</p>
+     */
     @PostMapping("/method/sync/likedsongs")
     public void syncLikedSongs() {
         if (this.method == null) {
@@ -484,6 +636,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionSyncAlbums.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/sync/albums")
     public String optionSyncAlbums(Model model) {
         if (this.method == null) {
@@ -496,6 +654,9 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>syncAlbums.</p>
+     */
     @PostMapping("/method/sync/albums")
     public void syncAlbums() {
         if (this.method == null) {
@@ -509,6 +670,12 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionSyncPlaylists.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/sync/playlists")
     public String optionSyncPlaylists(Model model) {
         if (this.method == null) {
@@ -521,6 +688,9 @@ public class MethodMenu {
         return "process";
     }
 
+    /**
+     * <p>syncPlaylists.</p>
+     */
     @PostMapping("/method/sync/playlists")
     public void syncPlaylists() {
         if (this.method == null) {
@@ -534,6 +704,11 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>optionReturn.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/return")
     public String optionReturn() {
         if (this.method != null) {

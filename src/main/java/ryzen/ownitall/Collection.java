@@ -22,6 +22,11 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 
+/**
+ * <p>Collection class.</p>
+ *
+ * @author ryzen
+ */
 public class Collection {
     private static final Logger logger = LogManager.getLogger(Collection.class);
     private static LikedSongs likedSongs = new LikedSongs();
@@ -44,21 +49,30 @@ public class Collection {
         clearAlbums();
     }
 
+    /**
+     * <p>clearLikedSongs.</p>
+     */
     public static void clearLikedSongs() {
         likedSongs.getSongs().clear();
     }
 
+    /**
+     * <p>clearPlaylists.</p>
+     */
     public static void clearPlaylists() {
         playlists.clear();
     }
 
+    /**
+     * <p>clearAlbums.</p>
+     */
     public static void clearAlbums() {
         albums.clear();
     }
 
     /**
      * merge array of albums into current collection
-     * 
+     *
      * @param albums - linkedhashset of albums to merge
      */
     public static void addAlbums(ArrayList<Album> albums) {
@@ -74,7 +88,7 @@ public class Collection {
     /**
      * add album to collection
      * merges if one is already existing (see contains() and equals())
-     * 
+     *
      * @param album - constructed album to merge
      */
     public static void addAlbum(Album album) {
@@ -92,7 +106,7 @@ public class Collection {
 
     /**
      * remove album from collection
-     * 
+     *
      * @param album - album to remove
      */
     public static void removeAlbum(Album album) {
@@ -105,7 +119,7 @@ public class Collection {
 
     /**
      * merge array of playlists into current collection
-     * 
+     *
      * @param playlists - linkedhashset of playlists to merge
      */
     public static void addPlaylists(ArrayList<Playlist> playlists) {
@@ -121,7 +135,7 @@ public class Collection {
     /**
      * add playlist to collection
      * merges if one already exists (see contains() and equals())
-     * 
+     *
      * @param playlist - constructed playlist to add
      */
     public static void addPlaylist(Playlist playlist) {
@@ -139,7 +153,7 @@ public class Collection {
 
     /**
      * removes playlist from collection
-     * 
+     *
      * @param playlist - constructed playlist to remove
      */
     public static void removePlaylist(Playlist playlist) {
@@ -152,8 +166,8 @@ public class Collection {
 
     /**
      * merge liked songs into current collection
-     * 
-     * @param likedSongs - array of constructed Song
+     *
+     * @param fromLikedSongs a {@link ryzen.ownitall.classes.LikedSongs} object
      */
     public static void addLikedSongs(LikedSongs fromLikedSongs) {
         if (fromLikedSongs == null) {
@@ -165,7 +179,7 @@ public class Collection {
 
     /**
      * add liked song to collection
-     * 
+     *
      * @param song - constructed song to add
      */
     public static void addLikedSong(Song song) {
@@ -178,7 +192,7 @@ public class Collection {
 
     /**
      * remove liked song from collection
-     * 
+     *
      * @param song - constructed song to remove
      */
     public static void removeLikedSong(Song song) {
@@ -191,7 +205,7 @@ public class Collection {
 
     /**
      * get this collections likedsongs
-     * 
+     *
      * @return - constructed LikedSongs
      */
     public static LikedSongs getLikedSongs() {
@@ -200,7 +214,7 @@ public class Collection {
 
     /**
      * function to get standalone liked songs (not in any albums or playlists)
-     * 
+     *
      * @return - linkedhashset of standalone liked songs
      */
     public static ArrayList<Song> getStandaloneLikedSongs() {
@@ -220,7 +234,7 @@ public class Collection {
 
     /**
      * get arraylist of playlists songs which are not in albums
-     * 
+     *
      * @param playlist - playlist to get songs from
      * @return - arraylist of songs only in that playlist
      */
@@ -239,7 +253,7 @@ public class Collection {
 
     /**
      * get the album a song is part of
-     * 
+     *
      * @param song - song to check
      * @return - constructed album
      */
@@ -258,7 +272,7 @@ public class Collection {
 
     /**
      * get the first playlist the song is part of
-     * 
+     *
      * @param song - song to check
      * @return - constructed playlist
      */
@@ -277,7 +291,7 @@ public class Collection {
 
     /**
      * check if song is liked (in likedSongs)
-     * 
+     *
      * @param song - constructed song to check if liked
      * @return - true if liked, false if not
      */
@@ -294,7 +308,7 @@ public class Collection {
 
     /**
      * get this collections albums
-     * 
+     *
      * @return - linkedhashset of albums
      */
     public static ArrayList<Album> getAlbums() {
@@ -303,7 +317,7 @@ public class Collection {
 
     /**
      * get album from collection
-     * 
+     *
      * @param album - constructed album
      * @return - found constructed album or null
      */
@@ -323,7 +337,7 @@ public class Collection {
 
     /**
      * get this collections playlists
-     * 
+     *
      * @return - linkedhashset of playlists
      */
     public static ArrayList<Playlist> getPlaylists() {
@@ -332,7 +346,7 @@ public class Collection {
 
     /**
      * get playlist from collection
-     * 
+     *
      * @param playlist - constructed playlist to find
      * @return - found playlist or null
      */
@@ -352,7 +366,7 @@ public class Collection {
     /**
      * get a playlists m3u String to write to a file
      * this gets all the paths for songs in albums
-     * 
+     *
      * @param playlist - playlist to get songs from
      * @return - string in m3u format
      */
@@ -387,7 +401,7 @@ public class Collection {
 
     /**
      * get an albums nfo String to write to a file
-     * 
+     *
      * @param album - album to get songs from
      * @return - string of an xml nfo file to write to a file
      */
@@ -462,7 +476,7 @@ public class Collection {
 
     /**
      * get total track count in playlists
-     * 
+     *
      * @return - int of playlist track count
      */
     public static int getPlaylistsTrackCount() {
@@ -475,7 +489,7 @@ public class Collection {
 
     /**
      * get total track count in albums
-     * 
+     *
      * @return - int of album track count
      */
     public static int getAlbumsTrackCount() {
@@ -488,7 +502,7 @@ public class Collection {
 
     /**
      * get total track count with no duplicates
-     * 
+     *
      * @return - int of total track count
      */
     public static int getTotalTrackCount() {
@@ -504,7 +518,7 @@ public class Collection {
 
     /**
      * get count of playlists in collection
-     * 
+     *
      * @return - int of playlists in collection
      */
     public static int getPlaylistCount() {
@@ -513,13 +527,18 @@ public class Collection {
 
     /**
      * get count of albums in collection
-     * 
+     *
      * @return - int of playlists in collection
      */
     public static int getAlbumCount() {
         return albums.size();
     }
 
+    /**
+     * <p>getLikedSongCount.</p>
+     *
+     * @return a int
+     */
     public static int getLikedSongCount() {
         return likedSongs.size();
     }

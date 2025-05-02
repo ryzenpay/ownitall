@@ -16,10 +16,21 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
+/**
+ * <p>MethodMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
     private Method method;
 
+    /**
+     * <p>Constructor for MethodMenu.</p>
+     *
+     * @param annotation a {@link java.lang.Class} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public MethodMenu(Class<? extends Annotation> annotation) throws InterruptedException {
         LibraryMenu.initializeLibrary();
         LinkedHashMap<String, Class<? extends Method>> methods = Method.getMethods(annotation);
@@ -70,6 +81,11 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>importMenu.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void importMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", this::optionImportCollection);
@@ -256,6 +272,11 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>exportMenu.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void exportMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", this::optionExportCollection);
@@ -372,6 +393,11 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>syncMenu.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void syncMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Sync Library", this::optionSyncCollection);

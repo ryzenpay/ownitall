@@ -19,6 +19,11 @@ import ryzen.ownitall.classes.Song;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * <p>LastFM class.</p>
+ *
+ * @author ryzen
+ */
 public class LastFM extends Library {
     private static final Logger logger = LogManager.getLogger(LastFM.class);
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
@@ -27,8 +32,8 @@ public class LastFM extends Library {
     /**
      * default LastFM constructor
      * initializes all values and loads from cache
-     * 
-     * @throws InterruptedException - thrown when user interrupts
+     *
+     * @throws java.lang.InterruptedException - thrown when user interrupts
      */
     public LastFM() throws InterruptedException {
         super();
@@ -40,14 +45,10 @@ public class LastFM extends Library {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get album from lastfm
      * https://www.last.fm/api/show/album.getInfo
-     * 
-     * @param album - constructed album with atleast a name, optionally artist
-     * 
-     * @return - constructed album with lastfm's data
-     * 
-     * @throws InterruptedException - thrown when user interrupts
      */
     @Override
     public Album getAlbum(Album album) throws InterruptedException {
@@ -131,11 +132,9 @@ public class LastFM extends Library {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get song from lastfm
-     * 
-     * @param song - constructed song with name, optionally artist
-     * @return - constructed song with lastFM data
-     * @throws InterruptedException - thrown when user interrupts
      */
     @Override
     public Song getSong(Song song) throws InterruptedException {
@@ -205,11 +204,9 @@ public class LastFM extends Library {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get artist from LastFM
-     * 
-     * @param artist - artist with name
-     * @return artist - constructed artist with lastFM data
-     * @throws InterruptedException - thrown when user interrupts
      */
     @Override
     public Artist getArtist(Artist artist) throws InterruptedException {
@@ -257,11 +254,9 @@ public class LastFM extends Library {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * get all albums from artist
-     * 
-     * @param artist - artist with atleast a name
-     * @return - arraylist of constructed albums with lastfm data
-     * @throws InterruptedException - thrown when user interrupts
      */
     @Override
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
@@ -367,10 +362,9 @@ public class LastFM extends Library {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * barebones method of handling library query response errors
-     * 
-     * @param code    - error code thrown
-     * @param message - additional message
      */
     @Override
     protected void queryErrorHandle(int code, String message) {

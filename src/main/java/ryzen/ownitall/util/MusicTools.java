@@ -27,12 +27,17 @@ import org.jaudiotagger.tag.images.ArtworkFactory;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
+/**
+ * <p>MusicTools class.</p>
+ *
+ * @author ryzen
+ */
 public class MusicTools {
     private static final Logger logger = LogManager.getLogger(MusicTools.class);
 
     /**
      * convert duration into music time (mm:ss)
-     * 
+     *
      * @param duration - constructed Duration
      * @return - string in format ((hh:)mm:ss)
      */
@@ -54,7 +59,7 @@ public class MusicTools {
 
     /**
      * get file extension of a file
-     * 
+     *
      * @param file - constructed File to get extension from
      * @return - String of file extension
      */
@@ -68,6 +73,12 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
+    /**
+     * <p>getExtension.</p>
+     *
+     * @param uri a {@link java.net.URI} object
+     * @return a {@link java.lang.String} object
+     */
     public static String getExtension(URI uri) {
         if (uri == null) {
             logger.debug("null uri provided in getExtension");
@@ -90,10 +101,10 @@ public class MusicTools {
 
     /**
      * write "text" data to a file
-     * 
+     *
      * @param file - file to write data to
      * @param data - data to write to file
-     * @throws IOException - when exception in file writing
+     * @throws java.io.IOException - when exception in file writing
      */
     public static void writeData(File file, String data) throws IOException {
         if (file == null) {
@@ -115,12 +126,12 @@ public class MusicTools {
 
     /**
      * write song metadata
-     * 
+     *
      * @param id3Data    - linkedhashmap with FieldKey:String mapping
      * @param liked      - if song is liked
      * @param coverImage - uri of song coverimage
      * @param songFile   - file to write metadata to
-     * @throws Exception - exception when writing metadata
+     * @throws java.lang.Exception - exception when writing metadata
      */
     public static void writeMetaData(LinkedHashMap<FieldKey, String> id3Data, boolean liked, URI coverImage,
             File songFile) throws Exception {
@@ -200,10 +211,10 @@ public class MusicTools {
 
     /**
      * read metadata from song file
-     * 
+     *
      * @param songFile - song file to read metadata from
      * @return - linkedhashmap of FieldKey:String with file metadata
-     * @throws Exception - exception reading metadata
+     * @throws java.lang.Exception - exception reading metadata
      */
     public static LinkedHashMap<FieldKey, String> readMetaData(File songFile) throws Exception {
         if (songFile == null || !songFile.exists()) {
@@ -233,10 +244,10 @@ public class MusicTools {
     /**
      * check if local song is liked using metadata
      * - requires 5 stars
-     * 
+     *
      * @param songFile - file to read metadata from
      * @return - true if liked, false if not
-     * @throws Exception - exception when reading metadata
+     * @throws java.lang.Exception - exception when reading metadata
      */
     public static boolean isSongLiked(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
@@ -256,10 +267,10 @@ public class MusicTools {
 
     /**
      * get duration of local song file
-     * 
+     *
      * @param songFile - songfile to check
      * @return - constructed Duration of songs duration
-     * @throws Exception - exception reading song metadata
+     * @throws java.lang.Exception - exception reading song metadata
      */
     public static Duration getSongDuration(File songFile) throws Exception {
         if (songFile == null || !songFile.isFile()) {
@@ -273,10 +284,10 @@ public class MusicTools {
 
     /**
      * download an image from the web
-     * 
+     *
      * @param url  - URI to fetch image from
      * @param file - file to download the image to (will make a new one)
-     * @throws IOException - IOException while downloading
+     * @throws java.io.IOException - java.io.IOException while downloading
      */
     public static void downloadImage(URI url, File file) throws IOException {
         if (url == null || file == null) {
@@ -296,7 +307,7 @@ public class MusicTools {
 
     /**
      * sanitize a fileName to be universally acceptable
-     * 
+     *
      * @param fileName - String filename to sanitize
      * @return - sanitized String
      */
@@ -322,6 +333,12 @@ public class MusicTools {
         return sanitized;
     }
 
+    /**
+     * <p>deleteFolder.</p>
+     *
+     * @param folder a {@link java.io.File} object
+     * @return a boolean
+     */
     public static boolean deleteFolder(File folder) {
         if (folder == null) {
             logger.debug("null folder provided in deleteFolder");

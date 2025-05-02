@@ -14,9 +14,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.method.Method;
 
+/**
+ * <p>ToolsMenu class.</p>
+ *
+ * @author ryzen
+ */
 @Controller
 public class ToolsMenu {
 
+    /**
+     * <p>toolsMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools")
     public String toolsMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -30,6 +41,12 @@ public class ToolsMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionArchive.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools/archive")
     public String optionArchive(Model model) {
         Storage.archive();
@@ -37,6 +54,13 @@ public class ToolsMenu {
         return toolsMenu(model);
     }
 
+    /**
+     * <p>optionUnArchive.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param folderPath a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools/unarchive")
     public String optionUnArchive(Model model,
             @RequestParam(value = "folderPath", required = false) String folderPath) {
@@ -63,6 +87,12 @@ public class ToolsMenu {
         }
     }
 
+    /**
+     * <p>optionClearCredentials.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools/clearcredentials")
     public String optionClearCredentials(Model model) {
         for (Class<? extends Method> methodClass : Method.methods.values()) {
@@ -72,6 +102,12 @@ public class ToolsMenu {
         return toolsMenu(model);
     }
 
+    /**
+     * <p>optionReturn.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools/return")
     public String optionReturn(Model model) {
         return "redirect:/";

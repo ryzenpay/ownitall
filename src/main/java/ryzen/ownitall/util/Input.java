@@ -10,6 +10,11 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * <p>Input class.</p>
+ *
+ * @author ryzen
+ */
 public class Input {
     private static final Logger logger = LogManager.getLogger(Input.class);
     private static Input instance;
@@ -25,7 +30,7 @@ public class Input {
 
     /**
      * instance loader for input
-     * 
+     *
      * @return - new or existing instance of input
      */
     public static Input request() {
@@ -35,6 +40,11 @@ public class Input {
         return instance;
     }
 
+    /**
+     * <p>Setter for the field <code>nonInteractive</code>.</p>
+     *
+     * @param params a {@link java.lang.String} object
+     */
     public static void setNonInteractive(String params) {
         if (params == null) {
             logger.error("null params provided in input request");
@@ -48,9 +58,9 @@ public class Input {
 
     /**
      * get string from user input
-     * 
+     *
      * @return - string of user input
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public String getString() throws InterruptedException {
         if (!nonInteractive.isEmpty()) {
@@ -74,10 +84,10 @@ public class Input {
 
     /**
      * get string from user input with enforced length
-     * 
+     *
      * @param length - length the user input has to meet
      * @return - string of length
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public String getString(int length) throws InterruptedException {
         while (true) {
@@ -93,9 +103,9 @@ public class Input {
 
     /**
      * get char from user
-     * 
+     *
      * @return - char of user input
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public char getChar() throws InterruptedException {
         while (true) {
@@ -111,9 +121,9 @@ public class Input {
 
     /**
      * get int from user
-     * 
+     *
      * @return - int of user input
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public int getInt() throws InterruptedException {
         while (true) {
@@ -128,11 +138,11 @@ public class Input {
 
     /**
      * get int from user between two boundaries
-     * 
+     *
      * @param lowerBound - lowest int boundary
      * @param upperBound - upper int boundary
      * @return - int between boundaries
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public int getInt(int lowerBound, int upperBound) throws InterruptedException {
         while (true) {
@@ -152,9 +162,9 @@ public class Input {
 
     /**
      * get long from user input
-     * 
+     *
      * @return - long from user input
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public long getLong() throws InterruptedException {
         while (true) {
@@ -172,10 +182,10 @@ public class Input {
 
     /**
      * get file from user input
-     * 
+     *
      * @param exists - boolean if the file should exist
      * @return - constructed file from user input
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public File getFile(boolean exists) throws InterruptedException {
         while (true) {
@@ -195,9 +205,9 @@ public class Input {
 
     /**
      * get user agreement (y or n)
-     * 
+     *
      * @return - y = true, n = false
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public boolean getAgreement() throws InterruptedException {
         while (true) {
@@ -214,9 +224,9 @@ public class Input {
 
     /**
      * get bool from user input
-     * 
+     *
      * @return - true = true, false = false
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public boolean getBool() throws InterruptedException {
         while (true) {
@@ -233,9 +243,9 @@ public class Input {
 
     /**
      * get url from user input
-     * 
+     *
      * @return - constructed URI of input url
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public URI getURL() throws InterruptedException {
         while (true) {
@@ -250,8 +260,8 @@ public class Input {
 
     /**
      * get user to press enter or interrupt
-     * 
-     * @throws InterruptedException - when user interrupts
+     *
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public void getEnter() throws InterruptedException {
         if (!nonInteractive.isEmpty()) {
@@ -260,6 +270,12 @@ public class Input {
         this.getString();
     }
 
+    /**
+     * <p>getClassStr.</p>
+     *
+     * @return a {@link java.lang.Class} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Class<?> getClassStr() throws InterruptedException {
         while (true) {
             String className = getString();
@@ -271,6 +287,13 @@ public class Input {
         }
     }
 
+    /**
+     * <p>getValue.</p>
+     *
+     * @param type a {@link java.lang.Class} object
+     * @return a {@link java.lang.Object} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Object getValue(Class<?> type) throws InterruptedException {
         if (type == boolean.class) {
             return this.getBool();

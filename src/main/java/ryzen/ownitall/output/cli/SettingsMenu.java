@@ -9,9 +9,17 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
+/**
+ * <p>SettingsMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class SettingsMenu {
     private static final Logger logger = LogManager.getLogger(SettingsMenu.class);
 
+    /**
+     * <p>Constructor for SettingsMenu.</p>
+     */
     public SettingsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Save Settings", this::optionSave);

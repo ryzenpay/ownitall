@@ -13,9 +13,24 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Logs;
 
+/**
+ * <p>
+ * LibraryMenu class.
+ * </p>
+ *
+ * @author ryzen
+ */
 @Controller
 public class LibraryMenu {
 
+    /**
+     * <p>
+     * libraryMenu.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library")
     public String libraryMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -28,6 +43,15 @@ public class LibraryMenu {
         return "menu";
     }
 
+    /**
+     * <p>
+     * optionChange.
+     * </p>
+     *
+     * @param model   a {@link org.springframework.ui.Model} object
+     * @param library a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/change")
     public String optionChange(Model model, @RequestParam(value = "library", required = false) String library) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -53,6 +77,16 @@ public class LibraryMenu {
         return "menu";
     }
 
+    /**
+     * <p>
+     * loginForm.
+     * </p>
+     *
+     * @param model            a {@link org.springframework.ui.Model} object
+     * @param libraryClassName a {@link java.lang.String} object
+     * @param callback         a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/login")
     public String loginForm(Model model,
             @RequestParam(value = "methodClass", required = true) String libraryClassName,
@@ -88,6 +122,16 @@ public class LibraryMenu {
         return "login";
     }
 
+    /**
+     * [POST] library login
+     *
+     * @param model            - model
+     * @param libraryClassName - library class
+     * @param callback         - callback
+     * @param params           - all parameters where credentials will be pulled
+     *                         from
+     * @return - successful or retry login
+     */
     @PostMapping("/library/login")
     public String login(Model model,
             @RequestParam(value = "methodClass", required = true) String libraryClassName,
@@ -128,6 +172,14 @@ public class LibraryMenu {
         return "login";
     }
 
+    /**
+     * <p>
+     * optionClearCache.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/cache/clear")
     public String optionClearCache(Model model) {
         Library.clear();
@@ -135,6 +187,14 @@ public class LibraryMenu {
         return libraryMenu(model);
     }
 
+    /**
+     * <p>
+     * optionCache.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/cache")
     public String optionCache(Model model) {
         int size = Library.getCacheSize();
@@ -142,6 +202,14 @@ public class LibraryMenu {
         return libraryMenu(model);
     }
 
+    /**
+     * <p>
+     * optionReturn.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/return")
     public String optionReturn(Model model) {
         return "redirect:/tools";

@@ -18,10 +18,18 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 
+/**
+ * <p>ModifyMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class ModifyMenu {
     private static final Logger logger = LogManager.getLogger(ModifyMenu.class);
     private static final Library library = Library.load();
 
+    /**
+     * <p>Constructor for ModifyMenu.</p>
+     */
     public ModifyMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add", this::addMenu);

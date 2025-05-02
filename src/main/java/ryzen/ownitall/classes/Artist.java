@@ -11,6 +11,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * <p>Artist class.</p>
+ *
+ * @author ryzen
+ */
 public class Artist {
     private static final Logger logger = LogManager.getLogger(Artist.class);
     private String name;
@@ -19,7 +24,7 @@ public class Artist {
 
     /**
      * default artist constructor
-     * 
+     *
      * @param name - artist name
      */
     public Artist(String name) {
@@ -28,6 +33,13 @@ public class Artist {
     }
 
     @JsonCreator
+    /**
+     * <p>Constructor for Artist.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @param ids a {@link java.util.LinkedHashMap} object
+     * @param coverImage a {@link java.lang.String} object
+     */
     public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("coverImage") String coverImage) {
         this.name = name;
@@ -42,7 +54,7 @@ public class Artist {
 
     /**
      * merge content from one artist into this artist
-     * 
+     *
      * @param artist - artist to get info from
      */
     public void merge(Artist artist) {
@@ -58,7 +70,7 @@ public class Artist {
 
     /**
      * get artist name
-     * 
+     *
      * @return - string artist name
      */
     public String getName() {
@@ -67,7 +79,7 @@ public class Artist {
 
     /**
      * set artist name
-     * 
+     *
      * @param name - string name to set
      */
     public void setName(String name) {
@@ -80,7 +92,7 @@ public class Artist {
 
     /**
      * add multiple ids to artist
-     * 
+     *
      * @param ids - linkedhashmap of id's
      */
     public void addIds(LinkedHashMap<String, String> ids) {
@@ -95,7 +107,7 @@ public class Artist {
 
     /**
      * add id to song
-     * 
+     *
      * @param key - id key
      * @param id  - id
      */
@@ -109,7 +121,7 @@ public class Artist {
 
     /**
      * get artist id
-     * 
+     *
      * @param key - key of id
      * @return - string id
      */
@@ -124,7 +136,7 @@ public class Artist {
 
     /**
      * get all artist id's
-     * 
+     *
      * @return - linkedhashmap of ids
      */
     public LinkedHashMap<String, String> getIds() {
@@ -133,7 +145,7 @@ public class Artist {
 
     /**
      * set artist coverimage (string)
-     * 
+     *
      * @param coverImage - string coverimage
      */
     public void setCoverImage(String coverImage) {
@@ -150,7 +162,7 @@ public class Artist {
 
     /**
      * set song coverimage (URI)
-     * 
+     *
      * @param coverImage - URI coverimage
      */
     public void setCoverImage(URI coverImage) {
@@ -163,19 +175,21 @@ public class Artist {
 
     /**
      * get coverimage
-     * 
+     *
      * @return - URI coverimage
      */
     public URI getCoverImage() {
         return this.coverImage;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public String toString() {
         return this.name.toString().trim();
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public boolean equals(Object object) {

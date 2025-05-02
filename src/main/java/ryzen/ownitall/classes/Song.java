@@ -17,6 +17,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.MusicTools;
 
+/**
+ * <p>Song class.</p>
+ *
+ * @author ryzen
+ */
 public class Song {
     private static final Logger logger = LogManager.getLogger(Song.class);
     private static final String downloadFormat = Settings.downloadFormat;
@@ -29,7 +34,7 @@ public class Song {
 
     /**
      * default song constructor
-     * 
+     *
      * @param name - String song name
      */
     public Song(String name) {
@@ -39,18 +44,18 @@ public class Song {
 
     }
 
-    /**
-     * full song constructor
-     * also used for importing
-     * 
-     * @param name       - name of song
-     * @param artist     - constructed artist
-     * @param ids        - linkedhashmap of ids
-     * @param duration   - double duration in seconds
-     * @param albumName  - album name of song
-     * @param coverImage - string of coverimage URI
-     */
     @JsonCreator
+    /**
+     * Full song constructor
+     * also used for json importing
+     *
+     * @param name       - song name
+     * @param artists    - arraylist of song artists
+     * @param ids        - arraylist of external ids associated to the song
+     * @param duration   - song duration in seconds
+     * @param albumName  - name of album song is part of
+     * @param coverImage - song coverimage
+     */
     public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
@@ -75,7 +80,7 @@ public class Song {
 
     /**
      * merge a song into this song
-     * 
+     *
      * @param song - song to get details from
      */
     public void merge(Song song) {
@@ -97,7 +102,7 @@ public class Song {
 
     /**
      * get the name of the current song class
-     * 
+     *
      * @return - string song name
      */
     public String getName() {
@@ -106,7 +111,7 @@ public class Song {
 
     /**
      * set song name
-     * 
+     *
      * @param name - string to set song name
      */
     public void setName(String name) {
@@ -117,6 +122,11 @@ public class Song {
         this.name = name;
     }
 
+    /**
+     * <p>addArtists.</p>
+     *
+     * @param artists a {@link java.util.ArrayList} object
+     */
     public void addArtists(ArrayList<Artist> artists) {
         if (artists == null) {
             logger.debug(this.toString() + ": null artists provided in addArtists");
@@ -129,7 +139,7 @@ public class Song {
 
     /**
      * set song artist
-     * 
+     *
      * @param artist - artist to set
      */
     public void addArtist(Artist artist) {
@@ -145,14 +155,20 @@ public class Song {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>artists</code>.</p>
+     *
+     * @return a {@link java.util.ArrayList} object
+     */
     public ArrayList<Artist> getArtists() {
         return this.artists;
     }
 
     /**
      * get song artist
-     * 
+     *
      * @return - constructed artist
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
      */
     @JsonIgnore
     public Artist getArtist(Artist artist) {
@@ -168,6 +184,11 @@ public class Song {
         return null;
     }
 
+    /**
+     * <p>getMainArtist.</p>
+     *
+     * @return a {@link ryzen.ownitall.classes.Artist} object
+     */
     @JsonIgnore
     public Artist getMainArtist() {
         if (this.artists.isEmpty()) {
@@ -178,7 +199,7 @@ public class Song {
 
     /**
      * add multiple ids to song
-     * 
+     *
      * @param ids - linkedhashmap of id's
      */
     public void addIds(LinkedHashMap<String, String> ids) {
@@ -191,7 +212,7 @@ public class Song {
 
     /**
      * add id to song
-     * 
+     *
      * @param key - id key
      * @param id  - id
      */
@@ -205,7 +226,7 @@ public class Song {
 
     /**
      * get song id
-     * 
+     *
      * @param key - key of id
      * @return - string id
      */
@@ -220,7 +241,7 @@ public class Song {
 
     /**
      * get all song id's
-     * 
+     *
      * @return - linkedhashmap of ids
      */
     public LinkedHashMap<String, String> getIds() {
@@ -229,7 +250,7 @@ public class Song {
 
     /**
      * get songs duration
-     * 
+     *
      * @return - constructed Duration class
      */
     public Duration getDuration() {
@@ -241,7 +262,7 @@ public class Song {
 
     /**
      * set songs duration
-     * 
+     *
      * @param duration - Long in duration
      * @param unit     - ChronoUnit of measurement for duration
      */
@@ -255,7 +276,7 @@ public class Song {
 
     /**
      * set songs duration
-     * 
+     *
      * @param duration - Duration
      */
     public void setDuration(Duration duration) {
@@ -268,7 +289,7 @@ public class Song {
 
     /**
      * set songs album name
-     * 
+     *
      * @param albumName - string album name
      */
     public void setAlbumName(String albumName) {
@@ -281,7 +302,7 @@ public class Song {
 
     /**
      * get songs album name
-     * 
+     *
      * @return - String song albumname
      */
     public String getAlbumName() {
@@ -290,7 +311,7 @@ public class Song {
 
     /**
      * set song coverimage (string)
-     * 
+     *
      * @param coverImage - string coverimage
      */
     public void setCoverImage(String coverImage) {
@@ -307,7 +328,7 @@ public class Song {
 
     /**
      * set song coverimage (URI)
-     * 
+     *
      * @param coverImage - URI coverimage
      */
     public void setCoverImage(URI coverImage) {
@@ -320,7 +341,7 @@ public class Song {
 
     /**
      * get coverimage
-     * 
+     *
      * @return - URI coverimage
      */
     public URI getCoverImage() {
@@ -329,7 +350,7 @@ public class Song {
 
     /**
      * get song UTF-8 file name
-     * 
+     *
      * @return - UTF-8 file name
      */
     @JsonIgnore
@@ -339,6 +360,7 @@ public class Song {
         return MusicTools.sanitizeFileName(this.getName()) + "." + downloadFormat;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public String toString() {
@@ -349,6 +371,7 @@ public class Song {
         return output;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public boolean equals(Object object) {

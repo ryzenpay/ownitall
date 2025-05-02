@@ -254,10 +254,16 @@
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.12.1</version>
+          <configuration>
+            <outputDirectory>${basedir}/docs</outputDirectory>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.6.1</version>
+          <configuration>
+            <outputDirectory>${basedir}/docs</outputDirectory>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -270,7 +276,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.11.2</version>
         <configuration>
-          <outputDirectory>${project.build.directory}/docs</outputDirectory>
+          <outputDirectory>${basedir}/docs</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

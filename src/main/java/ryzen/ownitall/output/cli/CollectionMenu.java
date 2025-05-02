@@ -14,6 +14,11 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
 
+/**
+ * <p>CollectionMenu class.</p>
+ *
+ * @author ryzen
+ */
 public class CollectionMenu {
     private static final Logger logger = LogManager.getLogger(CollectionMenu.class);
 
@@ -70,7 +75,6 @@ public class CollectionMenu {
 
     /**
      * print the inventory depending on its "depth"
-     * 
      */
     public void printInventory() {
         int recursion;
@@ -97,6 +101,9 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * <p>printInventoryR1.</p>
+     */
     public void printInventoryR1() {
         System.out
                 .println("Total playlists: " + Collection.getPlaylistCount() + "  ("
@@ -109,6 +116,9 @@ public class CollectionMenu {
         System.out.println("With a total of " + Collection.getTotalTrackCount() + " songs");
     }
 
+    /**
+     * <p>printInventoryR2.</p>
+     */
     public void printInventoryR2() {
         System.out.println("Liked Songs (" + Collection.getTotalTrackCount() + ")");
         System.out.println(
@@ -138,6 +148,9 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * <p>printInventoryR3.</p>
+     */
     public void printInventoryR3() {
         System.out.println("Liked Songs (" + Collection.getTotalTrackCount() + "): ");
         int i = 1;

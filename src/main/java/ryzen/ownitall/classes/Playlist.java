@@ -15,6 +15,11 @@ import ryzen.ownitall.util.MusicTools;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * <p>Playlist class.</p>
+ *
+ * @author ryzen
+ */
 public class Playlist {
     private static final Logger logger = LogManager.getLogger(Playlist.class);
     private String name;
@@ -24,7 +29,7 @@ public class Playlist {
 
     /**
      * Default playlist constructor
-     * 
+     *
      * @param name - name of the playlist
      */
     public Playlist(String name) {
@@ -35,7 +40,7 @@ public class Playlist {
 
     /**
      * full playlist contructor
-     * 
+     *
      * @param name       - playlist name
      * @param songs      - linkedhashset of song
      * @param ids        - linkedhashmap of id's
@@ -62,7 +67,7 @@ public class Playlist {
     /**
      * merge playlist into current playlist
      * used when existing playlist found and want to add new
-     * 
+     *
      * @param playlist - constructed playlist to merge into this
      */
     public void merge(Playlist playlist) {
@@ -79,13 +84,18 @@ public class Playlist {
 
     /**
      * get the name of the current playlist class
-     * 
+     *
      * @return - playlist name
      */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     */
     public void setName(String name) {
         if (name == null) {
             logger.debug(this.toString() + ": null playlist name passed to setName");
@@ -96,7 +106,7 @@ public class Playlist {
 
     /**
      * set playlist cover art
-     * 
+     *
      * @param coverImage - String of coverImage URL
      */
     public void setCoverImage(String coverImage) {
@@ -113,7 +123,7 @@ public class Playlist {
 
     /**
      * set playlist coverimage (URI)
-     * 
+     *
      * @param coverImage - constructed URI to set as coverimage
      */
     public void setCoverImage(URI coverImage) {
@@ -126,13 +136,18 @@ public class Playlist {
 
     /**
      * get coverimage of current playlist class
-     * 
+     *
      * @return - constructed URI
      */
     public URI getCoverImage() {
         return this.coverImage;
     }
 
+    /**
+     * <p>getCoverImageFileName.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     @JsonIgnore
     public String getCoverImageFileName() {
         if (this.coverImage == null) {
@@ -143,7 +158,7 @@ public class Playlist {
 
     /**
      * add songs to playlist
-     * 
+     *
      * @param songs - arraylist of constructed Song
      */
     public void addSongs(ArrayList<Song> songs) {
@@ -158,7 +173,7 @@ public class Playlist {
 
     /**
      * add song to playlist
-     * 
+     *
      * @param song - constructed Song
      */
     public void addSong(Song song) {
@@ -177,7 +192,7 @@ public class Playlist {
     /**
      * remove arraylist of songs
      * orchestrator for removeSong(Song song)
-     * 
+     *
      * @param songs - arraylist of songs to remove
      */
     public void removeSongs(ArrayList<Song> songs) {
@@ -192,7 +207,7 @@ public class Playlist {
 
     /**
      * remove song from playlist
-     * 
+     *
      * @param song - song to remove
      */
     public void removeSong(Song song) {
@@ -205,7 +220,7 @@ public class Playlist {
 
     /**
      * get song in playlist
-     * 
+     *
      * @param song - song to find
      * @return - constructed found song or null
      */
@@ -224,7 +239,7 @@ public class Playlist {
 
     /**
      * return size/numbers of songs in playlist
-     * 
+     *
      * @return - integer of size of playlist
      */
     @JsonIgnore
@@ -234,7 +249,7 @@ public class Playlist {
 
     /**
      * check if playlist has no songs
-     * 
+     *
      * @return - true if empty
      */
     @JsonIgnore
@@ -244,7 +259,7 @@ public class Playlist {
 
     /**
      * check if playlist contains a song
-     * 
+     *
      * @param song - song to check
      * @return - true if song is contained
      */
@@ -259,7 +274,7 @@ public class Playlist {
 
     /**
      * get all playlist songs
-     * 
+     *
      * @return - arraylist of constructed Song
      */
     public ArrayList<Song> getSongs() {
@@ -269,7 +284,7 @@ public class Playlist {
     /**
      * get playlist folder name
      * respects UTF-8
-     * 
+     *
      * @return - string UTF-8 foldername
      */
     @JsonIgnore
@@ -279,7 +294,7 @@ public class Playlist {
 
     /**
      * get total playlist duration
-     * 
+     *
      * @return - total Duration
      */
     @JsonIgnore
@@ -293,7 +308,7 @@ public class Playlist {
 
     /**
      * add multiple id's to playlist
-     * 
+     *
      * @param ids - linkedhashmap of id's to add
      */
     public void addIds(LinkedHashMap<String, String> ids) {
@@ -308,7 +323,7 @@ public class Playlist {
 
     /**
      * add id to playlist id's
-     * 
+     *
      * @param key - key to add (spotify, youtube, ...)
      * @param id  - id to add
      */
@@ -326,7 +341,7 @@ public class Playlist {
 
     /**
      * get id from playlist id's
-     * 
+     *
      * @param key - key of id to return
      * @return - string id
      */
@@ -341,19 +356,21 @@ public class Playlist {
 
     /**
      * get all playlist id's
-     * 
+     *
      * @return - linkedhashmap of id's
      */
     public LinkedHashMap<String, String> getIds() {
         return this.ids;
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public String toString() {
         return this.name.toString().trim();
     }
 
+    /** {@inheritDoc} */
     @Override
     @JsonIgnore
     public boolean equals(Object object) {

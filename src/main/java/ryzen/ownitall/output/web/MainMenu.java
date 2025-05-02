@@ -19,12 +19,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import ryzen.ownitall.Main;
 
+/**
+ * <p>MainMenu class.</p>
+ *
+ * @author ryzen
+ */
 @Controller
 @SpringBootApplication
 public class MainMenu {
     private static final Logger logger = LogManager.getLogger(MainMenu.class);
+    /** Constant <code>url="http://localhost:8080"</code> */
     public static final String url = "http://localhost:8080";
 
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects
+     */
     public static void main(String[] args) {
         logger.info("Starting up, browser will open soon");
         SpringApplication application = new SpringApplication(MainMenu.class);
@@ -50,6 +61,12 @@ public class MainMenu {
         Main.save();
     }
 
+    /**
+     * <p>mainMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/")
     public String mainMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -63,6 +80,12 @@ public class MainMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionSave.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/save")
     public String optionSave(Model model) {
         Main.save();
@@ -70,6 +93,11 @@ public class MainMenu {
         return mainMenu(model);
     }
 
+    /**
+     * <p>optionExit.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/exit")
     public String optionExit() {
         logger.info("Exiting program...");

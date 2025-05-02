@@ -23,9 +23,17 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
+/**
+ * <p>
+ * Library class.
+ * </p>
+ *
+ * @author ryzen
+ */
 public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    /** Constant <code>libraries</code> */
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
     private static Library instance;
     private long lastQueryTime = 0;
@@ -48,7 +56,7 @@ public class Library {
      * instance call method
      * sets library type with the integer set in settings
      * automates caching
-     * 
+     *
      * @return - new or existing Library
      */
     public static Library load() {
@@ -75,7 +83,7 @@ public class Library {
     /**
      * check if library has an instance
      * to prevent setting it up and logging in when clearing
-     * 
+     *
      * @return - true if instance set
      */
     public static boolean checkInstance() {
@@ -121,6 +129,14 @@ public class Library {
         Storage.clearCacheFiles();
     }
 
+    /**
+     * <p>
+     * isCredentialsEmpty.
+     * </p>
+     *
+     * @param type a {@link java.lang.Class} object
+     * @return a boolean
+     */
     public static boolean isCredentialsEmpty(Class<? extends Library> type) {
         if (type == null) {
             logger.debug("null type provided in isCredentialsEmpty");
@@ -140,21 +156,57 @@ public class Library {
         return false;
     }
 
+    /**
+     * <p>
+     * getAlbum.
+     * </p>
+     *
+     * @param album a {@link ryzen.ownitall.classes.Album} object
+     * @return a {@link ryzen.ownitall.classes.Album} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Album getAlbum(Album album) throws InterruptedException {
         logger.warn("get album supported for library type: " + Settings.libraryType);
         return null;
     }
 
+    /**
+     * <p>
+     * getSong.
+     * </p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Song getSong(Song song) throws InterruptedException {
         logger.warn("get song supported for library type: " + Settings.libraryType);
         return null;
     }
 
+    /**
+     * <p>
+     * getArtist.
+     * </p>
+     *
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
+     * @return a {@link ryzen.ownitall.classes.Artist} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public Artist getArtist(Artist artist) throws InterruptedException {
         logger.warn("get artist for library type: " + Settings.libraryType);
         return null;
     }
 
+    /**
+     * <p>
+     * getArtistAlbums.
+     * </p>
+     *
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
+     * @return a {@link java.util.ArrayList} object
+     * @throws java.lang.InterruptedException if any.
+     */
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
         logger.warn("get artist albums for library type: " + Settings.libraryType);
         return null;
@@ -176,10 +228,10 @@ public class Library {
 
     /**
      * query the specified url, catch errors or return response
-     * 
+     *
      * @param url - url to query
      * @return - JsonNode response or null if error
-     * @throws InterruptedException - if user interrupts timeout
+     * @throws java.lang.InterruptedException - if user interrupts timeout
      */
     protected JsonNode query(URI url) throws InterruptedException {
         if (url == null) {
@@ -217,10 +269,25 @@ public class Library {
         }
     }
 
+    /**
+     * <p>
+     * queryErrorHandle.
+     * </p>
+     *
+     * @param code    a int
+     * @param message a {@link java.lang.String} object
+     */
     protected void queryErrorHandle(int code, String message) {
         logger.error("Received error code (" + code + ") while querying: " + message);
     }
 
+    /**
+     * <p>
+     * getCacheSize.
+     * </p>
+     *
+     * @return a int
+     */
     public static int getCacheSize() {
         int size = 0;
         if (instance != null) {
@@ -232,18 +299,46 @@ public class Library {
         return size;
     }
 
+    /**
+     * <p>
+     * getArtistCacheSize.
+     * </p>
+     *
+     * @return a int
+     */
     public int getArtistCacheSize() {
         return this.artists.size();
     }
 
+    /**
+     * <p>
+     * getAlbumCacheSize.
+     * </p>
+     *
+     * @return a int
+     */
     public int getAlbumCacheSize() {
         return this.albums.size();
     }
 
+    /**
+     * <p>
+     * getSongCacheSize.
+     * </p>
+     *
+     * @return a int
+     */
     public int getSongCacheSize() {
         return this.songs.size();
     }
 
+    /**
+     * <p>
+     * getIdCacheSize.
+     * </p>
+     *
+     * @return a int
+     */
     public int getIdCacheSize() {
         return this.ids.size();
     }

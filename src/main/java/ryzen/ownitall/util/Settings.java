@@ -17,6 +17,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * <p>Settings class.</p>
+ *
+ * @author ryzen
+ */
 public class Settings {
     private static final Logger logger = LogManager.getLogger(Settings.class);
     private static final ObjectMapper objectMapper = new ObjectMapper()
@@ -25,6 +30,12 @@ public class Settings {
     protected String folderPath = ".appdata";
     private File file;
 
+    /**
+     * <p>Constructor for Settings.</p>
+     *
+     * @param saveFile a {@link java.lang.String} object
+     * @throws java.io.IOException if any.
+     */
     public Settings(String saveFile) throws IOException {
         this.file = new File(this.folderPath, saveFile);
         this.setFolder();
@@ -50,6 +61,11 @@ public class Settings {
         }
     }
 
+    /**
+     * <p>read.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     protected void read() throws IOException {
         setFolder();
         if (!file.exists()) {
@@ -69,8 +85,6 @@ public class Settings {
 
     /**
      * save settings to predefined file
-     * 
-     * @param filePath - filepath of settings file
      */
     protected void save() {
         this.setFolder();
@@ -83,8 +97,6 @@ public class Settings {
 
     /**
      * delete settings of predefined file
-     * 
-     * @param filePath - filepath of settings file
      */
     protected void clear() {
         file.delete();
@@ -92,11 +104,10 @@ public class Settings {
 
     /**
      * flexibly get all settings
-     * 
+     *
      * @return - LinkedHashSet of all settings with mapping field name : field
      *         value, only gets protected and non final entries
      */
-
     protected LinkedHashMap<String, Object> getAll() {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
@@ -130,12 +141,12 @@ public class Settings {
     }
 
     /**
-     * 
-     * @param setting - desired setting to modify
+     * <p>set.</p>
+     *
      * @return - true if modified, false if not
-     * @throws IllegalAccessException - if unaccessible setting is being modified
+     * @param name a {@link java.lang.String} object
+     * @param value a {@link java.lang.Object} object
      */
-
     protected boolean set(String name, Object value) {
         if (name == null) {
             logger.debug("null name provided in change");
@@ -160,6 +171,12 @@ public class Settings {
         return false;
     }
 
+    /**
+     * <p>getType.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.Class} object
+     */
     public Class<?> getType(String name) {
         if (name == null) {
             logger.debug("null name provided in getType");
@@ -173,6 +190,12 @@ public class Settings {
         }
     }
 
+    /**
+     * <p>isEmpty.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a boolean
+     */
     protected boolean isEmpty(String name) {
         if (name == null) {
             logger.debug("null name provided in isEmpty");
@@ -186,6 +209,12 @@ public class Settings {
         }
     }
 
+    /**
+     * <p>get.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.Object} object
+     */
     protected Object get(String name) {
         if (name == null) {
             logger.debug("null name provided in getFieldValue");
@@ -205,6 +234,12 @@ public class Settings {
         return null;
     }
 
+    /**
+     * <p>getGroup.</p>
+     *
+     * @param groupClass a {@link java.lang.Class} object
+     * @return a {@link java.util.LinkedHashMap} object
+     */
     public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
         if (groupClass == null) {
             logger.debug("null groupClass provided in getGroup");

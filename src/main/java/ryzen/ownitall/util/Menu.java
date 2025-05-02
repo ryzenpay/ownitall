@@ -7,8 +7,14 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * <p>Menu class.</p>
+ *
+ * @author ryzen
+ */
 public class Menu {
     private static final Logger logger = LogManager.getLogger(Menu.class);
+    /** Constant <code>asciiLogo="                        _  _          _"{trunked}</code> */
     public static final String asciiLogo = "                        _  _          _  _ \n" +
             "                       (_)| |        | || |\n" +
             "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
@@ -31,19 +37,22 @@ public class Menu {
         printLogo();
     }
 
+    /**
+     * <p>printLogo.</p>
+     */
     public static void printLogo() {
         System.out.println(asciiLogo);
     }
 
     /**
      * standard option menu with little to no customizability
-     * 
+     *
      * @param setOptions - arraylist of options which need to reflect to a
      * @param menuName   - parameter to give the menu a name and help the user
      *                   remember where they are
      *                   linkedhashmap
      * @return - string choice
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null) {
@@ -77,11 +86,11 @@ public class Menu {
 
     /**
      * print menu with options and set values
-     * 
+     *
      * @param setOptions - (linkedhash)map of options with name:value
      * @param menuName   - desired menu name
      * @return - name of selected option
-     * @throws InterruptedException - when user interrupts
+     * @throws java.lang.InterruptedException - when user interrupts
      */
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) throws InterruptedException {
         if (setOptions == null) {

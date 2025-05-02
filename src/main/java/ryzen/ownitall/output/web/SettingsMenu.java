@@ -8,9 +8,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import ryzen.ownitall.Settings;
 
+/**
+ * <p>SettingsMenu class.</p>
+ *
+ * @author ryzen
+ */
 @Controller
 public class SettingsMenu {
 
+    /**
+     * <p>settingsMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/settings")
     public String settingsMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -23,6 +34,12 @@ public class SettingsMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionSave.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/settings/save")
     public String optionSave(Model model) {
         Settings.load().save();
@@ -30,6 +47,12 @@ public class SettingsMenu {
         return settingsMenu(model);
     }
 
+    /**
+     * <p>optionChange.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/settings/change")
     public String optionChange(Model model) {
         // TODO: change setting menu
@@ -37,6 +60,12 @@ public class SettingsMenu {
         return settingsMenu(model);
     }
 
+    /**
+     * <p>optionReset.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/settings/reset")
     public String optionReset(Model model) {
         Settings.load().clear();
@@ -44,6 +73,12 @@ public class SettingsMenu {
         return settingsMenu(model);
     }
 
+    /**
+     * <p>optionReturn.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/settings/return")
     public String optionReturn(Model model) {
         return "redirect:/";
