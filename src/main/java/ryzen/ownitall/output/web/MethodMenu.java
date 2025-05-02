@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
@@ -88,7 +89,7 @@ public class MethodMenu {
             return methodMenu(model, methodClassName, callback);
         }
 
-        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return methodMenu(model, methodClassName, callback);
@@ -112,7 +113,7 @@ public class MethodMenu {
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
         Class<? extends Method> methodClass = Method.methods.get(methodClassName);
-        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(methodClass);
 
         if (params != null) {
             Settings settings = Settings.load();

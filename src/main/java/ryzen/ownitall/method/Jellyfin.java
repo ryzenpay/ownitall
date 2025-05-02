@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -31,6 +32,8 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 
+@Method.Import
+@Method.Export
 public class Jellyfin extends Method {
     private static final Logger logger = LogManager.getLogger(Jellyfin.class);
     private static final Library library = Library.load();
@@ -50,8 +53,8 @@ public class Jellyfin extends Method {
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
     private void authenticate() throws InterruptedException {
         ObjectNode credsNode = objectMapper.createObjectNode();
-        credsNode.put("Username", Settings.jellyfinUsername);
-        credsNode.put("Pw", Settings.jellyfinPassword);
+        credsNode.put("Username", Credentials.jellyfinUsername);
+        credsNode.put("Pw", Credentials.jellyfinPassword);
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
             logger.error("Failed to authenticate with jellyfin");
@@ -382,7 +385,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(Settings.jellyfinURL + type + builder.toString());
+            URI url = new URI(Credentials.jellyfinURL + type + builder.toString());
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -392,7 +395,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    Settings.jellyfinUsername + "ownitall",
+                    Credentials.jellyfinUsername + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);
@@ -432,7 +435,7 @@ public class Jellyfin extends Method {
             return null;
         }
         try {
-            URI url = new URI(Settings.jellyfinURL + type);
+            URI url = new URI(Credentials.jellyfinURL + type);
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod(method.toUpperCase());
             connection.setRequestProperty("Content-Type", "application/json");
@@ -442,7 +445,7 @@ public class Jellyfin extends Method {
                     "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
                     "ownitall",
                     "Java",
-                    Settings.jellyfinUsername + "ownitall",
+                    Credentials.jellyfinUsername + "ownitall",
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
@@ -43,11 +44,11 @@ public class SoulSeek extends Download {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(Settings.soulSeekFile.getAbsolutePath());
+        command.add(Credentials.soulSeekFile.getAbsolutePath());
         command.add("--user");
-        command.add(Settings.soulSeekUsername);
+        command.add(Credentials.soulSeekUsername);
         command.add("--pass");
-        command.add(Settings.soulSeekPassword);
+        command.add(Credentials.soulSeekPassword);
         command.add("--path");
         command.add(path.getAbsolutePath());
         command.add("--input-type");

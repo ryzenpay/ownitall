@@ -2,6 +2,10 @@ package ryzen.ownitall.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
@@ -25,6 +29,14 @@ public class Settings {
         this.file = new File(this.folderPath, saveFile);
         this.setFolder();
         this.read();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    protected @interface SettingsGroup {
+        Class<?>[] group();
+
+        String desc();
     }
 
     /**
@@ -191,5 +203,25 @@ public class Settings {
             logger.error("Unable to access field named '" + name + "'", e);
         }
         return null;
+    }
+
+    public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
+        if (groupClass == null) {
+            logger.debug("null groupClass provided in getGroup");
+            return null;
+        }
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        for (Field field : this.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(SettingsGroup.class)) {
+                SettingsGroup annotation = (SettingsGroup) field.getAnnotation(SettingsGroup.class);
+                for (Class<?> currClass : annotation.group()) {
+                    if (currClass.equals(groupClass)) {
+                        values.put(annotation.desc(), field.getName());
+                        break;
+                    }
+                }
+            }
+        }
+        return values;
     }
 }

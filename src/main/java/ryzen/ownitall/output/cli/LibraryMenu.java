@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
@@ -12,7 +13,6 @@ import ryzen.ownitall.util.Menu;
 
 public class LibraryMenu {
     private static final Logger logger = LogManager.getLogger(LibraryMenu.class);
-    private static final Settings settings = Settings.load();
 
     public LibraryMenu() throws InterruptedException {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -58,12 +58,13 @@ public class LibraryMenu {
             logger.debug("null type provided in setCredentials");
             return;
         }
-        LinkedHashMap<String, String> classCredentials = Library.credentialGroups.get(type);
+        Credentials credentials = Credentials.load();
+        LinkedHashMap<String, String> classCredentials = credentials.getGroup(type);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
                 String value = Input.request().getString();
-                if (!settings.set(classCredentials.get(name), value)) {
+                if (!credentials.set(classCredentials.get(name), value)) {
                     throw new InterruptedException(
                             "Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
                 }

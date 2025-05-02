@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Settings;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -47,17 +47,17 @@ public class MethodMenu {
         if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
-        Settings settings = Settings.load();
-        LinkedHashMap<String, String> classCredentials = Method.credentialGroups.get(methodClass);
+        Credentials credentials = Credentials.load();
+        LinkedHashMap<String, String> classCredentials = credentials.getGroup(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {
-                if (!settings.isEmpty(classCredentials.get(name))) {
+                if (!credentials.isEmpty(classCredentials.get(name))) {
                     // skip already set values
                     continue;
                 }
-                System.out.print("Enter '" + name + "': ");
-                Object value = Input.request().getValue(settings.getType(classCredentials.get(name)));
-                if (!settings.set(classCredentials.get(name), value)) {
+                System.out.print("Enter '" + methodClass.getSimpleName() + "'" + name + "': ");
+                Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
+                if (!credentials.set(classCredentials.get(name), value)) {
                     throw new InterruptedException(
                             "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
                 }

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
@@ -26,7 +27,6 @@ public class Library {
     private static final Logger logger = LogManager.getLogger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
-    public static final LinkedHashMap<Class<? extends Library>, LinkedHashMap<String, String>> credentialGroups;
     private static Library instance;
     private long lastQueryTime = 0;
     protected long queryDiff;
@@ -42,10 +42,6 @@ public class Library {
         libraries = new LinkedHashMap<>();
         libraries.put("LastFM", LastFM.class);
         libraries.put("MusicBrainz", MusicBrainz.class);
-    }
-    static {
-        credentialGroups = new LinkedHashMap<>();
-        credentialGroups.put(LastFM.class, Settings.getLastFMCredentials());
     }
 
     /**
@@ -130,14 +126,14 @@ public class Library {
             logger.debug("null type provided in isCredentialsEmpty");
             return true;
         }
-        LinkedHashMap<String, String> credentialVars = credentialGroups.get(type);
+        Credentials credentials = Credentials.load();
+        LinkedHashMap<String, String> credentialVars = credentials.getGroup(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;
         }
-        Settings settings = Settings.load();
         for (String varName : credentialVars.values()) {
-            if (settings.isEmpty(varName)) {
+            if (credentials.isEmpty(varName)) {
                 return true;
             }
         }

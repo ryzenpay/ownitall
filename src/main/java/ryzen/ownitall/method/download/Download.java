@@ -28,6 +28,7 @@ import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 
+@Method.Export
 public class Download extends Method {
     // more download sources
     // qobuz

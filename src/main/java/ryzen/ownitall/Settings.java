@@ -8,13 +8,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.download.Download;
+import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
 public class Settings extends ryzen.ownitall.util.Settings {
-
     private static Settings instance;
-
     private static final Logger logger = LogManager.getLogger(Settings.class);
 
     // the defaults: (non final & protected for the ones that can be changed by
@@ -65,25 +65,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static Class<? extends Library> libraryType = null;
 
     /**
-     * class representative of which download class to use
-     * default is YT_dl.class
-     */
-    public static Class<? extends Download> downloadType = YT_dl.class;
-    /**
-     * format of music to download
-     * current supported: "mp3", "flac", "wav"
-     */
-    public static String downloadFormat = "mp3";
-
-    public static LinkedHashMap<String, String> getDownloadCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Local Folder", "localFolder");
-        credentials.put("Download Class", "downloadType");
-        credentials.put("Download Format", "downloadFormat");
-        return credentials;
-    }
-
-    /**
      * option to hardcode cookies file
      */
     public static File yt_dlCookieFile = null;
@@ -93,7 +74,41 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * options: chrome, firefox, check yt-dlp docs,...
      */
     public static String yt_dlCookieBrowser = "";
+    /**
+     * format of music to download
+     * current supported: "mp3", "flac", "wav"
+     */
+    @SettingsGroup(group = { Download.class, YT_dl.class, SoulSeek.class }, desc = "Format(ex: mp3)")
+    public static String downloadFormat = "mp3";
+    /**
+     * class representative of which download class to use
+     * default is YT_dl.class
+     */
+    @SettingsGroup(group = { Download.class }, desc = "Method")
+    public static Class<? extends Download> downloadMethod = YT_dl.class;
 
+    /**
+     * local library path
+     */
+    @SettingsGroup(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class }, desc = "Local Library")
+    public static File localFolder = null;
+
+    /**
+     * YT_dl credentials
+     */
+    /**
+     * ffmpeg path (required for youtubedl)
+     * 
+     */
+    @SettingsGroup(group = { YT_dl.class }, desc = "FFMPEG file/folder")
+    public static File ffmpegFile = null;
+
+    /**
+     * youtube dl installation path
+     * 
+     */
+    @SettingsGroup(group = { YT_dl.class }, desc = "Binary")
+    public static File yt_dlFile = null;
     /**
      * download all files in a hierachy method
      * if true:
@@ -123,121 +138,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static int downloadThreads = 1;
 
-    /**
-     * spotify credentials
-     */
-    public static String spotifyClientID = "";
-    public static String spotifyClientSecret = "";
-    public static String spotifyRedirectURL = "";
-
-    public static final LinkedHashMap<String, String> getSpotifyCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Spotify Client ID", "spotifyClientID");
-        credentials.put("Spotify Client Secret", "spotifyClientSecret");
-        credentials.put("Spotify Redirect URL", "spotifyRedirectURL");
-        return credentials;
-    }
-
-    /**
-     * youtube credentials
-     * 
-     */
-    public static String youtubeApplicatioName = "";
-    public static String youtubeClientID = "";
-    public static String youtubeClientSecret = "";
-
-    public static final LinkedHashMap<String, String> getYoutubeCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Youtube Application Name", "youtubeApplicatioName");
-        credentials.put("Youtube Client ID", "youtubeClientID");
-        credentials.put("Youtube Client Secret", "youtubeClientSecret");
-        return credentials;
-    }
-
-    /**
-     * Last FM Credentials
-     * 
-     */
-    public static String lastFMApiKey = "";
-
-    public static final LinkedHashMap<String, String> getLastFMCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("LastFM API Key", "lastFMApiKey");
-        return credentials;
-    }
-
-    /**
-     * Jellyfin Credentials
-     * 
-     */
-    public static String jellyfinURL = "";
-    public static String jellyfinUsername = "";
-    public static String jellyfinPassword = "";
-
-    // TODO: better grouping
-    // interfaces maybe?
-    public static final LinkedHashMap<String, String> getJellyfinCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("JellyFin URL", "jellyfinURL");
-        credentials.put("JellyFin Username", "jellyfinUsername");
-        credentials.put("JellyFin Password", "jellyfinPassword");
-        return credentials;
-    }
-
-    /**
-     * Local credentials
-     * 
-     */
-    /**
-     * optional to hardcode local upload path
-     */
-    public static File localFolder = null;
-
-    public static final LinkedHashMap<String, String> getUploadCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.put("Local Folder", "localFolder");
-        return credentials;
-    }
-
-    /**
-     * ffmpeg path (required for youtubedl)
-     * 
-     */
-    public static File ffmpegFile = null;
-
-    /**
-     * youtube dl installation path
-     * 
-     */
-    public static File yt_dlFile = null;
-
-    public static final LinkedHashMap<String, String> getYT_dlCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.putAll(getDownloadCredentials());
-        credentials.put("YT-dl File", "yt_dlFile");
-        credentials.put("FFMPeg File", "ffmpegFile");
-        return credentials;
-    }
-
-    /**
-     * soulseek dl installation path
-     */
-    public static File soulSeekFile = null;
-
-    public static String soulSeekUsername = "";
-
-    public static String soulSeekPassword = "";
-
     public static int soulSeekBitRate = 320;
-
-    public static final LinkedHashMap<String, String> getSoulSeekCredentials() {
-        LinkedHashMap<String, String> credentials = new LinkedHashMap<>();
-        credentials.putAll(getDownloadCredentials());
-        credentials.put("SoulSeek dl File", "soulSeekFile");
-        credentials.put("SoulSeek Username", "soulSeekUsername");
-        credentials.put("SoulSeek Password", "soulSeekPassword");
-        return credentials;
-    }
 
     private Settings() throws IOException {
         super("settings.json");
@@ -279,5 +180,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     public Object get(String name) {
         return super.get(name);
+    }
+
+    public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
+        return super.getGroup(groupClass);
     }
 }

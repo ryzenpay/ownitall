@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -44,6 +45,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.awt.Desktop;
 
+@Method.Export
+@Method.Import
 public class Spotify extends Method {
     // TODO: refresh token after 30 min, use library timeout manager as time
     // context, look at git history for previous refresh function
@@ -67,11 +70,11 @@ public class Spotify extends Method {
         try {
             this.spotifyApi = new SpotifyApi.Builder()
                     .setClientId(
-                            Settings.spotifyClientID)
+                            Credentials.spotifyClientID)
                     .setClientSecret(
-                            Settings.spotifyClientSecret)
+                            Credentials.spotifyClientSecret)
                     .setRedirectUri(new URI(
-                            Settings.spotifyRedirectURL))
+                            Credentials.spotifyRedirectURL))
                     .build();
         } catch (URISyntaxException e) {
             throw new InterruptedException(e.getMessage());

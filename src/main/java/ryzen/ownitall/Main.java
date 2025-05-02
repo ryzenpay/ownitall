@@ -48,7 +48,6 @@ public class Main {
                 logger.debug("log level provided: " + level);
                 Logs.setLogLevel(level);
             }
-            Settings.load();
             Storage.importCollection();
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
@@ -70,6 +69,7 @@ public class Main {
     public static void save() {
         Collection.save();
         Settings.load().save();
+        Credentials.load().save();
         if (Library.checkInstance()) {
             Library.load();
         }
