@@ -19,8 +19,8 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.ProgressBar;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -34,7 +34,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>Youtube class.</p>
+ * <p>
+ * Youtube class.
+ * </p>
  *
  * @author ryzen
  */

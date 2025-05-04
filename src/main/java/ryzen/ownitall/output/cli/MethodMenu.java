@@ -15,9 +15,12 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
- * <p>MethodMenu class.</p>
+ * <p>
+ * MethodMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -26,7 +29,9 @@ public class MethodMenu {
     private Method method;
 
     /**
-     * <p>Constructor for MethodMenu.</p>
+     * <p>
+     * Constructor for MethodMenu.
+     * </p>
      *
      * @param annotation a {@link java.lang.Class} object
      * @throws java.lang.InterruptedException if any.
@@ -82,7 +87,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>importMenu.</p>
+     * <p>
+     * importMenu.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -273,7 +280,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>exportMenu.</p>
+     * <p>
+     * exportMenu.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -394,7 +403,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>syncMenu.</p>
+     * <p>
+     * syncMenu.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */

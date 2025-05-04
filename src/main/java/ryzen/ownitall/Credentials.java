@@ -14,7 +14,9 @@ import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.method.download.SoulSeek;
 
 /**
- * <p>Credentials class.</p>
+ * <p>
+ * Credentials class.
+ * </p>
  *
  * @author ryzen
  */
@@ -93,7 +95,9 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     }
 
     /**
-     * <p>load.</p>
+     * <p>
+     * load.
+     * </p>
      *
      * @return a {@link ryzen.ownitall.Credentials} object
      */
@@ -111,14 +115,18 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     }
 
     /**
-     * <p>save.</p>
+     * <p>
+     * save.
+     * </p>
      */
     public void save() {
         super.save();
     }
 
     /**
-     * <p>clear.</p>
+     * <p>
+     * clear.
+     * </p>
      */
     public void clear() {
         instance = null;

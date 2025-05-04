@@ -32,9 +32,9 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.ProgressBar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +46,9 @@ import java.net.URISyntaxException;
 import java.awt.Desktop;
 
 /**
- * <p>Spotify class.</p>
+ * <p>
+ * Spotify class.
+ * </p>
  *
  * @author ryzen
  */
@@ -974,7 +976,9 @@ public class Spotify extends Method {
     }
 
     /**
-     * <p>getTrackId.</p>
+     * <p>
+     * getTrackId.
+     * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @return a {@link java.lang.String} object
@@ -1011,7 +1015,9 @@ public class Spotify extends Method {
     }
 
     /**
-     * <p>getPlaylistId.</p>
+     * <p>
+     * getPlaylistId.
+     * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
      * @return a {@link java.lang.String} object
@@ -1067,7 +1073,9 @@ public class Spotify extends Method {
     }
 
     /**
-     * <p>getAlbumId.</p>
+     * <p>
+     * getAlbumId.
+     * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
      * @return a {@link java.lang.String} object

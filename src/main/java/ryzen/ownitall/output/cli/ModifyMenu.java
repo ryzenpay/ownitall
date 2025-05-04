@@ -17,9 +17,12 @@ import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
- * <p>ModifyMenu class.</p>
+ * <p>
+ * ModifyMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -28,7 +31,9 @@ public class ModifyMenu {
     private static final Library library = Library.load();
 
     /**
-     * <p>Constructor for ModifyMenu.</p>
+     * <p>
+     * Constructor for ModifyMenu.
+     * </p>
      */
     public ModifyMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

@@ -14,9 +14,9 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.ProgressBar;
 
 import java.time.Duration;
 
@@ -25,7 +25,9 @@ import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 /**
- * <p>Upload class.</p>
+ * <p>
+ * Upload class.
+ * </p>
  *
  * @author ryzen
  */
@@ -42,7 +44,9 @@ public class Upload extends Method {
     };
 
     /**
-     * <p>Constructor for Upload.</p>
+     * <p>
+     * Constructor for Upload.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -99,7 +103,9 @@ public class Upload extends Method {
     }
 
     /**
-     * <p>getLikedSongs.</p>
+     * <p>
+     * getLikedSongs.
+     * </p>
      *
      * @param folder a {@link java.io.File} object
      * @return a {@link ryzen.ownitall.classes.LikedSongs} object
@@ -172,7 +178,9 @@ public class Upload extends Method {
     }
 
     /**
-     * <p>getM3UPlaylist.</p>
+     * <p>
+     * getM3UPlaylist.
+     * </p>
      *
      * @param file a {@link java.io.File} object
      * @return a {@link ryzen.ownitall.classes.Playlist} object

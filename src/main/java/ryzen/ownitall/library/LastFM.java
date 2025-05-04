@@ -20,7 +20,9 @@ import ryzen.ownitall.classes.Song;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * <p>LastFM class.</p>
+ * <p>
+ * LastFM class.
+ * </p>
  *
  * @author ryzen
  */

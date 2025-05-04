@@ -6,66 +6,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
     <title th:text="${processName}"></title>
+    <style>
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        .progress-bar {
+            height: 30px;
+            width: 0;
+            background-color: #4caf50;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            transition: width 0.5s;
+        }
+
+        #message-block {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
     <script type="text/javascript">
-        async function performFunction() {
+        let progressTimer = null;
+
+        async function fetchProgress() {
             try {
-                const response = await fetch('${processFunction}', {
+                const response = await fetch('/method/progress', {
                     method: 'POST'
                 });
                 if (response.ok) {
-                    console.log('Executed ${processFunction}');
-                    showProcessText();
+                    const data = await response.json();
+                    console.debug("ProgressBar response: title=" + data.title + ", step=" + data.step + ", maxStep=" + data.maxstep + ", message=" + data.message);
+                    updateProgressBar(data.title, data.step, data.maxstep, data.message);
                 } else {
-                    console.error('${processFunction} request failed.');
+                    console.error('Failed to fetch progress.');
                 }
             } catch (error) {
-                console.error('Error during shutdown:', error);
+                console.error('Error fetching progress:', error);
             }
         }
 
-        function showProcessText() {
-            let textBlock = document.createElement('div');
-            textBlock.innerText = '${processName} is in action...';
-            document.body.appendChild(textBlock);
-        }
-        window.onload = performFunction;
-    </script>
-</head>
-
-<body>
-    <div th:insert="~{templates :: logging}"></div>
-    <h1 th:text="${processName}"></h1>
-
-    <div class="progress-container">
-        <div id="progress-bar" class="progress-bar">0%</div>
-    </div>
-
-    <button id="cancel-button" onclick="cancelProcess()">Cancel</button>
-    <a id="back-button" style="display: none;" th:href="@{${callback}}">Return</a>
-    <script>
-        let progress = 0;
-
-        function updateProgressBar(step) {
+        function updateProgressBar(title, step, maxStep, message) {
             let progressBar = document.getElementById('progress-bar');
-            progress += step;
+            let progress = (step / maxStep) * 100;
+
             progressBar.style.width = progress + '%';
-            progressBar.textContent = progress + '%';
+            progressBar.textContent = progress.toFixed(0) + '%';
+
+            // Update title and message
+            document.getElementById('progress-title').innerText = title;
+            let messageBlock = document.getElementById('message-block');
+            messageBlock.innerText = message;
 
             if (progress >= 100) {
                 document.getElementById('cancel-button').style.display = 'none';
                 document.getElementById('back-button').style.display = 'block';
+            } else {
+                document.getElementById('cancel-button').style.display = 'block';
+                document.getElementById('back-button').style.display = 'none';
             }
+        }
+
+        function startFetchingProgress() {
+            progressTimer = setInterval(fetchProgress, 500);
         }
 
         function cancelProcess() {
             fetch("/method/cancel", {
                 method: "GET"
-            })
+            });
+            clearInterval(progressTimer);
             document.getElementById('cancel-button').style.display = 'none';
             document.getElementById('back-button').style.display = 'block';
         }
 
+        window.onload = startFetchingProgress;
     </script>
+</head>
+
+<body>
+    <div th:insert="~{templates :: logging}"></div>
+    <h1 id="progress-title" th:text="${processName}"></h1>
+
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar">0%</div>
+    </div>
+
+    <div id="message-block"></div>
+
+    <button id="cancel-button" onclick="cancelProcess()">Cancel</button>
+    <a id="back-button" style="display: none;" th:href="@{${callback}}">Return</a>
 </body>
 
 </html>

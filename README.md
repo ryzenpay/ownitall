@@ -83,10 +83,25 @@ When doing this, read every TOS as you are using them at the risk of your own yo
 
 ## Local
 the current format to importing your local music library is currently strict  
-    - if you have a "liked songs" folder, name it "liked songs"  (can be changed in settings)
+    - if you have a "liked songs" folder, name it "liked songs"  (can be changed in settings)  
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
         - default is playlist  
-    - cover image of an and playlist album needs to be a file called "`<playlist/album name>`.png" in the folder  
+    - cover image of a playlist and an album need to be a file called "`<playlist/album name>`.<extension>" in the folder  
+
+## Jellyfin
+will need:  
+    - jellyfin url  
+    - jellyfin username  
+    - jellyfin password  
+To support multiple artists, you will need to set a custom delimiter which can be done in the following:  
+    - `dashboard -> libraries -> <select library> -> scroll to bottom -> custom delimiter`  
+    - set it to `;`  
+
+## SoulSeek
+will need:  
+    - soulseek username  
+    - soulseek password  
+Due to the soulseek binary and soulseek limits, it is hard encoded to 1 thread and can therefore take a long time to download an entire library  
 
 # Maven and compiling
 ## generate javadoc documentation

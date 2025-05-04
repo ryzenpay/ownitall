@@ -14,7 +14,9 @@ import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
 
 /**
- * <p>Settings class.</p>
+ * <p>
+ * Settings class.
+ * </p>
  *
  * @author ryzen
  */
@@ -161,7 +163,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
     }
 
     /**
-     * <p>load.</p>
+     * <p>
+     * load.
+     * </p>
      *
      * @return a {@link ryzen.ownitall.Settings} object
      */
@@ -179,14 +183,18 @@ public class Settings extends ryzen.ownitall.util.Settings {
     }
 
     /**
-     * <p>save.</p>
+     * <p>
+     * save.
+     * </p>
      */
     public void save() {
         super.save();
     }
 
     /**
-     * <p>clear.</p>
+     * <p>
+     * clear.
+     * </p>
      */
     public void clear() {
         instance = null;
@@ -199,7 +207,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
     }
 
     /**
-     * <p>getAll.</p>
+     * <p>
+     * getAll.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashMap} object
      */

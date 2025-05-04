@@ -11,7 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>Input class.</p>
+ * <p>
+ * Input class.
+ * </p>
  *
  * @author ryzen
  */
@@ -41,7 +43,9 @@ public class Input {
     }
 
     /**
-     * <p>Setter for the field <code>nonInteractive</code>.</p>
+     * <p>
+     * Setter for the field <code>nonInteractive</code>.
+     * </p>
      *
      * @param params a {@link java.lang.String} object
      */
@@ -271,7 +275,9 @@ public class Input {
     }
 
     /**
-     * <p>getClassStr.</p>
+     * <p>
+     * getClassStr.
+     * </p>
      *
      * @return a {@link java.lang.Class} object
      * @throws java.lang.InterruptedException if any.
@@ -288,7 +294,9 @@ public class Input {
     }
 
     /**
-     * <p>getValue.</p>
+     * <p>
+     * getValue.
+     * </p>
      *
      * @param type a {@link java.lang.Class} object
      * @return a {@link java.lang.Object} object

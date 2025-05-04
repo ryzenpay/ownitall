@@ -24,12 +24,14 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.Upload;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
- * <p>Download class.</p>
+ * <p>
+ * Download class.
+ * </p>
  *
  * @author ryzen
  */
@@ -47,7 +49,9 @@ public class Download extends Method {
     protected static int downloadThreads = Settings.downloadThreads;
 
     /**
-     * <p>threadDownload.</p>
+     * <p>
+     * threadDownload.
+     * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @param path a {@link java.io.File} object
@@ -108,7 +112,9 @@ public class Download extends Method {
     }
 
     /**
-     * <p>downloadSong.</p>
+     * <p>
+     * downloadSong.
+     * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @param path a {@link java.io.File} object
@@ -137,9 +143,6 @@ public class Download extends Method {
         id3Data.put(FieldKey.TITLE, song.getName());
         ArrayList<Artist> artists = song.getArtists();
         String artistList = "";
-        // TODO: readme update for jellyfin, requires custom delimiter
-        // dashboard -> libraries -> <select library> -> scroll to bottom -> custom
-        // delimiter
         if (artists.size() == 1) {
             artistList = song.getMainArtist().getName();
         } else {

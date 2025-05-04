@@ -29,11 +29,13 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.output.cli.ProgressBar;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
- * <p>Jellyfin class.</p>
+ * <p>
+ * Jellyfin class.
+ * </p>
  *
  * @author ryzen
  */
@@ -48,7 +50,9 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/
     /**
-     * <p>Constructor for Jellyfin.</p>
+     * <p>
+     * Constructor for Jellyfin.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -198,7 +202,9 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist
     /**
-     * <p>getPlaylistSongs.</p>
+     * <p>
+     * getPlaylistSongs.
+     * </p>
      *
      * @param playlistId a {@link java.lang.String} object
      * @return a {@link java.util.ArrayList} object
@@ -292,7 +298,9 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
     /**
-     * <p>getAlbumSongs.</p>
+     * <p>
+     * getAlbumSongs.
+     * </p>
      *
      * @param albumId a {@link java.lang.String} object
      * @return a {@link java.util.ArrayList} object
@@ -331,7 +339,9 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/#tag/UserLibrary/operation/GetItem
     /**
-     * <p>getSong.</p>
+     * <p>
+     * getSong.
+     * </p>
      *
      * @param songId a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Song} object
@@ -372,7 +382,9 @@ public class Jellyfin extends Method {
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
     /**
-     * <p>getSongId.</p>
+     * <p>
+     * getSongId.
+     * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @return a {@link java.lang.String} object

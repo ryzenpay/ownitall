@@ -5,11 +5,16 @@ import java.util.LinkedHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
@@ -19,23 +24,29 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
- * <p>MethodMenu class.</p>
+ * <p>
+ * MethodMenu class.
+ * </p>
  *
  * @author ryzen
  */
 @Controller
 public class MethodMenu {
     private static final Logger logger = LogManager.getLogger(MethodMenu.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
     private Method method;
 
     /**
-     * <p>methodMenu.</p>
+     * <p>
+     * methodMenu.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model           a {@link org.springframework.ui.Model} object
      * @param methodClassName a {@link java.lang.String} object
-     * @param callback a {@link java.lang.String} object
+     * @param callback        a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method")
@@ -82,11 +93,13 @@ public class MethodMenu {
     }
 
     /**
-     * <p>loginForm.</p>
+     * <p>
+     * loginForm.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model           a {@link org.springframework.ui.Model} object
      * @param methodClassName a {@link java.lang.String} object
-     * @param callback a {@link java.lang.String} object
+     * @param callback        a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/login")
@@ -128,12 +141,14 @@ public class MethodMenu {
     }
 
     /**
-     * <p>login.</p>
+     * <p>
+     * login.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model           a {@link org.springframework.ui.Model} object
      * @param methodClassName a {@link java.lang.String} object
-     * @param callback a {@link java.lang.String} object
-     * @param params a {@link java.util.LinkedHashMap} object
+     * @param callback        a {@link java.lang.String} object
+     * @param params          a {@link java.util.LinkedHashMap} object
      * @return a {@link java.lang.String} object
      */
     @PostMapping("/method/login")
@@ -177,7 +192,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>importMenu.</p>
+     * <p>
+     * importMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -200,7 +217,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionImportCollection.</p>
+     * <p>
+     * optionImportCollection.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -213,12 +232,14 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/import/collection");
-        model.addAttribute("redirect", "/method/import");
+        model.addAttribute("callback", "/method/import");
         return "process";
     }
 
     /**
-     * <p>importCollection.</p>
+     * <p>
+     * importCollection.
+     * </p>
      */
     @PostMapping("/method/import/collection")
     public void importCollection() {
@@ -236,7 +257,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionImportLikedSongs.</p>
+     * <p>
+     * optionImportLikedSongs.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -249,38 +272,37 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/import/likedsongs");
-        model.addAttribute("redirect", "/method/import");
+        model.addAttribute("callback", "/method/import");
         return "process";
     }
 
     /**
-     * <p>importLikedSongs.</p>
+     * <p>
+     * importLikedSongs.
+     * </p>
      *
      * @return a int
      */
     @PostMapping("/method/import/likedsongs")
-    // TODO: use response int
-    public int importLikedSongs() {
+    public void importLikedSongs() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/likedsongs");
-            return -1;
         }
         try {
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
-                return likedSongs.size();
             }
-            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
-            return -1;
         }
     }
 
     // TODO: import individual album
     /**
-     * <p>optionImportAlbums.</p>
+     * <p>
+     * optionImportAlbums.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -293,37 +315,37 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/import/albums");
-        model.addAttribute("redirect", "/method/import");
+        model.addAttribute("callback", "/method/import");
         return "process";
     }
 
     /**
-     * <p>importAlbums.</p>
+     * <p>
+     * importAlbums.
+     * </p>
      *
      * @return a int
      */
     @PostMapping("/method/import/albums")
-    public int importAlbums() {
+    public void importAlbums() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/albums");
-            return -1;
         }
         try {
             ArrayList<Album> albums = method.getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
-                return albums.size();
             }
-            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums: ", e);
-            return -1;
         }
     }
 
     // TODO: import individual playlist
     /**
-     * <p>optionImportPlaylists.</p>
+     * <p>
+     * optionImportPlaylists.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -336,36 +358,36 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Importing '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/import/playlists");
-        model.addAttribute("redirect", "/method/import");
+        model.addAttribute("callback", "/method/import");
         return "process";
     }
 
     /**
-     * <p>importPlaylists.</p>
+     * <p>
+     * importPlaylists.
+     * </p>
      *
      * @return a int
      */
     @PostMapping("/method/import/playlists")
-    public int importPlaylists() {
+    public void importPlaylists() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/playlists");
-            return -1;
         }
         try {
             ArrayList<Playlist> playlists = method.getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
-                return playlists.size();
             }
-            return 0;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists: ", e);
-            return -1;
         }
     }
 
     /**
-     * <p>exportMenu.</p>
+     * <p>
+     * exportMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -388,7 +410,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionExportCollection.</p>
+     * <p>
+     * optionExportCollection.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -401,34 +425,35 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/export/collection");
-        model.addAttribute("redirect", "/method/export");
+        model.addAttribute("callback", "/method/export");
         return "process";
     }
 
     /**
-     * <p>exportCollection.</p>
+     * <p>
+     * exportCollection.
+     * </p>
      *
      * @return a boolean
      */
     @PostMapping("/method/export/collection")
-    public boolean exportCollection() {
+    public void exportCollection() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/collection");
-            return false;
         }
         try {
             method.uploadLikedSongs();
             method.uploadAlbums();
             method.uploadPlaylists();
-            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'collection: ", e);
-            return false;
         }
     }
 
     /**
-     * <p>optionExportLikedSongs.</p>
+     * <p>
+     * optionExportLikedSongs.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -441,33 +466,34 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/export/likedsongs");
-        model.addAttribute("redirect", "/method/export");
+        model.addAttribute("callback", "/method/export");
         return "process";
     }
 
     /**
-     * <p>exportLikedSongs.</p>
+     * <p>
+     * exportLikedSongs.
+     * </p>
      *
      * @return a boolean
      */
     @PostMapping("/method/export/likedsongs")
-    public boolean exportLikedSongs() {
+    public void exportLikedSongs() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/import/likedsongs");
-            return false;
         }
         try {
             method.uploadLikedSongs();
-            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs: ", e);
-            return false;
         }
     }
 
     // TODO: export individual album
     /**
-     * <p>optionExportAlbums.</p>
+     * <p>
+     * optionExportAlbums.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -480,33 +506,34 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/export/albums");
-        model.addAttribute("redirect", "/method/export");
+        model.addAttribute("callback", "/method/export");
         return "process";
     }
 
     /**
-     * <p>exportAlbums.</p>
+     * <p>
+     * exportAlbums.
+     * </p>
      *
      * @return a boolean
      */
     @PostMapping("/method/export/albums")
-    public boolean exportAlbums() {
+    public void exportAlbums() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/albums");
-            return false;
         }
         try {
             method.uploadAlbums();
-            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums: ", e);
-            return false;
         }
     }
 
     // TODO: export individual playlist
     /**
-     * <p>optionExportPlaylists.</p>
+     * <p>
+     * optionExportPlaylists.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -519,32 +546,33 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/export/playlists");
-        model.addAttribute("redirect", "/method/export");
+        model.addAttribute("callback", "/method/export");
         return "process";
     }
 
     /**
-     * <p>exportPlaylists.</p>
+     * <p>
+     * exportPlaylists.
+     * </p>
      *
      * @return a boolean
      */
     @PostMapping("/method/export/playlists")
-    public boolean exportPlaylists() {
+    public void exportPlaylists() {
         if (this.method == null) {
             logger.debug("method was not initialized before /method/export/playlists");
-            return false;
         }
         try {
             method.uploadPlaylists();
-            return true;
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists: ", e);
-            return false;
         }
     }
 
     /**
-     * <p>syncMenu.</p>
+     * <p>
+     * syncMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -567,7 +595,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionSyncCollection.</p>
+     * <p>
+     * optionSyncCollection.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -580,12 +610,14 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' collection");
         model.addAttribute("processFunction", "/method/sync/collection");
-        model.addAttribute("redirect", "/method/sync");
+        model.addAttribute("callback", "/method/sync");
         return "process";
     }
 
     /**
-     * <p>syncCollection.</p>
+     * <p>
+     * syncCollection.
+     * </p>
      */
     @PostMapping("/method/sync/collection")
     public void syncCollection() {
@@ -603,7 +635,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionSyncLikedSongs.</p>
+     * <p>
+     * optionSyncLikedSongs.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -616,12 +650,14 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' liked songs");
         model.addAttribute("processFunction", "/method/sync/likedsongs");
-        model.addAttribute("redirect", "/method/sync");
+        model.addAttribute("callback", "/method/sync");
         return "process";
     }
 
     /**
-     * <p>syncLikedSongs.</p>
+     * <p>
+     * syncLikedSongs.
+     * </p>
      */
     @PostMapping("/method/sync/likedsongs")
     public void syncLikedSongs() {
@@ -637,7 +673,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionSyncAlbums.</p>
+     * <p>
+     * optionSyncAlbums.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -650,12 +688,14 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Syncronizing '" + Method.getMethodName(this.method) + "' albums");
         model.addAttribute("processFunction", "/method/sync/albums");
-        model.addAttribute("redirect", "/method/sync");
+        model.addAttribute("callback", "/method/sync");
         return "process";
     }
 
     /**
-     * <p>syncAlbums.</p>
+     * <p>
+     * syncAlbums.
+     * </p>
      */
     @PostMapping("/method/sync/albums")
     public void syncAlbums() {
@@ -671,7 +711,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>optionSyncPlaylists.</p>
+     * <p>
+     * optionSyncPlaylists.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -684,12 +726,14 @@ public class MethodMenu {
         }
         model.addAttribute("processName", "Exporting '" + Method.getMethodName(this.method) + "' playlists");
         model.addAttribute("processFunction", "/method/sync/playlists");
-        model.addAttribute("redirect", "/method/sync");
+        model.addAttribute("callback", "/method/sync");
         return "process";
     }
 
     /**
-     * <p>syncPlaylists.</p>
+     * <p>
+     * syncPlaylists.
+     * </p>
      */
     @PostMapping("/method/sync/playlists")
     public void syncPlaylists() {
@@ -704,8 +748,21 @@ public class MethodMenu {
         }
     }
 
+    @PostMapping("/method/progress")
+    @ResponseBody
+    public ResponseEntity<String> methodProgress() {
+        ObjectNode rootNode = mapper.createObjectNode();
+        rootNode.put("title", ProgressBar.getTitle());
+        rootNode.put("step", ProgressBar.getStep()); // Ensure these return proper integer
+        rootNode.put("message", ProgressBar.getMessage());
+        rootNode.put("maxstep", ProgressBar.getMaxStep()); // Ensure these return proper integer
+        return ResponseEntity.ok(rootNode.toPrettyString());
+    }
+
     /**
-     * <p>optionReturn.</p>
+     * <p>
+     * optionReturn.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */

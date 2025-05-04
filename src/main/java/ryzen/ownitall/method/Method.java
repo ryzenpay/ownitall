@@ -19,7 +19,9 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 
 /**
- * <p>Abstract Method class.</p>
+ * <p>
+ * Abstract Method class.
+ * </p>
  *
  * @author ryzen
  */
@@ -33,7 +35,7 @@ abstract public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("Download", Settings.load().downloadMethod);
+        methods.put("Download", (Class<? extends Method>) Settings.load().get("downloadMethod").getClass());
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -47,7 +49,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>Getter for the field <code>methods</code>.</p>
+     * <p>
+     * Getter for the field <code>methods</code>.
+     * </p>
      *
      * @param annotation a {@link java.lang.Class} object
      * @return a {@link java.util.LinkedHashMap} object
@@ -63,7 +67,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>initMethod.</p>
+     * <p>
+     * initMethod.
+     * </p>
      *
      * @param methodClass a {@link java.lang.Class} object
      * @return a {@link ryzen.ownitall.method.Method} object
@@ -88,7 +94,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>getMethodName.</p>
+     * <p>
+     * getMethodName.
+     * </p>
      *
      * @param method a {@link ryzen.ownitall.method.Method} object
      * @return a {@link java.lang.String} object
@@ -98,7 +106,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>isCredentialsEmpty.</p>
+     * <p>
+     * isCredentialsEmpty.
+     * </p>
      *
      * @param type a {@link java.lang.Class} object
      * @return a boolean
@@ -123,7 +133,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>isSettingsEmpty.</p>
+     * <p>
+     * isSettingsEmpty.
+     * </p>
      *
      * @param type a {@link java.lang.Class} object
      * @return a boolean
@@ -148,7 +160,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>clearCredentials.</p>
+     * <p>
+     * clearCredentials.
+     * </p>
      *
      * @param type a {@link java.lang.Class} object
      * @return a boolean
@@ -174,7 +188,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>getLikedSongs.</p>
+     * <p>
+     * getLikedSongs.
+     * </p>
      *
      * @return a {@link ryzen.ownitall.classes.LikedSongs} object
      * @throws java.lang.InterruptedException if any.
@@ -185,7 +201,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>getPlaylists.</p>
+     * <p>
+     * getPlaylists.
+     * </p>
      *
      * @return a {@link java.util.ArrayList} object
      * @throws java.lang.InterruptedException if any.
@@ -196,9 +214,11 @@ abstract public class Method {
     }
 
     /**
-     * <p>getPlaylist.</p>
+     * <p>
+     * getPlaylist.
+     * </p>
      *
-     * @param playlistId a {@link java.lang.String} object
+     * @param playlistId   a {@link java.lang.String} object
      * @param playlistName a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Playlist} object
      * @throws java.lang.InterruptedException if any.
@@ -209,7 +229,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>getAlbums.</p>
+     * <p>
+     * getAlbums.
+     * </p>
      *
      * @return a {@link java.util.ArrayList} object
      * @throws java.lang.InterruptedException if any.
@@ -220,10 +242,12 @@ abstract public class Method {
     }
 
     /**
-     * <p>getAlbum.</p>
+     * <p>
+     * getAlbum.
+     * </p>
      *
-     * @param albumId a {@link java.lang.String} object
-     * @param albumName a {@link java.lang.String} object
+     * @param albumId         a {@link java.lang.String} object
+     * @param albumName       a {@link java.lang.String} object
      * @param albumArtistName a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Album} object
      * @throws java.lang.InterruptedException if any.
@@ -234,7 +258,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>uploadLikedSongs.</p>
+     * <p>
+     * uploadLikedSongs.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -243,7 +269,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>uploadPlaylists.</p>
+     * <p>
+     * uploadPlaylists.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -252,7 +280,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>uploadPlaylist.</p>
+     * <p>
+     * uploadPlaylist.
+     * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
      * @throws java.lang.InterruptedException if any.
@@ -262,7 +292,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>uploadAlbums.</p>
+     * <p>
+     * uploadAlbums.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -271,7 +303,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>uploadAlbum.</p>
+     * <p>
+     * uploadAlbum.
+     * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
      * @throws java.lang.InterruptedException if any.
@@ -281,7 +315,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>syncLikedSongs.</p>
+     * <p>
+     * syncLikedSongs.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -290,7 +326,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>syncPlaylists.</p>
+     * <p>
+     * syncPlaylists.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -299,7 +337,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>syncPlaylist.</p>
+     * <p>
+     * syncPlaylist.
+     * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
      * @throws java.lang.InterruptedException if any.
@@ -309,7 +349,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>syncAlbums.</p>
+     * <p>
+     * syncAlbums.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -318,7 +360,9 @@ abstract public class Method {
     }
 
     /**
-     * <p>syncAlbum.</p>
+     * <p>
+     * syncAlbum.
+     * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
      * @throws java.lang.InterruptedException if any.
