@@ -33,7 +33,7 @@ public class InterruptionHandler implements AutoCloseable {
 
     public static InterruptionHandler getInstance() {
         if (instance == null) {
-            instance = InterruptionHandler.getInstance();
+            instance = new InterruptionHandler();
         }
         return instance;
     }
