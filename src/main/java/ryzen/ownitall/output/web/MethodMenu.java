@@ -23,6 +23,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logs;
 import ryzen.ownitall.util.ProgressBar;
 
@@ -752,11 +753,32 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        rootNode.put("title", ProgressBar.getTitle());
-        rootNode.put("step", ProgressBar.getStep()); // Ensure these return proper integer
-        rootNode.put("message", ProgressBar.getMessage());
-        rootNode.put("maxstep", ProgressBar.getMaxStep()); // Ensure these return proper integer
-        return ResponseEntity.ok(rootNode.toPrettyString());
+        ProgressBar pb = ProgressBar.getInstance();
+        if (pb != null) {
+            rootNode.put("title", pb.getTitle());
+            rootNode.put("step", pb.getStep());
+            rootNode.put("message", pb.getMessage());
+            rootNode.put("maxstep", pb.getMaxStep());
+            return ResponseEntity.ok(rootNode.toPrettyString());
+        } else {
+            rootNode.put("title", "waiting...");
+            rootNode.put("step", 0);
+            rootNode.put("message", "");
+            rootNode.put("maxstep", 0);
+            return ResponseEntity.ok(rootNode.toPrettyString());
+        }
+    }
+
+    @PostMapping("/method/cancel")
+    public void cancel() {
+        InterruptionHandler interruptionHandler = InterruptionHandler.getExistingInstance();
+        if (interruptionHandler != null) {
+            try {
+                interruptionHandler.triggerInterruption();
+            } catch (InterruptedException e) {
+                logger.debug("Processed /method/cancel Interruption");
+            }
+        }
     }
 
     /**

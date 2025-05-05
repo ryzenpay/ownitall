@@ -70,7 +70,7 @@ public class Input {
         if (!nonInteractive.isEmpty()) {
             return nonInteractive.poll();
         }
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             if (scanner.hasNextLine()) {
                 return scanner.nextLine().trim();
             } else {

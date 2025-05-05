@@ -8,11 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>InterruptionHandler class.</p>
+ * <p>
+ * InterruptionHandler class.
+ * </p>
  *
  * @author ryzen
  */
 public class InterruptionHandler implements AutoCloseable {
+    private static InterruptionHandler instance;
     private static final Logger logger = LogManager.getLogger(InterruptionHandler.class);
     private SignalHandler signalHandler;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
@@ -21,11 +24,22 @@ public class InterruptionHandler implements AutoCloseable {
      * initialize interruption handler
      * which is thread save
      */
-    public InterruptionHandler() {
+    private InterruptionHandler() {
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
             interrupted.set(true);
         });
+    }
+
+    public static InterruptionHandler getInstance() {
+        if (instance == null) {
+            instance = InterruptionHandler.getInstance();
+        }
+        return instance;
+    }
+
+    public static InterruptionHandler getExistingInstance() {
+        return instance;
     }
 
     /**

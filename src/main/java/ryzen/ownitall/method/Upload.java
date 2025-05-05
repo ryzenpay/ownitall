@@ -70,8 +70,8 @@ public class Upload extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (ProgressBar pb = ProgressBar.getInstance("Liked Songs", Settings.localFolder.listFiles().length);
+                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             if (Settings.downloadHierachy) {
                 File likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
                 if (likedSongsFolder.exists()) {
@@ -117,7 +117,7 @@ public class Upload extends Method {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
@@ -146,8 +146,8 @@ public class Upload extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (ProgressBar pb = ProgressBar.getInstance("Playlists", Settings.localFolder.listFiles().length);
+                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (Settings.downloadHierachy) {
@@ -272,8 +272,8 @@ public class Upload extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Albums", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (ProgressBar pb = ProgressBar.getInstance("Albums", Settings.localFolder.listFiles().length);
+                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
@@ -389,7 +389,7 @@ public class Upload extends Method {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {

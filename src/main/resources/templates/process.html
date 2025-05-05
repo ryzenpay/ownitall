@@ -43,7 +43,8 @@
                     const data = await response.json();
                     console.debug("ProgressBar response: title=" + data.title + ", step=" + data.step + ", maxStep=" + data.maxstep + ", message=" + data.message);
                     updateProgressBar(data.title, data.step, data.maxstep, data.message);
-                } else {
+                }
+                else {
                     console.error('Failed to fetch progress.');
                 }
             } catch (error) {
@@ -60,8 +61,7 @@
 
             // Update title and message
             document.getElementById('progress-title').innerText = title;
-            let messageBlock = document.getElementById('message-block');
-            messageBlock.innerText = message;
+            document.getElementById('message-block').innerText = message;
 
             if (progress >= 100) {
                 document.getElementById('cancel-button').style.display = 'none';
@@ -72,27 +72,39 @@
             }
         }
 
-        function startFetchingProgress() {
-            progressTimer = setInterval(fetchProgress, 500);
+        function startProcess() {
+            try {
+                const response = fetch('[[${processFunction}]]', {
+                    method: 'POST'
+                });
+                console.debug("Started process");
+                progressTimer = setInterval(fetchProgress, 500);
+            } catch (error) {
+                console.error('Error starting process:', error);
+                document.getElementById('cancel-button').style.display = 'none';
+                document.getElementById('back-button').style.display = 'block';
+                let messageBlock = document.getElementById('message-block');
+                messageBlock.innerText = "Failed to start process at '[[${processFunction}]]'";
+            }
         }
 
         function cancelProcess() {
             fetch("/method/cancel", {
-                method: "GET"
+                method: "POST"
             });
             clearInterval(progressTimer);
             document.getElementById('cancel-button').style.display = 'none';
             document.getElementById('back-button').style.display = 'block';
         }
 
-        window.onload = startFetchingProgress;
+        window.onload = startProcess;
     </script>
 </head>
 
 <body>
     <div th:insert="~{templates :: logging}"></div>
-    <h1 id="progress-title" th:text="${processName}"></h1>
-
+    <h1 th:text="${processName}"></h1>
+    <h2 id="progress-title"></h2>
     <div class="progress-container">
         <div id="progress-bar" class="progress-bar">0%</div>
     </div>

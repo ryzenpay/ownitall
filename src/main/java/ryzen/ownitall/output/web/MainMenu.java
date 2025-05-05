@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import ryzen.ownitall.Main;
 
 /**
- * <p>MainMenu class.</p>
+ * <p>
+ * MainMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -32,7 +34,9 @@ public class MainMenu {
     public static final String url = "http://localhost:8080";
 
     /**
-     * <p>main.</p>
+     * <p>
+     * main.
+     * </p>
      *
      * @param args an array of {@link java.lang.String} objects
      */
@@ -62,7 +66,9 @@ public class MainMenu {
     }
 
     /**
-     * <p>mainMenu.</p>
+     * <p>
+     * mainMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -81,7 +87,9 @@ public class MainMenu {
     }
 
     /**
-     * <p>optionSave.</p>
+     * <p>
+     * optionSave.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -94,7 +102,9 @@ public class MainMenu {
     }
 
     /**
-     * <p>optionExit.</p>
+     * <p>
+     * optionExit.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
