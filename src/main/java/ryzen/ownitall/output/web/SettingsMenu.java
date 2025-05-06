@@ -5,11 +5,15 @@ import java.util.LinkedHashMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Settings;
 
 /**
- * <p>SettingsMenu class.</p>
+ * <p>
+ * SettingsMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -17,7 +21,9 @@ import ryzen.ownitall.Settings;
 public class SettingsMenu {
 
     /**
-     * <p>settingsMenu.</p>
+     * <p>
+     * settingsMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -35,7 +41,9 @@ public class SettingsMenu {
     }
 
     /**
-     * <p>optionSave.</p>
+     * <p>
+     * optionSave.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -48,20 +56,43 @@ public class SettingsMenu {
     }
 
     /**
-     * <p>optionChange.</p>
+     * <p>
+     * optionChange.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/settings/change")
-    public String optionChange(Model model) {
-        // TODO: change setting menu
-        // look at method setCredentials
+    public String changeSettingForm(Model model) {
+        model.addAttribute("formName", "Change Settings");
+        model.addAttribute("loginFields", Settings.load().getAll());
+        model.addAttribute("postAction", "/settings/change");
+        model.addAttribute("callback", "/settings");
+        return "form";
+    }
+
+    @PostMapping("/settings/change")
+    public String login(Model model,
+            @RequestParam(value = "callback", required = true) String callback,
+            @RequestParam(required = false) LinkedHashMap<String, String> params) {
+
+        if (params != null) {
+            Settings settings = Settings.load();
+            for (String name : params.keySet()) {
+                if (!settings.set(name, params.get(name))) {
+                    model.addAttribute("warn", "Failed to set setting '" + name + "'");
+                }
+            }
+            model.addAttribute("info", "Successfully updated Settings");
+        }
         return settingsMenu(model);
     }
 
     /**
-     * <p>optionReset.</p>
+     * <p>
+     * optionReset.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -74,7 +105,9 @@ public class SettingsMenu {
     }
 
     /**
-     * <p>optionReturn.</p>
+     * <p>
+     * optionReturn.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object

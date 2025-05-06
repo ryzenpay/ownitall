@@ -133,11 +133,11 @@ public class MethodMenu {
         for (String name : classCredentials.keySet()) {
             currentCredentials.put(name, credentials.get(classCredentials.get(name)).toString());
         }
-        model.addAttribute("loginName", methodClass.getSimpleName());
+        model.addAttribute("formName", methodClass.getSimpleName() + " Credentials");
         model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("methodClass", methodClassName);
+        model.addAttribute("postAction", "/method/login?methodClass=" + methodClassName);
         model.addAttribute("callback", callback);
-        return "login";
+        return "form";
     }
 
     /**
@@ -187,7 +187,6 @@ public class MethodMenu {
         model.addAttribute("loginFields", classCredentials.keySet());
         model.addAttribute("methodClass", methodClassName);
         model.addAttribute("callback", callback);
-
         return "login";
     }
 
