@@ -1,8 +1,16 @@
 <!-- logging-messages.html -->
 <div th:fragment="logging">
-    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}" />
-    <div th:if="${info}" class="alert alert-info" th:text="${info}"></div>
-    <div th:if="${debug}" class="alert alert-debug" th:text="${debug}"></div>
-    <div th:if="${warn}" class="alert alert-warning" th:text="${warn}"></div>
-    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert" th:text="${info}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${debug}" class="alert alert-secondary alert-dismissible fade show" role="alert" th:text="${debug}">
+        <!-- Using secondary for debug -->
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${warn}" class="alert alert-warning alert-dismissible fade show" role="alert" th:text="${warn}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${error}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
