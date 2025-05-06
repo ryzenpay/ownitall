@@ -109,9 +109,9 @@ to update the javadoc documentation, run the command `mvn doc` in the root of th
 please fix any of the errors it throws as they show incomplete documentation  
 
 ## Compile new jar file
-run the command `mvn package`  
-look for the compiled `.jar` file in `target`  
-run the compiled with `java -jar target/ownitall-<VERSION>.jar`
+run the command `mvn assembly:single`  
+look for the compiled `.jar` file in `target` directory  
+run the compiled with `java -jar target/ownitall-<VERSION>-jar-with-dependencies.jar`
 
 ## JRE Requirements
 current java version is 17, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  
