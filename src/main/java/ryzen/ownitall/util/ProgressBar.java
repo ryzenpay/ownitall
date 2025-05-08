@@ -113,9 +113,5 @@ public class ProgressBar implements AutoCloseable {
             pb.setExtraMessage("Done").stepTo(maxStep);
             pb.close();
         }
-        title = null;
-        step = 0;
-        maxStep = -1;
-        message = null;
     }
 }

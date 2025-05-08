@@ -753,6 +753,7 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
+        // TODO: when done, the title also gets set to none
         if (ProgressBar.getTitle() != null) {
             rootNode.put("title", ProgressBar.getTitle());
             rootNode.put("step", ProgressBar.getStep());
