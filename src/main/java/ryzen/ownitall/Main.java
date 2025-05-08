@@ -64,11 +64,11 @@ public class Main {
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
                 ProgressBar.output = false;
-                ryzen.ownitall.output.web.MainMenu.main(args);
+                ryzen.ownitall.ui.web.MainMenu.main(args);
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
                 ProgressBar.output = true;
-                new ryzen.ownitall.output.cli.MainMenu();
+                new ryzen.ownitall.ui.cli.MainMenu();
             }
         } catch (ParseException e) {
             logger.error("Exception parsing input flags", e);

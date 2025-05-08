@@ -109,13 +109,13 @@ public class ProgressBar implements AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public void close() {
-        title = null;
-        step = 0;
-        maxStep = -1;
-        message = null;
         if (output) {
             pb.setExtraMessage("Done").stepTo(maxStep);
             pb.close();
         }
+        title = null;
+        step = 0;
+        maxStep = -1;
+        message = null;
     }
 }

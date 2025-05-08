@@ -1,4 +1,4 @@
-package ryzen.ownitall.output.web;
+package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
 
@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import ryzen.ownitall.Collection;
 
 /**
- * <p>CollectionMenu class.</p>
+ * <p>
+ * CollectionMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -17,7 +19,9 @@ import ryzen.ownitall.Collection;
 public class CollectionMenu {
 
     /**
-     * <p>collectionMenu.</p>
+     * <p>
+     * collectionMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -37,7 +41,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionImport.</p>
+     * <p>
+     * optionImport.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -47,7 +53,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionExport.</p>
+     * <p>
+     * optionExport.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -57,7 +65,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionSync.</p>
+     * <p>
+     * optionSync.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -67,7 +77,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionModify.</p>
+     * <p>
+     * optionModify.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -79,7 +91,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionBrowse.</p>
+     * <p>
+     * optionBrowse.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -94,7 +108,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>optionReturn.</p>
+     * <p>
+     * optionReturn.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object

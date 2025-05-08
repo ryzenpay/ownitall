@@ -1,4 +1,4 @@
-package ryzen.ownitall.output.cli;
+package ryzen.ownitall.ui.cli;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

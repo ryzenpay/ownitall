@@ -1,4 +1,4 @@
-package ryzen.ownitall.output.web;
+package ryzen.ownitall.ui.web;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +15,9 @@ import ryzen.ownitall.Storage;
 import ryzen.ownitall.method.Method;
 
 /**
- * <p>ToolsMenu class.</p>
+ * <p>
+ * ToolsMenu class.
+ * </p>
  *
  * @author ryzen
  */
@@ -23,7 +25,9 @@ import ryzen.ownitall.method.Method;
 public class ToolsMenu {
 
     /**
-     * <p>toolsMenu.</p>
+     * <p>
+     * toolsMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -42,7 +46,9 @@ public class ToolsMenu {
     }
 
     /**
-     * <p>optionArchive.</p>
+     * <p>
+     * optionArchive.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -55,9 +61,11 @@ public class ToolsMenu {
     }
 
     /**
-     * <p>optionUnArchive.</p>
+     * <p>
+     * optionUnArchive.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model      a {@link org.springframework.ui.Model} object
      * @param folderPath a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
@@ -88,7 +96,9 @@ public class ToolsMenu {
     }
 
     /**
-     * <p>optionClearCredentials.</p>
+     * <p>
+     * optionClearCredentials.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -103,7 +113,9 @@ public class ToolsMenu {
     }
 
     /**
-     * <p>optionReturn.</p>
+     * <p>
+     * optionReturn.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object

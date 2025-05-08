@@ -1,4 +1,4 @@
-package ryzen.ownitall.output.web;
+package ryzen.ownitall.ui.web;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -781,6 +781,7 @@ public class MethodMenu {
             logNode.put("message", entity.getValue());
             logsArray.add(logNode);
         }
+        LogConfig.clearLogs();
         return ResponseEntity.ok(rootNode.toPrettyString());
     }
 

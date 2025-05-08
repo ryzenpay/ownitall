@@ -1,4 +1,4 @@
-package ryzen.ownitall.output.web;
+package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
 
