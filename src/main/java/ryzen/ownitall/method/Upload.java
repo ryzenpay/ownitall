@@ -257,13 +257,10 @@ public class Upload extends Method {
             return null;
         }
         playlist.addSongs(songs);
-        // TODO: doesnt work cuz of variable extension
-        // also fix in getAlbum()
-        // WRAAAAAA
-        // File coverFile = new File(folder, playlist.getCoverImageFileName());
-        // if (coverFile.exists()) {
-        // playlist.setCoverImage(coverFile.toURI());
-        // }
+        File coverFile = new File(folder, playlist.getFolderName() + ".png");
+        if (coverFile.exists()) {
+            playlist.setCoverImage(coverFile.toURI());
+        }
         return playlist;
     }
 
@@ -320,11 +317,10 @@ public class Upload extends Method {
                 logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath(), e);
             }
         }
-        // check getPlaylist()
-        // File albumCover = new File(folder, album.getCoverImageFileName());
-        // if (albumCover.exists()) {
-        // album.setCoverImage(albumCover.toURI());
-        // }
+        File albumCover = new File(folder, album.getFolderName() + ".png");
+        if (albumCover.exists()) {
+            album.setCoverImage(albumCover.toURI());
+        }
         if (library != null) {
             Album foundAlbum = library.getAlbum(album);
             if (foundAlbum != null) {

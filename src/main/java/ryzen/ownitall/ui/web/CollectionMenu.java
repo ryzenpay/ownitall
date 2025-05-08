@@ -32,8 +32,7 @@ public class CollectionMenu {
         options.put("Import", "/collection/import");
         options.put("Export", "/collection/export");
         options.put("Sync", "/collection/sync");
-        options.put("Modify", "/collection/modify");
-        options.put("Browse", "/collection/browse");
+        options.put("Browse & Modify", "/collection/browse");
         model.addAttribute("menuName", "Collection Menu");
         model.addAttribute("menuOptions", options);
         model.addAttribute("callback", "/collection/return");
@@ -86,7 +85,8 @@ public class CollectionMenu {
     @GetMapping("/collection/modify")
     public String optionModify() {
         // TODO: modify menu
-        // update browse to have delete / update buttons
+        // make api calls for modifying each element
+        // build it into /collection/browse
         return "redirect:/collection";
     }
 

@@ -191,7 +191,7 @@ public class Download extends Method {
         try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(folder, playlist.getCoverImageFileName()));
+                        new File(folder, playlist.getFolderName() + ".png"));
             }
         } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
@@ -222,7 +222,7 @@ public class Download extends Method {
         try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(),
-                        new File(folder, album.getCoverImageFileName()));
+                        new File(folder, album.getFolderName() + ".png"));
             }
         } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage", e);

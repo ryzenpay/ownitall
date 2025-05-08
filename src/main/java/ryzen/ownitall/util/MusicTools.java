@@ -72,33 +72,33 @@ public class MusicTools {
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 
-    /**
-     * <p>
-     * getExtension.
-     * </p>
-     *
-     * @param uri a {@link java.net.URI} object
-     * @return a {@link java.lang.String} object
-     */
-    public static String getExtension(URI uri) {
-        if (uri == null) {
-            logger.debug("null uri provided in getExtension");
-            return null;
-        }
-        String path = uri.getPath();
-        if (path == null || path.isEmpty()) {
-            logger.debug("empty path provided for url: '" + uri + "'");
-            return null;
-        }
-        int lastSlashIndex = path.lastIndexOf('/');
-        String lastSegment = path.substring(lastSlashIndex + 1);
-        int extensionIndex = lastSegment.lastIndexOf('.');
-        if (extensionIndex == -1 || extensionIndex == lastSegment.length() - 1) {
-            // logger.debug("url has no extension: '" + uri + "'");
-            return null;
-        }
-        return lastSegment.substring(extensionIndex + 1).toLowerCase();
-    }
+    // /**
+    // * <p>
+    // * getExtension.
+    // * </p>
+    // *
+    // * @param uri a {@link java.net.URI} object
+    // * @return a {@link java.lang.String} object
+    // */
+    // public static String getExtension(URI uri) {
+    // if (uri == null) {
+    // logger.debug("null uri provided in getExtension");
+    // return null;
+    // }
+    // String path = uri.getPath();
+    // if (path == null || path.isEmpty()) {
+    // logger.debug("empty path provided for url: '" + uri + "'");
+    // return null;
+    // }
+    // int lastSlashIndex = path.lastIndexOf('/');
+    // String lastSegment = path.substring(lastSlashIndex + 1);
+    // int extensionIndex = lastSegment.lastIndexOf('.');
+    // if (extensionIndex == -1 || extensionIndex == lastSegment.length() - 1) {
+    // // logger.debug("url has no extension: '" + uri + "'");
+    // return null;
+    // }
+    // return lastSegment.substring(extensionIndex + 1).toLowerCase();
+    // }
 
     /**
      * write "text" data to a file
@@ -157,12 +157,8 @@ public class MusicTools {
         }
         if (coverImage != null) {
             try {
-                String extension = getExtension(coverImage);
-                if (extension == null) {
-                    extension = "png";
-                }
                 File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()),
-                        "." + extension);
+                        ".png");
                 tempFile.delete(); // to prevent throwing off the downloadimage function
                 downloadImage(coverImage, tempFile);
                 if (tempFile.exists()) {

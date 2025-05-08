@@ -146,21 +146,6 @@ public class Playlist {
     }
 
     /**
-     * <p>
-     * getCoverImageFileName.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @JsonIgnore
-    public String getCoverImageFileName() {
-        if (this.coverImage == null) {
-            return null;
-        }
-        return this.getFolderName() + "." + MusicTools.getExtension(coverImage);
-    }
-
-    /**
      * add songs to playlist
      *
      * @param songs - arraylist of constructed Song
