@@ -15,13 +15,12 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
 
 import java.time.Duration;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 /**
@@ -33,7 +32,7 @@ import org.jaudiotagger.tag.FieldKey;
  */
 @Method.Import
 public class Upload extends Method {
-    private static final Logger logger = LogManager.getLogger(Upload.class);
+    private static final Logger logger = new Logger(Upload.class);
     private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
         {

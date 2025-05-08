@@ -2,22 +2,24 @@ package ryzen.ownitall.output.cli;
 
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Main;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 
 /**
- * <p>MainMenu class.</p>
+ * <p>
+ * MainMenu class.
+ * </p>
  *
  * @author ryzen
  */
 public class MainMenu {
-    private static final Logger logger = LogManager.getLogger(MainMenu.class);
+    private static final Logger logger = new Logger(MainMenu.class);
 
     /**
-     * <p>Constructor for MainMenu.</p>
+     * <p>
+     * Constructor for MainMenu.
+     * </p>
      */
     public MainMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

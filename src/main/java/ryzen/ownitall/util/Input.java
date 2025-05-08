@@ -7,9 +7,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * <p>
  * Input class.
@@ -18,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  * @author ryzen
  */
 public class Input {
-    private static final Logger logger = LogManager.getLogger(Input.class);
+    private static final Logger logger = new Logger(Input.class);
     private static Input instance;
     private static Scanner scanner;
     private static Queue<String> nonInteractive = new LinkedList<>();
@@ -51,7 +48,7 @@ public class Input {
      */
     public static void setNonInteractive(String params) {
         if (params == null) {
-            logger.error("null params provided in input request");
+            logger.error("null params provided in input request", new Exception());
             return;
         }
         String[] inputParams = params.split(",");

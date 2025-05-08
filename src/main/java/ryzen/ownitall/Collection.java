@@ -11,8 +11,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -21,14 +19,17 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Logger;
 
 /**
- * <p>Collection class.</p>
+ * <p>
+ * Collection class.
+ * </p>
  *
  * @author ryzen
  */
 public class Collection {
-    private static final Logger logger = LogManager.getLogger(Collection.class);
+    private static final Logger logger = new Logger(Collection.class);
     private static LikedSongs likedSongs = new LikedSongs();
     private static ArrayList<Playlist> playlists = new ArrayList<>();
     private static ArrayList<Album> albums = new ArrayList<>();
@@ -50,21 +51,27 @@ public class Collection {
     }
 
     /**
-     * <p>clearLikedSongs.</p>
+     * <p>
+     * clearLikedSongs.
+     * </p>
      */
     public static void clearLikedSongs() {
         likedSongs.getSongs().clear();
     }
 
     /**
-     * <p>clearPlaylists.</p>
+     * <p>
+     * clearPlaylists.
+     * </p>
      */
     public static void clearPlaylists() {
         playlists.clear();
     }
 
     /**
-     * <p>clearAlbums.</p>
+     * <p>
+     * clearAlbums.
+     * </p>
      */
     public static void clearAlbums() {
         albums.clear();
@@ -535,7 +542,9 @@ public class Collection {
     }
 
     /**
-     * <p>getLikedSongCount.</p>
+     * <p>
+     * getLikedSongCount.
+     * </p>
      *
      * @return a int
      */

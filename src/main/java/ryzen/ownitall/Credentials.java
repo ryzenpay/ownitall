@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.method.Jellyfin;
 import ryzen.ownitall.method.Spotify;
 import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.method.download.SoulSeek;
+import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -24,7 +22,7 @@ public class Credentials extends ryzen.ownitall.util.Settings {
 
     private static Credentials instance;
 
-    private static final Logger logger = LogManager.getLogger(Credentials.class);
+    private static final Logger logger = new Logger(Credentials.class);
 
     /**
      * spotify credentials

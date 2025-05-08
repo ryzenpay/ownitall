@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
-import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.util.LogConfig;
+import ryzen.ownitall.util.Logger;
 
 //https://github.com/fiso64/slsk-batchdl
 /**
@@ -25,7 +23,7 @@ import ryzen.ownitall.util.Logs;
  */
 @Method.Export
 public class SoulSeek extends Download {
-    private static final Logger logger = LogManager.getLogger(SoulSeek.class);
+    private static final Logger logger = new Logger(SoulSeek.class);
 
     /**
      * <p>
@@ -75,7 +73,7 @@ public class SoulSeek extends Download {
         command.add("--fast-search");
         command.add("--concurrent-downloads");
         command.add(String.valueOf(Settings.downloadThreads));
-        if (Logs.isDebug()) {
+        if (LogConfig.isDebug()) {
             command.add("-v");
         }
         /**
@@ -116,11 +114,11 @@ public class SoulSeek extends Download {
                         logger.debug("Error with user provided options: " + command.toString());
                         break;
                     } else {
-                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
-                        logger.error(command.toString());
-                        logger.error(completeLog.toString());
+                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
+                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
+                                new Exception());
                     }
-                    logger.error("Attempt: " + retries);
+                    logger.warn("Attempt: " + retries);
                 }
                 retries++;
             }

@@ -4,9 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
@@ -14,6 +11,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
 
@@ -25,7 +23,7 @@ import ryzen.ownitall.util.ProgressBar;
  * @author ryzen
  */
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
+    private static final Logger logger = new Logger(MethodMenu.class);
     private Method method;
 
     /**
@@ -50,7 +48,7 @@ public class MethodMenu {
         try {
             method = Method.initMethod(methodClass);
         } catch (InterruptedException e) {
-            logger.info("Interrupted while setting up method, could be due to invalid credentials", e);
+            logger.info("Interrupted while setting up method, could be due to invalid credentials");
             Method.clearCredentials(methodClass);
             this.setCredentials(methodClass);
             Method.initMethod(methodClass);
@@ -138,7 +136,7 @@ public class MethodMenu {
             }
             logger.debug("done importing '" + Method.getMethodName(this.method) + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' library", e);
+            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' library");
         }
     }
 
@@ -153,7 +151,7 @@ public class MethodMenu {
                                 + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' liked songs", e);
+            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' liked songs");
         }
     }
 
@@ -185,7 +183,7 @@ public class MethodMenu {
                 logger.info("Imported " + albums.size() + " albums from '" + Method.getMethodName(this.method) + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing albums", e);
+            logger.debug("Interrupted while importing albums");
         }
     }
 
@@ -215,7 +213,7 @@ public class MethodMenu {
                         + Method.getMethodName(this.method) + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' album", e);
+            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' album");
         }
     }
 
@@ -248,7 +246,7 @@ public class MethodMenu {
                         "Imported " + playlists.size() + " playlists from '" + Method.getMethodName(this.method) + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing playlists", e);
+            logger.debug("Interrupted while importing playlists");
         }
     }
 
@@ -275,7 +273,7 @@ public class MethodMenu {
                         + Method.getMethodName(this.method) + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' playlist", e);
+            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' playlist");
         }
     }
 
@@ -325,7 +323,7 @@ public class MethodMenu {
                             + "'");
             logger.debug("done uploading '" + Method.getMethodName(this.method) + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' music", e);
+            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' music");
         }
     }
 
@@ -338,7 +336,7 @@ public class MethodMenu {
             logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                     + Method.getMethodName(this.method) + "'");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' liked songs", e);
+            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' liked songs");
         }
     }
 

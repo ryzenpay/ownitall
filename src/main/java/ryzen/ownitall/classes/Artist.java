@@ -4,20 +4,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.util.Logger;
+
 /**
- * <p>Artist class.</p>
+ * <p>
+ * Artist class.
+ * </p>
  *
  * @author ryzen
  */
 public class Artist {
-    private static final Logger logger = LogManager.getLogger(Artist.class);
+    private static final Logger logger = new Logger(Artist.class);
     private String name;
     private URI coverImage;
     private LinkedHashMap<String, String> ids;
@@ -34,10 +35,12 @@ public class Artist {
 
     @JsonCreator
     /**
-     * <p>Constructor for Artist.</p>
+     * <p>
+     * Constructor for Artist.
+     * </p>
      *
-     * @param name a {@link java.lang.String} object
-     * @param ids a {@link java.util.LinkedHashMap} object
+     * @param name       a {@link java.lang.String} object
+     * @param ids        a {@link java.util.LinkedHashMap} object
      * @param coverImage a {@link java.lang.String} object
      */
     public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashMap<String, String> ids,

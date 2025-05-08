@@ -6,11 +6,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.util.LogConfig;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
@@ -25,7 +24,7 @@ import sun.misc.SignalHandler;
  * @author ryzen
  */
 public class Main {
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final Logger logger = new Logger(Main.class);
 
     /**
      * main function launching the main ownitall menu
@@ -54,7 +53,7 @@ public class Main {
             if (cmd.hasOption("l")) {
                 String level = cmd.getOptionValue("l");
                 logger.debug("log level provided: " + level);
-                Logs.setLogLevel(level);
+                LogConfig.setLogLevel(level);
             }
             Storage.importCollection();
             if (cmd.hasOption("i")) {

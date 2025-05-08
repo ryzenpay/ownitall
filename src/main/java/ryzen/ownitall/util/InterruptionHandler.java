@@ -4,9 +4,6 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * <p>
  * InterruptionHandler class.
@@ -15,8 +12,8 @@ import org.apache.logging.log4j.Logger;
  * @author ryzen
  */
 public class InterruptionHandler implements AutoCloseable {
+    private static final Logger logger = new Logger(InterruptionHandler.class);
     private static InterruptionHandler instance;
-    private static final Logger logger = LogManager.getLogger(InterruptionHandler.class);
     private SignalHandler signalHandler;
     private AtomicBoolean interrupted = new AtomicBoolean(false);
 

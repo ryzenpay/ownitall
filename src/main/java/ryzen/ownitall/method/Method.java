@@ -9,14 +9,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
+import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -26,7 +24,7 @@ import ryzen.ownitall.classes.Playlist;
  * @author ryzen
  */
 abstract public class Method {
-    private static final Logger logger = LogManager.getLogger(Method.class);
+    private static final Logger logger = new Logger(Method.class);
     /** Constant <code>methods</code> */
     public static final LinkedHashMap<String, Class<? extends Method>> methods;
     static {

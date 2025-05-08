@@ -10,20 +10,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * <p>Settings class.</p>
+ * <p>
+ * Settings class.
+ * </p>
  *
  * @author ryzen
  */
 public class Settings {
-    private static final Logger logger = LogManager.getLogger(Settings.class);
+    private static final Logger logger = new Logger(Settings.class);
     private static final ObjectMapper objectMapper = new ObjectMapper()
             // needed to include null values
             .setSerializationInclusion(JsonInclude.Include.ALWAYS);
@@ -31,7 +30,9 @@ public class Settings {
     private File file;
 
     /**
-     * <p>Constructor for Settings.</p>
+     * <p>
+     * Constructor for Settings.
+     * </p>
      *
      * @param saveFile a {@link java.lang.String} object
      * @throws java.io.IOException if any.
@@ -62,7 +63,9 @@ public class Settings {
     }
 
     /**
-     * <p>read.</p>
+     * <p>
+     * read.
+     * </p>
      *
      * @throws java.io.IOException if any.
      */
@@ -77,7 +80,7 @@ public class Settings {
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
         if (imported == null) {
-            logger.error("Failed to import from file '" + file.getAbsolutePath() + "'");
+            logger.error("Failed to import from file '" + file.getAbsolutePath() + "'", new Exception());
         } else {
             this.setAll(imported);
         }
@@ -141,10 +144,12 @@ public class Settings {
     }
 
     /**
-     * <p>set.</p>
+     * <p>
+     * set.
+     * </p>
      *
      * @return - true if modified, false if not
-     * @param name a {@link java.lang.String} object
+     * @param name  a {@link java.lang.String} object
      * @param value a {@link java.lang.Object} object
      */
     protected boolean set(String name, Object value) {
@@ -172,7 +177,9 @@ public class Settings {
     }
 
     /**
-     * <p>getType.</p>
+     * <p>
+     * getType.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Class} object
@@ -191,7 +198,9 @@ public class Settings {
     }
 
     /**
-     * <p>isEmpty.</p>
+     * <p>
+     * isEmpty.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a boolean
@@ -210,7 +219,9 @@ public class Settings {
     }
 
     /**
-     * <p>get.</p>
+     * <p>
+     * get.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Object} object
@@ -235,7 +246,9 @@ public class Settings {
     }
 
     /**
-     * <p>getGroup.</p>
+     * <p>
+     * getGroup.
+     * </p>
      *
      * @param groupClass a {@link java.lang.Class} object
      * @return a {@link java.util.LinkedHashMap} object

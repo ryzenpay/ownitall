@@ -2,25 +2,27 @@ package ryzen.ownitall.output.cli;
 
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 
 /**
- * <p>LibraryMenu class.</p>
+ * <p>
+ * LibraryMenu class.
+ * </p>
  *
  * @author ryzen
  */
 public class LibraryMenu {
-    private static final Logger logger = LogManager.getLogger(LibraryMenu.class);
+    private static final Logger logger = new Logger(LibraryMenu.class);
 
     /**
-     * <p>Constructor for LibraryMenu.</p>
+     * <p>
+     * Constructor for LibraryMenu.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */
@@ -55,7 +57,9 @@ public class LibraryMenu {
     }
 
     /**
-     * <p>initializeLibrary.</p>
+     * <p>
+     * initializeLibrary.
+     * </p>
      *
      * @throws java.lang.InterruptedException if any.
      */

@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.time.temporal.ChronoUnit;
 import org.apache.hc.core5.http.ParseException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -34,6 +31,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 
 import java.io.BufferedReader;
@@ -55,7 +53,7 @@ import java.awt.Desktop;
 @Method.Export
 @Method.Import
 public class Spotify extends Method {
-    private static final Logger logger = LogManager.getLogger(Spotify.class);
+    private static final Logger logger = new Logger(Spotify.class);
     private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
@@ -177,13 +175,13 @@ public class Spotify extends Method {
                 // (frame.toFront(); frame.repaint();)
                 sendResponse(clientSocket, 200, "Authorization code received successfully.");
             } else {
-                logger.error("Failed to retrieve authorization code. Request: " + request.toString());
+                logger.warn("Failed to retrieve authorization code. Request: " + request.toString());
                 sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
                 try {
                     System.out.println("Code it provides (in url)");
                     this.code = Input.request().getString();
                 } catch (InterruptedException e) {
-                    logger.debug("Interrupted while getting code (failed getting from browser)", e);
+                    logger.debug("Interrupted while getting code (failed getting from browser)");
                 }
             }
 
@@ -934,7 +932,7 @@ public class Spotify extends Method {
                 logger.debug("Created new playlist: " + playlist.getName());
                 playlist.addId("spotify", playlistId);
             } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.debug("Exception creating user playlist", e);
+                logger.debug("Exception creating user playlist");
             }
         } else {
             // filter out the existing playlist songs

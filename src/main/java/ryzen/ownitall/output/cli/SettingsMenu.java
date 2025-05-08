@@ -2,23 +2,25 @@ package ryzen.ownitall.output.cli;
 
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 
 /**
- * <p>SettingsMenu class.</p>
+ * <p>
+ * SettingsMenu class.
+ * </p>
  *
  * @author ryzen
  */
 public class SettingsMenu {
-    private static final Logger logger = LogManager.getLogger(SettingsMenu.class);
+    private static final Logger logger = new Logger(SettingsMenu.class);
 
     /**
-     * <p>Constructor for SettingsMenu.</p>
+     * <p>
+     * Constructor for SettingsMenu.
+     * </p>
      */
     public SettingsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -54,7 +56,7 @@ public class SettingsMenu {
                 if (this.changeSetting(choice)) {
                     logger.info("Successfully changed setting '" + choice + "'");
                 } else {
-                    logger.error("Unsuccessfully changed setting '" + choice + "'");
+                    logger.error("Unsuccessfully changed setting '" + choice + "'", new Exception());
                 }
             }
         } catch (InterruptedException e) {
@@ -70,7 +72,7 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         Class<?> settingType = settings.getType(settingName);
         if (settingType == null) {
-            logger.error("Unable to find setting type  of '" + settingName + "'");
+            logger.error("Unable to find setting type  of '" + settingName + "'", new Exception());
             return false;
         }
         System.out.print(

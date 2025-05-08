@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.util.LogConfig;
 
 /**
  * <p>
@@ -92,7 +92,7 @@ public class LibraryMenu {
             @RequestParam(value = "methodClass", required = true) String libraryClassName,
             @RequestParam(value = "callback", required = true) String callback) {
 
-        if (Logs.isDebug()) {
+        if (LogConfig.isDebug()) {
             model.addAttribute("debug",
                     "libraryclass=" + libraryClassName + ", callback=" + callback);
         }

@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,6 +19,7 @@ import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -31,7 +29,7 @@ import ryzen.ownitall.classes.Song;
  * @author ryzen
  */
 public class Library {
-    private static final Logger logger = LogManager.getLogger(Library.class);
+    private static final Logger logger = new Logger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     /** Constant <code>libraries</code> */
     public static final LinkedHashMap<String, Class<? extends Library>> libraries;
@@ -278,7 +276,7 @@ public class Library {
      * @param message a {@link java.lang.String} object
      */
     protected void queryErrorHandle(int code, String message) {
-        logger.error("Received error code (" + code + ") while querying: " + message);
+        logger.error("Received error code (" + code + ") while querying: " + message, new Exception());
     }
 
     /**

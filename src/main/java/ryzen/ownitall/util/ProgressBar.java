@@ -11,6 +11,8 @@ import me.tongfei.progressbar.ProgressBarStyle;
  *
  * @author ryzen
  */
+// TODO: is pretty bad with "stacked progressbars"
+// unsure how to fix
 public class ProgressBar implements AutoCloseable {
     private static ProgressBar instance;
     private String title;

@@ -10,9 +10,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.LinkedHashMap;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -28,12 +25,14 @@ import org.jaudiotagger.tag.reference.ID3V2Version;
 import org.jaudiotagger.tag.reference.PictureTypes;
 
 /**
- * <p>MusicTools class.</p>
+ * <p>
+ * MusicTools class.
+ * </p>
  *
  * @author ryzen
  */
 public class MusicTools {
-    private static final Logger logger = LogManager.getLogger(MusicTools.class);
+    private static final Logger logger = new Logger(MusicTools.class);
 
     /**
      * convert duration into music time (mm:ss)
@@ -74,7 +73,9 @@ public class MusicTools {
     }
 
     /**
-     * <p>getExtension.</p>
+     * <p>
+     * getExtension.
+     * </p>
      *
      * @param uri a {@link java.net.URI} object
      * @return a {@link java.lang.String} object
@@ -334,7 +335,9 @@ public class MusicTools {
     }
 
     /**
-     * <p>deleteFolder.</p>
+     * <p>
+     * deleteFolder.
+     * </p>
      *
      * @param folder a {@link java.io.File} object
      * @return a boolean
@@ -352,13 +355,13 @@ public class MusicTools {
                 if (deleteFolder(file)) {
                     logger.info("Successfully deleted folder: " + file.getAbsolutePath());
                 } else {
-                    logger.error("Failed to delete folder: " + file.getAbsolutePath());
+                    logger.error("Failed to delete folder: " + file.getAbsolutePath(), new Exception());
                 }
             } else {
                 if (file.delete()) {
                     logger.info("Successfully deleted file: " + file.getAbsolutePath());
                 } else {
-                    logger.error("Failed to delete file: " + file.getAbsolutePath());
+                    logger.error("Failed to delete file: " + file.getAbsolutePath(), new Exception());
                 }
             }
         }

@@ -6,21 +6,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.util.Logger;
 
 /**
- * <p>YT_dl class.</p>
+ * <p>
+ * YT_dl class.
+ * </p>
  *
  * @author ryzen
  */
 @Method.Export
 public class YT_dl extends Download {
-    private static final Logger logger = LogManager.getLogger(YT_dl.class);
+    private static final Logger logger = new Logger(YT_dl.class);
 
     /**
      * default download constructor
@@ -123,17 +123,17 @@ public class YT_dl extends Download {
                         logger.debug("Error with user provided options: " + command.toString());
                         break;
                     } else if (exitCode == 100) {
-                        logger.error("Your yt-dlp needs to update");
+                        logger.error("Your yt-dlp needs to update", new Exception());
                         break;
                     } else if (exitCode == 101) {
                         logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
                     } else {
-                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
-                        logger.error(command.toString());
-                        logger.error(completeLog.toString());
+                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
+                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
+                                new Exception());
                     }
-                    logger.error("Attempt: " + retries);
+                    logger.warn("Attempt: " + retries);
                 }
                 retries++;
             }

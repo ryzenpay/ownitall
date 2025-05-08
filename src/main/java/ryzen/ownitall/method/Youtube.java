@@ -20,6 +20,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 
 import java.io.IOException;
@@ -29,9 +30,6 @@ import java.util.Arrays;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -43,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 @Method.Import
 @Method.Export
 public class Youtube extends Method {
-    private static final Logger logger = LogManager.getLogger(Youtube.class);
+    private static final Logger logger = new Logger(Youtube.class);
     private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
     private java.util.Collection<String> scopes = Arrays.asList("https://www.googleapis.com/auth/youtube.readonly");

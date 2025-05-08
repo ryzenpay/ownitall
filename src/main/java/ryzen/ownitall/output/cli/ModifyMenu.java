@@ -3,9 +3,6 @@ package ryzen.ownitall.output.cli;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
@@ -16,6 +13,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
 
@@ -27,7 +25,7 @@ import ryzen.ownitall.util.ProgressBar;
  * @author ryzen
  */
 public class ModifyMenu {
-    private static final Logger logger = LogManager.getLogger(ModifyMenu.class);
+    private static final Logger logger = new Logger(ModifyMenu.class);
     private static final Library library = Library.load();
 
     /**
@@ -102,7 +100,7 @@ public class ModifyMenu {
                     return;
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interruption caught while getting album", e);
+                logger.debug("Interruption caught while getting album");
                 return;
             }
         }
@@ -181,7 +179,7 @@ public class ModifyMenu {
                     return null;
                 }
             } catch (InterruptedException e) {
-                logger.debug("Interruption caugth while adding song", e);
+                logger.debug("Interruption caugth while adding song");
                 return null;
             }
         }
@@ -215,7 +213,7 @@ public class ModifyMenu {
                         + "' to collection");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while adding artist", e);
+            logger.debug("Interrupted while adding artist");
         }
     }
 
@@ -417,9 +415,9 @@ public class ModifyMenu {
                 pb.step(album.getName(), album.size());
             }
         } catch (InterruptedException e) {
-            logger.debug("Interruption caught while verifying inventory", e);
+            logger.debug("Interruption caught while verifying inventory");
             return;
         }
-        logger.debug("done updating collection content");
+        logger.info("done updating collection content");
     }
 }

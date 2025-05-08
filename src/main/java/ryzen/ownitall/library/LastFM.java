@@ -9,13 +9,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,7 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author ryzen
  */
 public class LastFM extends Library {
-    private static final Logger logger = LogManager.getLogger(LastFM.class);
+    private static final Logger logger = new Logger(LastFM.class);
     private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
 
@@ -372,49 +370,52 @@ public class LastFM extends Library {
     protected void queryErrorHandle(int code, String message) {
         switch (code) {
             case 2:
-                logger.error("Invalid service - This service does not exist");
+                logger.error("Invalid service - This service does not exist", new Exception());
                 break;
             case 3:
-                logger.error("Invalid Method - No method with that name in this package");
+                logger.error("Invalid Method - No method with that name in this package", new Exception());
                 break;
             case 4:
-                logger.error("Authentication Failed - You do not have permissions to access the service");
+                logger.error("Authentication Failed - You do not have permissions to access the service",
+                        new Exception());
                 break;
             case 5:
-                logger.error("Invalid format - This service doesn't exist in that format");
+                logger.error("Invalid format - This service doesn't exist in that format", new Exception());
                 break;
             case 6:
-                logger.error("Invalid parameters - Your request is missing a required parameter");
+                logger.error("Invalid parameters - Your request is missing a required parameter", new Exception());
                 break;
             case 7:
-                logger.error("Invalid resource specified");
+                logger.error("Invalid resource specified", new Exception());
                 break;
             case 8:
-                logger.error("Operation failed - Something else went wrong");
+                logger.error("Operation failed - Something else went wrong", new Exception());
                 break;
             case 9:
-                logger.error("Invalid session key - Please re-authenticate");
+                logger.error("Invalid session key - Please re-authenticate", new Exception());
                 break;
             case 10:
-                logger.error("Invalid API key - You must be granted a valid key by last.fm");
+                logger.error("Invalid API key - You must be granted a valid key by last.fm", new Exception());
                 break;
             case 11:
-                logger.error("Service Offline - This service is temporarily offline. Try again later");
+                logger.error("Service Offline - This service is temporarily offline. Try again later", new Exception());
                 break;
             case 13:
-                logger.error("Invalid method signature supplied");
+                logger.error("Invalid method signature supplied", new Exception());
                 break;
             case 16:
-                logger.error("There was a temporary error processing your request. Please try again");
+                logger.error("There was a temporary error processing your request. Please try again", new Exception());
                 break;
             case 26:
-                logger.error("Suspended API key - Access for your account has been suspended, please contact Last.fm");
+                logger.error("Suspended API key - Access for your account has been suspended, please contact Last.fm",
+                        new Exception());
                 break;
             case 29:
-                logger.error("Rate limit exceeded - Your IP has made too many requests in a short period");
+                logger.error("Rate limit exceeded - Your IP has made too many requests in a short period",
+                        new Exception());
                 break;
             default:
-                logger.error("Unknown error: " + message);
+                logger.error("Unknown error: " + message, new Exception());
                 break;
         }
     }

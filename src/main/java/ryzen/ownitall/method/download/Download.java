@@ -11,8 +11,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.tag.FieldKey;
 
 import ryzen.ownitall.Collection;
@@ -25,6 +23,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
 
@@ -41,7 +40,7 @@ public class Download extends Method {
     // qobuz
     // deezer
     // tidal
-    private static final Logger logger = LogManager.getLogger(Download.class);
+    private static final Logger logger = new Logger(Download.class);
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
@@ -251,7 +250,7 @@ public class Download extends Method {
                     if (file.delete()) {
                         logger.debug("Cleaned up file: '" + file.getAbsolutePath() + "'");
                     } else {
-                        logger.error("Failed to clean up file: '" + file.getAbsolutePath() + "'");
+                        logger.error("Failed to clean up file: '" + file.getAbsolutePath() + "'", new Exception());
                     }
                 }
             }
@@ -286,7 +285,7 @@ public class Download extends Method {
                     if (songFolder.delete()) {
                         logger.info("Deleted liked song '" + songFile.getAbsolutePath());
                     } else {
-                        logger.error("Failed to delete liked song: " + songFile.getAbsolutePath());
+                        logger.error("Failed to delete liked song: " + songFile.getAbsolutePath(), new Exception());
                     }
                 }
             }
@@ -350,7 +349,7 @@ public class Download extends Method {
                                 + playlistFolder.getAbsolutePath());
                     } else {
                         logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
-                                + playlistFolder.getAbsolutePath());
+                                + playlistFolder.getAbsolutePath(), new Exception());
                     }
                 } else {
                     // deletes all playlists songs
@@ -362,7 +361,7 @@ public class Download extends Method {
                                         + m3uFile.getAbsolutePath());
                     } else {
                         logger.error("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                                + m3uFile.getAbsolutePath());
+                                + m3uFile.getAbsolutePath(), new Exception());
                     }
                 }
             }
@@ -489,7 +488,7 @@ public class Download extends Method {
                                 "Deleted album '" + album.getName() + "'' folder: " + albumFolder.getAbsolutePath());
                     } else {
                         logger.error("Failed to delete album '" + album.getName() + "' folder: "
-                                + albumFolder.getAbsolutePath());
+                                + albumFolder.getAbsolutePath(), new Exception());
                     }
                 }
             }

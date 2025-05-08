@@ -3,20 +3,21 @@ package ryzen.ownitall.classes;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.util.Logger;
+
 /**
- * <p>Album class.</p>
+ * <p>
+ * Album class.
+ * </p>
  *
  * @author ryzen
  */
 public class Album extends Playlist {
-    private static final Logger logger = LogManager.getLogger(Album.class);
+    private static final Logger logger = new Logger(Album.class);
     private ArrayList<Artist> artists;
 
     /**
@@ -133,7 +134,9 @@ public class Album extends Playlist {
     }
 
     /**
-     * <p>getArtist.</p>
+     * <p>
+     * getArtist.
+     * </p>
      *
      * @param artist a {@link ryzen.ownitall.classes.Artist} object
      * @return a {@link ryzen.ownitall.classes.Artist} object

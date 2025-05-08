@@ -11,22 +11,22 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * <p>MusicBrainz class.</p>
+ * <p>
+ * MusicBrainz class.
+ * </p>
  *
  * @author ryzen
  */
 public class MusicBrainz extends Library {
-    private static final Logger logger = LogManager.getLogger(MusicBrainz.class);
+    private static final Logger logger = new Logger(MusicBrainz.class);
     private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
     private final String coverArtUrl = "https://coverartarchive.org/";
 
@@ -88,7 +88,9 @@ public class MusicBrainz extends Library {
     }
 
     /**
-     * <p>getAlbum.</p>
+     * <p>
+     * getAlbum.
+     * </p>
      *
      * @param id a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Album} object
@@ -205,7 +207,7 @@ public class MusicBrainz extends Library {
                 this.ids.put(params.toString(), id);
                 return id;
             } else {
-                logger.error("Missing data while getting Song: " + response.toString());
+                logger.error("Missing data while getting Song: " + response.toString(), new Exception());
             }
         }
         logger.info("Could not find song '" + song.getName() + "' in library");
@@ -213,7 +215,9 @@ public class MusicBrainz extends Library {
     }
 
     /**
-     * <p>getSong.</p>
+     * <p>
+     * getSong.
+     * </p>
      *
      * @param id a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Song} object
@@ -271,7 +275,9 @@ public class MusicBrainz extends Library {
     }
 
     /**
-     * <p>searchArtist.</p>
+     * <p>
+     * searchArtist.
+     * </p>
      *
      * @param artist a {@link ryzen.ownitall.classes.Artist} object
      * @return a {@link java.lang.String} object
@@ -305,7 +311,9 @@ public class MusicBrainz extends Library {
     }
 
     /**
-     * <p>getArtist.</p>
+     * <p>
+     * getArtist.
+     * </p>
      *
      * @param id a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Artist} object
@@ -353,7 +361,7 @@ public class MusicBrainz extends Library {
                 return new URI(redirectUrl);
             }
         } catch (IOException | URISyntaxException e) {
-            logger.debug("Exception while getting coverArt", e);
+            logger.error("Exception while getting coverArt", e);
         }
         logger.debug("No coverart found for: '" + id + "'");
         return null;

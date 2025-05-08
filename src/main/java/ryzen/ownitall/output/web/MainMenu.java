@@ -6,8 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -18,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import ryzen.ownitall.Main;
+import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -29,7 +28,7 @@ import ryzen.ownitall.Main;
 @Controller
 @SpringBootApplication
 public class MainMenu {
-    private static final Logger logger = LogManager.getLogger(MainMenu.class);
+    private static final Logger logger = new Logger(MainMenu.class);
     /** Constant <code>url="http://localhost:8080"</code> */
     public static final String url = "http://localhost:8080";
 

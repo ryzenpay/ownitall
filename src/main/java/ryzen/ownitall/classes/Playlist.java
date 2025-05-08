@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
- * <p>Playlist class.</p>
+ * <p>
+ * Playlist class.
+ * </p>
  *
  * @author ryzen
  */
 public class Playlist {
-    private static final Logger logger = LogManager.getLogger(Playlist.class);
+    private static final Logger logger = new Logger(Playlist.class);
     private String name;
     private URI coverImage;
     private ArrayList<Song> songs;
@@ -92,7 +92,9 @@ public class Playlist {
     }
 
     /**
-     * <p>Setter for the field <code>name</code>.</p>
+     * <p>
+     * Setter for the field <code>name</code>.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      */
@@ -144,7 +146,9 @@ public class Playlist {
     }
 
     /**
-     * <p>getCoverImageFileName.</p>
+     * <p>
+     * getCoverImageFileName.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */

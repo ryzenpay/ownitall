@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
+import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -22,7 +20,7 @@ import ryzen.ownitall.method.download.YT_dl;
  */
 public class Settings extends ryzen.ownitall.util.Settings {
     private static Settings instance;
-    private static final Logger logger = LogManager.getLogger(Settings.class);
+    private static final Logger logger = new Logger(Settings.class);
 
     // the defaults: (non final & protected for the ones that can be changed by
     // user)

@@ -3,8 +3,6 @@ package ryzen.ownitall.output.web;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +21,8 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.Logs;
+import ryzen.ownitall.util.LogConfig;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 
 /**
@@ -35,7 +34,7 @@ import ryzen.ownitall.util.ProgressBar;
  */
 @Controller
 public class MethodMenu {
-    private static final Logger logger = LogManager.getLogger(MethodMenu.class);
+    private static final Logger logger = new Logger(MethodMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private Method method;
 
@@ -53,7 +52,7 @@ public class MethodMenu {
     public String methodMenu(Model model,
             @RequestParam(value = "methodClass", required = false) String methodClassName,
             @RequestParam(value = "callback", required = true) String callback) {
-        if (Logs.isDebug()) {
+        if (LogConfig.isDebug()) {
             model.addAttribute("debug",
                     "methodclass=" + methodClassName + ", callback=" + callback);
         }
@@ -107,7 +106,7 @@ public class MethodMenu {
             @RequestParam(value = "methodClass", required = true) String methodClassName,
             @RequestParam(value = "callback", required = true) String callback) {
 
-        if (Logs.isDebug()) {
+        if (LogConfig.isDebug()) {
             model.addAttribute("debug",
                     "methodclass=" + methodClassName + ", callback=" + callback);
         }
@@ -251,7 +250,7 @@ public class MethodMenu {
             method.uploadAlbums();
             method.uploadPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection: ", e);
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection");
         }
     }
 
@@ -293,7 +292,7 @@ public class MethodMenu {
                 Collection.addLikedSongs(likedSongs);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs");
         }
     }
 
@@ -336,7 +335,7 @@ public class MethodMenu {
                 Collection.addAlbums(albums);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums: ", e);
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums");
         }
     }
 
@@ -379,7 +378,7 @@ public class MethodMenu {
                 Collection.addPlaylists(playlists);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists: ", e);
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists");
         }
     }
 
@@ -445,7 +444,7 @@ public class MethodMenu {
             method.uploadAlbums();
             method.uploadPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'collection: ", e);
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'collection");
         }
     }
 
@@ -484,7 +483,7 @@ public class MethodMenu {
         try {
             method.uploadLikedSongs();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs");
         }
     }
 
@@ -524,7 +523,7 @@ public class MethodMenu {
         try {
             method.uploadAlbums();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums: ", e);
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums");
         }
     }
 
@@ -564,7 +563,7 @@ public class MethodMenu {
         try {
             method.uploadPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists: ", e);
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists");
         }
     }
 
@@ -629,7 +628,7 @@ public class MethodMenu {
             method.syncAlbums();
             method.syncPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection: ", e);
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection");
         }
     }
 
@@ -667,7 +666,7 @@ public class MethodMenu {
         try {
             method.syncLikedSongs();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs: ", e);
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs");
         }
     }
 
@@ -705,7 +704,7 @@ public class MethodMenu {
         try {
             method.syncAlbums();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums: ", e);
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums");
         }
     }
 
@@ -743,7 +742,7 @@ public class MethodMenu {
         try {
             method.syncPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists: ", e);
+            logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists");
         }
     }
 

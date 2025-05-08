@@ -17,10 +17,8 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -30,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * @author ryzen
  */
 public class Storage {
-    private static final Logger logger = LogManager.getLogger(Storage.class);
+    private static final Logger logger = new Logger(Storage.class);
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     /**

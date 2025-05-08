@@ -7,23 +7,23 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 
 /**
- * <p>Song class.</p>
+ * <p>
+ * Song class.
+ * </p>
  *
  * @author ryzen
  */
 public class Song {
-    private static final Logger logger = LogManager.getLogger(Song.class);
+    private static final Logger logger = new Logger(Song.class);
     private static final String downloadFormat = Settings.downloadFormat;
     private String name;
     private ArrayList<Artist> artists;
@@ -123,7 +123,9 @@ public class Song {
     }
 
     /**
-     * <p>addArtists.</p>
+     * <p>
+     * addArtists.
+     * </p>
      *
      * @param artists a {@link java.util.ArrayList} object
      */
@@ -156,7 +158,9 @@ public class Song {
     }
 
     /**
-     * <p>Getter for the field <code>artists</code>.</p>
+     * <p>
+     * Getter for the field <code>artists</code>.
+     * </p>
      *
      * @return a {@link java.util.ArrayList} object
      */
@@ -185,7 +189,9 @@ public class Song {
     }
 
     /**
-     * <p>getMainArtist.</p>
+     * <p>
+     * getMainArtist.
+     * </p>
      *
      * @return a {@link ryzen.ownitall.classes.Artist} object
      */

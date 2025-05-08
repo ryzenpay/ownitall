@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
- * <p>Menu class.</p>
+ * <p>
+ * Menu class.
+ * </p>
  *
  * @author ryzen
  */
 public class Menu {
-    private static final Logger logger = LogManager.getLogger(Menu.class);
-    /** Constant <code>asciiLogo="                        _  _          _"{trunked}</code> */
+    private static final Logger logger = new Logger(Menu.class);
+    /**
+     * Constant
+     * <code>asciiLogo="                        _  _          _"{trunked}</code>
+     */
     public static final String asciiLogo = "                        _  _          _  _ \n" +
             "                       (_)| |        | || |\n" +
             "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
@@ -30,15 +32,19 @@ public class Menu {
         // TODO: print last log?
         // to prevent it being lost and not knowing if it happened or not
         // and then remove the "press enter to continue" elsewhere
-        if (!Logs.isDebug()) {
+        if (!LogConfig.isDebug()) {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();
         printLogo();
+        LogConfig.printLogs();
+        LogConfig.clearLogs();
     }
 
     /**
-     * <p>printLogo.</p>
+     * <p>
+     * printLogo.
+     * </p>
      */
     public static void printLogo() {
         System.out.println(asciiLogo);
