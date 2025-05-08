@@ -115,8 +115,8 @@ public class Youtube extends Method {
         }
         LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
-        try (ProgressBar pb = ProgressBar.getInstance("Liked Song", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Liked Song", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
@@ -177,8 +177,8 @@ public class Youtube extends Method {
             return null;
         }
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.getInstance("Playlists", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
@@ -222,8 +222,8 @@ public class Youtube extends Method {
         }
         ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
-        try (ProgressBar pb = ProgressBar.getInstance("Liked Songs", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()

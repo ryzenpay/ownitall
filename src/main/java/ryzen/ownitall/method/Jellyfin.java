@@ -87,8 +87,8 @@ public class Jellyfin extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = ProgressBar.getInstance("Liked Songs", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("mediaTypes", "Audio");
             params.put("recursive", "true");
@@ -122,7 +122,7 @@ public class Jellyfin extends Method {
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting jellyfin liked songs to remove mismatches");
         LikedSongs likedSongs = this.getLikedSongs();
-        try (InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (likedSongs != null && !likedSongs.isEmpty()) {
                 likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
                 for (Song song : likedSongs.getSongs()) {
@@ -142,8 +142,8 @@ public class Jellyfin extends Method {
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
-        try (ProgressBar pb = ProgressBar.getInstance("Liked Songs", likedSongs.size());
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size());
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : likedSongs.getSongs()) {
                 String songId = this.getSongId(song);
                 if (songId != null) {
@@ -160,8 +160,8 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.getInstance("Playlists", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "Playlist");
             params.put("recursive", "true");
@@ -240,8 +240,8 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.getInstance("Playlists", -1);
-                InterruptionHandler interruptionHandler = InterruptionHandler.getInstance()) {
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "MusicAlbum");
             params.put("recursive", "true");

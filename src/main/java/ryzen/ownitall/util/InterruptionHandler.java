@@ -13,30 +13,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class InterruptionHandler implements AutoCloseable {
     private static final Logger logger = new Logger(InterruptionHandler.class);
-    private static InterruptionHandler instance;
     private SignalHandler signalHandler;
-    private AtomicBoolean interrupted = new AtomicBoolean(false);
+    private static AtomicBoolean interrupted = new AtomicBoolean(false);
 
     /**
      * initialize interruption handler
      * which is thread save
      */
-    private InterruptionHandler() {
+    public InterruptionHandler() {
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
             interrupted.set(true);
         });
-    }
-
-    public static InterruptionHandler getInstance() {
-        if (instance == null) {
-            instance = new InterruptionHandler();
-        }
-        return instance;
-    }
-
-    public static InterruptionHandler getExistingInstance() {
-        return instance;
     }
 
     /**
@@ -60,6 +48,10 @@ public class InterruptionHandler implements AutoCloseable {
     public void triggerInterruption() throws InterruptedException {
         interrupted.set(false);
         throw new InterruptedException("Interruption manually triggered");
+    }
+
+    public static void forceInterruption() {
+        interrupted.set(true);
     }
 
     /** {@inheritDoc} */

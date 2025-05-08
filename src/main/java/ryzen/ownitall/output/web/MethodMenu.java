@@ -750,12 +750,11 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        ProgressBar pb = ProgressBar.getInstance();
-        if (pb != null) {
-            rootNode.put("title", pb.getTitle());
-            rootNode.put("step", pb.getStep());
-            rootNode.put("message", pb.getMessage());
-            rootNode.put("maxstep", pb.getMaxStep());
+        if (ProgressBar.getTitle() != null) {
+            rootNode.put("title", ProgressBar.getTitle());
+            rootNode.put("step", ProgressBar.getStep());
+            rootNode.put("message", ProgressBar.getMessage());
+            rootNode.put("maxstep", ProgressBar.getMaxStep());
             return ResponseEntity.ok(rootNode.toPrettyString());
         } else {
             rootNode.put("title", "waiting...");
@@ -768,14 +767,7 @@ public class MethodMenu {
 
     @PostMapping("/method/cancel")
     public void cancel() {
-        InterruptionHandler interruptionHandler = InterruptionHandler.getExistingInstance();
-        if (interruptionHandler != null) {
-            try {
-                interruptionHandler.triggerInterruption();
-            } catch (InterruptedException e) {
-                logger.debug("Processed /method/cancel Interruption");
-            }
-        }
+        InterruptionHandler.forceInterruption();
     }
 
     /**

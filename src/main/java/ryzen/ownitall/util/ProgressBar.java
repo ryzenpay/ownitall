@@ -11,14 +11,11 @@ import me.tongfei.progressbar.ProgressBarStyle;
  *
  * @author ryzen
  */
-// TODO: is pretty bad with "stacked progressbars"
-// unsure how to fix
 public class ProgressBar implements AutoCloseable {
-    private static ProgressBar instance;
-    private String title;
-    private int maxStep;
-    private int step;
-    private String message;
+    private static String title;
+    private static int maxStep;
+    private static int step;
+    private static String message;
     private me.tongfei.progressbar.ProgressBar pb;
 
     public static boolean output = true;
@@ -31,11 +28,11 @@ public class ProgressBar implements AutoCloseable {
      * @param title   a {@link java.lang.String} object
      * @param maxStep a int
      */
-    private ProgressBar(String title, int maxStep) {
-        this.title = title;
+    public ProgressBar(String newTitle, int newMaxStep) {
+        title = newTitle;
         step = 0;
         // this.title = title;
-        this.maxStep = maxStep;
+        maxStep = newMaxStep;
         if (output) {
             this.pb = new ProgressBarBuilder()
                     .setTaskName(title)
@@ -46,31 +43,20 @@ public class ProgressBar implements AutoCloseable {
         }
     }
 
-    public static ProgressBar getInstance(String title, int maxStep) {
-        if (instance == null) {
-            instance = new ProgressBar(title, maxStep);
-        }
-        return instance;
+    public static String getTitle() {
+        return title;
     }
 
-    public static ProgressBar getInstance() {
-        return instance;
+    public static int getStep() {
+        return step;
     }
 
-    public String getTitle() {
-        return this.title;
+    public static int getMaxStep() {
+        return maxStep;
     }
 
-    public int getStep() {
-        return this.step;
-    }
-
-    public int getMaxStep() {
-        return this.maxStep;
-    }
-
-    public String getMessage() {
-        return this.message;
+    public static String getMessage() {
+        return message;
     }
 
     /**
@@ -81,9 +67,9 @@ public class ProgressBar implements AutoCloseable {
      * @param message a {@link java.lang.String} object
      * @param by      a int
      */
-    public void step(String message, int by) {
+    public void step(String newMessage, int by) {
         step = step + by;
-        this.message = message;
+        message = newMessage;
         if (output) {
             pb.setExtraMessage(message).stepTo(step);
         }
@@ -123,10 +109,13 @@ public class ProgressBar implements AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public void close() {
+        title = null;
+        step = 0;
+        maxStep = -1;
+        message = null;
         if (output) {
             pb.setExtraMessage("Done").stepTo(maxStep);
             pb.close();
         }
-        instance = null;
     }
 }
