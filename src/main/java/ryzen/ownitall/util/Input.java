@@ -315,7 +315,6 @@ public class Input {
         } else if (type == File.class) {
             return this.getFile(false);
         } else {
-            // TODO: this stinks
             return this.getClassStr();
             // logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is
             // currently not supported");
