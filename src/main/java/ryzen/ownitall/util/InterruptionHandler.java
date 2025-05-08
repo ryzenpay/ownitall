@@ -52,6 +52,7 @@ public class InterruptionHandler implements AutoCloseable {
 
     public static void forceInterruption() {
         interrupted.set(true);
+        logger.debug("Forcibly set interruption to false");
     }
 
     /** {@inheritDoc} */

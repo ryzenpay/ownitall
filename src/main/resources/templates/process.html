@@ -7,65 +7,72 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <title th:text="${processName}"></title>
-    <!-- Removed inline styles, using Bootstrap progress bar -->
+    <style>
+        /* Styles for log display */
+        .log-block {
+            font-family: "Courier New", Courier, monospace;
+            white-space: pre-wrap;
+            background-color: #fcfcfd;
+        }
+
+        .log-warning {
+            color: orange;
+        }
+
+        .log-error {
+            color: red;
+        }
+
+        .log-info {
+            color: blue;
+        }
+
+        .log-debug {
+            color: green;
+        }
+    </style>
     <script type="text/javascript">
         let progressTimer = null;
-        let processActive = false; // Flag to prevent multiple fetches after completion/cancel
+        let logTimer = setInterval(fetchLogs, 1000); // Poll every 1 second
 
         async function fetchProgress() {
-            if (!processActive) return; // Stop fetching if process inactive
-
             try {
-                const response = await fetch('/method/progress', {
-                    method: 'POST' // Should this be GET if just fetching status? Adjust if needed.
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.debug("ProgressBar response: title=" + data.title + ", step=" + data.step + ", maxStep=" + data.maxstep + ", message=" + data.message);
-                    updateProgressBar(data.title, data.step, data.maxstep, data.message);
-                } else {
-                    console.error('Failed to fetch progress. Status:', response.status);
-                    // Optional: Stop polling on failure?
-                    // stopProgressPolling();
-                    // updateProgressBar("Error", 0, 1, "Failed to fetch progress.");
-                }
+                // Fetch progress
+                await fetch('/method/progress', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(progressData => {
+                        console.debug("ProgressBar response: ", progressData);
+                        updateProgressBar(progressData.title, progressData.step, progressData.maxstep, progressData.message);
+                    });
             } catch (error) {
-                console.error('Error fetching progress:', error);
-                // Optional: Stop polling on error?
-                // stopProgressPolling();
-                // updateProgressBar("Error", 0, 1, "Error fetching progress.");
+                console.error('Error fetching updates:', error);
             }
+        }
+
+        async function fetchLogs() {
+            await fetch('/method/log', { method: 'POST' })
+                .then(response => response.json())
+                .then(logsData => {
+                    console.debug("Logs response:", logsData);
+                    displayLogs(logsData.logs);
+                });
         }
 
         function updateProgressBar(title, step, maxStep, message) {
             let progressBar = document.getElementById('progress-bar');
-            let progress = 0;
-            // Ensure maxStep is valid and > 0 to avoid division by zero
-            if (maxStep && maxStep > 0) {
-                // Clamp step between 0 and maxStep
-                const clampedStep = Math.max(0, Math.min(step, maxStep));
-                progress = (clampedStep / maxStep) * 100;
-            } else if (step > 0) {
-                // Handle indeterminate case or maxStep=0 scenario
-                progress = 100; // Or some other indicator
-                console.warn("MaxStep is invalid or zero. Setting progress based on step.");
-            }
-
-
+            let progress = maxStep && maxStep > 0 ? Math.min(step / maxStep * 100, 100) : 0;
             progressBar.style.width = progress + '%';
             progressBar.setAttribute('aria-valuenow', progress.toFixed(0));
             progressBar.textContent = progress.toFixed(0) + '%';
-
-            // Update title and message
-            document.getElementById('progress-title').innerText = title || document.getElementById('progress-title').innerText; // Keep old title if new one is empty
+            document.getElementById('progress-title').innerText = title || document.getElementById('progress-title').innerText;
             document.getElementById('message-block').innerText = message;
 
-            if (progress >= 100 || step >= maxStep) {
+            if (progress >= 100) {
                 progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                progressBar.classList.add('bg-success'); // Indicate completion
+                progressBar.classList.add('bg-success');
                 stopProgressPolling();
                 document.getElementById('cancel-button').style.display = 'none';
-                document.getElementById('back-button').style.display = 'inline-block'; // Use inline-block for buttons
+                document.getElementById('back-button').style.display = 'inline-block';
             } else {
                 progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
                 progressBar.classList.remove('bg-success');
@@ -74,8 +81,26 @@
             }
         }
 
+        function displayLogs(logs) {
+            let logContent = logs.map(log => {
+                let logClass = 'log-info';
+
+                if (log.level === 'WARN') {
+                    logClass = 'log-warning';
+                } else if (log.level === 'ERROR') {
+                    logClass = 'log-error';
+                } else if (log.level === 'DEBUG') {
+                    logClass = 'log-debug';
+                }
+
+                return `<span class="${logClass}">[${log.level}] ${log.message}</span>`;
+            }).join('\n');
+
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = `<div class="log-block">${logContent}</div>`;
+        }
+
         function stopProgressPolling() {
-            processActive = false;
             if (progressTimer) {
                 clearInterval(progressTimer);
                 progressTimer = null;
@@ -83,23 +108,14 @@
             }
         }
 
-
         function startProcess() {
-            // Ensure buttons are in the correct initial state
             document.getElementById('cancel-button').style.display = 'inline-block';
             document.getElementById('back-button').style.display = 'none';
-            document.getElementById('message-block').innerText = 'Starting process...'; // Initial message
-            processActive = true;
-
+            document.getElementById('message-block').innerText = 'Starting process...';
             try {
-                // Use await to ensure the process endpoint is hit before starting polling
-                const response = fetch('[[${processFunction}]]', {
-                    method: 'POST'
-                });
+                fetch('[[${processFunction}]]', { method: 'POST' });
                 console.debug("Started process, beginning polling.");
-                fetchProgress();
-                progressTimer = setInterval(fetchProgress, 1000); // Poll every 1 second (adjust as needed)
-
+                progressTimer = setInterval(fetchProgress, 1000); // Poll every 1 second
             } catch (error) {
                 console.error('Error starting process:', error);
                 document.getElementById('message-block').innerText = "An error occurred while trying to start the process.";
@@ -111,25 +127,20 @@
 
         function cancelProcess() {
             console.debug("Attempting to cancel process...");
-            stopProgressPolling(); // Stop polling immediately
-
+            stopProgressPolling();
             try {
-                const response = fetch("/method/cancel", {
-                    method: "POST"
-                });
+                fetch("/method/cancel", { method: "POST" });
                 console.log("Cancel request sent successfully.");
                 document.getElementById('message-block').innerText = "Process cancellation requested.";
             } catch (error) {
                 console.error("Error sending cancel request:", error);
                 document.getElementById('message-block').innerText = "Error occurred while sending cancel request.";
             } finally {
-                // Always show Return button after attempting cancel
                 document.getElementById('cancel-button').style.display = 'none';
                 document.getElementById('back-button').style.display = 'inline-block';
-                // Optional: Update progress bar to show cancellation visually
-                let progressBar = document.getElementById('progress-bar');
+                const progressBar = document.getElementById('progress-bar');
                 progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                progressBar.classList.add('bg-warning'); // Indicate cancellation/warning
+                progressBar.classList.add('bg-warning');
                 progressBar.textContent = 'Cancelled';
             }
         }
@@ -140,8 +151,6 @@
 
 <body>
     <div class="container mt-4">
-        <div th:insert="~{templates :: logging}"></div>
-
         <h1 th:text="${processName}"></h1>
         <h2 id="progress-title" class="h4 text-muted">Initializing...</h2>
 
@@ -157,6 +166,9 @@
             <button id="cancel-button" class="btn btn-danger" onclick="cancelProcess()">Cancel</button>
             <a id="back-button" class="btn btn-secondary" style="display: none;" th:href="@{${callback}}">Return</a>
         </div>
+
+        <div id="log-container" class="mt-4"></div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

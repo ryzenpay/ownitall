@@ -2,6 +2,7 @@ package ryzen.ownitall.output.web;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ryzen.ownitall.Collection;
@@ -23,6 +25,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
+import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
 
 /**
@@ -765,6 +768,22 @@ public class MethodMenu {
         }
     }
 
+    @PostMapping("/method/log")
+    @ResponseBody
+    public ResponseEntity<String> methodLogs() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootNode = mapper.createObjectNode();
+        ArrayNode logsArray = rootNode.putArray("logs");
+
+        for (Entry<Level, String> entity : LogConfig.getLogs()) {
+            ObjectNode logNode = mapper.createObjectNode();
+            logNode.put("level", entity.getKey().toString().toUpperCase());
+            logNode.put("message", entity.getValue());
+            logsArray.add(logNode);
+        }
+        return ResponseEntity.ok(rootNode.toPrettyString());
+    }
+
     @PostMapping("/method/cancel")
     public void cancel() {
         InterruptionHandler.forceInterruption();
@@ -779,11 +798,7 @@ public class MethodMenu {
      */
     @GetMapping("/method/return")
     public String optionReturn() {
-        if (this.method != null) {
-            // reset so they can change method as they back out (its persistent due to
-            // springboot)
-            this.method = null;
-        }
+        this.method = null;
         return "redirect:/collection";
     }
 }
