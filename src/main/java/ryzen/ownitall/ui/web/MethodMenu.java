@@ -261,9 +261,14 @@ public class MethodMenu {
             return;
         }
         try {
-            method.uploadLikedSongs();
-            method.uploadAlbums();
-            method.uploadPlaylists();
+            try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
+                pb.step("Liked Songs");
+                method.uploadLikedSongs();
+                pb.step("Albums");
+                method.uploadAlbums();
+                pb.step("Playlists");
+                method.uploadPlaylists();
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection");
         }
@@ -432,9 +437,14 @@ public class MethodMenu {
             logger.debug("method was not initialized before /method/export/collection");
         }
         try {
-            method.uploadLikedSongs();
-            method.uploadAlbums();
-            method.uploadPlaylists();
+            try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
+                pb.step("Liked Songs");
+                method.uploadLikedSongs();
+                pb.step("Albums");
+                method.uploadAlbums();
+                pb.step("Playlists");
+                method.uploadPlaylists();
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' collection");
         }
@@ -592,9 +602,14 @@ public class MethodMenu {
             return;
         }
         try {
-            method.syncLikedSongs();
-            method.syncAlbums();
-            method.syncPlaylists();
+            try (ProgressBar pb = new ProgressBar("Sync Collection", 3)) {
+                pb.step("Liked Songs");
+                method.syncLikedSongs();
+                pb.step("Albums");
+                method.syncAlbums();
+                pb.step("Playlists");
+                method.syncPlaylists();
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection");
         }
@@ -700,14 +715,15 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        if (ProgressBar.getTitle() != null) {
-            rootNode.put("title", ProgressBar.getTitle());
-            rootNode.put("step", ProgressBar.getStep());
-            rootNode.put("message", ProgressBar.getMessage());
-            rootNode.put("maxstep", ProgressBar.getMaxStep());
+        ProgressBar pb = ProgressBar.getCurrentInstance();
+        if (pb != null) {
+            rootNode.put("title", pb.getTitle());
+            rootNode.put("step", pb.getStep());
+            rootNode.put("message", pb.getMessage());
+            rootNode.put("maxstep", pb.getMaxStep());
             return ResponseEntity.ok(rootNode.toPrettyString());
         } else {
-            rootNode.put("title", "waiting...");
+            rootNode.put("title", "");
             rootNode.put("step", 0);
             rootNode.put("message", "");
             rootNode.put("maxstep", 0);

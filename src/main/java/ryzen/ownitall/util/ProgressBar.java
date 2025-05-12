@@ -3,6 +3,7 @@ package ryzen.ownitall.util;
 //http://tongfei.me/progressbar/
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import java.util.Stack;
 
 /**
  * <p>
@@ -12,13 +13,14 @@ import me.tongfei.progressbar.ProgressBarStyle;
  * @author ryzen
  */
 public class ProgressBar implements AutoCloseable {
-    private static String title;
-    private static int maxStep;
-    private static int step;
-    private static String message;
+    private String title;
+    private int maxStep;
+    private int step;
+    private String message;
     private me.tongfei.progressbar.ProgressBar pb;
 
     public static boolean output = true;
+    private static final Stack<ProgressBar> instances = new Stack<>();
 
     /**
      * <p>
@@ -28,11 +30,13 @@ public class ProgressBar implements AutoCloseable {
      * @param title   a {@link java.lang.String} object
      * @param maxStep a int
      */
-    public ProgressBar(String newTitle, int newMaxStep) {
-        title = newTitle;
+    public ProgressBar(
+            String title,
+            int maxStep) {
+        this.title = title;
         step = 0;
         // this.title = title;
-        maxStep = newMaxStep;
+        this.maxStep = maxStep;
         if (output) {
             this.pb = new ProgressBarBuilder()
                     .setTaskName(title)
@@ -41,22 +45,23 @@ public class ProgressBar implements AutoCloseable {
                     .hideEta()
                     .build();
         }
+        instances.push(this);
     }
 
-    public static String getTitle() {
-        return title;
+    public String getTitle() {
+        return this.title;
     }
 
-    public static int getStep() {
-        return step;
+    public int getStep() {
+        return this.step;
     }
 
-    public static int getMaxStep() {
-        return maxStep;
+    public int getMaxStep() {
+        return this.maxStep;
     }
 
-    public static String getMessage() {
-        return message;
+    public String getMessage() {
+        return this.message;
     }
 
     /**
@@ -67,9 +72,9 @@ public class ProgressBar implements AutoCloseable {
      * @param message a {@link java.lang.String} object
      * @param by      a int
      */
-    public void step(String newMessage, int by) {
+    public void step(String message, int by) {
         step = step + by;
-        message = newMessage;
+        this.message = message;
         if (output) {
             pb.setExtraMessage(message).stepTo(step);
         }
@@ -106,6 +111,13 @@ public class ProgressBar implements AutoCloseable {
         this.step(null, by);
     }
 
+    public static ProgressBar getCurrentInstance() {
+        if (instances.isEmpty()) {
+            return null;
+        }
+        return instances.peek();
+    }
+
     /** {@inheritDoc} */
     @Override
     public void close() {
@@ -115,5 +127,27 @@ public class ProgressBar implements AutoCloseable {
         }
         // needed to trigger web gui completion
         maxStep = 1;
+        if (!instances.remove(this)) {
+            instances.pop();
+        }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (!(object instanceof ProgressBar)) {
+            return false;
+        }
+        ProgressBar pb = (ProgressBar) object;
+        if (this.hashCode() == pb.hashCode()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return instances.size();
     }
 }
