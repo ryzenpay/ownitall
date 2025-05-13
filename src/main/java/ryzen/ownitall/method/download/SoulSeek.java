@@ -24,9 +24,6 @@ import ryzen.ownitall.util.Logger;
 @Method.Export
 public class SoulSeek extends Download {
     private static final Logger logger = new Logger(SoulSeek.class);
-    private static final int basePort = 49998;
-    // to keep track of all unused / available ports to prevent threading conflict
-    private static ArrayList<Integer> ports;
 
     /**
      * <p>
@@ -40,10 +37,10 @@ public class SoulSeek extends Download {
             logger.debug("Empty SoulSeek credentials found");
             throw new InterruptedException("empty SoulSeek credentials");
         }
-        ports = new ArrayList<>();
-        for (int i = 0; i < downloadThreads; i++) {
-            ports.add(basePort + i);
-        }
+        // unable to thread due to ports
+        // using multiple ports also doesnt work because soulseek doesnt allow multiple
+        // usersessions with same account
+        downloadThreads = 1;
     }
 
     /**
@@ -57,8 +54,6 @@ public class SoulSeek extends Download {
             logger.debug("null song or Path provided in downloadSong");
             return;
         }
-        int currPort = ports.get(0);
-        ports.remove(0);
         ArrayList<String> command = new ArrayList<>();
         // executables
         command.add(Credentials.soulSeekFile.getAbsolutePath());
@@ -80,8 +75,6 @@ public class SoulSeek extends Download {
         command.add("--fast-search");
         command.add("--concurrent-downloads");
         command.add(String.valueOf(Settings.downloadThreads));
-        command.add("--listen-port");
-        command.add(String.valueOf(currPort));
         command.add("--searches-per-time");
         command.add("100");
         if (LogConfig.isDebug()) {
@@ -140,8 +133,6 @@ public class SoulSeek extends Download {
             }
         } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
-        } finally {
-            ports.add(currPort);
         }
     }
 }
