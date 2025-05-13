@@ -67,20 +67,13 @@ public class Input {
         if (!nonInteractive.isEmpty()) {
             return nonInteractive.poll();
         }
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            if (scanner.hasNextLine()) {
-                return scanner.nextLine().trim();
-            } else {
-                interruptionHandler.triggerInterruption();
-            }
-        } catch (InterruptedException e) {
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine().trim();
+        } else {
+            InterruptionHandler.resetInterruption();
             scanner = new Scanner(System.in);
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new InterruptedException();
         }
-        Thread.dumpStack();
-        throw new RuntimeException("Got out of getString loop");
     }
 
     /**

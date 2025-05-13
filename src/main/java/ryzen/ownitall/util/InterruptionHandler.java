@@ -30,6 +30,8 @@ public class InterruptionHandler implements AutoCloseable {
     /**
      * throw if interruption was caught
      * needs to be triggered for interruption to be thrown
+     * needs to be non static to ensure InterruptionHandler was initialized at that
+     * point, triggering close upon finish / error and resetting the interruption
      *
      * @throws java.lang.InterruptedException - when interruption caught
      */
@@ -40,19 +42,14 @@ public class InterruptionHandler implements AutoCloseable {
         }
     }
 
-    /**
-     * force trigger an interruption and reset interruption
-     *
-     * @throws java.lang.InterruptedException - forced interruption
-     */
-    public void triggerInterruption() throws InterruptedException {
-        interrupted.set(false);
-        throw new InterruptedException("Interruption manually triggered");
-    }
-
     public static void forceInterruption() {
         interrupted.set(true);
-        logger.debug("Forcibly set interruption to false");
+        logger.debug("Forcibly set interruption to true");
+    }
+
+    public static void resetInterruption() {
+        interrupted.set(false);
+        logger.debug("Reset interruption to false");
     }
 
     /** {@inheritDoc} */

@@ -400,12 +400,17 @@ public class Jellyfin extends Method {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("searchTerm", song.getName());
-        if (song.getMainArtist() != null) {
-            params.put("artists", song.getMainArtist().toString());
+        if (!song.getArtists().isEmpty()) {
+            String artists = "";
+            for (Artist artist : song.getArtists()) {
+                artists += artist.getName() + " | ";
+            }
+            params.put("artists", artists);
         }
-        if (song.getAlbumName() != null) {
-            params.put("albums", song.getAlbumName());
-        }
+        // this limits songs being found?
+        // if (song.getAlbumName() != null) {
+        // params.put("albums", song.getAlbumName());
+        // }
         params.put("mediaTypes", "Audio");
         params.put("recursive", "true");
         params.put("limit", "1");
