@@ -33,7 +33,7 @@ abstract public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("Download", (Class<? extends Method>) Settings.load().get("downloadMethod").getClass());
+        methods.put("Download", (Class<? extends Method>) Settings.load().get("downloadMethod"));
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -54,14 +54,17 @@ abstract public class Method {
      * @param annotation a {@link java.lang.Class} object
      * @return a {@link java.util.LinkedHashMap} object
      */
+    // TODO: currently broken for download class
     public static LinkedHashMap<String, Class<? extends Method>> getMethods(Class<? extends Annotation> annotation) {
-        LinkedHashMap<String, Class<? extends Method>> importMethods = new LinkedHashMap<>();
-        for (String methodName : methods.keySet()) {
-            if (methods.get(methodName).isAnnotationPresent(annotation)) {
-                importMethods.put(methodName, methods.get(methodName));
-            }
-        }
-        return importMethods;
+        return methods;
+        // LinkedHashMap<String, Class<? extends Method>> filteredMethods = new
+        // LinkedHashMap<>();
+        // for (String methodName : methods.keySet()) {
+        // if (methods.get(methodName).isAnnotationPresent(annotation)) {
+        // filteredMethods.put(methodName, methods.get(methodName));
+        // }
+        // }
+        // return filteredMethods;
     }
 
     /**

@@ -391,8 +391,6 @@ public class Jellyfin extends Method {
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @return a {@link java.lang.String} object
      */
-    // TODO: doesnt find all songs
-    // especially for liked songs
     public String getSongId(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongId");
