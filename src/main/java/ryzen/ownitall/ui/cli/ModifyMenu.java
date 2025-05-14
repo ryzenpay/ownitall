@@ -26,7 +26,6 @@ import ryzen.ownitall.util.ProgressBar;
  */
 public class ModifyMenu {
     private static final Logger logger = new Logger(ModifyMenu.class);
-    private static final Library library = Library.load();
 
     /**
      * <p>
@@ -89,6 +88,7 @@ public class ModifyMenu {
         if (artistName != null) {
             album.addArtist(new Artist(artistName));
         }
+        Library library = Library.load();
         if (library != null) {
             try {
                 Album foundAlbum = library.getAlbum(album);
@@ -168,6 +168,7 @@ public class ModifyMenu {
         if (artistName != null) {
             song.addArtist(new Artist(artistName));
         }
+        Library library = Library.load();
         if (library != null) {
             try {
                 Song foundSong = library.getSong(song);
@@ -201,6 +202,7 @@ public class ModifyMenu {
             logger.debug("Interrupted while getting Artist details");
             return;
         }
+        Library library = Library.load();
         try {
             Artist artist = library.getArtist(new Artist(artistName));
             if (artist == null) {

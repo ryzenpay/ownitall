@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Level;
+
 /**
  * <p>
  * Menu class.
@@ -34,7 +36,7 @@ public class Menu {
         }
         System.out.flush();
         printLogo();
-        LogConfig.printLogs();
+        LogConfig.printLogs(Level.INFO);
         LogConfig.clearLogs();
     }
 

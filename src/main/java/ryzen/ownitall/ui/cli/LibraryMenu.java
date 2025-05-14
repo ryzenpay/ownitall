@@ -108,6 +108,7 @@ public class LibraryMenu {
     }
 
     private void optionCacheSize() {
+        Library.load();
         int size = Library.getCacheSize();
         logger.info("The library cache has '" + size + "' entries");
     }

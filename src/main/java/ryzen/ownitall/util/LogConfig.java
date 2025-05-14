@@ -42,9 +42,13 @@ public class LogConfig {
     }
 
     public static void printLogs() {
+        printLogs(globalLevel);
+    }
+
+    public static void printLogs(Level level) {
         for (Entry<Level, String> entry : globalHistory) {
             // log level or higher
-            if (entry.getKey().intLevel() <= globalLevel.intLevel()) {
+            if (entry.getKey().intLevel() <= level.intLevel()) {
                 System.out.println("[" + entry.getKey().toString().toUpperCase() + "] " + entry.getValue());
             }
         }
