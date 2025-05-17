@@ -47,7 +47,7 @@ save the absolute executable path and provide it when needed
 when attempting to import or export to spotify, you will need to provide the 3 following things:  
     - client id  
     - client secret  
-    - redirect url (for easier setup, use mine: https://ryzen.rip/ownitall)   
+    - redirect url (set this to: `http://localhost:8081/method/spotify`)
 spotify will provide you with the client id and secret, and the redirect url will be your or the website you decide to use  
 to get the clienit id and secret:  
     1. log in to spotify develper portal: https://developer.spotify.com/dashboard  

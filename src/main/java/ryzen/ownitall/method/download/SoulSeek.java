@@ -114,15 +114,11 @@ public class SoulSeek extends Download {
                 }
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
-                    if (exitCode == 2) {
-                        logger.debug("Error with user provided options: " + command.toString());
-                        break;
-                    } else {
-                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
-                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
-                                new Exception());
-                    }
                     logger.warn("Attempt: " + retries);
+                    logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
+                            + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
+                            new Exception());
+                    // TODO: check possible exit codes
                 }
                 retries++;
             }

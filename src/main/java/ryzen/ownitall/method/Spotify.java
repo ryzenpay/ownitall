@@ -14,6 +14,7 @@ import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCrede
 import se.michaelthelin.spotify.model_objects.specification.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.time.temporal.ChronoUnit;
 import org.apache.hc.core5.http.ParseException;
 
@@ -34,14 +35,13 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.awt.Desktop;
+
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * <p>
@@ -57,6 +57,7 @@ public class Spotify extends Method {
     private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
+    private final int TIMEOUT = 20;
     private SpotifyApi spotifyApi;
     private String code;
 
@@ -82,36 +83,82 @@ public class Spotify extends Method {
         } catch (URISyntaxException e) {
             throw new InterruptedException(e.getMessage());
         }
-        this.requestCode();
+        this.getCode();
         this.setToken();
     }
 
     /**
-     * obtaining the oauth code to set the token
-     * 
-     * @return - the oauth code with permissions
-     * @throws InterruptedException - when user interrupts
+     * Start an HTTP server to intercept the Spotify API code
+     *
+     * @throws InterruptedException - if an error occurs
      */
-    // TODO: make it work without an actual website (ex: .local.lan)
-    private void requestCode() throws InterruptedException {
+    public void getCode() throws InterruptedException {
+        AtomicReference<String> codeRef = new AtomicReference<>();
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
                 .show_dialog(Settings.spotifyShowdialog)
                 .build();
-        URI auth_uri = authorizationCodeUriRequest.execute();
-        // Open the default browser with the authorization URL
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(auth_uri);
-                this.startLocalServer();
-            } catch (IOException e) {
-                logger.error("Exception opening web browser", e);
+        URI authUri = authorizationCodeUriRequest.execute();
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
+            server.createContext("/method/spotify", exchange -> {
+                logger.debug("request received on /method/spotify");
+                URI requestURI = exchange.getRequestURI();
+                String query = requestURI.getQuery();
+                String code = extractCodeFromQuery(query);
+                if (code != null) {
+                    codeRef.set(code);
+                    logger.info("Authorization code received: " + code);
+                    exchange.sendResponseHeaders(200, "Authorization code received".getBytes().length);
+                } else {
+                    logger.warn("Failed to retrieve authorization code. Query: " + query);
+                    exchange.sendResponseHeaders(404, "Failed to retrieve authorization code".getBytes().length);
+                }
+            });
+            server.start();
+            logger.info("Awaiting response at http://localhost/method/spotify");
+            HttpURLConnection con = (HttpURLConnection) authUri.toURL().openConnection();
+            con.setConnectTimeout(TIMEOUT * 1000);
+            con.connect(); // TODO: doesnt work as no spotify cookies
+            logger.debug("Web request made to: '" + authUri + "'");
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                con.disconnect();
+                server.stop(0);
+                throw new IOException("Exception (" + responseCode + ") response code from web request");
             }
-        } else {
-            System.out.println("Open this link:\n" + auth_uri.toString());
-            System.out.print("Code it presents (in url): ");
-            this.code = Input.request().getString();
+            con.disconnect();
+            server.stop(0);
+        } catch (IOException e) {
+            logger.error("Failed to start local server", e);
         }
+        if (codeRef.get() == null) {
+            logger.info("Unable to get code automatically, please provide it manually");
+            System.out.println("Please open this url: " + authUri);
+            System.out.print("Please provide the code found in response url: ");
+            this.code = Input.request().getString();
+        } else {
+            this.code = codeRef.get();
+        }
+    }
+
+    /**
+     * Extracts the 'code' query parameter from the request URI
+     *
+     * @param query - full query string from the request URI
+     * @return String - extracted code if present
+     */
+    private String extractCodeFromQuery(String query) {
+        if (query != null && query.contains("code=")) {
+            String[] queryParams = query.split("&");
+            for (String param : queryParams) {
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 2 && "code".equals(keyValue[0])) {
+                    return keyValue[1];
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -147,91 +194,6 @@ public class Spotify extends Method {
             logger.error("Exception refreshing token", e);
             return false;
         }
-    }
-
-    /**
-     * start temporary local server to "intercept" spotify api code
-     *
-     * @throws java.lang.InterruptedException - when user interrupts
-     */
-    public void startLocalServer() throws InterruptedException {
-        try (ServerSocket serverSocket = new ServerSocket(8888)) {
-            logger.info("Waiting for the authorization code...");
-            Socket clientSocket = serverSocket.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine;
-            StringBuilder request = new StringBuilder();
-            while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
-                request.append(inputLine).append("\n");
-                if (inputLine.contains("code=")) {
-                    break; // Stop reading after we've found the code
-                }
-            }
-
-            String code = extractCodeFromRequest(request.toString());
-            if (code != null) {
-                this.code = code;
-                logger.info("Authorization code received");
-                // (frame.toFront(); frame.repaint();)
-                sendResponse(clientSocket, 200, "Authorization code received successfully.");
-            } else {
-                logger.warn("Failed to retrieve authorization code. Request: " + request.toString());
-                sendResponse(clientSocket, 404, "Failed to retrieve authorization code.");
-                try {
-                    System.out.println("Code it provides (in url)");
-                    this.code = Input.request().getString();
-                } catch (InterruptedException e) {
-                    logger.debug("Interrupted while getting code (failed getting from browser)");
-                }
-            }
-
-            clientSocket.close();
-        } catch (IOException e) {
-            System.out.println("Code it provides (in url)");
-            this.code = Input.request().getString();
-        }
-    }
-
-    /**
-     * extract code from the "intercepted" spotify api
-     * 
-     * @param request - raw response data
-     * @return - String code
-     */
-    private String extractCodeFromRequest(String request) {
-        if (request == null) {
-            logger.debug("null request passed in extractCodeFromRequest");
-            return null;
-        }
-        int codeIndex = request.indexOf("code=");
-        if (codeIndex != -1) {
-            int endIndex = request.indexOf("&", codeIndex);
-            if (endIndex == -1) {
-                endIndex = request.indexOf(" ", codeIndex);
-            }
-            if (endIndex == -1) {
-                endIndex = request.length();
-            }
-            return request.substring(codeIndex + 5, endIndex);
-        }
-        return null;
-    }
-
-    /**
-     * send response to website if received code
-     * 
-     * @param clientSocket - socket to send through
-     * @param statusCode   - additional success message (200 = success, 404 =
-     *                     failed)
-     * @param message      - additional message to present on site
-     * @throws IOException
-     */
-    private void sendResponse(Socket clientSocket, int statusCode, String message) throws IOException {
-        String statusLine = "HTTP/1.1 " + statusCode + " " + (statusCode == 200 ? "OK" : "Not Found") + "\r\n";
-        String contentType = "Content-Type: text/plain\r\n";
-        String contentLength = "Content-Length: " + message.length() + "\r\n";
-        String response = statusLine + contentType + contentLength + "\r\n" + message;
-        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     /**

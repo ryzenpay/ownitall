@@ -119,6 +119,7 @@ public class YT_dl extends Download {
 
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
+                    logger.warn("Attempt: " + retries);
                     if (exitCode == 2) {
                         logger.debug("Error with user provided options: " + command.toString());
                         break;
@@ -128,12 +129,11 @@ public class YT_dl extends Download {
                     } else if (exitCode == 101) {
                         logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
-                    } else {
+                    } else { // TODO: check what most common exit code is and make it not break
                         logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
                                 + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
                                 new Exception());
                     }
-                    logger.warn("Attempt: " + retries);
                 }
                 retries++;
             }
