@@ -36,11 +36,12 @@ import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.awt.Desktop;
 import com.sun.net.httpserver.HttpServer;
 
 /**
@@ -106,28 +107,40 @@ public class Spotify extends Method {
                 URI requestURI = exchange.getRequestURI();
                 String query = requestURI.getQuery();
                 String code = extractCodeFromQuery(query);
+                String responseText;
+
                 if (code != null) {
                     codeRef.set(code);
                     logger.info("Authorization code received: " + code);
-                    exchange.sendResponseHeaders(200, "Authorization code received".getBytes().length);
+                    responseText = "Code received, you can now close this tab";
+                    exchange.sendResponseHeaders(200, responseText.getBytes().length);
                 } else {
                     logger.warn("Failed to retrieve authorization code. Query: " + query);
-                    exchange.sendResponseHeaders(404, "Failed to retrieve authorization code".getBytes().length);
+                    responseText = "an error occurred, check logs for more";
+                    exchange.sendResponseHeaders(404, responseText.getBytes().length);
                 }
+
+                OutputStream responseBody = exchange.getResponseBody();
+                responseBody.write(responseText.getBytes());
+                responseBody.close();
             });
             server.start();
             logger.info("Awaiting response at http://localhost/method/spotify");
-            HttpURLConnection con = (HttpURLConnection) authUri.toURL().openConnection();
-            con.setConnectTimeout(TIMEOUT * 1000);
-            con.connect(); // TODO: doesnt work as no spotify cookies
-            logger.debug("Web request made to: '" + authUri + "'");
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                con.disconnect();
-                server.stop(0);
-                throw new IOException("Exception (" + responseCode + ") response code from web request");
+            // TODO: add option for interactive / non-interactive
+            boolean interactive = true;
+            if (interactive) {
+                try {
+                    interactiveSetCode(authUri, codeRef);
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted while interactively getting code");
+                }
+            } else {
+                try {
+                    nonInteractiveSetCode(authUri, codeRef);
+                } catch (IOException e) {
+                    logger.error("Unable to non-interactively login/get code", e);
+                }
             }
-            con.disconnect();
             server.stop(0);
         } catch (IOException e) {
             logger.error("Failed to start local server", e);
@@ -140,6 +153,36 @@ public class Spotify extends Method {
         } else {
             this.code = codeRef.get();
         }
+    }
+
+    private void interactiveSetCode(URI url, AtomicReference<String> codeRef) throws InterruptedException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(url);
+            } catch (IOException e) {
+                logger.error("Exception opening web browser", e);
+            }
+        }
+        logger.info("Waiting " + TIMEOUT + " seconds for code or interrupt to manually provide");
+        for (int i = 0; i < TIMEOUT; i++) {
+            if (codeRef.get() != null) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+    private void nonInteractiveSetCode(URI url, AtomicReference<String> codeRef) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) url.toURL().openConnection();
+        con.setConnectTimeout(TIMEOUT * 1000);
+        con.connect(); // TODO: requires login cookies
+        logger.debug("Web request made to: '" + url + "'");
+        int responseCode = con.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            con.disconnect();
+            throw new IOException("Exception (" + responseCode + ") response code from web request");
+        }
+        con.disconnect();
     }
 
     /**

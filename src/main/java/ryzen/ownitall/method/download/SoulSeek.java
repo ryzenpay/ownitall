@@ -55,7 +55,6 @@ public class SoulSeek extends Download {
             return;
         }
         ArrayList<String> command = new ArrayList<>();
-        // executables
         command.add(Credentials.soulSeekFile.getAbsolutePath());
         command.add("--user");
         command.add(Credentials.soulSeekUsername);
@@ -73,10 +72,7 @@ public class SoulSeek extends Download {
         command.add("--name-format");
         command.add(song.getFileName());
         command.add("--fast-search");
-        command.add("--concurrent-downloads");
         command.add(String.valueOf(Settings.downloadThreads));
-        command.add("--searches-per-time");
-        command.add("100");
         if (LogConfig.isDebug()) {
             command.add("-v");
         }
