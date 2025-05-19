@@ -67,8 +67,16 @@ public class LibraryMenu {
         if (Settings.libraryType == null) {
             return;
         }
-        if (Library.isCredentialsEmpty(Settings.libraryType)) {
-            setCredentials(Settings.libraryType);
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends Library> libraryType = (Class<? extends Library>) Class
+                    .forName("ryzen.ownitall.library." + Settings.libraryType);
+            if (Library.isCredentialsEmpty(libraryType)) {
+                setCredentials(libraryType);
+            }
+        } catch (ClassNotFoundException e) {
+            logger.error("Invalid library type set in settings", e);
+            throw new InterruptedException("Invalid library type set in settings: " + e);
         }
     }
 

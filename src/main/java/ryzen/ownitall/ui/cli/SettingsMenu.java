@@ -64,6 +64,8 @@ public class SettingsMenu {
         }
     }
 
+    // TODO: if options, show menu with options
+    // if boolean: show menu with true or false
     private boolean changeSetting(String settingName) throws InterruptedException {
         if (settingName == null) {
             logger.debug("null settingName provided in changeSetting");

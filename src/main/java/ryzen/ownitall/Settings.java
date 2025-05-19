@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
@@ -87,7 +86,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * class representative of which library to use
      * null for none
      */
-    public static Class<? extends Library> libraryType = null;
+    @Options(options = { "LastFM", "MusicBrainz" })
+    public static String libraryType = null;
 
     /**
      * option to hardcode cookies file
@@ -103,19 +103,21 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    @SettingsGroup(group = { Download.class, YT_dl.class, SoulSeek.class }, desc = "Format(ex: mp3)")
+    @Group(group = { Download.class, YT_dl.class, SoulSeek.class }, desc = "Format(ex: mp3)")
+    @Options(options = { "mp3", "flac", "wav" })
     public static String downloadFormat = "mp3";
     /**
      * class representative of which download class to use
      * default is YT_dl.class
      */
-    @SettingsGroup(group = { Download.class }, desc = "Method")
-    public static Class<? extends Download> downloadMethod = YT_dl.class;
+    @Group(group = { Download.class }, desc = "Method")
+    @Options(options = { "YT_dl", "SoulSeek" })
+    public static String downloadMethod = "YT_dl";
 
     /**
      * local library path
      */
-    @SettingsGroup(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class }, desc = "Local Library")
+    @Group(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class }, desc = "Local Library")
     public static File localFolder = null;
 
     /**
@@ -125,14 +127,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * ffmpeg path (required for youtubedl)
      * 
      */
-    @SettingsGroup(group = { YT_dl.class }, desc = "FFMPEG file/folder")
+    @Group(group = { YT_dl.class }, desc = "FFMPEG file/folder")
     public static File ffmpegFile = null;
 
     /**
      * youtube dl installation path
      * 
      */
-    @SettingsGroup(group = { YT_dl.class }, desc = "Binary")
+    @Group(group = { YT_dl.class }, desc = "Binary")
     public static File yt_dlFile = null;
     /**
      * download all files in a hierachy method

@@ -27,12 +27,12 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     /**
      * spotify credentials
      */
-    @SettingsGroup(group = { Spotify.class }, desc = "Client ID")
+    @Group(group = { Spotify.class }, desc = "Client ID")
     public static String spotifyClientID = "";
-    @SettingsGroup(group = { Spotify.class }, desc = "Client Secret")
+    @Group(group = { Spotify.class }, desc = "Client Secret")
     /** Constant <code>spotifyClientSecret=""</code> */
     public static String spotifyClientSecret = "";
-    @SettingsGroup(group = { Spotify.class }, desc = "Redirect URL")
+    @Group(group = { Spotify.class }, desc = "Redirect URL")
     /** Constant <code>spotifyRedirectURL=""</code> */
     public static String spotifyRedirectURL = "";
 
@@ -40,12 +40,12 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * youtube credentials
      * 
      */
-    @SettingsGroup(group = { Youtube.class }, desc = "Application Name")
+    @Group(group = { Youtube.class }, desc = "Application Name")
     public static String youtubeApplicatioName = "";
-    @SettingsGroup(group = { Youtube.class }, desc = "Client ID")
+    @Group(group = { Youtube.class }, desc = "Client ID")
     /** Constant <code>youtubeClientID=""</code> */
     public static String youtubeClientID = "";
-    @SettingsGroup(group = { Youtube.class }, desc = "Client Secret")
+    @Group(group = { Youtube.class }, desc = "Client Secret")
     /** Constant <code>youtubeClientSecret=""</code> */
     public static String youtubeClientSecret = "";
 
@@ -54,19 +54,19 @@ public class Credentials extends ryzen.ownitall.util.Settings {
      * 
      */
 
-    @SettingsGroup(group = { LastFM.class }, desc = "API Key")
+    @Group(group = { LastFM.class }, desc = "API Key")
     public static String lastFMApiKey = "";
 
     /**
      * Jellyfin Credentials
      * 
      */
-    @SettingsGroup(group = { Jellyfin.class }, desc = "URL")
+    @Group(group = { Jellyfin.class }, desc = "URL")
     public static String jellyfinURL = "";
-    @SettingsGroup(group = { Jellyfin.class }, desc = "Username")
+    @Group(group = { Jellyfin.class }, desc = "Username")
     /** Constant <code>jellyfinUsername=""</code> */
     public static String jellyfinUsername = "";
-    @SettingsGroup(group = { Jellyfin.class }, desc = "Password")
+    @Group(group = { Jellyfin.class }, desc = "Password")
     /** Constant <code>jellyfinPassword=""</code> */
     public static String jellyfinPassword = "";
 
@@ -77,14 +77,14 @@ public class Credentials extends ryzen.ownitall.util.Settings {
     /**
      * soulseek dl installation path
      */
-    @SettingsGroup(group = { SoulSeek.class }, desc = "Binary")
+    @Group(group = { SoulSeek.class }, desc = "Binary")
     public static File soulSeekFile = null;
 
-    @SettingsGroup(group = { SoulSeek.class }, desc = "Username")
+    @Group(group = { SoulSeek.class }, desc = "Username")
     /** Constant <code>soulSeekUsername=""</code> */
     public static String soulSeekUsername = "";
 
-    @SettingsGroup(group = { SoulSeek.class }, desc = "Password")
+    @Group(group = { SoulSeek.class }, desc = "Password")
     /** Constant <code>soulSeekPassword=""</code> */
     public static String soulSeekPassword = "";
 

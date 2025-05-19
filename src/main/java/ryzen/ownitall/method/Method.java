@@ -33,7 +33,14 @@ abstract public class Method {
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        methods.put("Download", (Class<? extends Method>) Settings.load().get("downloadMethod"));
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends Method> downloadMethod = (Class<? extends Method>) Class
+                    .forName(Settings.load().get("downloadMethod").toString());
+            methods.put("Download", downloadMethod);
+        } catch (ClassNotFoundException e) {
+            logger.error("Unsupported downloadMethod set in settings", e);
+        }
     }
 
     @Retention(RetentionPolicy.RUNTIME)

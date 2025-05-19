@@ -58,9 +58,14 @@ public class Library {
      * @return - new or existing Library
      */
     public static Library load() {
-        if (instance == null || !instance.getClass().isInstance(Settings.libraryType)) {
-            Class<? extends Library> libraryType = Settings.libraryType;
-            if (libraryType != null) {
+        if (Settings.libraryType.isEmpty()) {
+            return null;
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends Library> libraryType = (Class<? extends Library>) Class
+                    .forName(Settings.libraryType);
+            if (instance == null || !instance.getClass().isInstance(libraryType)) {
                 try {
                     instance = libraryType.getDeclaredConstructor().newInstance();
                 } catch (InstantiationException e) {
@@ -71,6 +76,8 @@ public class Library {
                     logger.error("Exception creating library '" + libraryType + "'", e);
                 }
             }
+        } catch (ClassNotFoundException e) {
+            logger.error("Invalid library type set in settings", e);
         }
         if (instance != null) {
             instance.cache();

@@ -308,10 +308,8 @@ public class Input {
         } else if (type == File.class) {
             return this.getFile(false);
         } else {
-            return this.getClassStr();
-            // logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is
-            // currently not supported");
-            // return null;
+            logger.warn("Getting variables of the type '" + type.getSimpleName() + "' is currently not supported");
+            return null;
         }
     }
 }

@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ryzen.ownitall.Credentials;
-
 /**
  * <p>
  * Settings class.
@@ -47,10 +45,17 @@ public class Settings {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    protected @interface SettingsGroup {
+    protected @interface Group {
         Class<?>[] group();
 
         String desc();
+    }
+
+    // TODO: predefined options when changing settings
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    protected @interface Options {
+        String[] options();
     }
 
     /**
@@ -280,8 +285,8 @@ public class Settings {
         }
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(SettingsGroup.class)) {
-                SettingsGroup annotation = (SettingsGroup) field.getAnnotation(SettingsGroup.class);
+            if (field.isAnnotationPresent(Group.class)) {
+                Group annotation = (Group) field.getAnnotation(Group.class);
                 for (Class<?> currClass : annotation.group()) {
                     if (currClass.equals(groupClass)) {
                         values.put(annotation.desc(), field.getName());
