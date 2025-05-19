@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -257,7 +258,7 @@ public class Upload extends Method {
             return null;
         }
         playlist.addSongs(songs);
-        File coverFile = new File(folder, playlist.getFolderName() + ".png");
+        File coverFile = new File(folder, Collection.getCollectionCoverFileName(playlist));
         if (coverFile.exists()) {
             playlist.setCoverImage(coverFile.toURI());
         }
@@ -305,19 +306,19 @@ public class Upload extends Method {
         ArrayList<Song> songs = getSongs(folder);
         if (songs != null && !songs.isEmpty()) {
             album.addSongs(songs);
-            File songFile = new File(folder, songs.get(0).getFileName());
+            Song song = songs.get(0);
             // get albumName from first song in album
             try {
                 LinkedHashMap<FieldKey, String> songData = MusicTools
-                        .readMetaData(new File(folder, songs.get(0).getFileName()));
+                        .readMetaData(new File(folder, Collection.getSongFileName(song)));
                 if (songData.get(FieldKey.ALBUM) != null) {
                     album.setName(songData.get(FieldKey.ALBUM));
                 }
             } catch (Exception e) {
-                logger.error("Exception reading albumName from song: " + songFile.getAbsolutePath(), e);
+                logger.error("Exception reading albumName from song: " + song.toString(), e);
             }
         }
-        File albumCover = new File(folder, album.getFolderName() + ".png");
+        File albumCover = new File(folder, Collection.getCollectionCoverFileName(album));
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
         }

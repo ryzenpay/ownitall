@@ -11,9 +11,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.MusicTools;
 
 /**
  * <p>
@@ -24,7 +22,6 @@ import ryzen.ownitall.util.MusicTools;
  */
 public class Song {
     private static final Logger logger = new Logger(Song.class);
-    private static final String downloadFormat = Settings.downloadFormat;
     private String name;
     private ArrayList<Artist> artists;
     private Duration duration;
@@ -352,18 +349,6 @@ public class Song {
      */
     public URI getCoverImage() {
         return this.coverImage;
-    }
-
-    /**
-     * get song UTF-8 file name
-     *
-     * @return - UTF-8 file name
-     */
-    @JsonIgnore
-    public String getFileName() {
-        // TODO: just make hashcode to prevent conflicts?
-        // or place part / the hashcode into the filename
-        return MusicTools.sanitizeFileName(this.getName()) + "." + downloadFormat;
     }
 
     /** {@inheritDoc} */

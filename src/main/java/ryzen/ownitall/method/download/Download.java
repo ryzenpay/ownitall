@@ -183,7 +183,7 @@ public class Download extends Method {
             return;
         }
         try {
-            File m3uFile = new File(folder, playlist.getFolderName() + ".m3u");
+            File m3uFile = new File(folder, Collection.getCollectionFolderName(playlist) + ".m3u");
             MusicTools.writeData(m3uFile, Collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' m3u", e);
@@ -191,7 +191,7 @@ public class Download extends Method {
         try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(folder, playlist.getFolderName() + ".png"));
+                        new File(folder, Collection.getCollectionCoverFileName(playlist)));
             }
         } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
@@ -222,7 +222,7 @@ public class Download extends Method {
         try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(),
-                        new File(folder, album.getFolderName() + ".png"));
+                        new File(folder, Collection.getCollectionCoverFileName(album)));
             }
         } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage", e);
@@ -280,7 +280,7 @@ public class Download extends Method {
                         continue;
                     }
                 }
-                File songFile = new File(songFolder, song.getFileName());
+                File songFile = new File(songFolder, Collection.getSongFileName(song));
                 if (songFile.exists()) {
                     if (songFolder.delete()) {
                         logger.info("Deleted liked song '" + songFile.getAbsolutePath());
@@ -343,7 +343,7 @@ public class Download extends Method {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
                 if (Settings.downloadHierachy) {
-                    File playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
+                    File playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
                     if (MusicTools.deleteFolder(playlistFolder)) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
@@ -354,7 +354,8 @@ public class Download extends Method {
                 } else {
                     // deletes all playlists songs
                     this.syncPlaylist(new Playlist(playlist.getName()));
-                    File m3uFile = new File(Settings.localFolder, playlist.getFolderName() + ".m3u");
+                    File m3uFile = new File(Settings.localFolder,
+                            Collection.getCollectionFolderName(playlist) + ".m3u");
                     if (m3uFile.delete()) {
                         logger.info(
                                 "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
@@ -400,10 +401,10 @@ public class Download extends Method {
         Playlist localPlaylist = null;
         Upload upload = new Upload();
         if (Settings.downloadHierachy) {
-            playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
+            playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
             localPlaylist = upload.getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
         } else {
-            File m3uFile = new File(Settings.localFolder, playlist.getFolderName() + ".m3u");
+            File m3uFile = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist) + ".m3u");
             if (m3uFile.exists()) {
                 localPlaylist = Upload.getM3UPlaylist(m3uFile);
             }
@@ -411,7 +412,7 @@ public class Download extends Method {
         if (localPlaylist != null && !localPlaylist.isEmpty()) {
             localPlaylist.removeSongs(playlist.getSongs());
             for (Song song : localPlaylist.getSongs()) {
-                File songFile = new File(playlistFolder, song.getFileName());
+                File songFile = new File(playlistFolder, Collection.getSongFileName(song));
                 if (songFile.exists()) {
                     if (!Settings.downloadHierachy) {
                         if (Collection.isLiked(song)) {
@@ -445,7 +446,7 @@ public class Download extends Method {
         File playlistFolder;
         if (Settings.downloadHierachy) {
             songs = playlist.getSongs();
-            playlistFolder = new File(Settings.localFolder, playlist.getFolderName());
+            playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
             playlistFolder.mkdirs();
         } else {
             songs = Collection.getStandalonePlaylistSongs(playlist);
@@ -481,7 +482,7 @@ public class Download extends Method {
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : albums) {
-                File albumFolder = new File(Settings.localFolder, album.getFolderName());
+                File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
                         logger.info(
@@ -519,14 +520,14 @@ public class Download extends Method {
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(Settings.localFolder, album.getFolderName());
+        File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
         Upload upload = new Upload();
         Album localAlbum = upload.getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
         if (localAlbum != null && !localAlbum.isEmpty()) {
             localAlbum.removeSongs(album.getSongs());
             for (Song song : localAlbum.getSongs()) {
-                File songFile = new File(albumFolder, song.getFileName());
+                File songFile = new File(albumFolder, Collection.getSongFileName(song));
                 if (songFile.exists()) {
                     if (songFile.delete()) {
                         logger.info("Deleted album '" + album.getName() + "' song: "
@@ -553,7 +554,7 @@ public class Download extends Method {
             return;
         }
         // albums are always in a folder
-        File albumFolder = new File(Settings.localFolder, album.getFolderName());
+        File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
         albumFolder.mkdirs();
         try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {

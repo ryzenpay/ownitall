@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.MusicTools;
 
 /**
  * <p>
@@ -268,17 +267,6 @@ public class Playlist {
      */
     public ArrayList<Song> getSongs() {
         return this.songs;
-    }
-
-    /**
-     * get playlist folder name
-     * respects UTF-8
-     *
-     * @return - string UTF-8 foldername
-     */
-    @JsonIgnore
-    public String getFolderName() {
-        return MusicTools.sanitizeFileName(this.getName());
     }
 
     /**

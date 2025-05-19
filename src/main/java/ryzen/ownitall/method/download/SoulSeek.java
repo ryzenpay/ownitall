@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
@@ -70,7 +71,7 @@ public class SoulSeek extends Download {
         command.add("--min-bitrate");
         command.add(String.valueOf(Settings.soulSeekBitRate));
         command.add("--name-format");
-        command.add(song.getFileName());
+        command.add(Collection.getSongFileName(song));
         command.add("--fast-search");
         command.add(String.valueOf(Settings.downloadThreads));
         if (LogConfig.isDebug()) {
@@ -97,7 +98,7 @@ public class SoulSeek extends Download {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
-            File songFile = new File(path, song.getFileName());
+            File songFile = new File(path, Collection.getSongFileName(song));
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
                 Process process = processBuilder.start();

@@ -20,6 +20,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.MusicTools;
 
 /**
  * <p>
@@ -389,14 +390,14 @@ public class Collection {
         output.append("#PLAYLIST:").append(playlist.toString()).append("\n");
         // m3u playlist cover
         if (playlist.getCoverImage() != null) {
-            output.append("#EXTIMG:").append(playlist.getFolderName() + ".png").append("\n");
+            output.append("#EXTIMG:").append(getCollectionCoverFileName(playlist)).append("\n");
         }
         for (Song song : playlist.getSongs()) {
-            File songFile = new File(song.getFileName());
+            File songFile = new File(getSongFileName(song));
             if (!Settings.downloadHierachy) {
                 Album foundAlbum = getSongAlbum(song);
                 if (foundAlbum != null) {
-                    songFile = new File(foundAlbum.getFolderName(), song.getFileName());
+                    songFile = new File(getCollectionFolderName(foundAlbum), getSongFileName(song));
                 }
             }
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
@@ -460,7 +461,7 @@ public class Collection {
             // Cover image
             if (album.getCoverImage() != null) {
                 Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(album.getFolderName() + ".png"));
+                thumb.appendChild(doc.createTextNode(getCollectionCoverFileName(album)));
                 rootElement.appendChild(thumb);
             }
 
@@ -550,5 +551,29 @@ public class Collection {
      */
     public static int getLikedSongCount() {
         return likedSongs.size();
+    }
+
+    public static String getSongFileName(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getSongFileName");
+            return null;
+        }
+        return MusicTools.sanitizeFileName(song.getName()) + "." + Settings.downloadFormat;
+    }
+
+    public static String getCollectionFolderName(Playlist collection) {
+        if (collection == null) {
+            logger.debug("null collection provided in getCollectionFoldername");
+            return null;
+        }
+        return MusicTools.sanitizeFileName(collection.getName());
+    }
+
+    public static String getCollectionCoverFileName(Playlist collection) {
+        if (collection == null) {
+            logger.debug("null collection provided in getCollectionCoverFileName");
+            return null;
+        }
+        return MusicTools.sanitizeFileName(collection.getName()) + ".png";
     }
 }

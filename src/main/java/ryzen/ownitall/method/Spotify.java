@@ -126,9 +126,7 @@ public class Spotify extends Method {
             });
             server.start();
             logger.info("Awaiting response at http://localhost/method/spotify");
-            // TODO: add option for interactive / non-interactive
-            boolean interactive = true;
-            if (interactive) {
+            if (Settings.spotifyInteractiveLogin) {
                 try {
                     interactiveSetCode(authUri, codeRef);
                 } catch (InterruptedException e) {

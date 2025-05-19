@@ -52,6 +52,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static boolean spotifyShowdialog = true;
 
+    public static boolean spotifyInteractiveLogin = true;
+
     /**
      * to limit number of songs in each spotify API batch query
      */

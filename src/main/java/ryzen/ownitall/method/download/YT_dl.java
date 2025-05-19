@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
@@ -75,7 +76,7 @@ public class YT_dl extends Download {
         command.add("--paths");
         command.add(path.getAbsolutePath());
         command.add("--output");
-        command.add(song.getFileName());
+        command.add(Collection.getSongFileName(song));
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags
@@ -95,7 +96,7 @@ public class YT_dl extends Download {
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             int retries = 0;
-            File songFile = new File(path, song.getFileName());
+            File songFile = new File(path, Collection.getSongFileName(song));
             StringBuilder completeLog = new StringBuilder();
             while (!songFile.exists() && retries < 3) {
                 if (retries == 1) {
