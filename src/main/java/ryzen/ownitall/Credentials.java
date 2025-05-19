@@ -141,6 +141,10 @@ public class Credentials extends ryzen.ownitall.util.Settings {
         return super.isEmpty(name);
     }
 
+    public boolean isGroupEmpty(Class<?> group) {
+        return super.isGroupEmpty(group);
+    }
+
     /** {@inheritDoc} */
     public Object get(String name) {
         return super.get(name);

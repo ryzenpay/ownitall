@@ -68,7 +68,7 @@ public class LastFM extends Library {
         if (this.albums.containsKey(params.toString())) {
             return this.albums.get(params.toString());
         }
-        JsonNode response = this.lastFMQuery("album.getInfo", this.queryBuilder(params));
+        JsonNode response = this.query("album.getInfo", this.queryBuilder(params));
         if (response != null) {
             JsonNode albumNode = response.path("album");
             if (!albumNode.isMissingNode()) {
@@ -151,7 +151,7 @@ public class LastFM extends Library {
         if (this.songs.containsKey(params.toString())) {
             return this.songs.get(params.toString());
         }
-        JsonNode response = this.lastFMQuery("track.getInfo", this.queryBuilder(params));
+        JsonNode response = this.query("track.getInfo", this.queryBuilder(params));
         if (response != null) {
             JsonNode trackNode = response.path("track");
             if (!trackNode.isMissingNode()) {
@@ -219,7 +219,7 @@ public class LastFM extends Library {
         if (this.artists.containsKey(params.toString())) {
             return this.artists.get(params.toString());
         }
-        JsonNode response = this.lastFMQuery("artist.getInfo", this.queryBuilder(params));
+        JsonNode response = this.query("artist.getInfo", this.queryBuilder(params));
         if (response != null) {
             JsonNode artistNode = response.path("artist");
             if (!artistNode.isMissingNode()) {
@@ -267,7 +267,7 @@ public class LastFM extends Library {
         ArrayList<Album> albums = new ArrayList<>();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
-        JsonNode response = this.lastFMQuery("artist.getTopAlbums", this.queryBuilder(params));
+        JsonNode response = this.query("artist.getTopAlbums", this.queryBuilder(params));
         if (response != null) {
             JsonNode topAlbumsNode = response.path("topalbums");
             if (!topAlbumsNode.isMissingNode()) {
@@ -335,7 +335,7 @@ public class LastFM extends Library {
      * @return - JsonNode of lastfm response
      * @throws InterruptedException - thrown when user interrupts
      */
-    private JsonNode lastFMQuery(String type, String query) throws InterruptedException {
+    private JsonNode query(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in lastFMQuery");
             return null;

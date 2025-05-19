@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class MusicBrainz extends Library {
     private static final Logger logger = new Logger(MusicBrainz.class);
-    private final String musicBeeUrl = "https://musicbrainz.org/ws/2/";
+    private final String baseUrl = "https://musicbrainz.org/ws/2/";
     private final String coverArtUrl = "https://coverartarchive.org/";
 
     /**
@@ -72,7 +72,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        JsonNode response = this.musicBeeQuery("release", this.searchQueryBuilder(params));
+        JsonNode response = this.query("release", this.searchQueryBuilder(params));
         if (response != null) {
             JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null) {
@@ -109,7 +109,7 @@ public class MusicBrainz extends Library {
         inclusions.add("recordings");
         inclusions.add("artists");
         // check cache
-        JsonNode response = this.musicBeeQuery("release", this.directQueryBuilder(id, inclusions));
+        JsonNode response = this.query("release", this.directQueryBuilder(id, inclusions));
         if (response != null) {
             Album album = new Album(response.path("title").asText());
             album.addId("id", response.path("id").asText());
@@ -199,7 +199,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        JsonNode response = this.musicBeeQuery("recording", this.searchQueryBuilder(params));
+        JsonNode response = this.query("recording", this.searchQueryBuilder(params));
         if (response != null) {
             JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null) {
@@ -236,7 +236,7 @@ public class MusicBrainz extends Library {
         inclusions.add("artists");
         inclusions.add("url-rels");
         inclusions.add("releases");
-        JsonNode response = this.musicBeeQuery("recording", this.directQueryBuilder(id, inclusions));
+        JsonNode response = this.query("recording", this.directQueryBuilder(id, inclusions));
         if (response != null) {
             Song song = new Song(response.path("title").asText());
             song.setDuration(response.path("length").asLong(), ChronoUnit.MILLIS);
@@ -297,7 +297,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        JsonNode response = this.musicBeeQuery("artist", this.searchQueryBuilder(params));
+        JsonNode response = this.query("artist", this.searchQueryBuilder(params));
         if (response != null) {
             JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null) {
@@ -330,7 +330,7 @@ public class MusicBrainz extends Library {
         }
         LinkedHashSet<String> inclusions = new LinkedHashSet<>();
         inclusions.add("releases");
-        JsonNode response = this.musicBeeQuery("artist", this.directQueryBuilder(id, inclusions));
+        JsonNode response = this.query("artist", this.directQueryBuilder(id, inclusions));
         if (response != null) {
             Artist artist = new Artist(response.path("name").asText());
             artist.addId("id", response.path("id").asText());
@@ -400,7 +400,7 @@ public class MusicBrainz extends Library {
         return builder.toString();
     }
 
-    private JsonNode musicBeeQuery(String type, String query) throws InterruptedException {
+    private JsonNode query(String type, String query) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in musicBeeQuery");
             return null;
@@ -410,7 +410,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         try {
-            StringBuilder urlBuilder = new StringBuilder(this.musicBeeUrl);
+            StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
             urlBuilder.append(type);
             urlBuilder.append(query);
             URI url = new URI(urlBuilder.toString());

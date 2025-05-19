@@ -162,7 +162,7 @@ public class Storage {
      * orchestrates import albums, playlists and liked songs
      */
     public static void importCollection() {
-        logger.debug("importing collection... ");
+        logger.info("importing collection... ");
         try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
             pb.step("Albums");
             Collection.addAlbums(importAlbums());
@@ -170,7 +170,7 @@ public class Storage {
             Collection.addPlaylists(importPlaylists());
             pb.step("Liked Songs");
             Collection.addLikedSongs(importLikedSongs());
-            logger.debug("Successfully imported collection");
+            logger.info("Successfully imported collection");
         }
     }
 
@@ -179,7 +179,7 @@ public class Storage {
      * orchestrates export albums, playlists and liked songs
      */
     public static void exportCollection() {
-        logger.debug("Exporting music collection...");
+        logger.info("Exporting music collection...");
         try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
             pb.step("Albums");
             exportAlbums(Collection.getAlbums());
@@ -187,7 +187,7 @@ public class Storage {
             exportPlaylists(Collection.getPlaylists());
             pb.step("Liked Songs");
             exportLikedSongs(Collection.getLikedSongs());
-            logger.debug("Successfully exported music collection");
+            logger.info("Successfully exported music collection");
         }
     }
 

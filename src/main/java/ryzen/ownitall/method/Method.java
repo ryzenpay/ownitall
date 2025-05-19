@@ -115,22 +115,7 @@ abstract public class Method {
      * @return a boolean
      */
     public static boolean isCredentialsEmpty(Class<?> type) {
-        if (type == null) {
-            logger.debug("null type provided in isCredentialsEmpty");
-            return true;
-        }
-        Credentials credentials = Credentials.load();
-        LinkedHashMap<String, String> credentialVars = credentials.getGroup(type);
-        if (credentialVars == null) {
-            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
-            return false;
-        }
-        for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
-                return true;
-            }
-        }
-        return false;
+        return Credentials.load().isGroupEmpty(type);
     }
 
     /**
@@ -142,22 +127,7 @@ abstract public class Method {
      * @return a boolean
      */
     public static boolean isSettingsEmpty(Class<?> type) {
-        if (type == null) {
-            logger.debug("null type provided in isCredentialsEmpty");
-            return true;
-        }
-        Settings settings = Settings.load();
-        LinkedHashMap<String, String> settingVars = settings.getGroup(type);
-        if (settingVars == null) {
-            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
-            return false;
-        }
-        for (String varName : settingVars.values()) {
-            if (settings.isEmpty(varName)) {
-                return true;
-            }
-        }
-        return false;
+        return Settings.load().isGroupEmpty(type);
     }
 
     /**

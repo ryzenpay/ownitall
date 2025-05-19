@@ -37,7 +37,7 @@ public class Library {
     private long lastQueryTime = 0;
     protected long queryDiff;
     /**
-     * arrays to save api queries if they already exist
+     * arrays to cache api queries
      */
     protected LinkedHashMap<String, Artist> artists;
     protected LinkedHashMap<String, Album> albums;
@@ -136,22 +136,7 @@ public class Library {
      * @return a boolean
      */
     public static boolean isCredentialsEmpty(Class<? extends Library> type) {
-        if (type == null) {
-            logger.debug("null type provided in isCredentialsEmpty");
-            return true;
-        }
-        Credentials credentials = Credentials.load();
-        LinkedHashMap<String, String> credentialVars = credentials.getGroup(type);
-        if (credentialVars == null) {
-            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
-            return false;
-        }
-        for (String varName : credentialVars.values()) {
-            if (credentials.isEmpty(varName)) {
-                return true;
-            }
-        }
-        return false;
+        return Credentials.load().isGroupEmpty(type);
     }
 
     /**
@@ -164,7 +149,7 @@ public class Library {
      * @throws java.lang.InterruptedException if any.
      */
     public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("get album supported for library type: " + Settings.libraryType);
+        logger.warn("get album unsupported for library type: " + Settings.libraryType);
         return null;
     }
 
@@ -178,7 +163,7 @@ public class Library {
      * @throws java.lang.InterruptedException if any.
      */
     public Song getSong(Song song) throws InterruptedException {
-        logger.warn("get song supported for library type: " + Settings.libraryType);
+        logger.warn("get song unsupported for library type: " + Settings.libraryType);
         return null;
     }
 
@@ -192,7 +177,7 @@ public class Library {
      * @throws java.lang.InterruptedException if any.
      */
     public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("get artist for library type: " + Settings.libraryType);
+        logger.warn("get artist unsupported for library type: " + Settings.libraryType);
         return null;
     }
 
@@ -206,7 +191,7 @@ public class Library {
      * @throws java.lang.InterruptedException if any.
      */
     public ArrayList<Album> getArtistAlbums(Artist artist) throws InterruptedException {
-        logger.warn("get artist albums for library type: " + Settings.libraryType);
+        logger.warn("get artist albums unsupported for library type: " + Settings.libraryType);
         return null;
     }
 

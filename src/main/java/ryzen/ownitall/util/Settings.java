@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ryzen.ownitall.Credentials;
+
 /**
  * <p>
  * Settings class.
@@ -216,6 +218,24 @@ public class Settings {
         } else {
             return false;
         }
+    }
+
+    protected boolean isGroupEmpty(Class<?> group) {
+        if (group == null) {
+            logger.debug("null group provided in isGroupEmpty");
+            return true;
+        }
+        LinkedHashMap<String, String> vars = getGroup(group);
+        if (vars == null) {
+            logger.debug("Unable to find credentials for '" + group.getSimpleName() + "'");
+            return false;
+        }
+        for (String varName : vars.values()) {
+            if (isEmpty(varName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
