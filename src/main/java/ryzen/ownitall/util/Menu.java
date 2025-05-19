@@ -19,13 +19,11 @@ public class Menu {
      * Constant
      * <code>asciiLogo="                        _  _          _"{trunked}</code>
      */
-    public static final String asciiLogo = "                        _  _          _  _ \n" +
-            "                       (_)| |        | || |\n" +
-            "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
-            " / _  \\ \\ /\\ / /| '_ \\ | || __|/ _` || || |\n" +
-            "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
-            " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
-            "                ";
+    private static String asciiLogo = "";
+
+    public static void setLogo(String logo) {
+        asciiLogo = logo;
+    }
 
     /**
      * clears screen contents when not in debug mode
@@ -35,6 +33,9 @@ public class Menu {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();
+        if (LogConfig.isDebug()) {
+            return;
+        }
         printLogo();
         LogConfig.printLogs(Level.INFO);
         LogConfig.clearLogs();

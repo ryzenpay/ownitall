@@ -25,6 +25,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
+    public static final String logo = "                        _  _          _  _ \n" +
+            "                       (_)| |        | || |\n" +
+            "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
+            " / _  \\ \\ /\\ / /| '_ \\ | || __|/ _` || || |\n" +
+            "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
+            " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
+            "                ";
+
     /**
      * default file names (without extensions)
      */

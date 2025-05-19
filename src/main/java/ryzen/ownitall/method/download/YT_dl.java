@@ -119,6 +119,7 @@ public class YT_dl extends Download {
                 }
 
                 int exitCode = process.waitFor();
+                // https://github.com/yt-dlp/yt-dlp/issues/4262
                 if (exitCode != 0) {
                     logger.warn("Attempt: " + retries);
                     if (exitCode == 2) {
@@ -130,7 +131,7 @@ public class YT_dl extends Download {
                     } else if (exitCode == 101) {
                         logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
-                    } else { // TODO: check what most common exit code is and make it not break
+                    } else {
                         logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
                                 + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
                                 new Exception());

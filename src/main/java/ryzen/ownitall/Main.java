@@ -68,6 +68,7 @@ public class Main {
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
                 ProgressBar.output = true;
+                Menu.setLogo(Settings.logo);
                 new ryzen.ownitall.ui.cli.MainMenu();
             }
         } catch (ParseException e) {
