@@ -62,15 +62,13 @@ abstract public class Method {
      */
     // TODO: currently broken for download class
     public static LinkedHashMap<String, Class<? extends Method>> getMethods(Class<? extends Annotation> annotation) {
-        return methods;
-        // LinkedHashMap<String, Class<? extends Method>> filteredMethods = new
-        // LinkedHashMap<>();
-        // for (String methodName : methods.keySet()) {
-        // if (methods.get(methodName).isAnnotationPresent(annotation)) {
-        // filteredMethods.put(methodName, methods.get(methodName));
-        // }
-        // }
-        // return filteredMethods;
+        LinkedHashMap<String, Class<? extends Method>> filteredMethods = new LinkedHashMap<>();
+        for (String methodName : methods.keySet()) {
+            if (methods.get(methodName).isAnnotationPresent(annotation)) {
+                filteredMethods.put(methodName, methods.get(methodName));
+            }
+        }
+        return filteredMethods;
     }
 
     /**

@@ -68,8 +68,7 @@ public class LibraryMenu {
         }
         try {
             @SuppressWarnings("unchecked")
-            Class<? extends Library> libraryType = (Class<? extends Library>) Class
-                    .forName("ryzen.ownitall.library." + Settings.libraryType);
+            Class<? extends Library> libraryType = (Class<? extends Library>) Class.forName(Settings.libraryType);
             if (Library.isCredentialsEmpty(libraryType)) {
                 setCredentials(libraryType);
             }
