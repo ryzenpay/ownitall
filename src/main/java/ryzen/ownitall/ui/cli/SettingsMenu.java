@@ -1,6 +1,8 @@
 package ryzen.ownitall.ui.cli;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
@@ -77,9 +79,26 @@ public class SettingsMenu {
             logger.error("Unable to find setting type  of '" + settingName + "'", new Exception());
             return false;
         }
-        System.out.print(
-                "Enter new '" + settingType.getSimpleName() + "' value for '" + settingName + "': ");
-        Object input = Input.request().getValue(settingType);
+        String[] options = settings.getOptions(settingName);
+        Object input;
+        if (options != null) {
+            try {
+                String choice = Menu.optionMenu(new LinkedHashSet<String>(Arrays.asList(options)),
+                        "'" + settingName.toUpperCase() + "' OPTIONS");
+                if (choice.equals("Exit")) {
+                    return false;
+                } else {
+                    input = choice;
+                }
+            } catch (InterruptedException e) {
+                logger.info("Interruption caught changing setting");
+                return false;
+            }
+        } else {
+            System.out.print(
+                    "Enter new '" + settingType.getSimpleName() + "' value for '" + settingName + "': ");
+            input = Input.request().getValue(settingType);
+        }
         return settings.set(settingName, input);
     }
 

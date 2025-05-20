@@ -72,6 +72,7 @@ public class SettingsMenu {
         return "form";
     }
 
+    // TODO: hardencode predefined options as a dropdown
     @PostMapping("/settings/change")
     public String login(Model model,
             @RequestParam(value = "callback", required = true) String callback,

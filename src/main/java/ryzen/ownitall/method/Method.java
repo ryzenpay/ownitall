@@ -120,19 +120,7 @@ abstract public class Method {
      * @param type a {@link java.lang.Class} object
      * @return a boolean
      */
-    public static boolean isCredentialsEmpty(Class<?> type) {
-        return Settings.load().isGroupEmpty(type);
-    }
-
-    /**
-     * <p>
-     * isSettingsEmpty.
-     * </p>
-     *
-     * @param type a {@link java.lang.Class} object
-     * @return a boolean
-     */
-    public static boolean isSettingsEmpty(Class<?> type) {
+    public static boolean isCredentialsEmpty(Class<? extends Method> type) {
         return Settings.load().isGroupEmpty(type);
     }
 

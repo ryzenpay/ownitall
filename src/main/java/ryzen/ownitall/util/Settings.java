@@ -297,4 +297,21 @@ public class Settings {
         }
         return values;
     }
+
+    public String[] getOptions(String name) {
+        if (name == null) {
+            logger.debug("null field provided in getOptions");
+            return null;
+        }
+        try {
+            Field field = this.getClass().getField(name);
+            if (field.isAnnotationPresent(Options.class)) {
+                Options annotation = (Options) field.getAnnotation(Options.class);
+                return annotation.options();
+            }
+        } catch (NoSuchFieldException e) {
+            logger.debug("Unable to find field '" + name + "'");
+        }
+        return null;
+    }
 }
