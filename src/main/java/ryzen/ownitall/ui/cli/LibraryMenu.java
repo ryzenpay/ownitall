@@ -2,7 +2,6 @@ package ryzen.ownitall.ui.cli;
 
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
@@ -85,7 +84,7 @@ public class LibraryMenu {
             logger.debug("null type provided in setCredentials");
             return;
         }
-        Credentials credentials = Credentials.load();
+        Settings credentials = Settings.load();
         LinkedHashMap<String, String> classCredentials = credentials.getGroup(type);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {

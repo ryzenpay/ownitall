@@ -84,7 +84,6 @@ public class Main {
     public static void save() {
         Collection.save();
         Settings.load().save();
-        Credentials.load().save();
         if (Library.checkInstance()) {
             Library.load();
         }

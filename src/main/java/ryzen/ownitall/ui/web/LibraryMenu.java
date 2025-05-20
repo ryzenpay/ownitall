@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.LogConfig;
@@ -108,7 +107,7 @@ public class LibraryMenu {
             return optionChange(model, libraryClassName);
         }
 
-        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(libraryClass);
+        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return optionChange(model, libraryClassName);
@@ -139,7 +138,7 @@ public class LibraryMenu {
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
         Class<? extends Library> libraryClass = Library.libraries.get(libraryClassName);
-        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(libraryClass);
+        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
 
         if (params != null) {
             Settings settings = Settings.load();

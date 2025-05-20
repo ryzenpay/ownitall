@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
@@ -143,7 +142,7 @@ public class Library {
      * @return a boolean
      */
     public static boolean isCredentialsEmpty(Class<? extends Library> type) {
-        return Credentials.load().isGroupEmpty(type);
+        return Settings.load().isGroupEmpty(type);
     }
 
     /**

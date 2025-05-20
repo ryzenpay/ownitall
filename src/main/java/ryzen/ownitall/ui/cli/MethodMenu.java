@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -63,7 +63,7 @@ public class MethodMenu {
         if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
-        Credentials credentials = Credentials.load();
+        Settings credentials = Settings.load();
         LinkedHashMap<String, String> classCredentials = credentials.getGroup(methodClass);
         if (classCredentials != null) {
             for (String name : classCredentials.keySet()) {

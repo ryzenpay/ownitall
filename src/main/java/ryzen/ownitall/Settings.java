@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.library.LastFM;
+import ryzen.ownitall.method.Jellyfin;
+import ryzen.ownitall.method.Spotify;
 import ryzen.ownitall.method.Upload;
+import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.download.SoulSeek;
 import ryzen.ownitall.method.download.YT_dl;
@@ -171,6 +175,70 @@ public class Settings extends ryzen.ownitall.util.Settings {
     private Settings() throws IOException {
         super("settings.json");
     }
+
+    /**
+     * spotify credentials
+     */
+    @Group(group = { Spotify.class }, desc = "Client ID")
+    public static String spotifyClientID = "";
+    @Group(group = { Spotify.class }, desc = "Client Secret")
+    /** Constant <code>spotifyClientSecret=""</code> */
+    public static String spotifyClientSecret = "";
+    @Group(group = { Spotify.class }, desc = "Redirect URL")
+    /** Constant <code>spotifyRedirectURL=""</code> */
+    public static String spotifyRedirectURL = "";
+
+    /**
+     * youtube credentials
+     * 
+     */
+    @Group(group = { Youtube.class }, desc = "Application Name")
+    public static String youtubeApplicatioName = "";
+    @Group(group = { Youtube.class }, desc = "Client ID")
+    /** Constant <code>youtubeClientID=""</code> */
+    public static String youtubeClientID = "";
+    @Group(group = { Youtube.class }, desc = "Client Secret")
+    /** Constant <code>youtubeClientSecret=""</code> */
+    public static String youtubeClientSecret = "";
+
+    /**
+     * Last FM Credentials
+     * 
+     */
+
+    @Group(group = { LastFM.class }, desc = "API Key")
+    public static String lastFMApiKey = "";
+
+    /**
+     * Jellyfin Credentials
+     * 
+     */
+    @Group(group = { Jellyfin.class }, desc = "URL")
+    public static String jellyfinURL = "";
+    @Group(group = { Jellyfin.class }, desc = "Username")
+    /** Constant <code>jellyfinUsername=""</code> */
+    public static String jellyfinUsername = "";
+    @Group(group = { Jellyfin.class }, desc = "Password")
+    /** Constant <code>jellyfinPassword=""</code> */
+    public static String jellyfinPassword = "";
+
+    /**
+     * SoulSeek Credentials
+     */
+
+    /**
+     * soulseek dl installation path
+     */
+    @Group(group = { SoulSeek.class }, desc = "Binary")
+    public static File soulSeekFile = null;
+
+    @Group(group = { SoulSeek.class }, desc = "Username")
+    /** Constant <code>soulSeekUsername=""</code> */
+    public static String soulSeekUsername = "";
+
+    @Group(group = { SoulSeek.class }, desc = "Password")
+    /** Constant <code>soulSeekPassword=""</code> */
+    public static String soulSeekPassword = "";
 
     /**
      * <p>

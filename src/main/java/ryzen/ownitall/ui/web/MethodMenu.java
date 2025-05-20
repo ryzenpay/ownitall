@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
+import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -125,13 +125,13 @@ public class MethodMenu {
             return methodMenu(model, methodClassName, callback);
         }
 
-        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(methodClass);
+        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return methodMenu(model, methodClassName, callback);
         }
         LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
-        Credentials credentials = Credentials.load();
+        Settings credentials = Settings.load();
         for (String name : classCredentials.keySet()) {
             currentCredentials.put(name, credentials.get(classCredentials.get(name)).toString());
         }
@@ -160,10 +160,10 @@ public class MethodMenu {
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
         Class<? extends Method> methodClass = Method.methods.get(methodClassName);
-        LinkedHashMap<String, String> classCredentials = Credentials.load().getGroup(methodClass);
+        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
 
         if (params != null) {
-            Credentials credentials = Credentials.load();
+            Settings credentials = Settings.load();
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
@@ -56,11 +55,11 @@ public class SoulSeek extends Download {
             return;
         }
         ArrayList<String> command = new ArrayList<>();
-        command.add(Credentials.soulSeekFile.getAbsolutePath());
+        command.add(Settings.soulSeekFile.getAbsolutePath());
         command.add("--user");
-        command.add(Credentials.soulSeekUsername);
+        command.add(Settings.soulSeekUsername);
         command.add("--pass");
-        command.add(Credentials.soulSeekPassword);
+        command.add(Settings.soulSeekPassword);
         command.add("--path");
         command.add(path.getAbsolutePath());
         command.add("--input-type");

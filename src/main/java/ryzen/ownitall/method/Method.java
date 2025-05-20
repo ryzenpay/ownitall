@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
@@ -122,7 +121,7 @@ abstract public class Method {
      * @return a boolean
      */
     public static boolean isCredentialsEmpty(Class<?> type) {
-        return Credentials.load().isGroupEmpty(type);
+        return Settings.load().isGroupEmpty(type);
     }
 
     /**
@@ -151,7 +150,7 @@ abstract public class Method {
             return true;
         }
         Settings settings = Settings.load();
-        LinkedHashMap<String, String> credentialVars = Credentials.load().getGroup(type);
+        LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return false;

@@ -22,7 +22,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import ryzen.ownitall.Collection;
-import ryzen.ownitall.Credentials;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -75,11 +74,11 @@ public class Spotify extends Method {
         try {
             this.spotifyApi = new SpotifyApi.Builder()
                     .setClientId(
-                            Credentials.spotifyClientID)
+                            Settings.spotifyClientID)
                     .setClientSecret(
-                            Credentials.spotifyClientSecret)
+                            Settings.spotifyClientSecret)
                     .setRedirectUri(new URI(
-                            Credentials.spotifyRedirectURL))
+                            Settings.spotifyRedirectURL))
                     .build();
         } catch (URISyntaxException e) {
             throw new InterruptedException(e.getMessage());
