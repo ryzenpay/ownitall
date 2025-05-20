@@ -28,6 +28,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
+    /** Constant <code>logo="                        _  _          _"{trunked}</code> */
     public static final String logo = "                        _  _          _  _ \n" +
             "                       (_)| |        | || |\n" +
             "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
@@ -35,6 +36,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
             "| (_) |\\ V  V / | | | || || |_| (_| || || |\n" +
             " \\___/  \\_/\\_/  |_| |_||_| \\__|\\__,_||_||_|\n" +
             "                ";
+
+    /** Constant <code>interactive=true</code> */
+    public static boolean interactive = true;
 
     /**
      * default file names (without extensions)
@@ -63,6 +67,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     public static boolean spotifyShowdialog = true;
 
+    /** Constant <code>spotifyInteractiveLogin=true</code> */
     public static boolean spotifyInteractiveLogin = true;
 
     /**
@@ -172,9 +177,23 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /** Constant <code>soulSeekBitRate=320</code> */
     public static int soulSeekBitRate = 320;
 
-    private Settings() throws IOException {
-        super("settings.json");
-    }
+    /**
+     * SoulSeek Credentials
+     */
+
+    /**
+     * soulseek dl installation path
+     */
+    @Group(group = { SoulSeek.class }, desc = "Binary")
+    public static File soulSeekFile = null;
+
+    @Group(group = { SoulSeek.class }, desc = "Username")
+    /** Constant <code>soulSeekUsername=""</code> */
+    public static String soulSeekUsername = "";
+
+    @Group(group = { SoulSeek.class }, desc = "Password")
+    /** Constant <code>soulSeekPassword=""</code> */
+    public static String soulSeekPassword = "";
 
     /**
      * spotify credentials
@@ -222,23 +241,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /** Constant <code>jellyfinPassword=""</code> */
     public static String jellyfinPassword = "";
 
-    /**
-     * SoulSeek Credentials
-     */
-
-    /**
-     * soulseek dl installation path
-     */
-    @Group(group = { SoulSeek.class }, desc = "Binary")
-    public static File soulSeekFile = null;
-
-    @Group(group = { SoulSeek.class }, desc = "Username")
-    /** Constant <code>soulSeekUsername=""</code> */
-    public static String soulSeekUsername = "";
-
-    @Group(group = { SoulSeek.class }, desc = "Password")
-    /** Constant <code>soulSeekPassword=""</code> */
-    public static String soulSeekPassword = "";
+    private Settings() throws IOException {
+        super("settings.json");
+    }
 
     /**
      * <p>
@@ -300,6 +305,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
         return super.isEmpty(name);
     }
 
+    /** {@inheritDoc} */
     public boolean isGroupEmpty(Class<?> group) {
         return super.isGroupEmpty(group);
     }

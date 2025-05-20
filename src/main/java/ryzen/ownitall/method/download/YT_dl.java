@@ -10,7 +10,9 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -27,12 +29,12 @@ public class YT_dl extends Download {
      * default download constructor
      * setting all settings / credentials
      *
-     * @throws java.lang.InterruptedException - when user interrupts
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public YT_dl() throws InterruptedException {
+    public YT_dl() throws MissingSettingException {
         if (Method.isCredentialsEmpty(YT_dl.class)) {
             logger.debug("Empty YT_dl credentials found");
-            throw new InterruptedException("empty YT_dl credentials");
+            throw new MissingSettingException(YT_dl.class);
         }
     }
 
@@ -146,6 +148,7 @@ public class YT_dl extends Download {
             }
         } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
+            InterruptionHandler.forceInterruption();
         }
     }
 }

@@ -6,7 +6,9 @@
 
   <groupId>ryzen.ownitall</groupId>
   <artifactId>ownitall</artifactId>
-  <version>1.7</version>
+  <!-- TODO: set up distribution management
+  (https://docs.github.com/en/enterprise-cloud@latest/actions/use-cases-and-examples/publishing-packages/publishing-java-packages-with-maven) -->
+  <version>1.0-SNAPSHOT</version>
 
   <name>ownitall</name>
   <url>https://github.com/ryzenpay/ownitall</url>

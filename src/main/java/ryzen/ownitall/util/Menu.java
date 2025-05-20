@@ -21,6 +21,11 @@ public class Menu {
      */
     private static String asciiLogo = "";
 
+    /**
+     * <p>setLogo.</p>
+     *
+     * @param logo a {@link java.lang.String} object
+     */
     public static void setLogo(String logo) {
         asciiLogo = logo;
     }

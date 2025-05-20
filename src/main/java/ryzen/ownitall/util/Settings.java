@@ -225,6 +225,12 @@ public class Settings {
         }
     }
 
+    /**
+     * <p>isGroupEmpty.</p>
+     *
+     * @param group a {@link java.lang.Class} object
+     * @return a boolean
+     */
     protected boolean isGroupEmpty(Class<?> group) {
         if (group == null) {
             logger.debug("null group provided in isGroupEmpty");
@@ -298,6 +304,12 @@ public class Settings {
         return values;
     }
 
+    /**
+     * <p>getOptions.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return an array of {@link java.lang.String} objects
+     */
     public String[] getOptions(String name) {
         if (name == null) {
             logger.debug("null field provided in getOptions");

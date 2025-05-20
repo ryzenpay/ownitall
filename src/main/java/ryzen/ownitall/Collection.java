@@ -553,6 +553,12 @@ public class Collection {
         return likedSongs.size();
     }
 
+    /**
+     * <p>getSongFileName.</p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link java.lang.String} object
+     */
     public static String getSongFileName(Song song) {
         if (song == null) {
             logger.debug("null song provided in getSongFileName");
@@ -561,6 +567,12 @@ public class Collection {
         return MusicTools.sanitizeFileName(song.getName()) + "." + Settings.downloadFormat;
     }
 
+    /**
+     * <p>getCollectionFolderName.</p>
+     *
+     * @param collection a {@link ryzen.ownitall.classes.Playlist} object
+     * @return a {@link java.lang.String} object
+     */
     public static String getCollectionFolderName(Playlist collection) {
         if (collection == null) {
             logger.debug("null collection provided in getCollectionFoldername");
@@ -569,6 +581,12 @@ public class Collection {
         return MusicTools.sanitizeFileName(collection.getName());
     }
 
+    /**
+     * <p>getCollectionCoverFileName.</p>
+     *
+     * @param collection a {@link ryzen.ownitall.classes.Playlist} object
+     * @return a {@link java.lang.String} object
+     */
     public static String getCollectionCoverFileName(Playlist collection) {
         if (collection == null) {
             logger.debug("null collection provided in getCollectionCoverFileName");

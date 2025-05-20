@@ -28,6 +28,8 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -51,29 +53,25 @@ public class Jellyfin extends Method {
      * Constructor for Jellyfin.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public Jellyfin() throws InterruptedException {
+    public Jellyfin() throws MissingSettingException, AuthenticationException {
         if (Method.isCredentialsEmpty(Jellyfin.class)) {
             logger.debug("Empty jellyfin credentials");
-            throw new InterruptedException("empty jellyfin credentials");
+            throw new MissingSettingException(Jellyfin.class);
         }
-        try {
-            this.authenticate();
-        } catch (InterruptedException e) {
-            logger.error("Failed to authenticate with jellyfin", e);
-            throw e;
-        }
+        this.authenticate();
     }
 
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
-    private void authenticate() throws InterruptedException {
+    private void authenticate() throws AuthenticationException {
         ObjectNode credsNode = objectMapper.createObjectNode();
         credsNode.put("Username", Settings.jellyfinUsername);
         credsNode.put("Pw", Settings.jellyfinPassword);
         JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
         if (response == null) {
-            throw new InterruptedException("Failed to authenticate with jellyfin");
+            throw new AuthenticationException("Failed to authenticate with jellyfin");
         } else {
             logger.debug("Authenticated into jellyfin with user " + response.get("User").get("Name").asText());
             this.userId = response.get("User").get("Id").asText();

@@ -73,6 +73,14 @@ public class SettingsMenu {
     }
 
     // TODO: hardencode predefined options as a dropdown
+    /**
+     * <p>login.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
+     * @param params a {@link java.util.LinkedHashMap} object
+     * @return a {@link java.lang.String} object
+     */
     @PostMapping("/settings/change")
     public String login(Model model,
             @RequestParam(value = "callback", required = true) String callback,

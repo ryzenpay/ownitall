@@ -19,6 +19,7 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import java.time.Duration;
 
@@ -48,12 +49,12 @@ public class Upload extends Method {
      * Constructor for Upload.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public Upload() throws InterruptedException {
+    public Upload() throws MissingSettingException {
         if (Method.isCredentialsEmpty(Upload.class)) {
             logger.debug("Empty upload credentials");
-            throw new InterruptedException("empty upload credentials");
+            throw new MissingSettingException(Upload.class);
         }
     }
 

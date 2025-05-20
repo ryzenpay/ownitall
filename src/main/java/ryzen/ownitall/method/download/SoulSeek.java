@@ -10,8 +10,10 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 //https://github.com/fiso64/slsk-batchdl
 /**
@@ -30,12 +32,12 @@ public class SoulSeek extends Download {
      * Constructor for SoulSeek.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public SoulSeek() throws InterruptedException {
+    public SoulSeek() throws MissingSettingException {
         if (Method.isCredentialsEmpty(SoulSeek.class)) {
             logger.debug("Empty SoulSeek credentials found");
-            throw new InterruptedException("empty SoulSeek credentials");
+            throw new MissingSettingException(SoulSeek.class);
         }
         // unable to thread due to ports
         // using multiple ports also doesnt work because soulseek doesnt allow multiple
@@ -125,6 +127,7 @@ public class SoulSeek extends Download {
             }
         } catch (IOException | InterruptedException e) {
             logger.error("Exception preparing yt-dlp: ", e);
+            InterruptionHandler.forceInterruption();
         }
     }
 }

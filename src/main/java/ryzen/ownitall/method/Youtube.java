@@ -21,6 +21,8 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -49,12 +51,13 @@ public class Youtube extends Method {
     /**
      * default youtube constructor asking for user input
      *
-     * @throws java.lang.InterruptedException - when user interrupts
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public Youtube() throws InterruptedException {
+    public Youtube() throws MissingSettingException, AuthenticationException {
         if (Method.isCredentialsEmpty(Youtube.class)) {
             logger.debug("Empty youtube credentials");
-            throw new InterruptedException("empty youtube credentials");
+            throw new MissingSettingException("empty youtube credentials");
         }
         this.youtubeApi = this.getService();
     }
@@ -63,9 +66,9 @@ public class Youtube extends Method {
      * Build and return an authorized API client service.
      *
      * @return an authorized API client service
-     * @throws InterruptedException - when user interrupts
+     * @throws AuthenticationException - when exception logging in
      */
-    private com.google.api.services.youtube.YouTube getService() throws InterruptedException {
+    private com.google.api.services.youtube.YouTube getService() throws AuthenticationException {
         try {
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Credential credential = this.authorize(httpTransport);
@@ -75,7 +78,7 @@ public class Youtube extends Method {
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Exception logging in with youtube api", e);
-            throw new InterruptedException(e.getMessage());
+            throw new AuthenticationException(e.getMessage());
         }
     }
 

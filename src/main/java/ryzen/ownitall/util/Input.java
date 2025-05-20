@@ -18,7 +18,7 @@ public class Input {
     private static final Logger logger = new Logger(Input.class);
     private static Input instance;
     private static Scanner scanner;
-    private static Queue<String> nonInteractive = new LinkedList<>();
+    private static Queue<String> nonInteractive;
 
     /**
      * default input constructor creating system scanner
@@ -51,6 +51,7 @@ public class Input {
             logger.error("null params provided in input request", new Exception());
             return;
         }
+        nonInteractive = new LinkedList<>();
         String[] inputParams = params.split(",");
         for (String param : inputParams) {
             nonInteractive.add(param);
@@ -64,7 +65,7 @@ public class Input {
      * @throws java.lang.InterruptedException - when user interrupts
      */
     public String getString() throws InterruptedException {
-        if (!nonInteractive.isEmpty()) {
+        if (nonInteractive != null) {
             return nonInteractive.poll();
         }
         if (scanner.hasNextLine()) {

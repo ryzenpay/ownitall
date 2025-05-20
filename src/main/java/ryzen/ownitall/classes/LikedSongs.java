@@ -4,7 +4,9 @@ import ryzen.ownitall.Settings;
 
 //a playlist for just liked songs (as they might not be in playlists)
 /**
- * <p>LikedSongs class.</p>
+ * <p>
+ * LikedSongs class.
+ * </p>
  *
  * @author ryzen
  */

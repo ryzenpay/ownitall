@@ -14,6 +14,8 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -60,7 +62,6 @@ abstract public class Method {
      * @param annotation a {@link java.lang.Class} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    // TODO: currently broken for download class
     public static LinkedHashMap<String, Class<? extends Method>> getMethods(Class<? extends Annotation> annotation) {
         LinkedHashMap<String, Class<? extends Method>> filteredMethods = new LinkedHashMap<>();
         for (String methodName : methods.keySet()) {
@@ -78,9 +79,15 @@ abstract public class Method {
      *
      * @param methodClass a {@link java.lang.Class} object
      * @return a {@link ryzen.ownitall.method.Method} object
-     * @throws java.lang.InterruptedException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.NoSuchMethodException                        if any.
      */
-    public static Method initMethod(Class<? extends Method> methodClass) throws InterruptedException {
+    // TODO: attempt to init, catch authentication / missingsettings exception
+    // allow user to fix and try again, if not throw another error
+    public static Method initMethod(Class<? extends Method> methodClass)
+            throws MissingSettingException, AuthenticationException,
+            NoSuchMethodException {
         if (methodClass == null) {
             logger.debug("null method class provided in load");
             return null;
@@ -88,13 +95,16 @@ abstract public class Method {
         try {
             logger.debug("Initializing '" + methodClass + "' method");
             return methodClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException e) {
-            logger.error("Interrupted while setting up method '" + methodClass.getSimpleName() + "'", e);
-            throw new InterruptedException(e.getMessage());
-        } catch (IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException e) {
-            logger.error("Exception creating method '" + methodClass.getSimpleName() + "'", e);
-            throw new InterruptedException(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
+            Throwable cause = e.getCause();
+            if (cause instanceof MissingSettingException) {
+                throw new MissingSettingException(e.getMessage());
+            }
+            if (cause instanceof AuthenticationException) {
+                throw new AuthenticationException(e.getMessage());
+            }
+            throw new NoSuchMethodException(e.getMessage());
         }
     }
 
@@ -282,9 +292,11 @@ abstract public class Method {
      * syncLikedSongs.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public void syncLikedSongs() throws InterruptedException {
+    public void syncLikedSongs() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.warn("Unsupported method for syncLikedSongs");
     }
 
@@ -293,9 +305,11 @@ abstract public class Method {
      * syncPlaylists.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public void syncPlaylists() throws InterruptedException {
+    public void syncPlaylists() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.warn("Unsupported method for syncPlaylists");
     }
 
@@ -305,9 +319,12 @@ abstract public class Method {
      * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public void syncPlaylist(Playlist playlist) throws InterruptedException {
+    public void syncPlaylist(Playlist playlist) throws InterruptedException, MissingSettingException,
+            AuthenticationException {
         logger.warn("Unsupported method for syncPlaylist");
     }
 
@@ -316,9 +333,11 @@ abstract public class Method {
      * syncAlbums.
      * </p>
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public void syncAlbums() throws InterruptedException {
+    public void syncAlbums() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.warn("Unsupported method for syncAlbums");
     }
 
@@ -328,9 +347,11 @@ abstract public class Method {
      * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public void syncAlbum(Album album) throws InterruptedException {
+    public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.warn("Unsupported method for syncAlbum");
     }
 }

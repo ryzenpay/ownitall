@@ -19,6 +19,7 @@ public class ProgressBar implements AutoCloseable {
     private String message;
     private me.tongfei.progressbar.ProgressBar pb;
 
+    /** Constant <code>output=true</code> */
     public static boolean output = true;
     private static final Stack<ProgressBar> instances = new Stack<>();
 
@@ -48,18 +49,38 @@ public class ProgressBar implements AutoCloseable {
         instances.push(this);
     }
 
+    /**
+     * <p>Getter for the field <code>title</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getTitle() {
         return this.title;
     }
 
+    /**
+     * <p>Getter for the field <code>step</code>.</p>
+     *
+     * @return a int
+     */
     public int getStep() {
         return this.step;
     }
 
+    /**
+     * <p>Getter for the field <code>maxStep</code>.</p>
+     *
+     * @return a int
+     */
     public int getMaxStep() {
         return this.maxStep;
     }
 
+    /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getMessage() {
         return this.message;
     }
@@ -111,6 +132,11 @@ public class ProgressBar implements AutoCloseable {
         this.step(null, by);
     }
 
+    /**
+     * <p>getCurrentInstance.</p>
+     *
+     * @return a {@link ryzen.ownitall.util.ProgressBar} object
+     */
     public static ProgressBar getCurrentInstance() {
         if (instances.isEmpty()) {
             return null;
@@ -132,6 +158,7 @@ public class ProgressBar implements AutoCloseable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -146,6 +173,7 @@ public class ProgressBar implements AutoCloseable {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return instances.size();

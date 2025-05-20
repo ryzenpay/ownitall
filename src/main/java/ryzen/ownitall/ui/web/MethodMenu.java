@@ -27,6 +27,8 @@ import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
 import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -68,7 +70,7 @@ public class MethodMenu {
                     } else {
                         this.method = Method.initMethod(methodClass);
                     }
-                } catch (InterruptedException e) {
+                } catch (MissingSettingException | AuthenticationException e) {
                     model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
                     if (Method.clearCredentials(methodClass)) {
                         return this.loginForm(model, methodClassName, callback);
@@ -76,6 +78,8 @@ public class MethodMenu {
                         model.addAttribute("error", "Interrupted while setting up '" + methodClassName
                                 + ", and unable to clear credentials");
                     }
+                } catch (NoSuchMethodException e) {
+                    model.addAttribute("error", "Invalid method '" + methodClassName + "' provided");
                 }
             } else {
                 model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
@@ -231,6 +235,15 @@ public class MethodMenu {
                 + "' collection", "/method/import/collection", "/method/import");
     }
 
+    /**
+     * <p>process.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param processName a {@link java.lang.String} object
+     * @param processFunction a {@link java.lang.String} object
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/process")
     public String process(Model model,
             @RequestParam(value = "processName", required = true) String processName,
@@ -292,8 +305,6 @@ public class MethodMenu {
      * <p>
      * importLikedSongs.
      * </p>
-     *
-     * @return a int
      */
     @PostMapping("/method/import/likedsongs")
     public void importLikedSongs() {
@@ -330,8 +341,6 @@ public class MethodMenu {
      * <p>
      * importAlbums.
      * </p>
-     *
-     * @return a int
      */
     @PostMapping("/method/import/albums")
     public void importAlbums() {
@@ -367,8 +376,6 @@ public class MethodMenu {
      * <p>
      * importPlaylists.
      * </p>
-     *
-     * @return a int
      */
     @PostMapping("/method/import/playlists")
     public void importPlaylists() {
@@ -428,8 +435,6 @@ public class MethodMenu {
      * <p>
      * exportCollection.
      * </p>
-     *
-     * @return a boolean
      */
     @PostMapping("/method/export/collection")
     public void exportCollection() {
@@ -468,8 +473,6 @@ public class MethodMenu {
      * <p>
      * exportLikedSongs.
      * </p>
-     *
-     * @return a boolean
      */
     @PostMapping("/method/export/likedsongs")
     public void exportLikedSongs() {
@@ -502,8 +505,6 @@ public class MethodMenu {
      * <p>
      * exportAlbums.
      * </p>
-     *
-     * @return a boolean
      */
     @PostMapping("/method/export/albums")
     public void exportAlbums() {
@@ -536,8 +537,6 @@ public class MethodMenu {
      * <p>
      * exportPlaylists.
      * </p>
-     *
-     * @return a boolean
      */
     @PostMapping("/method/export/playlists")
     public void exportPlaylists() {
@@ -612,6 +611,12 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection");
+        } catch (MissingSettingException e) {
+            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
+                    e);
+        } catch (AuthenticationException e) {
+            logger.error(
+                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
         }
     }
 
@@ -644,6 +649,12 @@ public class MethodMenu {
             method.syncLikedSongs();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs");
+        } catch (MissingSettingException e) {
+            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
+                    e);
+        } catch (AuthenticationException e) {
+            logger.error(
+                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
         }
     }
 
@@ -676,6 +687,12 @@ public class MethodMenu {
             method.syncAlbums();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums");
+        } catch (MissingSettingException e) {
+            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
+                    e);
+        } catch (AuthenticationException e) {
+            logger.error(
+                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
         }
     }
 
@@ -708,9 +725,20 @@ public class MethodMenu {
             method.syncPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists");
+        } catch (MissingSettingException e) {
+            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
+                    e);
+        } catch (AuthenticationException e) {
+            logger.error(
+                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
         }
     }
 
+    /**
+     * <p>methodProgress.</p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/progress")
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
@@ -731,6 +759,11 @@ public class MethodMenu {
         }
     }
 
+    /**
+     * <p>methodLogs.</p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/logs")
     @ResponseBody
     public ResponseEntity<String> methodLogs() {
@@ -748,6 +781,9 @@ public class MethodMenu {
         return ResponseEntity.ok(rootNode.toPrettyString());
     }
 
+    /**
+     * <p>cancel.</p>
+     */
     @PostMapping("/method/cancel")
     public void cancel() {
         InterruptionHandler.forceInterruption();

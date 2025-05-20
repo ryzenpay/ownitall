@@ -21,6 +21,11 @@ public class LogConfig {
     private static Stack<Map.Entry<Level, String>> globalHistory = new Stack<>();
     private static final int historySize = 10;
 
+    /**
+     * <p>getLatestLog.</p>
+     *
+     * @return a {@link java.util.Map.Entry} object
+     */
     public static Entry<Level, String> getLatestLog() {
         for (Entry<Level, String> entry : globalHistory) {
             if (entry.getKey().intLevel() == globalLevel.intLevel()) {
@@ -30,6 +35,11 @@ public class LogConfig {
         return null;
     }
 
+    /**
+     * <p>getLogs.</p>
+     *
+     * @return a {@link java.util.LinkedHashSet} object
+     */
     public static LinkedHashSet<Entry<Level, String>> getLogs() {
         LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
         for (Entry<Level, String> entry : globalHistory) {
@@ -41,10 +51,18 @@ public class LogConfig {
         return logs;
     }
 
+    /**
+     * <p>printLogs.</p>
+     */
     public static void printLogs() {
         printLogs(globalLevel);
     }
 
+    /**
+     * <p>printLogs.</p>
+     *
+     * @param level a {@link org.apache.logging.log4j.Level} object
+     */
     public static void printLogs(Level level) {
         for (Entry<Level, String> entry : globalHistory) {
             // log level or higher
@@ -54,6 +72,11 @@ public class LogConfig {
         }
     }
 
+    /**
+     * <p>addLog.</p>
+     *
+     * @param entry a {@link java.util.Map.Entry} object
+     */
     public static void addLog(Entry<Level, String> entry) {
         if (globalHistory.size() >= historySize) {
             globalHistory.remove(0);
@@ -61,6 +84,9 @@ public class LogConfig {
         globalHistory.add(entry);
     }
 
+    /**
+     * <p>clearLogs.</p>
+     */
     public static void clearLogs() {
         globalHistory.clear();
     }

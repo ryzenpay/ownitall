@@ -11,6 +11,8 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -50,6 +52,8 @@ public class CollectionMenu {
             new MethodMenu(Method.Import.class).importMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up import menu");
+        } catch (MissingSettingException | AuthenticationException e) {
+            logger.warn("Unable to authenticate into selected method due to invalid / missing credentials");
         }
     }
 
@@ -58,6 +62,8 @@ public class CollectionMenu {
             new MethodMenu(Method.Export.class).exportMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up export menu");
+        } catch (MissingSettingException | AuthenticationException e) {
+            logger.warn("Unable to authenticate into selected method due to invalid / missing credentials");
         }
     }
 
@@ -66,6 +72,8 @@ public class CollectionMenu {
             new MethodMenu(Method.Export.class).syncMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up sync menu");
+        } catch (MissingSettingException | AuthenticationException e) {
+            logger.warn("Unable to authenticate into selected method due to invalid / missing credentials");
         }
     }
 

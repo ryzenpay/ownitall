@@ -33,6 +33,8 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,12 +66,13 @@ public class Spotify extends Method {
     /**
      * Default spotify constructor asking for user input
      *
-     * @throws java.lang.InterruptedException - when user interrupts
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public Spotify() throws InterruptedException {
+    public Spotify() throws MissingSettingException, AuthenticationException {
         if (Method.isCredentialsEmpty(Spotify.class)) {
             logger.debug("Empty spotify credentials");
-            throw new InterruptedException("empty spotify credentials");
+            throw new MissingSettingException(Spotify.class);
         }
         try {
             this.spotifyApi = new SpotifyApi.Builder()
@@ -81,16 +84,21 @@ public class Spotify extends Method {
                             Settings.spotifyRedirectURL))
                     .build();
         } catch (URISyntaxException e) {
-            throw new InterruptedException(e.getMessage());
+            throw new AuthenticationException(e.getMessage());
         }
-        this.getCode();
-        this.setToken();
+        try {
+            this.getCode();
+            this.setToken();
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while authenticating with Spotify");
+            throw new AuthenticationException(e.getMessage());
+        }
     }
 
     /**
      * Start an HTTP server to intercept the Spotify API code
      *
-     * @throws InterruptedException - if an error occurs
+     * @throws java.lang.InterruptedException - if an error occurs
      */
     public void getCode() throws InterruptedException {
         AtomicReference<String> codeRef = new AtomicReference<>();
@@ -206,7 +214,7 @@ public class Spotify extends Method {
      * 
      * @param code - the authentication code provided in the oauth
      */
-    private void setToken() throws InterruptedException {
+    private void setToken() throws AuthenticationException {
         AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.code).build();
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
@@ -214,7 +222,7 @@ public class Spotify extends Method {
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             logger.error("Exception logging in", e);
-            throw new InterruptedException(e.getMessage());
+            throw new AuthenticationException(e.getMessage());
         }
     }
 

@@ -14,6 +14,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,13 +34,13 @@ public class LastFM extends Library {
      * default LastFM constructor
      * initializes all values and loads from cache
      *
-     * @throws java.lang.InterruptedException - thrown when user interrupts
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public LastFM() throws InterruptedException {
+    public LastFM() throws MissingSettingException {
         super();
         if (Library.isCredentialsEmpty(LastFM.class)) {
             logger.debug("Empty LastFM credentials");
-            throw new InterruptedException("Empty LastFM credentials");
+            throw new MissingSettingException(LastFM.class);
         }
         this.queryDiff = 10;
     }

@@ -3,6 +3,7 @@ ryzen.ownitall.classes
 ryzen.ownitall.library
 ryzen.ownitall.method
 ryzen.ownitall.method.download
-ryzen.ownitall.output.cli
-ryzen.ownitall.output.web
+ryzen.ownitall.ui.cli
+ryzen.ownitall.ui.web
 ryzen.ownitall.util
+ryzen.ownitall.util.exceptions
