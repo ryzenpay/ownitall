@@ -58,23 +58,21 @@ public class LibraryMenu {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         if (library != null) {
             Class<? extends Library> libraryClass = Library.libraries.get(library);
-            while (true) {
-                try {
-                    Library.initLibrary(libraryClass);
-                    return libraryMenu(model);
-                } catch (MissingSettingException e) {
-                    model.addAttribute("info",
-                            "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
-                    return loginForm(model, library, "/library/change?library=" + library);
-                } catch (AuthenticationException e) {
-                    model.addAttribute("info",
-                            "Authentication exception setting up library '" + libraryClass.getSimpleName()
-                                    + "', retrying...");
-                    Library.clearCredentials(libraryClass);
-                    return loginForm(model, library, "/library/change?library=" + library);
-                } catch (NoSuchMethodException e) {
-                    model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
-                }
+            try {
+                Library.initLibrary(libraryClass);
+                return libraryMenu(model);
+            } catch (MissingSettingException e) {
+                model.addAttribute("info",
+                        "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+                return loginForm(model, library, "/library/change?library=" + library);
+            } catch (AuthenticationException e) {
+                model.addAttribute("info",
+                        "Authentication exception setting up library '" + libraryClass.getSimpleName()
+                                + "', retrying...");
+                Library.clearCredentials(libraryClass);
+                return loginForm(model, library, "/library/change?library=" + library);
+            } catch (NoSuchMethodException e) {
+                model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
             }
         }
         for (String currLibrary : Library.libraries.keySet()) {
@@ -111,18 +109,18 @@ public class LibraryMenu {
             model.addAttribute("error", "Unsupported library provided");
             return optionChange(model, null);
         }
-        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
+        Settings settings = Settings.load();
+        LinkedHashMap<String, String> classCredentials = settings.getGroup(libraryClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
             return optionChange(model, libraryClass.getSimpleName());
         }
         LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
-        Settings credentials = Settings.load();
         for (String name : classCredentials.keySet()) {
             String settingName = classCredentials.get(name);
             String value = "";
-            if (!credentials.isEmpty(settingName)) {
-                value = credentials.get(settingName).toString();
+            if (!settings.isEmpty(settingName)) {
+                value = settings.get(settingName).toString();
             }
             currentCredentials.put(name, value);
         }
@@ -154,10 +152,10 @@ public class LibraryMenu {
             model.addAttribute("error", "invalid library '" + library + "' provided");
             return loginForm(model, library, callback);
         }
-        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
+        Settings settings = Settings.load();
+        LinkedHashMap<String, String> classCredentials = settings.getGroup(libraryClass);
 
         if (params != null) {
-            Settings settings = Settings.load();
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {

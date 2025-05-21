@@ -66,25 +66,23 @@ public class MethodMenu {
         if (method != null) {
             Class<? extends Method> methodClass = Method.getMethod(method);
             if (methodClass != null) {
-                while (true) {
-                    try {
-                        this.method = Method.initMethod(methodClass);
-                        return "redirect:" + callback;
-                    } catch (MissingSettingException e) {
-                        model.addAttribute("info", "Missing settings to set up '" + methodClass.getSimpleName() + "'");
-                        return this.loginForm(model,
-                                method,
-                                "/method?method=" + method + "?callback=" + callback);
-                    } catch (AuthenticationException e) {
-                        model.addAttribute("error",
-                                "Failed to authenticate into method '" + method + "'");
-                        Method.clearCredentials(methodClass);
-                        return this.loginForm(model, methodClass
-                                .getSimpleName(),
-                                "/method?method=" + method + "?callback=" + callback);
-                    } catch (NoSuchMethodException e) {
-                        model.addAttribute("error", "Invalid method '" + method + "' provided");
-                    }
+                try {
+                    this.method = Method.initMethod(methodClass);
+                    return "redirect:" + callback;
+                } catch (MissingSettingException e) {
+                    model.addAttribute("info", "Missing settings to set up '" + methodClass.getSimpleName() + "'");
+                    return this.loginForm(model,
+                            method,
+                            "/method?method=" + method + "&callback=" + callback);
+                } catch (AuthenticationException e) {
+                    model.addAttribute("error",
+                            "Failed to authenticate into method '" + method + "'");
+                    Method.clearCredentials(methodClass);
+                    return this.loginForm(model, methodClass
+                            .getSimpleName(),
+                            "/method?method=" + method + "&callback=" + callback);
+                } catch (NoSuchMethodException e) {
+                    model.addAttribute("error", "Invalid method '" + method + "' provided");
                 }
             } else {
                 model.addAttribute("error", "Unsupported method class '" + method + "'");
@@ -176,10 +174,10 @@ public class MethodMenu {
             model.addAttribute("error", "Invalid method '" + method + "' provided");
             return loginForm(model, method, callback);
         }
-        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
+        Settings settings = Settings.load();
+        LinkedHashMap<String, String> classCredentials = settings.getGroup(methodClass);
 
         if (params != null) {
-            Settings credentials = Settings.load();
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
@@ -187,7 +185,7 @@ public class MethodMenu {
                             "Missing value for: '" + name + "' for '" + methodClass.getSimpleName() + "'");
                     return loginForm(model, method, callback);
                 }
-                if (!credentials.set(classCredentials.get(name), value)) {
+                if (!settings.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
                             "Failed to set credential: '" + name + "' for '" + methodClass.getSimpleName() + "'");
                     return loginForm(model, method, callback);
@@ -254,8 +252,8 @@ public class MethodMenu {
             @RequestParam(value = "callback", required = true) String callback) {
         if (this.method == null) {
             model.addAttribute("error", "Method was not initialized");
-            return methodMenu(model, null, "/method/process?processName=" + processName + "?processFunction="
-                    + processFunction + "?callback=" + callback);
+            return methodMenu(model, null, "/method/process?processName=" + processName + "&processFunction="
+                    + processFunction + "&callback=" + callback);
         }
         model.addAttribute("processName", processName);
         model.addAttribute("processFunction", processFunction);

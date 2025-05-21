@@ -69,6 +69,10 @@ abstract public class Method {
     }
 
     public static Class<? extends Method> getMethod(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getMethod");
+            return null;
+        }
         // needed for wrapper classes such as Download
         if (methods.containsKey(name)) {
             return methods.get(name);
@@ -103,7 +107,6 @@ abstract public class Method {
             logger.debug("Initializing '" + methodClass + "' method");
             return methodClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
             Throwable cause = e.getCause();
             if (cause instanceof MissingSettingException) {
                 throw new MissingSettingException(e.getMessage());
@@ -111,6 +114,7 @@ abstract public class Method {
             if (cause instanceof AuthenticationException) {
                 throw new AuthenticationException(e.getMessage());
             }
+            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
             throw new NoSuchMethodException(e.getMessage());
         }
     }
