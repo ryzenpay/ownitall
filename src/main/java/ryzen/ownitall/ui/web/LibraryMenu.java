@@ -128,7 +128,7 @@ public class LibraryMenu {
         }
         model.addAttribute("formName", libraryClass.getSimpleName() + " Credentials");
         model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/library/login?library=" + libraryClass.getSimpleName());
+        model.addAttribute("postAction", "/library/login?library=" + library);
         model.addAttribute("callback", callback);
         return "login";
     }

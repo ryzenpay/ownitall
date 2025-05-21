@@ -74,14 +74,14 @@ public class MethodMenu {
                         model.addAttribute("info", "Missing settings to set up '" + methodClass.getSimpleName() + "'");
                         return this.loginForm(model,
                                 method,
-                                "/method?method=" + methodClass.getSimpleName() + "?callback=" + callback);
+                                "/method?method=" + method + "?callback=" + callback);
                     } catch (AuthenticationException e) {
                         model.addAttribute("error",
-                                "Failed to authenticate into method '" + methodClass.getSimpleName() + "'");
+                                "Failed to authenticate into method '" + method + "'");
                         Method.clearCredentials(methodClass);
                         return this.loginForm(model, methodClass
                                 .getSimpleName(),
-                                "/method?method=" + methodClass.getSimpleName() + "?callback=" + callback);
+                                "/method?method=" + method + "?callback=" + callback);
                     } catch (NoSuchMethodException e) {
                         model.addAttribute("error", "Invalid method '" + method + "' provided");
                     }
@@ -149,7 +149,7 @@ public class MethodMenu {
         }
         model.addAttribute("formName", methodClass.getSimpleName() + " Credentials");
         model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/method/login?method=" + methodClass.getSimpleName());
+        model.addAttribute("postAction", "/method/login?method=" + method);
         model.addAttribute("callback", callback);
         return "form";
     }

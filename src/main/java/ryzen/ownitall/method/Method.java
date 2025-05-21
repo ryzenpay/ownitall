@@ -68,8 +68,6 @@ abstract public class Method {
         return filteredMethods;
     }
 
-    // TODO: needs to have all sub classes
-    // such as soulseek etc
     public static Class<? extends Method> getMethod(String name) {
         // needed for wrapper classes such as Download
         if (methods.containsKey(name)) {
