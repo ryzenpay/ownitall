@@ -28,7 +28,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
     // the defaults: (non final & protected for the ones that can be changed by
     // user)
 
-    /** Constant <code>logo="                        _  _          _"{trunked}</code> */
+    /**
+     * Constant <code>logo="                        _  _          _"{trunked}</code>
+     */
     public static final String logo = "                        _  _          _  _ \n" +
             "                       (_)| |        | || |\n" +
             "  ___ __      __ _ __   _ | |_  __ _ | || |\n" +
@@ -66,9 +68,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * want to easily switch between them
      */
     public static boolean spotifyShowdialog = true;
-
-    /** Constant <code>spotifyInteractiveLogin=true</code> */
-    public static boolean spotifyInteractiveLogin = true;
 
     /**
      * to limit number of songs in each spotify API batch query
@@ -188,22 +187,26 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static File soulSeekFile = null;
 
     @Group(group = { SoulSeek.class }, desc = "Username")
+    @Secret
     /** Constant <code>soulSeekUsername=""</code> */
     public static String soulSeekUsername = "";
 
     @Group(group = { SoulSeek.class }, desc = "Password")
-    /** Constant <code>soulSeekPassword=""</code> */
+    @Secret
     public static String soulSeekPassword = "";
 
     /**
      * spotify credentials
      */
     @Group(group = { Spotify.class }, desc = "Client ID")
+    @Secret
     public static String spotifyClientID = "";
     @Group(group = { Spotify.class }, desc = "Client Secret")
+    @Secret
     /** Constant <code>spotifyClientSecret=""</code> */
     public static String spotifyClientSecret = "";
     @Group(group = { Spotify.class }, desc = "Redirect URL")
+    @Secret
     /** Constant <code>spotifyRedirectURL=""</code> */
     public static String spotifyRedirectURL = "";
 
@@ -212,11 +215,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * 
      */
     @Group(group = { Youtube.class }, desc = "Application Name")
+    @Secret
     public static String youtubeApplicatioName = "";
     @Group(group = { Youtube.class }, desc = "Client ID")
+    @Secret
     /** Constant <code>youtubeClientID=""</code> */
     public static String youtubeClientID = "";
     @Group(group = { Youtube.class }, desc = "Client Secret")
+    @Secret
     /** Constant <code>youtubeClientSecret=""</code> */
     public static String youtubeClientSecret = "";
 
@@ -226,6 +232,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
 
     @Group(group = { LastFM.class }, desc = "API Key")
+    @Secret
     public static String lastFMApiKey = "";
 
     /**
@@ -233,11 +240,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * 
      */
     @Group(group = { Jellyfin.class }, desc = "URL")
+    @Secret
     public static String jellyfinURL = "";
     @Group(group = { Jellyfin.class }, desc = "Username")
+    @Secret
     /** Constant <code>jellyfinUsername=""</code> */
     public static String jellyfinUsername = "";
     @Group(group = { Jellyfin.class }, desc = "Password")
+    @Secret
     /** Constant <code>jellyfinPassword=""</code> */
     public static String jellyfinPassword = "";
 
@@ -296,8 +306,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
      *
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, Object> getAll() {
-        return super.getAll();
+    public LinkedHashMap<String, Object> getAll(boolean hashSecrets) {
+        return super.getAll(hashSecrets);
     }
 
     /** {@inheritDoc} */

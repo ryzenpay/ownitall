@@ -66,7 +66,7 @@ public class SettingsMenu {
     @GetMapping("/settings/change")
     public String changeSettingForm(Model model) {
         model.addAttribute("formName", "Change Settings");
-        model.addAttribute("loginFields", Settings.load().getAll());
+        model.addAttribute("loginFields", Settings.load().getAll(true));
         model.addAttribute("postAction", "/settings/change");
         model.addAttribute("callback", "/settings");
         return "form";
@@ -74,11 +74,13 @@ public class SettingsMenu {
 
     // TODO: hardencode predefined options as a dropdown
     /**
-     * <p>login.</p>
+     * <p>
+     * login.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
      * @param callback a {@link java.lang.String} object
-     * @param params a {@link java.util.LinkedHashMap} object
+     * @param params   a {@link java.util.LinkedHashMap} object
      * @return a {@link java.lang.String} object
      */
     @PostMapping("/settings/change")

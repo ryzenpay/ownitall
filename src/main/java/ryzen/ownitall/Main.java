@@ -59,6 +59,7 @@ public class Main {
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
+                Settings.interactive = false;
                 Input.setNonInteractive(trace);
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {

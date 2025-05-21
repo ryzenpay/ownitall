@@ -26,7 +26,6 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**

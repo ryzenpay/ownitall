@@ -51,7 +51,7 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         try {
             while (true) {
-                String choice = Menu.optionMenuWithValue(settings.getAll(), "SETTINGS");
+                String choice = Menu.optionMenuWithValue(settings.getAll(true), "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -66,8 +66,6 @@ public class SettingsMenu {
         }
     }
 
-    // TODO: if options, show menu with options
-    // if boolean: show menu with true or false
     private boolean changeSetting(String settingName) throws InterruptedException {
         if (settingName == null) {
             logger.debug("null settingName provided in changeSetting");

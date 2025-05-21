@@ -51,11 +51,16 @@ public class Settings {
         String desc();
     }
 
-    // TODO: predefined options when changing settings
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     protected @interface Options {
         String[] options();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    protected @interface Secret {
+        boolean mask() default true;
     }
 
     /**
@@ -99,7 +104,7 @@ public class Settings {
     protected void save() {
         this.setFolder();
         try {
-            objectMapper.writeValue(file, this.getAll());
+            objectMapper.writeValue(file, this.getAll(false));
         } catch (IOException e) {
             logger.error("Exception saving", e);
         }
@@ -118,7 +123,7 @@ public class Settings {
      * @return - LinkedHashSet of all settings with mapping field name : field
      *         value, only gets protected and non final entries
      */
-    protected LinkedHashMap<String, Object> getAll() {
+    protected LinkedHashMap<String, Object> getAll(boolean hashSecrets) {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             try {
@@ -128,6 +133,9 @@ public class Settings {
                 }
                 field.setAccessible(true);
                 Object value = field.get(null);
+                if (hashSecrets && field.isAnnotationPresent(Secret.class)) {
+                    value = "*".repeat(value.toString().length());
+                }
                 settings.put(field.getName(), value);
             } catch (IllegalAccessException e) {
                 logger.error("Field access error '" + field.getName() + "'", e);
@@ -226,7 +234,9 @@ public class Settings {
     }
 
     /**
-     * <p>isGroupEmpty.</p>
+     * <p>
+     * isGroupEmpty.
+     * </p>
      *
      * @param group a {@link java.lang.Class} object
      * @return a boolean
@@ -305,7 +315,9 @@ public class Settings {
     }
 
     /**
-     * <p>getOptions.</p>
+     * <p>
+     * getOptions.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return an array of {@link java.lang.String} objects
@@ -321,9 +333,31 @@ public class Settings {
                 Options annotation = (Options) field.getAnnotation(Options.class);
                 return annotation.options();
             }
+            if (field.getType() == boolean.class) {
+                String[] options = { "true", "false" };
+                return options;
+            }
         } catch (NoSuchFieldException e) {
             logger.debug("Unable to find field '" + name + "'");
         }
         return null;
+    }
+
+    public boolean isSecret(String name) {
+        if (name == null) {
+            logger.debug("null field provided in isSecret");
+            return false;
+        }
+        try {
+            Field field = this.getClass().getField(name);
+            if (field.isAnnotationPresent(Secret.class)) {
+                return true;
+                // Secret annotation = (Secret) field.getAnnotation(Secret.class);
+                // return annotation.mask();
+            }
+        } catch (NoSuchFieldException e) {
+            logger.debug("Unable to find field '" + name + "'");
+        }
+        return false;
     }
 }

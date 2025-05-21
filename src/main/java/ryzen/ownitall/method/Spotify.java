@@ -133,7 +133,7 @@ public class Spotify extends Method {
             });
             server.start();
             logger.info("Awaiting response at http://localhost/method/spotify");
-            if (Settings.spotifyInteractiveLogin) {
+            if (Settings.interactive) {
                 try {
                     interactiveSetCode(authUri, codeRef);
                 } catch (InterruptedException e) {
