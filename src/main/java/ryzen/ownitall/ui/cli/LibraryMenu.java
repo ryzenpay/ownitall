@@ -7,6 +7,8 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -47,38 +49,33 @@ public class LibraryMenu {
             if (choice.equals("Exit")) {
                 throw new InterruptedException("Exited");
             }
+            Class<? extends Library> libraryClass = Library.libraries.get(choice);
+            while (true) {
+                try {
+                    Library.initLibrary(libraryClass);
+                    break;
+                } catch (MissingSettingException e) {
+                    logger.info("Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+                    setCredentials(libraryClass);
+                } catch (AuthenticationException e) {
+                    logger.info("Authentication exception setting up library '" + libraryClass.getSimpleName()
+                            + "', retrying...");
+                    Library.clearCredentials(libraryClass);
+                    setCredentials(libraryClass);
+                } catch (NoSuchMethodException e) {
+                    logger.error("library '" + libraryClass.getSimpleName() + "' does not exist", e);
+                    break;
+                }
+            }
             Settings.load().set("libraryType", Library.libraries.get(choice));
-            initializeLibrary();
             logger.info("Successfully changed library type to '" + choice + "'");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while getting library change option");
         }
     }
 
-    /**
-     * <p>
-     * initializeLibrary.
-     * </p>
-     *
-     * @throws java.lang.InterruptedException if any.
-     */
-    public static void initializeLibrary() throws InterruptedException {
-        if (Settings.libraryType == null) {
-            return;
-        }
-        try {
-            @SuppressWarnings("unchecked")
-            Class<? extends Library> libraryType = (Class<? extends Library>) Class.forName(Settings.libraryType);
-            if (Library.isCredentialsEmpty(libraryType)) {
-                setCredentials(libraryType);
-            }
-        } catch (ClassNotFoundException e) {
-            logger.error("Invalid library type set in settings", e);
-            throw new InterruptedException("Invalid library type set in settings: " + e);
-        }
-    }
-
-    private static void setCredentials(Class<? extends Library> type) throws InterruptedException {
+    private static void setCredentials(Class<? extends Library> type)
+            throws MissingSettingException, InterruptedException {
         if (type == null) {
             logger.debug("null type provided in setCredentials");
             return;
@@ -90,13 +87,13 @@ public class LibraryMenu {
                 System.out.print("Enter '" + name + "': ");
                 String value = Input.request().getString();
                 if (!credentials.set(classCredentials.get(name), value)) {
-                    throw new InterruptedException(
+                    throw new MissingSettingException(
                             "Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
                 }
             }
         }
-        if (Library.isCredentialsEmpty(type)) {
-            throw new InterruptedException("Unable to set credentials for '" + type.getSimpleName() + "'");
+        if (credentials.isGroupEmpty(type)) {
+            throw new MissingSettingException("Unable to set credentials for '" + type.getSimpleName() + "'");
         }
     }
 

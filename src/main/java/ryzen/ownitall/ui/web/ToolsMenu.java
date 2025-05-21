@@ -105,7 +105,7 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/clearcredentials")
     public String optionClearCredentials(Model model) {
-        for (Class<? extends Method> methodClass : Method.methods.values()) {
+        for (Class<? extends Method> methodClass : Method.getMethods().values()) {
             Method.clearCredentials(methodClass);
         }
         model.addAttribute("info", "Successfully cleared credentials");

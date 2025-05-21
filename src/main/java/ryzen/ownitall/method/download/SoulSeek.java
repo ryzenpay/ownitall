@@ -13,6 +13,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 //https://github.com/fiso64/slsk-batchdl
@@ -34,10 +35,13 @@ public class SoulSeek extends Download {
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public SoulSeek() throws MissingSettingException {
-        if (Method.isCredentialsEmpty(SoulSeek.class)) {
+    public SoulSeek() throws MissingSettingException, AuthenticationException {
+        if (Settings.load().isGroupEmpty(SoulSeek.class)) {
             logger.debug("Empty SoulSeek credentials found");
             throw new MissingSettingException(SoulSeek.class);
+        }
+        if (!Settings.soulSeekFile.exists()) {
+            throw new AuthenticationException("SoulSeek missing soulseek binary");
         }
         // unable to thread due to ports
         // using multiple ports also doesnt work because soulseek doesnt allow multiple

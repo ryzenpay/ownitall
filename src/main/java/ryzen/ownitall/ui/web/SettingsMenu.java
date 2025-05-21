@@ -63,6 +63,8 @@ public class SettingsMenu {
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      */
+    // TODO: implement options
+    // also in library and method /login
     @GetMapping("/settings/change")
     public String changeSettingForm(Model model) {
         model.addAttribute("formName", "Change Settings");

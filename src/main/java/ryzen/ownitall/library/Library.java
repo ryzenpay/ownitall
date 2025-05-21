@@ -3,7 +3,6 @@ package ryzen.ownitall.library;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,6 +18,8 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -49,6 +50,29 @@ public class Library {
         libraries.put("MusicBrainz", MusicBrainz.class);
     }
 
+    public static Library initLibrary(Class<? extends Library> libraryClass)
+            throws MissingSettingException, AuthenticationException,
+            NoSuchMethodException {
+        if (libraryClass == null) {
+            logger.debug("null library class provided in initLibrary");
+            return null;
+        }
+        try {
+            logger.debug("Initializing '" + libraryClass + "' library");
+            return libraryClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            logger.error("Exception while setting up library '" + libraryClass.getSimpleName() + "'", e);
+            Throwable cause = e.getCause();
+            if (cause instanceof MissingSettingException) {
+                throw new MissingSettingException(e.getMessage());
+            }
+            if (cause instanceof AuthenticationException) {
+                throw new AuthenticationException(e.getMessage());
+            }
+            throw new NoSuchMethodException(e.getMessage());
+        }
+    }
+
     /**
      * instance call method
      * sets library type with the integer set in settings
@@ -60,28 +84,54 @@ public class Library {
         if (Settings.libraryType.isEmpty()) {
             return null;
         }
-        try {
-            @SuppressWarnings("unchecked")
-            Class<? extends Library> libraryType = (Class<? extends Library>) Class
-                    .forName(Settings.libraryType);
-            if (instance == null || !instance.getClass().isInstance(libraryType)) {
-                try {
-                    instance = libraryType.getDeclaredConstructor().newInstance();
-                } catch (InstantiationException e) {
-                    logger.error("Interrupted while setting up library type '" + libraryType + "'",
-                            e);
-                } catch (IllegalAccessException | NoSuchMethodException
-                        | InvocationTargetException e) {
-                    logger.error("Exception creating library '" + libraryType + "'", e);
-                }
+        Class<? extends Library> libraryClass = Library.libraries.get(Settings.libraryType);
+        if (libraryClass == null) {
+            logger.warn("Invalid library type set in settings");
+            return null;
+        }
+        if (instance == null || !instance.getClass().isInstance(libraryClass)) {
+            try {
+                instance = initLibrary(libraryClass);
+            } catch (MissingSettingException e) {
+                logger.warn("Library '" + libraryClass.getSimpleName() + "' is missing credentials");
+            } catch (AuthenticationException e) {
+                logger.error("Library '" + libraryClass.getSimpleName() + "' had an exception authenticating", e);
+            } catch (NoSuchMethodException e) {
+                logger.error("Library '" + libraryClass.getSimpleName() + "' does not exist", e);
             }
-        } catch (ClassNotFoundException e) {
-            logger.error("Invalid library type set in settings", e);
         }
         if (instance != null) {
             instance.cache();
         }
         return instance;
+    }
+
+    /**
+     * <p>
+     * clearCredentials.
+     * </p>
+     *
+     * @param type a {@link java.lang.Class} object
+     * @return a boolean
+     */
+    public static boolean clearCredentials(Class<? extends Library> type) {
+        if (type == null) {
+            logger.debug("null type provided in clearCredentials");
+            return true;
+        }
+        Settings settings = Settings.load();
+        LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
+        if (credentialVars == null) {
+            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
+            return false;
+        }
+        for (String varName : credentialVars.values()) {
+            if (!settings.set(varName, "")) {
+                return false;
+            }
+        }
+        logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
+        return true;
     }
 
     /**
@@ -131,18 +181,6 @@ public class Library {
             instance = null;
         }
         Storage.clearCacheFiles();
-    }
-
-    /**
-     * <p>
-     * isCredentialsEmpty.
-     * </p>
-     *
-     * @param type a {@link java.lang.Class} object
-     * @return a boolean
-     */
-    public static boolean isCredentialsEmpty(Class<? extends Library> type) {
-        return Settings.load().isGroupEmpty(type);
     }
 
     /**

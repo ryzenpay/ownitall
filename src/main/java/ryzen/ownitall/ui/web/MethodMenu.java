@@ -22,6 +22,8 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.method.Method.Export;
+import ryzen.ownitall.method.Method.Import;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
@@ -55,42 +57,48 @@ public class MethodMenu {
      */
     @GetMapping("/method")
     public String methodMenu(Model model,
-            @RequestParam(value = "methodClass", required = false) String methodClassName,
+            @RequestParam(value = "method", required = false) String method,
             @RequestParam(value = "callback", required = true) String callback) {
         if (LogConfig.isDebug()) {
             model.addAttribute("debug",
-                    "methodclass=" + methodClassName + ", callback=" + callback);
+                    "method=" + method + ", callback=" + callback);
         }
-        if (methodClassName != null) {
-            Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        if (method != null) {
+            Class<? extends Method> methodClass = Method.getMethod(method);
             if (methodClass != null) {
-                try {
-                    if (Method.isCredentialsEmpty(methodClass)) {
-                        return this.loginForm(model, methodClassName, callback);
-                    } else {
+                while (true) {
+                    try {
                         this.method = Method.initMethod(methodClass);
+                        return "redirect:" + callback;
+                    } catch (MissingSettingException e) {
+                        model.addAttribute("info", "Missing settings to set up '" + methodClass.getSimpleName() + "'");
+                        return this.loginForm(model,
+                                method,
+                                "/method?method=" + methodClass.getSimpleName() + "?callback=" + callback);
+                    } catch (AuthenticationException e) {
+                        model.addAttribute("error",
+                                "Failed to authenticate into method '" + methodClass.getSimpleName() + "'");
+                        Method.clearCredentials(methodClass);
+                        return this.loginForm(model, methodClass
+                                .getSimpleName(),
+                                "/method?method=" + methodClass.getSimpleName() + "?callback=" + callback);
+                    } catch (NoSuchMethodException e) {
+                        model.addAttribute("error", "Invalid method '" + method + "' provided");
                     }
-                } catch (MissingSettingException | AuthenticationException e) {
-                    model.addAttribute("error", "Interrupted while setting up '" + methodClassName + "': " + e);
-                    if (Method.clearCredentials(methodClass)) {
-                        return this.loginForm(model, methodClassName, callback);
-                    } else {
-                        model.addAttribute("error", "Interrupted while setting up '" + methodClassName
-                                + ", and unable to clear credentials");
-                    }
-                } catch (NoSuchMethodException e) {
-                    model.addAttribute("error", "Invalid method '" + methodClassName + "' provided");
                 }
             } else {
-                model.addAttribute("error", "Unsupported method class '" + methodClassName + "'");
+                model.addAttribute("error", "Unsupported method class '" + method + "'");
             }
         }
-        if (this.method != null) {
-            return "redirect:" + callback;
-        }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        for (String currMethod : Method.methods.keySet()) {
-            options.put(currMethod, "/method?methodClass=" + currMethod + "&callback=" + callback);
+        if (callback.contains("import")) {
+            for (String currMethod : Method.getMethods(Import.class).keySet()) {
+                options.put(currMethod, "/method?method=" + currMethod + "&callback=" + callback);
+            }
+        } else {
+            for (String currMethod : Method.getMethods(Export.class).keySet()) {
+                options.put(currMethod, "/method?method=" + currMethod + "&callback=" + callback);
+            }
         }
         model.addAttribute("menuName", "Method Menu");
         model.addAttribute("menuOptions", options);
@@ -110,38 +118,38 @@ public class MethodMenu {
      */
     @GetMapping("/method/login")
     public String loginForm(Model model,
-            @RequestParam(value = "methodClass", required = true) String methodClassName,
+            @RequestParam(value = "method", required = true) String method,
             @RequestParam(value = "callback", required = true) String callback) {
 
         if (LogConfig.isDebug()) {
             model.addAttribute("debug",
-                    "methodclass=" + methodClassName + ", callback=" + callback);
+                    "method=" + method + ", callback=" + callback);
         }
 
-        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        Class<? extends Method> methodClass = Method.getMethod(method);
         if (methodClass == null) {
             model.addAttribute("error", "Unsupported method provided");
             return methodMenu(model, null, callback);
         }
 
-        if (!Method.isCredentialsEmpty(methodClass)) {
-            model.addAttribute("info", "Found existing credentials");
-            return methodMenu(model, methodClassName, callback);
-        }
-
         LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
-            return methodMenu(model, methodClassName, callback);
+            return methodMenu(model, methodClass.getSimpleName(), callback);
         }
         LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
         Settings credentials = Settings.load();
         for (String name : classCredentials.keySet()) {
-            currentCredentials.put(name, credentials.get(classCredentials.get(name)).toString());
+            String settingName = classCredentials.get(name);
+            String value = "";
+            if (!credentials.isEmpty(settingName)) {
+                value = credentials.get(settingName).toString();
+            }
+            currentCredentials.put(name, value);
         }
         model.addAttribute("formName", methodClass.getSimpleName() + " Credentials");
         model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/method/login?methodClass=" + methodClassName);
+        model.addAttribute("postAction", "/method/login?method=" + methodClass.getSimpleName());
         model.addAttribute("callback", callback);
         return "form";
     }
@@ -159,11 +167,15 @@ public class MethodMenu {
      */
     @PostMapping("/method/login")
     public String login(Model model,
-            @RequestParam(value = "methodClass", required = true) String methodClassName,
+            @RequestParam(value = "method", required = true) String method,
             @RequestParam(value = "callback", required = true) String callback,
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
-        Class<? extends Method> methodClass = Method.methods.get(methodClassName);
+        Class<? extends Method> methodClass = Method.getMethod(method);
+        if (methodClass == null) {
+            model.addAttribute("error", "Invalid method '" + method + "' provided");
+            return loginForm(model, method, callback);
+        }
         LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
 
         if (params != null) {
@@ -172,28 +184,17 @@ public class MethodMenu {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
                     model.addAttribute("error",
-                            "Missing value for: '" + name + "' for '" + methodClassName + "'");
-                    break;
+                            "Missing value for: '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                    return loginForm(model, method, callback);
                 }
                 if (!credentials.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
-                            "Failed to set credential: '" + name + "' for '" + methodClassName + "'");
-                    break;
+                            "Failed to set credential: '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                    return loginForm(model, method, callback);
                 }
             }
-            if (Method.isCredentialsEmpty(methodClass)) {
-                model.addAttribute("error", "Missing credentials for '" + methodClassName + "'");
-            } else {
-                model.addAttribute("info", "Successfully signed into '" + methodClassName + "'");
-                return methodMenu(model, methodClassName, callback);
-            }
         }
-
-        model.addAttribute("loginName", methodClass.getSimpleName());
-        model.addAttribute("loginFields", classCredentials.keySet());
-        model.addAttribute("methodClass", methodClassName);
-        model.addAttribute("callback", callback);
-        return "login";
+        return "redirect:" + callback;
     }
 
     /**
@@ -236,12 +237,14 @@ public class MethodMenu {
     }
 
     /**
-     * <p>process.</p>
+     * <p>
+     * process.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
-     * @param processName a {@link java.lang.String} object
+     * @param model           a {@link org.springframework.ui.Model} object
+     * @param processName     a {@link java.lang.String} object
      * @param processFunction a {@link java.lang.String} object
-     * @param callback a {@link java.lang.String} object
+     * @param callback        a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/process")
@@ -612,8 +615,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -650,8 +652,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -688,8 +689,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -726,8 +726,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -735,7 +734,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>methodProgress.</p>
+     * <p>
+     * methodProgress.
+     * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -760,7 +761,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>methodLogs.</p>
+     * <p>
+     * methodLogs.
+     * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -782,7 +785,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>cancel.</p>
+     * <p>
+     * cancel.
+     * </p>
      */
     @PostMapping("/method/cancel")
     public void cancel() {

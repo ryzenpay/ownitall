@@ -26,21 +26,14 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 abstract public class Method {
     private static final Logger logger = new Logger(Method.class);
     /** Constant <code>methods</code> */
-    public static final LinkedHashMap<String, Class<? extends Method>> methods;
+    private static final LinkedHashMap<String, Class<? extends Method>> methods;
     static {
         methods = new LinkedHashMap<>();
         methods.put("Jellyfin", Jellyfin.class);
         methods.put("Spotify", Spotify.class);
         methods.put("Youtube", Youtube.class);
         methods.put("Upload", Upload.class);
-        try {
-            @SuppressWarnings("unchecked")
-            Class<? extends Method> downloadMethod = (Class<? extends Method>) Class
-                    .forName(Settings.load().get("downloadMethod").toString());
-            methods.put("Download", downloadMethod);
-        } catch (ClassNotFoundException e) {
-            logger.error("Unsupported downloadMethod set in settings", e);
-        }
+        methods.put("Download", getMethod(Settings.load().get("downloadMethod").toString()));
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -51,6 +44,10 @@ abstract public class Method {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Export {
+    }
+
+    public static LinkedHashMap<String, Class<? extends Method>> getMethods() {
+        return methods;
     }
 
     /**
@@ -71,6 +68,21 @@ abstract public class Method {
         return filteredMethods;
     }
 
+    // TODO: needs to have all sub classes
+    // such as soulseek etc
+    public static Class<? extends Method> getMethod(String name) {
+        // needed for wrapper classes such as Download
+        if (methods.containsKey(name)) {
+            return methods.get(name);
+        }
+        try {
+            return (Class<? extends Method>) Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            logger.error("Unable to find method '" + name + "'", e);
+        }
+        return null;
+    }
+
     /**
      * <p>
      * initMethod.
@@ -82,13 +94,11 @@ abstract public class Method {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      * @throws java.lang.NoSuchMethodException                        if any.
      */
-    // TODO: attempt to init, catch authentication / missingsettings exception
-    // allow user to fix and try again, if not throw another error
     public static Method initMethod(Class<? extends Method> methodClass)
             throws MissingSettingException, AuthenticationException,
             NoSuchMethodException {
         if (methodClass == null) {
-            logger.debug("null method class provided in load");
+            logger.debug("null method class provided in initMethod");
             return null;
         }
         try {
@@ -117,18 +127,6 @@ abstract public class Method {
      */
     public static String getMethodName(Method method) {
         return method.getClass().getSimpleName();
-    }
-
-    /**
-     * <p>
-     * isCredentialsEmpty.
-     * </p>
-     *
-     * @param type a {@link java.lang.Class} object
-     * @return a boolean
-     */
-    public static boolean isCredentialsEmpty(Class<? extends Method> type) {
-        return Settings.load().isGroupEmpty(type);
     }
 
     /**

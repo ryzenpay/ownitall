@@ -55,7 +55,7 @@ public class Youtube extends Method {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Youtube() throws MissingSettingException, AuthenticationException {
-        if (Method.isCredentialsEmpty(Youtube.class)) {
+        if (Settings.load().isGroupEmpty(Youtube.class)) {
             logger.debug("Empty youtube credentials");
             throw new MissingSettingException("empty youtube credentials");
         }

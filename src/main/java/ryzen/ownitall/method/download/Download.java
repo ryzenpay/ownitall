@@ -294,7 +294,7 @@ public class Download extends Method {
                 }
             }
         } catch (MissingSettingException e) {
-            logger.error("Upload is missing credentials for download sync", e);
+            logger.warn("Upload is missing credentials for download sync");
             return;
         }
     }

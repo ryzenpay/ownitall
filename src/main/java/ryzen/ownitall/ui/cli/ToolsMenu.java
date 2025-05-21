@@ -78,7 +78,7 @@ public class ToolsMenu {
             System.out.print("Are you sure you wan to clear Credentials (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing Credentials...");
-                for (Class<? extends Method> methodClass : Method.methods.values()) {
+                for (Class<? extends Method> methodClass : Method.getMethods().values()) {
                     Method.clearCredentials(methodClass);
                 }
                 logger.info("Done clearing Credentials");

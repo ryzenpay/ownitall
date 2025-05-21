@@ -57,7 +57,7 @@ public class Jellyfin extends Method {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Jellyfin() throws MissingSettingException, AuthenticationException {
-        if (Method.isCredentialsEmpty(Jellyfin.class)) {
+        if (Settings.load().isGroupEmpty(Jellyfin.class)) {
             logger.debug("Empty jellyfin credentials");
             throw new MissingSettingException(Jellyfin.class);
         }

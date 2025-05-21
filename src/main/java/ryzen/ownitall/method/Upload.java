@@ -52,7 +52,7 @@ public class Upload extends Method {
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
     public Upload() throws MissingSettingException {
-        if (Method.isCredentialsEmpty(Upload.class)) {
+        if (Settings.load().isGroupEmpty(Upload.class)) {
             logger.debug("Empty upload credentials");
             throw new MissingSettingException(Upload.class);
         }

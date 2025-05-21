@@ -34,44 +34,41 @@ public class MethodMenu {
      * </p>
      *
      * @param annotation a {@link java.lang.Class} object
-     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.InterruptedException                         if any.
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public MethodMenu(Class<? extends Annotation> annotation)
-            throws InterruptedException, MissingSettingException, AuthenticationException {
-        LibraryMenu.initializeLibrary();
+            throws InterruptedException, MissingSettingException {
         LinkedHashMap<String, Class<? extends Method>> methods = Method.getMethods(annotation);
         String choice = Menu.optionMenu(methods.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException("Cancelled method selection");
         }
         Class<? extends Method> methodClass = methods.get(choice);
-        if (Method.isCredentialsEmpty(methodClass)) {
-            this.setCredentials(methodClass);
-        }
-        try {
-            method = Method.initMethod(methodClass);
-        } catch (MissingSettingException | AuthenticationException e) {
-            logger.info("Exception while setting up method, could be due to invalid credentials");
-            Method.clearCredentials(methodClass);
-            this.setCredentials(methodClass);
+        while (true) {
             try {
-                Method.initMethod(methodClass);
-            } catch (NoSuchMethodException f) {
-
+                method = Method.initMethod(methodClass);
+                break;
+            } catch (MissingSettingException e) {
+                logger.info("Missing settings to set up method '" + methodClass.getSimpleName() + "'");
+                setCredentials(methodClass);
+            } catch (AuthenticationException e) {
+                logger.info("Authentication exception setting up method '" + methodClass.getSimpleName()
+                        + "', retrying...");
+                Method.clearCredentials(methodClass);
+                setCredentials(methodClass);
+            } catch (NoSuchMethodException e) {
+                logger.error("method '" + methodClass.getSimpleName() + "' does not exist", e);
+                break;
             }
-        } catch (NoSuchMethodException e) {
-            logger.error("method '" + methodClass.getSimpleName() + "' does not exist", e);
         }
     }
 
-    private void setCredentials(Class<? extends Method> methodClass) throws InterruptedException {
+    private static void setCredentials(Class<? extends Method> methodClass)
+            throws MissingSettingException, InterruptedException {
         if (methodClass == null) {
             logger.debug("null methodClass provided in setCredentials");
-            return;
-        }
-        if (!Method.isCredentialsEmpty(methodClass)) {
             return;
         }
         Settings credentials = Settings.load();
@@ -82,16 +79,16 @@ public class MethodMenu {
                     // skip already set values
                     continue;
                 }
-                System.out.print("Enter '" + methodClass.getSimpleName() + "'" + name + "': ");
+                System.out.print("Enter '" + methodClass.getSimpleName() + " " + name + "': ");
                 Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
                 if (!credentials.set(classCredentials.get(name), value)) {
-                    throw new InterruptedException(
+                    throw new MissingSettingException(
                             "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
                 }
             }
         }
-        if (Method.isCredentialsEmpty(methodClass)) {
-            throw new InterruptedException("Unable to set credentials for '" + methodClass.getSimpleName() + "'");
+        if (credentials.isGroupEmpty(methodClass)) {
+            throw new MissingSettingException("Unable to set credentials for '" + methodClass.getSimpleName() + "'");
         }
     }
 
@@ -457,8 +454,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -477,8 +473,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' liked songs");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -496,8 +491,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' albums");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
@@ -516,8 +510,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' playlists");
         } catch (MissingSettingException e) {
-            logger.error("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library",
-                    e);
+            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
         } catch (AuthenticationException e) {
             logger.error(
                     "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);

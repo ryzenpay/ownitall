@@ -70,7 +70,7 @@ public class Spotify extends Method {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Spotify() throws MissingSettingException, AuthenticationException {
-        if (Method.isCredentialsEmpty(Spotify.class)) {
+        if (Settings.load().isGroupEmpty(Spotify.class)) {
             logger.debug("Empty spotify credentials");
             throw new MissingSettingException(Spotify.class);
         }

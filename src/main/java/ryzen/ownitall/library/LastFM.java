@@ -38,7 +38,7 @@ public class LastFM extends Library {
      */
     public LastFM() throws MissingSettingException {
         super();
-        if (Library.isCredentialsEmpty(LastFM.class)) {
+        if (Settings.load().isGroupEmpty(LastFM.class)) {
             logger.debug("Empty LastFM credentials");
             throw new MissingSettingException(LastFM.class);
         }

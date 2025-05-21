@@ -13,6 +13,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
 
 /**
  * <p>
@@ -31,10 +32,13 @@ public class YT_dl extends Download {
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public YT_dl() throws MissingSettingException {
-        if (Method.isCredentialsEmpty(YT_dl.class)) {
+    public YT_dl() throws MissingSettingException, AuthenticationException {
+        if (Settings.load().isGroupEmpty(YT_dl.class)) {
             logger.debug("Empty YT_dl credentials found");
             throw new MissingSettingException(YT_dl.class);
+        }
+        if (!Settings.yt_dlFile.exists()) {
+            throw new AuthenticationException("YT_DL missing yt_dl binary");
         }
     }
 

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.LogConfig;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -56,16 +58,24 @@ public class LibraryMenu {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         if (library != null) {
             Class<? extends Library> libraryClass = Library.libraries.get(library);
-            if (libraryClass != null) {
-                Settings.load().set("libraryType", libraryClass);
-                if (Library.isCredentialsEmpty(libraryClass)) {
-                    return loginForm(model, library, "/library/change");
+            while (true) {
+                try {
+                    Library.initLibrary(libraryClass);
+                    return libraryMenu(model);
+                } catch (MissingSettingException e) {
+                    model.addAttribute("info",
+                            "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+                    return loginForm(model, library, "/library/change?library=" + library);
+                } catch (AuthenticationException e) {
+                    model.addAttribute("info",
+                            "Authentication exception setting up library '" + libraryClass.getSimpleName()
+                                    + "', retrying...");
+                    Library.clearCredentials(libraryClass);
+                    return loginForm(model, library, "/library/change?library=" + library);
+                } catch (NoSuchMethodException e) {
+                    model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
                 }
-                model.addAttribute("info", "Successfully changed library type to '" + library + "'");
-            } else {
-                model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
             }
-            return libraryMenu(model);
         }
         for (String currLibrary : Library.libraries.keySet()) {
             options.put(currLibrary, "/library/change?library=" + currLibrary);
@@ -88,36 +98,38 @@ public class LibraryMenu {
      */
     @GetMapping("/library/login")
     public String loginForm(Model model,
-            @RequestParam(value = "methodClass", required = true) String libraryClassName,
+            @RequestParam(value = "library", required = true) String library,
             @RequestParam(value = "callback", required = true) String callback) {
 
         if (LogConfig.isDebug()) {
             model.addAttribute("debug",
-                    "libraryclass=" + libraryClassName + ", callback=" + callback);
+                    "library=" + library + ", callback=" + callback);
         }
 
-        Class<? extends Library> libraryClass = Library.libraries.get(libraryClassName);
+        Class<? extends Library> libraryClass = Library.libraries.get(library);
         if (libraryClass == null) {
             model.addAttribute("error", "Unsupported library provided");
             return optionChange(model, null);
         }
-
-        if (!Library.isCredentialsEmpty(libraryClass)) {
-            model.addAttribute("info", "Found existing credentials");
-            return optionChange(model, libraryClassName);
-        }
-
         LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
             model.addAttribute("info", "No credentials required");
-            return optionChange(model, libraryClassName);
+            return optionChange(model, libraryClass.getSimpleName());
         }
-
-        model.addAttribute("loginName", libraryClass.getSimpleName());
-        model.addAttribute("loginFields", classCredentials.keySet());
-        model.addAttribute("methodClass", libraryClassName);
+        LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
+        Settings credentials = Settings.load();
+        for (String name : classCredentials.keySet()) {
+            String settingName = classCredentials.get(name);
+            String value = "";
+            if (!credentials.isEmpty(settingName)) {
+                value = credentials.get(settingName).toString();
+            }
+            currentCredentials.put(name, value);
+        }
+        model.addAttribute("formName", libraryClass.getSimpleName() + " Credentials");
+        model.addAttribute("loginFields", currentCredentials);
+        model.addAttribute("postAction", "/library/login?library=" + libraryClass.getSimpleName());
         model.addAttribute("callback", callback);
-
         return "login";
     }
 
@@ -133,11 +145,15 @@ public class LibraryMenu {
      */
     @PostMapping("/library/login")
     public String login(Model model,
-            @RequestParam(value = "methodClass", required = true) String libraryClassName,
+            @RequestParam(value = "library", required = true) String library,
             @RequestParam(value = "callback", required = true) String callback,
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 
-        Class<? extends Library> libraryClass = Library.libraries.get(libraryClassName);
+        Class<? extends Library> libraryClass = Library.libraries.get(library);
+        if (libraryClass == null) {
+            model.addAttribute("error", "invalid library '" + library + "' provided");
+            return loginForm(model, library, callback);
+        }
         LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(libraryClass);
 
         if (params != null) {
@@ -146,29 +162,17 @@ public class LibraryMenu {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
                     model.addAttribute("error",
-                            "Missing value for: '" + name + "' for '" + libraryClassName + "'");
-                    break;
+                            "Missing value for: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
+                    return loginForm(model, library, callback);
                 }
                 if (!settings.set(classCredentials.get(name), value)) {
                     model.addAttribute("error",
-                            "Failed to set credential: '" + name + "' for '" + libraryClassName + "'");
-                    break;
+                            "Failed to set credential: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
+                    return loginForm(model, library, callback);
                 }
             }
-            if (Library.isCredentialsEmpty(libraryClass)) {
-                model.addAttribute("error", "Missing credentials for '" + libraryClassName + "'");
-            } else {
-                model.addAttribute("info", "Successfully signed into '" + libraryClassName + "'");
-                return optionChange(model, libraryClassName);
-            }
         }
-
-        model.addAttribute("loginName", libraryClass.getSimpleName());
-        model.addAttribute("loginFields", classCredentials.keySet());
-        model.addAttribute("methodClass", libraryClassName);
-        model.addAttribute("callback", callback);
-
-        return "login";
+        return "redirect:" + callback;
     }
 
     /**
