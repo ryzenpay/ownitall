@@ -26,7 +26,7 @@ import ryzen.ownitall.method.Method.Export;
 import ryzen.ownitall.method.Method.Import;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.LogConfig;
-import ryzen.ownitall.util.Logger;
+
 import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -45,6 +45,13 @@ public class MethodMenu {
     private static final ObjectMapper mapper = new ObjectMapper();
     private Method method;
 
+    private String getMethodName() {
+        if (method == null) {
+            return "";
+        }
+        return method.getClass().getSimpleName();
+    }
+
     /**
      * <p>
      * methodMenu.
@@ -59,10 +66,8 @@ public class MethodMenu {
     public String methodMenu(Model model,
             @RequestParam(value = "method", required = false) String method,
             @RequestParam(value = "callback", required = true) String callback) {
-        if (LogConfig.isDebug()) {
-            model.addAttribute("debug",
-                    "method=" + method + ", callback=" + callback);
-        }
+        logger.debug(model,
+                "method=" + method + ", callback=" + callback);
         if (method != null) {
             Class<? extends Method> methodClass = Method.getMethod(method);
             if (methodClass != null) {
@@ -70,22 +75,19 @@ public class MethodMenu {
                     this.method = Method.initMethod(methodClass);
                     return "redirect:" + callback;
                 } catch (MissingSettingException e) {
-                    model.addAttribute("info", "Missing settings to set up '" + methodClass.getSimpleName() + "'");
-                    return this.loginForm(model,
-                            method,
-                            "/method?method=" + method + "&callback=" + callback);
+                    logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "'");
+                    return this.loginForm(model, method, "/method?method=" + method + "&callback=" + callback);
                 } catch (AuthenticationException e) {
-                    model.addAttribute("error",
-                            "Failed to authenticate into method '" + method + "'");
+                    logger.error(model, "Failed to authenticate into method '" + method + "'", e);
                     Method.clearCredentials(methodClass);
                     return this.loginForm(model, methodClass
                             .getSimpleName(),
                             "/method?method=" + method + "&callback=" + callback);
                 } catch (NoSuchMethodException e) {
-                    model.addAttribute("error", "Invalid method '" + method + "' provided");
+                    logger.error(model, "Invalid method '" + method + "' provided", e);
                 }
             } else {
-                model.addAttribute("error", "Unsupported method class '" + method + "'");
+                logger.warn(model, "Unsupported method class '" + method + "'");
             }
         }
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -118,21 +120,17 @@ public class MethodMenu {
     public String loginForm(Model model,
             @RequestParam(value = "method", required = true) String method,
             @RequestParam(value = "callback", required = true) String callback) {
-
-        if (LogConfig.isDebug()) {
-            model.addAttribute("debug",
-                    "method=" + method + ", callback=" + callback);
-        }
+        logger.debug("method=" + method + ", callback=" + callback);
 
         Class<? extends Method> methodClass = Method.getMethod(method);
         if (methodClass == null) {
-            model.addAttribute("error", "Unsupported method provided");
+            logger.warn(model, "Unsupported method '" + method + "'provided");
             return methodMenu(model, null, callback);
         }
 
         LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
-            model.addAttribute("info", "No credentials required");
+            logger.info(model, "No credentials required");
             return methodMenu(model, methodClass.getSimpleName(), callback);
         }
         LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
@@ -171,7 +169,7 @@ public class MethodMenu {
 
         Class<? extends Method> methodClass = Method.getMethod(method);
         if (methodClass == null) {
-            model.addAttribute("error", "Invalid method '" + method + "' provided");
+            logger.warn(model, "Invalid method '" + method + "' provided");
             return loginForm(model, method, callback);
         }
         Settings settings = Settings.load();
@@ -181,13 +179,15 @@ public class MethodMenu {
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
-                    model.addAttribute("error",
-                            "Missing value for: '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                    logger.warn(model, "Missing value for: '" + name + "' for '" + methodClass.getSimpleName() + "'");
                     return loginForm(model, method, callback);
                 }
-                if (!settings.set(classCredentials.get(name), value)) {
-                    model.addAttribute("error",
-                            "Failed to set credential: '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                try {
+                    settings.set(classCredentials.get(name), value);
+                    logger.info(model, "Successfully changed setting '" + name + "'");
+                } catch (NoSuchFieldException e) {
+                    logger.error(model,
+                            "Failed to set credential: '" + name + "' for '" + methodClass.getSimpleName() + "'", e);
                     return loginForm(model, method, callback);
                 }
             }
@@ -208,7 +208,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/import");
         }
-        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
+        logger.info(model, "Current method: " + getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/method/import/collection");
         options.put("Import Liked Songs", "/method/import/likedsongs");
@@ -230,37 +230,12 @@ public class MethodMenu {
      */
     @GetMapping("/method/import/collection")
     public String optionImportCollection(Model model) {
-        return process(model, "Importing '" + Method.getMethodName(this.method)
-                + "' collection", "/method/import/collection", "/method/import");
-    }
-
-    /**
-     * <p>
-     * process.
-     * </p>
-     *
-     * @param model           a {@link org.springframework.ui.Model} object
-     * @param processName     a {@link java.lang.String} object
-     * @param processFunction a {@link java.lang.String} object
-     * @param callback        a {@link java.lang.String} object
-     * @return a {@link java.lang.String} object
-     */
-    @GetMapping("/method/process")
-    public String process(Model model,
-            @RequestParam(value = "processName", required = true) String processName,
-            @RequestParam(value = "processFunction", required = true) String processFunction,
-            @RequestParam(value = "callback", required = true) String callback) {
         if (this.method == null) {
-            model.addAttribute("error", "Method was not initialized");
-            return methodMenu(model, null, "/method/process?processName=" + processName + "&processFunction="
-                    + processFunction + "&callback=" + callback);
+            logger.warn(model, "Method not initialized in import/collection");
+            return methodMenu(model, null, "/method/import/collection");
         }
-        model.addAttribute("processName", processName);
-        model.addAttribute("processFunction", processFunction);
-        model.addAttribute("processProgress", "/method/progress");
-        model.addAttribute("processLogs", "/method/logs");
-        model.addAttribute("callback", callback);
-        return "process";
+        return process(model, "Importing '" + getMethodName()
+                + "' collection", "/method/import/collection", "/method/import");
     }
 
     /**
@@ -271,7 +246,6 @@ public class MethodMenu {
     @PostMapping("/method/import/collection")
     public void importCollection() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/collection");
             return;
         }
         try {
@@ -284,7 +258,7 @@ public class MethodMenu {
                 method.uploadPlaylists();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'collection");
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "' collection");
         }
     }
 
@@ -298,7 +272,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/import/likedsongs")
     public String optionImportLikedSongs(Model model) {
-        return process(model, "Importing '" + Method.getMethodName(this.method) + "' liked songs",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in import/likedsongs");
+            return methodMenu(model, null, "/method/import/likedsongs");
+        }
+        return process(model, "Importing '" + getMethodName() + "' liked songs",
                 "/method/import/likedsongs", "/method/import");
     }
 
@@ -310,7 +288,7 @@ public class MethodMenu {
     @PostMapping("/method/import/likedsongs")
     public void importLikedSongs() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/likedsongs");
+            return;
         }
         try {
             LikedSongs likedSongs = method.getLikedSongs();
@@ -318,7 +296,7 @@ public class MethodMenu {
                 Collection.addLikedSongs(likedSongs);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'liked songs");
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "' liked songs");
         }
     }
 
@@ -334,7 +312,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/import/albums")
     public String optionImportAlbums(Model model) {
-        return process(model, "Importing '" + Method.getMethodName(this.method) + "' albums", "/method/import/albums",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in import/albums");
+            return methodMenu(model, null, "/method/import/albums");
+        }
+        return process(model, "Importing '" + getMethodName() + "' albums", "/method/import/albums",
                 "/method/import");
     }
 
@@ -346,7 +328,7 @@ public class MethodMenu {
     @PostMapping("/method/import/albums")
     public void importAlbums() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/albums");
+            return;
         }
         try {
             ArrayList<Album> albums = method.getAlbums();
@@ -354,7 +336,7 @@ public class MethodMenu {
                 Collection.addAlbums(albums);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'albums");
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "' albums");
         }
     }
 
@@ -369,7 +351,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/import/playlists")
     public String optionImportPlaylists(Model model) {
-        return process(model, "Importing '" + Method.getMethodName(this.method) + "' playlists",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in import/playlists");
+            return methodMenu(model, null, "/method/import/playlists");
+        }
+        return process(model, "Importing '" + getMethodName() + "' playlists",
                 "/method/import/playlists", "/method/import");
     }
 
@@ -381,7 +367,7 @@ public class MethodMenu {
     @PostMapping("/method/import/playlists")
     public void importPlaylists() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/playlists");
+            return;
         }
         try {
             ArrayList<Playlist> playlists = method.getPlaylists();
@@ -389,7 +375,7 @@ public class MethodMenu {
                 Collection.addPlaylists(playlists);
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "'playlists");
+            logger.debug("Interrupted while importing '" + method.getClass().getSimpleName() + "' playlists");
         }
     }
 
@@ -406,7 +392,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/export");
         }
-        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
+        logger.info(model, "Current method: " + this.method.getClass().getSimpleName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Export Library", "/method/export/collection");
         options.put("Export Liked Songs", "/method/export/likedsongs");
@@ -428,7 +414,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/export/collection")
     public String optionExportCollection(Model model) {
-        return process(model, "Exporting '" + Method.getMethodName(this.method) + "' collection",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in export/collection");
+            return methodMenu(model, null, "/method/export/collection");
+        }
+        return process(model, "Exporting '" + getMethodName() + "' collection",
                 "/method/export/collection", "/method/export");
     }
 
@@ -440,7 +430,7 @@ public class MethodMenu {
     @PostMapping("/method/export/collection")
     public void exportCollection() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/export/collection");
+            return;
         }
         try {
             try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
@@ -466,7 +456,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/export/likedsongs")
     public String optionExportLikedSongs(Model model) {
-        return process(model, "Exporting '" + Method.getMethodName(this.method) + "' liked songs",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in export/likedsongs");
+            return methodMenu(model, null, "/method/export/likedsongs");
+        }
+        return process(model, "Exporting '" + getMethodName() + "' liked songs",
                 "/method/export/likedsongs", "/method/export");
     }
 
@@ -478,12 +472,12 @@ public class MethodMenu {
     @PostMapping("/method/export/likedsongs")
     public void exportLikedSongs() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/import/likedsongs");
+            return;
         }
         try {
             method.uploadLikedSongs();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'liked songs");
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' liked songs");
         }
     }
 
@@ -498,7 +492,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/export/albums")
     public String optionExportAlbums(Model model) {
-        return process(model, "Exporting '" + Method.getMethodName(this.method) + "' albums", "/method/export/albums",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in export/albums");
+            return methodMenu(model, null, "/method/export/albums");
+        }
+        return process(model, "Exporting '" + getMethodName() + "' albums", "/method/export/albums",
                 "/method/export");
     }
 
@@ -510,12 +508,12 @@ public class MethodMenu {
     @PostMapping("/method/export/albums")
     public void exportAlbums() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/export/albums");
+            return;
         }
         try {
             method.uploadAlbums();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'albums");
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' albums");
         }
     }
 
@@ -530,7 +528,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/export/playlists")
     public String optionExportPlaylists(Model model) {
-        return process(model, "Exporting '" + Method.getMethodName(this.method) + "' playlists",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in export/playlists");
+            return methodMenu(model, null, "/method/export/playlists");
+        }
+        return process(model, "Exporting '" + getMethodName() + "' playlists",
                 "/method/export/playlists", "/method/export");
     }
 
@@ -542,12 +544,12 @@ public class MethodMenu {
     @PostMapping("/method/export/playlists")
     public void exportPlaylists() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/export/playlists");
+            return;
         }
         try {
             method.uploadPlaylists();
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "'playlists");
+            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' playlists");
         }
     }
 
@@ -564,7 +566,7 @@ public class MethodMenu {
         if (this.method == null) {
             return methodMenu(model, null, "/method/sync");
         }
-        model.addAttribute("info", "Current method: " + Method.getMethodName(this.method));
+        logger.info(model, "Current method: " + getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Sync Library", "/method/sync/collection");
         options.put("Sync Liked Songs", "/method/sync/likedsongs");
@@ -586,7 +588,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/sync/collection")
     public String optionSyncCollection(Model model) {
-        return process(model, "Syncronizing '" + Method.getMethodName(this.method) + "' collection",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in sync/collection");
+            return methodMenu(model, null, "/method/sync/collection");
+        }
+        return process(model, "Syncronizing '" + getMethodName() + "' collection",
                 "/method/sync/collection", "/method/sync");
     }
 
@@ -598,7 +604,6 @@ public class MethodMenu {
     @PostMapping("/method/sync/collection")
     public void syncCollection() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/sync/collection");
             return;
         }
         try {
@@ -613,10 +618,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'collection");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
@@ -630,7 +635,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/sync/likedsongs")
     public String optionSyncLikedSongs(Model model) {
-        return process(model, "Syncronizing '" + Method.getMethodName(this.method) + "' liked songs",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in sync/likedsongs");
+            return methodMenu(model, null, "/method/sync/likedsongs");
+        }
+        return process(model, "Syncronizing '" + getMethodName() + "' liked songs",
                 "/method/sync/likedsongs", "/method/sync");
     }
 
@@ -642,7 +651,6 @@ public class MethodMenu {
     @PostMapping("/method/sync/likedsongs")
     public void syncLikedSongs() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/sync/likedsongs");
             return;
         }
         try {
@@ -650,10 +658,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'liked songs");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
@@ -667,7 +675,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/sync/albums")
     public String optionSyncAlbums(Model model) {
-        return process(model, "Syncronizing '" + Method.getMethodName(this.method) + "' albums", "/method/sync/albums",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in sync/albums");
+            return methodMenu(model, null, "/method/sync/albums");
+        }
+        return process(model, "Syncronizing '" + getMethodName() + "' albums", "/method/sync/albums",
                 "/method/sync");
     }
 
@@ -679,7 +691,6 @@ public class MethodMenu {
     @PostMapping("/method/sync/albums")
     public void syncAlbums() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/sync/albums");
             return;
         }
         try {
@@ -687,10 +698,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'albums");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
@@ -704,7 +715,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/sync/playlists")
     public String optionSyncPlaylists(Model model) {
-        return process(model, "Exporting '" + Method.getMethodName(this.method) + "' playlists",
+        if (this.method == null) {
+            logger.warn(model, "Method not initialized in sync/playlists");
+            return methodMenu(model, null, "/method/sync/playlists");
+        }
+        return process(model, "Exporting '" + getMethodName() + "' playlists",
                 "/method/sync/playlists", "/method/sync");
     }
 
@@ -716,7 +731,6 @@ public class MethodMenu {
     @PostMapping("/method/sync/playlists")
     public void syncPlaylists() {
         if (this.method == null) {
-            logger.debug("method was not initialized before /method/sync/playlists");
             return;
         }
         try {
@@ -724,11 +738,40 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + method.getClass().getSimpleName() + "'playlists");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
+    }
+
+    /**
+     * <p>
+     * process.
+     * </p>
+     *
+     * @param model           a {@link org.springframework.ui.Model} object
+     * @param processName     a {@link java.lang.String} object
+     * @param processFunction a {@link java.lang.String} object
+     * @param callback        a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
+    @GetMapping("/method/process")
+    public String process(Model model,
+            @RequestParam(value = "processName", required = true) String processName,
+            @RequestParam(value = "processFunction", required = true) String processFunction,
+            @RequestParam(value = "callback", required = true) String callback) {
+        if (this.method == null) {
+            logger.warn(model, "Method was not initialized");
+            return methodMenu(model, null, "/method/process?processName=" + processName + "&processFunction="
+                    + processFunction + "&callback=" + callback);
+        }
+        model.addAttribute("processName", processName);
+        model.addAttribute("processFunction", processFunction);
+        model.addAttribute("processProgress", "/method/progress");
+        model.addAttribute("processLogs", "/method/logs");
+        model.addAttribute("callback", callback);
+        return "process";
     }
 
     /**

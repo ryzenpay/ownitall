@@ -51,14 +51,27 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         try {
             while (true) {
-                String choice = Menu.optionMenuWithValue(settings.getAll(true), "SETTINGS");
+                LinkedHashMap<String, String> options = new LinkedHashMap<>();
+                for (String name : settings.getAll().keySet()) {
+                    if (settings.isEmpty(name)) {
+                        options.put(name, "");
+                    } else {
+                        if (settings.isSecret(name)) {
+                            options.put(name, settings.getHashedValue(name));
+                        } else {
+                            options.put(name, settings.get(name).toString());
+                        }
+                    }
+                }
+                String choice = Menu.optionMenuWithValue(options, "SETTINGS");
                 if (choice.equals("Exit")) {
                     break;
                 }
-                if (this.changeSetting(choice)) {
+                try {
+                    this.changeSetting(choice);
                     logger.info("Successfully changed setting '" + choice + "'");
-                } else {
-                    logger.error("Unsuccessfully changed setting '" + choice + "'", new Exception());
+                } catch (NoSuchFieldException e) {
+                    logger.error("Unsuccessfully changed setting '" + choice + "'", e);
                 }
             }
         } catch (InterruptedException e) {
@@ -66,16 +79,16 @@ public class SettingsMenu {
         }
     }
 
-    private boolean changeSetting(String settingName) throws InterruptedException {
+    private void changeSetting(String settingName) throws InterruptedException, NoSuchFieldException {
         if (settingName == null) {
             logger.debug("null settingName provided in changeSetting");
-            return false;
+            return;
         }
         Settings settings = Settings.load();
         Class<?> settingType = settings.getType(settingName);
         if (settingType == null) {
             logger.error("Unable to find setting type  of '" + settingName + "'", new Exception());
-            return false;
+            return;
         }
         String[] options = settings.getOptions(settingName);
         Object input;
@@ -84,20 +97,20 @@ public class SettingsMenu {
                 String choice = Menu.optionMenu(new LinkedHashSet<String>(Arrays.asList(options)),
                         "'" + settingName.toUpperCase() + "' OPTIONS");
                 if (choice.equals("Exit")) {
-                    return false;
+                    throw new InterruptedException("Cancelled setting change option");
                 } else {
                     input = choice;
                 }
             } catch (InterruptedException e) {
                 logger.info("Interruption caught changing setting");
-                return false;
+                return;
             }
         } else {
             System.out.print(
                     "Enter new '" + settingType.getSimpleName() + "' value for '" + settingName + "': ");
             input = Input.request().getValue(settingType);
         }
-        return settings.set(settingName, input);
+        settings.set(settingName, input);
     }
 
     /**

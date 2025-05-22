@@ -109,26 +109,14 @@ abstract public class Method {
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof MissingSettingException) {
-                throw new MissingSettingException(e.getMessage());
+                throw new MissingSettingException(e);
             }
             if (cause instanceof AuthenticationException) {
-                throw new AuthenticationException(e.getMessage());
+                throw new AuthenticationException(e);
             }
             logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
-            throw new NoSuchMethodException(e.getMessage());
+            throw new NoSuchMethodException(methodClass.getName());
         }
-    }
-
-    /**
-     * <p>
-     * getMethodName.
-     * </p>
-     *
-     * @param method a {@link ryzen.ownitall.method.Method} object
-     * @return a {@link java.lang.String} object
-     */
-    public static String getMethodName(Method method) {
-        return method.getClass().getSimpleName();
     }
 
     /**
@@ -139,24 +127,25 @@ abstract public class Method {
      * @param type a {@link java.lang.Class} object
      * @return a boolean
      */
-    public static boolean clearCredentials(Class<? extends Method> type) {
+    public static void clearCredentials(Class<? extends Method> type) {
         if (type == null) {
             logger.debug("null type provided in clearCredentials");
-            return true;
+            return;
         }
         Settings settings = Settings.load();
         LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
-            return false;
+            return;
         }
         for (String varName : credentialVars.values()) {
-            if (!settings.set(varName, "")) {
-                return false;
+            try {
+                settings.set(varName, "");
+            } catch (NoSuchFieldException e) {
+                logger.warn("Unable to find method setting '" + varName + "'");
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
-        return true;
     }
 
     /**

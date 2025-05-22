@@ -64,12 +64,12 @@ public class Library {
             logger.error("Exception while setting up library '" + libraryClass.getSimpleName() + "'", e);
             Throwable cause = e.getCause();
             if (cause instanceof MissingSettingException) {
-                throw new MissingSettingException(e.getMessage());
+                throw new MissingSettingException(e);
             }
             if (cause instanceof AuthenticationException) {
-                throw new AuthenticationException(e.getMessage());
+                throw new AuthenticationException(e);
             }
-            throw new NoSuchMethodException(e.getMessage());
+            throw new NoSuchMethodException(libraryClass.getName());
         }
     }
 
@@ -114,24 +114,25 @@ public class Library {
      * @param type a {@link java.lang.Class} object
      * @return a boolean
      */
-    public static boolean clearCredentials(Class<? extends Library> type) {
+    public static void clearCredentials(Class<? extends Library> type) {
         if (type == null) {
             logger.debug("null type provided in clearCredentials");
-            return true;
+            return;
         }
         Settings settings = Settings.load();
         LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
         if (credentialVars == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
-            return false;
+            return;
         }
         for (String varName : credentialVars.values()) {
-            if (!settings.set(varName, "")) {
-                return false;
+            try {
+                settings.set(varName, "");
+            } catch (NoSuchFieldException e) {
+                logger.warn("Unable to find library credential '" + varName + "'");
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
-        return true;
     }
 
     /**

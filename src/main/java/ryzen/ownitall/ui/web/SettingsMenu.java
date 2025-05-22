@@ -19,6 +19,7 @@ import ryzen.ownitall.Settings;
  */
 @Controller
 public class SettingsMenu {
+    private static final Logger logger = new Logger(SettingsMenu.class);
 
     /**
      * <p>
@@ -51,7 +52,7 @@ public class SettingsMenu {
     @GetMapping("/settings/save")
     public String optionSave(Model model) {
         Settings.load().save();
-        model.addAttribute("info", "Successfully saved");
+        logger.info(model, "Successfully saved");
         return settingsMenu(model);
     }
 
@@ -63,18 +64,48 @@ public class SettingsMenu {
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      */
-    // TODO: implement options
+    // TODO: hardencode predefined options as a dropdown
     // also in library and method /login
+    // ^ point them to this
     @GetMapping("/settings/change")
-    public String changeSettingForm(Model model) {
-        model.addAttribute("formName", "Change Settings");
-        model.addAttribute("loginFields", Settings.load().getAll(true));
-        model.addAttribute("postAction", "/settings/change");
+    public String changeSettingForm(Model model, @RequestParam(value = "choice", required = false) String choice) {
+        Settings settings = Settings.load();
+        if (choice != null) {
+            LinkedHashMap<String, String> fields = new LinkedHashMap<>();
+            // allows semi colon seperated list
+            for (String currChoice : choice.split(";")) {
+                if (settings.isEmpty(currChoice)) {
+                    fields.put(currChoice, "");
+                } else {
+                    fields.put(currChoice, settings.get(currChoice).toString());
+                }
+            }
+            model.addAttribute("formName", "Change Setting(s)");
+            model.addAttribute("loginFields", fields);
+            model.addAttribute("postAction", "/settings/change?choice=" + choice);
+            model.addAttribute("callback", "/settings/change");
+            return "form";
+        }
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        for (String name : settings.getAll().keySet()) {
+            String value;
+            if (settings.isEmpty(name)) {
+                value = "";
+            } else {
+                if (settings.isSecret(name)) {
+                    value = settings.getHashedValue(name);
+                } else {
+                    value = settings.get(name).toString();
+                }
+            }
+            options.put(name + ": " + value, "/settings/change?choice=" + name);
+        }
+        model.addAttribute("menuName", "Choose Setting Menu");
+        model.addAttribute("menuOptions", options);
         model.addAttribute("callback", "/settings");
-        return "form";
+        return "menu";
     }
 
-    // TODO: hardencode predefined options as a dropdown
     /**
      * <p>
      * login.
@@ -88,18 +119,20 @@ public class SettingsMenu {
     @PostMapping("/settings/change")
     public String login(Model model,
             @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(required = false) LinkedHashMap<String, String> params) {
-
-        if (params != null) {
-            Settings settings = Settings.load();
-            for (String name : params.keySet()) {
-                if (!settings.set(name, params.get(name))) {
-                    model.addAttribute("warn", "Failed to set setting '" + name + "'");
+            @RequestParam(required = true) LinkedHashMap<String, String> params) {
+        Settings settings = Settings.load();
+        for (String name : params.keySet()) {
+            if (settings.exists(name)) {
+                try {
+                    settings.set(name, params.get(name));
+                } catch (NoSuchFieldException e) {
+                    logger.warn(model, "Failed to set setting '" + name + "'");
+                    break;
                 }
             }
-            model.addAttribute("info", "Successfully updated Settings");
         }
-        return settingsMenu(model);
+        logger.info(model, "Successfully updated Settings");
+        return "redirect:" + callback;
     }
 
     /**
@@ -113,7 +146,7 @@ public class SettingsMenu {
     @GetMapping("/settings/reset")
     public String optionReset(Model model) {
         Settings.load().clear();
-        model.addAttribute("info", "Successfully reset");
+        logger.info(model, "Successfully reset");
         return settingsMenu(model);
     }
 

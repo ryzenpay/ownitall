@@ -16,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import ryzen.ownitall.Main;
-import ryzen.ownitall.util.Logger;
 
 /**
  * <p>
@@ -96,7 +95,7 @@ public class MainMenu {
     @GetMapping("/save")
     public String optionSave(Model model) {
         Main.save();
-        model.addAttribute("info", "Successfully saved");
+        logger.info(model, "Successfully saved");
         return mainMenu(model);
     }
 

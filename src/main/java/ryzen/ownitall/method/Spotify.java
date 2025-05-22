@@ -84,14 +84,14 @@ public class Spotify extends Method {
                             Settings.spotifyRedirectURL))
                     .build();
         } catch (URISyntaxException e) {
-            throw new AuthenticationException(e.getMessage());
+            throw new AuthenticationException(e);
         }
         try {
             this.getCode();
             this.setToken();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while authenticating with Spotify");
-            throw new AuthenticationException(e.getMessage());
+            throw new AuthenticationException(e);
         }
     }
 
@@ -104,7 +104,7 @@ public class Spotify extends Method {
         AtomicReference<String> codeRef = new AtomicReference<>();
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
-                .show_dialog(Settings.spotifyShowdialog)
+                .show_dialog(Settings.interactive)
                 .build();
         URI authUri = authorizationCodeUriRequest.execute();
         try {
@@ -222,7 +222,7 @@ public class Spotify extends Method {
             this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             logger.error("Exception logging in", e);
-            throw new AuthenticationException(e.getMessage());
+            throw new AuthenticationException(e);
         }
     }
 

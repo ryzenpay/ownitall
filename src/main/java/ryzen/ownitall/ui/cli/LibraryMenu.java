@@ -67,8 +67,13 @@ public class LibraryMenu {
                     break;
                 }
             }
-            Settings.load().set("libraryType", Library.libraries.get(choice));
-            logger.info("Successfully changed library type to '" + choice + "'");
+            try {
+                Settings.load().set("libraryType", Library.libraries.get(choice));
+                logger.info("Successfully changed library type to '" + choice + "'");
+            } catch (NoSuchFieldException e) {
+                logger.error("Unable to find library setting 'libraryType'", e);
+                throw new MissingSettingException(e);
+            }
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while getting library change option");
         }
@@ -86,9 +91,11 @@ public class LibraryMenu {
             for (String name : classCredentials.keySet()) {
                 System.out.print("Enter '" + name + "': ");
                 String value = Input.request().getString();
-                if (!credentials.set(classCredentials.get(name), value)) {
-                    throw new MissingSettingException(
-                            "Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
+                try {
+                    credentials.set(classCredentials.get(name), value);
+                } catch (NoSuchFieldException e) {
+                    logger.warn("Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
+                    throw new MissingSettingException(e);
                 }
             }
         }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.Level;
+
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
@@ -79,7 +81,7 @@ public class SoulSeek extends Download {
         command.add(Collection.getSongFileName(song));
         command.add("--fast-search");
         command.add(String.valueOf(Settings.downloadThreads));
-        if (LogConfig.isDebug()) {
+        if (LogConfig.is(Level.DEBUG)) {
             command.add("-v");
         }
         /**

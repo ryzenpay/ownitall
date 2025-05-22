@@ -78,7 +78,7 @@ public class Youtube extends Method {
                     .build();
         } catch (IOException | GeneralSecurityException e) {
             logger.error("Exception logging in with youtube api", e);
-            throw new AuthenticationException(e.getMessage());
+            throw new AuthenticationException(e);
         }
     }
 

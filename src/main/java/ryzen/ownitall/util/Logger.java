@@ -22,24 +22,24 @@ public class Logger {
     private org.apache.logging.log4j.Logger logger;
 
     /**
-     * <p>Constructor for Logger.</p>
+     * <p>
+     * Constructor for Logger.
+     * </p>
      *
      * @param clazz a {@link java.lang.Class} object
      */
     public Logger(Class<?> clazz) {
-        if (clazz == null) {
-            logger = LogManager.getLogger();
-        } else {
-            logger = LogManager.getLogger(clazz);
-        }
+        logger = LogManager.getLogger(clazz);
     }
 
     /**
-     * <p>log.</p>
+     * <p>
+     * log.
+     * </p>
      *
-     * @param level a {@link org.apache.logging.log4j.Level} object
+     * @param level   a {@link org.apache.logging.log4j.Level} object
      * @param message a {@link java.lang.String} object
-     * @param error a {@link java.lang.Throwable} object
+     * @param error   a {@link java.lang.Throwable} object
      */
     public void log(Level level, String message, Throwable error) {
         if (error == null) {
@@ -51,7 +51,9 @@ public class Logger {
     }
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
      */
@@ -60,7 +62,9 @@ public class Logger {
     }
 
     /**
-     * <p>info.</p>
+     * <p>
+     * info.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
      */
@@ -69,7 +73,9 @@ public class Logger {
     }
 
     /**
-     * <p>warn.</p>
+     * <p>
+     * warn.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
      */
@@ -78,17 +84,21 @@ public class Logger {
     }
 
     /**
-     * <p>error.</p>
+     * <p>
+     * error.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
-     * @param error a {@link java.lang.Throwable} object
+     * @param error   a {@link java.lang.Throwable} object
      */
     public void error(String message, Throwable error) {
         this.log(Level.ERROR, message, error);
     }
 
     /**
-     * <p>getLatestLog.</p>
+     * <p>
+     * getLatestLog.
+     * </p>
      *
      * @return a {@link java.util.Map.Entry} object
      */
@@ -102,7 +112,9 @@ public class Logger {
     }
 
     /**
-     * <p>getLogs.</p>
+     * <p>
+     * getLogs.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */

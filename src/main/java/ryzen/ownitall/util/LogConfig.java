@@ -22,7 +22,9 @@ public class LogConfig {
     private static final int historySize = 10;
 
     /**
-     * <p>getLatestLog.</p>
+     * <p>
+     * getLatestLog.
+     * </p>
      *
      * @return a {@link java.util.Map.Entry} object
      */
@@ -36,7 +38,9 @@ public class LogConfig {
     }
 
     /**
-     * <p>getLogs.</p>
+     * <p>
+     * getLogs.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
@@ -52,14 +56,18 @@ public class LogConfig {
     }
 
     /**
-     * <p>printLogs.</p>
+     * <p>
+     * printLogs.
+     * </p>
      */
     public static void printLogs() {
         printLogs(globalLevel);
     }
 
     /**
-     * <p>printLogs.</p>
+     * <p>
+     * printLogs.
+     * </p>
      *
      * @param level a {@link org.apache.logging.log4j.Level} object
      */
@@ -73,7 +81,9 @@ public class LogConfig {
     }
 
     /**
-     * <p>addLog.</p>
+     * <p>
+     * addLog.
+     * </p>
      *
      * @param entry a {@link java.util.Map.Entry} object
      */
@@ -85,7 +95,9 @@ public class LogConfig {
     }
 
     /**
-     * <p>clearLogs.</p>
+     * <p>
+     * clearLogs.
+     * </p>
      */
     public static void clearLogs() {
         globalHistory.clear();
@@ -128,12 +140,12 @@ public class LogConfig {
      *
      * @return a boolean
      */
-    public static boolean isDebug() {
+    public static boolean is(Level level) {
         if (globalLevel == null) {
             System.err.println("Log level not set");
             return false;
         }
-        if (globalLevel.intLevel() == Level.DEBUG.intLevel()) {
+        if (globalLevel.isLessSpecificThan(level)) {
             return true;
         }
         return false;

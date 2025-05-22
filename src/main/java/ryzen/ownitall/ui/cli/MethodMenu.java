@@ -28,6 +28,13 @@ public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
     private Method method;
 
+    private String getMethodName() {
+        if (method == null) {
+            return "";
+        }
+        return method.getClass().getSimpleName();
+    }
+
     /**
      * <p>
      * Constructor for MethodMenu.
@@ -81,9 +88,11 @@ public class MethodMenu {
                 }
                 System.out.print("Enter '" + methodClass.getSimpleName() + " " + name + "': ");
                 Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
-                if (!credentials.set(classCredentials.get(name), value)) {
-                    throw new MissingSettingException(
-                            "Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                try {
+                    credentials.set(classCredentials.get(name), value);
+                } catch (NoSuchFieldException e) {
+                    logger.warn("Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
+                    throw new MissingSettingException(e);
                 }
             }
         }
@@ -108,58 +117,58 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT " + Method.getMethodName(this.method));
+                        "IMPORT " + getMethodName());
                 if (choice.equals("Exit")) {
                     break;
                 }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + Method.getMethodName(this.method) + " import menu choice");
+            logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
         }
     }
 
     private void optionImportCollection() {
-        logger.debug("Importing '" + Method.getMethodName(this.method) + "' library...");
-        try (ProgressBar pb = new ProgressBar(Method.getMethodName(this.method) + " Import", 3)) {
+        logger.debug("Importing '" + getMethodName() + "' library...");
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Import", 3)) {
             pb.step("Liked Songs");
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
-                logger.info("Imported " + likedSongs.size() + " liked songs from '" + Method.getMethodName(this.method)
+                logger.info("Imported " + likedSongs.size() + " liked songs from '" + getMethodName()
                         + "'");
             }
             pb.step("Saved Albums");
             ArrayList<Album> albums = method.getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
-                logger.info("Imported " + albums.size() + " albums from '" + Method.getMethodName(this.method) + "'");
+                logger.info("Imported " + albums.size() + " albums from '" + getMethodName() + "'");
             }
             pb.step("Playlists");
             ArrayList<Playlist> playlists = method.getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info(
-                        "Imported " + playlists.size() + " playlists from '" + Method.getMethodName(this.method) + "'");
+                        "Imported " + playlists.size() + " playlists from '" + getMethodName() + "'");
             }
-            logger.debug("done importing '" + Method.getMethodName(this.method) + "' music");
+            logger.debug("done importing '" + getMethodName() + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' library");
+            logger.debug("Interrupted while importing '" + getMethodName() + "' library");
         }
     }
 
     private void optionImportLikedSongs() {
         try {
-            logger.info("Getting liked songs from '" + Method.getMethodName(this.method) + "'...");
+            logger.info("Getting liked songs from '" + getMethodName() + "'...");
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
                 logger.info(
-                        "Imported " + likedSongs.size() + " liked songs from '" + Method.getMethodName(this.method)
+                        "Imported " + likedSongs.size() + " liked songs from '" + getMethodName()
                                 + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + Method.getMethodName(this.method) + "' liked songs");
+            logger.debug("Interrupted while importing '" + getMethodName() + "' liked songs");
         }
     }
 
@@ -170,7 +179,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT ALBUM" + Method.getMethodName(this.method).toUpperCase());
+                        "IMPORT ALBUM" + getMethodName().toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -178,17 +187,17 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug(
-                    "Interrupted while getting " + Method.getMethodName(this.method) + " import album menu choice");
+                    "Interrupted while getting " + getMethodName() + " import album menu choice");
         }
     }
 
     private void optionImportAlbums() {
         try {
-            logger.info("Getting albums from '" + Method.getMethodName(this.method) + "'...");
+            logger.info("Getting albums from '" + getMethodName() + "'...");
             ArrayList<Album> albums = method.getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
-                logger.info("Imported " + albums.size() + " albums from '" + Method.getMethodName(this.method) + "'");
+                logger.info("Imported " + albums.size() + " albums from '" + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing albums");
@@ -201,27 +210,27 @@ public class MethodMenu {
         String albumArtistName = null;
         try {
             while (albumId == null || albumId.isEmpty()) {
-                System.out.print("*Enter '" + Method.getMethodName(this.method) + "' Album ID: ");
+                System.out.print("*Enter '" + getMethodName() + "' Album ID: ");
                 albumId = Input.request().getString();
             }
-            System.out.print("Enter '" + Method.getMethodName(this.method) + "' Album name: ");
+            System.out.print("Enter '" + getMethodName() + "' Album name: ");
             albumName = Input.request().getString();
-            System.out.print("Enter '" + Method.getMethodName(this.method) + "' Album artist name: ");
+            System.out.print("Enter '" + getMethodName() + "' Album artist name: ");
             albumArtistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting album details");
             return;
         }
         try {
-            logger.info("Getting album '" + albumId + "' from '" + Method.getMethodName(this.method) + "'...");
+            logger.info("Getting album '" + albumId + "' from '" + getMethodName() + "'...");
             Album album = method.getAlbum(albumId, albumName, albumArtistName);
             if (album != null) {
                 Collection.addAlbum(album);
                 logger.info("Imported album '" + album.getName() + "' (" + album.size() + ") from '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' album");
+            logger.debug("Interrupted while getting '" + getMethodName() + "' album");
         }
     }
 
@@ -232,7 +241,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT PlAYLIST" + Method.getMethodName(this.method).toUpperCase());
+                        "IMPORT PlAYLIST" + getMethodName().toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
                 }
@@ -240,18 +249,18 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug(
-                    "Interrupted while getting " + Method.getMethodName(this.method) + " import playlist menu choice");
+                    "Interrupted while getting " + getMethodName() + " import playlist menu choice");
         }
     }
 
     private void optionImportPlaylists() {
         try {
-            logger.info("Getting playlists from '" + Method.getMethodName(this.method) + "'...");
+            logger.info("Getting playlists from '" + getMethodName() + "'...");
             ArrayList<Playlist> playlists = method.getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info(
-                        "Imported " + playlists.size() + " playlists from '" + Method.getMethodName(this.method) + "'");
+                        "Imported " + playlists.size() + " playlists from '" + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing playlists");
@@ -263,25 +272,25 @@ public class MethodMenu {
         String playlistName = null;
         try {
             while (playlistId == null || playlistId.isEmpty()) {
-                System.out.print("*Enter '" + Method.getMethodName(this.method) + "' Playlist ID: ");
+                System.out.print("*Enter '" + getMethodName() + "' Playlist ID: ");
                 playlistId = Input.request().getString();
             }
-            System.out.print("Enter '" + Method.getMethodName(this.method) + "' Playlist Name: ");
+            System.out.print("Enter '" + getMethodName() + "' Playlist Name: ");
             playlistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting playlist details");
             return;
         }
         try {
-            logger.info("Getting playlist '" + playlistId + "' from '" + Method.getMethodName(this.method) + "'...");
+            logger.info("Getting playlist '" + playlistId + "' from '" + getMethodName() + "'...");
             Playlist playlist = method.getPlaylist(playlistId, playlistName);
             if (playlist != null) {
                 Collection.addPlaylist(playlist);
                 logger.info("Imported playlist '" + playlist.getName() + "' (" + playlist.size() + ") from '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting '" + Method.getMethodName(this.method) + "' playlist");
+            logger.debug("Interrupted while getting '" + getMethodName() + "' playlist");
         }
     }
 
@@ -301,50 +310,50 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "EXPORT " + Method.getMethodName(this.method).toUpperCase());
+                        "EXPORT " + getMethodName().toUpperCase());
                 if (choice.equals("Exit")) {
                     break;
                 }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + Method.getMethodName(this.method) + " export menu choice");
+            logger.debug("Interrupted while getting " + getMethodName() + " export menu choice");
         }
     }
 
     private void optionExportCollection() {
-        logger.debug("Uploading '" + Method.getMethodName(this.method) + "' (" + Collection.getTotalTrackCount()
+        logger.debug("Uploading '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
-        try (ProgressBar pb = new ProgressBar(Method.getMethodName(this.method) + " Upload", 3)) {
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
             pb.step("Liked Songs");
             method.uploadLikedSongs();
             logger.debug("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
-                    + Method.getMethodName(this.method) + "'");
+                    + getMethodName() + "'");
             pb.step("Saved Albums");
             method.uploadAlbums();
             logger.debug("Exported " + Collection.getAlbumCount() + " albums to '"
-                    + Method.getMethodName(this.method) + "'");
+                    + getMethodName() + "'");
             pb.step("Playlists");
             method.uploadPlaylists();
             logger.debug(
-                    "Exported " + Collection.getPlaylistCount() + " playlists to '" + Method.getMethodName(this.method)
+                    "Exported " + Collection.getPlaylistCount() + " playlists to '" + getMethodName()
                             + "'");
-            logger.debug("done uploading '" + Method.getMethodName(this.method) + "' music");
+            logger.debug("done uploading '" + getMethodName() + "' music");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' music");
+            logger.debug("Interrupted while uploading '" + getMethodName() + "' music");
         }
     }
 
     private void optionExportLikedSongs() {
         try {
             logger.info("Uploading " + Collection.getLikedSongs().size() + " liked songs to '"
-                    + Method.getMethodName(this.method)
+                    + getMethodName()
                     + "'");
             method.uploadLikedSongs();
             logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
-                    + Method.getMethodName(this.method) + "'");
+                    + getMethodName() + "'");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while uploading '" + Method.getMethodName(this.method) + "' liked songs");
+            logger.debug("Interrupted while uploading '" + getMethodName() + "' liked songs");
         }
     }
 
@@ -361,17 +370,17 @@ public class MethodMenu {
             }
             if (choice.equals("All")) {
                 logger.info("Uploading " + Collection.getPlaylistCount() + " playlists to '"
-                        + Method.getMethodName(this.method)
+                        + getMethodName()
                         + "'");
                 method.uploadPlaylists();
                 logger.info("Exported " + Collection.getPlaylistCount() + " playlists to '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
             } else {
                 Playlist playlist = options.get(choice);
                 logger.info("Uploading playlist '" + playlist.getName() + "' (" + playlist.size() + ") to '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
                 method.uploadPlaylist(playlist);
-                logger.info("Exported playlist '" + playlist.getName() + "' to '" + Method.getMethodName(this.method)
+                logger.info("Exported playlist '" + playlist.getName() + "' to '" + getMethodName()
                         + "'");
             }
         } catch (InterruptedException e) {
@@ -392,16 +401,16 @@ public class MethodMenu {
             }
             if (choice.equals("All")) {
                 logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
                 method.uploadAlbums();
                 logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
             } else {
                 Album album = options.get(choice);
                 logger.info("Uploading album '" + album.getName() + "' (" + album.size() + ") to '"
-                        + Method.getMethodName(this.method) + "'");
+                        + getMethodName() + "'");
                 method.uploadAlbum(album);
-                logger.info("Exported album '" + album.getName() + "' to '" + Method.getMethodName(this.method) + "'");
+                logger.info("Exported album '" + album.getName() + "' to '" + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting export album choice");
@@ -424,96 +433,96 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "SYNC " + Method.getMethodName(this.method));
+                        "SYNC " + getMethodName());
                 if (choice.equals("Exit")) {
                     break;
                 }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + Method.getMethodName(this.method) + " import menu choice");
+            logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
         }
     }
 
     private void optionSyncCollection() {
-        logger.debug("Syncronizing '" + Method.getMethodName(this.method) + "' library...");
-        try (ProgressBar pb = new ProgressBar(Method.getMethodName(this.method) + " Sync", 3)) {
+        logger.debug("Syncronizing '" + getMethodName() + "' library...");
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Sync", 3)) {
             pb.step("Liked Songs");
             method.syncLikedSongs();
             logger.debug("Syncronized " + Collection.getLikedSongCount() + " liked songs from '"
-                    + Method.getMethodName(this.method) + "'");
+                    + getMethodName() + "'");
             pb.step("Saved Albums");
             method.syncAlbums();
             logger.debug("Syncronized " + Collection.getAlbumCount() + " albums from '"
-                    + Method.getMethodName(this.method) + "'");
+                    + getMethodName() + "'");
             pb.step("Playlists");
             method.syncPlaylists();
             logger.debug("Syncronized " + Collection.getPlaylistCount() + " playlists from '"
-                    + Method.getMethodName(this.method) + "'");
-            logger.debug("done syncronizing '" + Method.getMethodName(this.method) + "' library");
+                    + getMethodName() + "'");
+            logger.debug("done syncronizing '" + getMethodName() + "' library");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.debug("Interrupted while syncronizing '" + getMethodName() + "' library");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
     private void optionSyncLikedSongs() {
         try {
             logger.info("Syncronizing " + Collection.getLikedSongCount() + " liked songs to '"
-                    + Method.getMethodName(this.method)
+                    + getMethodName()
                     + "'");
             method.syncLikedSongs();
             logger.info("Syncronized " + Collection.getLikedSongCount() + " liked songs to '"
-                    + Method.getMethodName(this.method)
+                    + getMethodName()
                     + "'");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' liked songs");
+            logger.debug("Interrupted while syncronizing '" + getMethodName() + "' liked songs");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
     private void optionSyncAlbums() {
         try {
             logger.info(
-                    "Syncronizing " + Collection.getAlbumCount() + " albums to '" + Method.getMethodName(this.method)
+                    "Syncronizing " + Collection.getAlbumCount() + " albums to '" + getMethodName()
                             + "'");
             method.syncAlbums();
-            logger.info("Syncronized " + Collection.getAlbumCount() + " albums to '" + Method.getMethodName(this.method)
+            logger.info("Syncronized " + Collection.getAlbumCount() + " albums to '" + getMethodName()
                     + "'");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' albums");
+            logger.debug("Interrupted while syncronizing '" + getMethodName() + "' albums");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 
     private void optionSyncPlaylists() {
         try {
             logger.info("Syncronizing " + Collection.getPlaylistCount() + " playlists to '"
-                    + Method.getMethodName(this.method)
+                    + getMethodName()
                     + "'");
             method.syncPlaylists();
             logger.info("Syncronized " + Collection.getPlaylistCount() + " playlists to '"
-                    + Method.getMethodName(this.method)
+                    + getMethodName()
                     + "'");
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + Method.getMethodName(this.method) + "' playlists");
+            logger.debug("Interrupted while syncronizing '" + getMethodName() + "' playlists");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + Method.getMethodName(this.method) + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
             logger.error(
-                    "Failed to Authenticate while syncronizing '" + Method.getMethodName(this.method) + "' library", e);
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
         }
     }
 }

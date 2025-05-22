@@ -22,7 +22,9 @@ public class Menu {
     private static String asciiLogo = "";
 
     /**
-     * <p>setLogo.</p>
+     * <p>
+     * setLogo.
+     * </p>
      *
      * @param logo a {@link java.lang.String} object
      */
@@ -34,11 +36,11 @@ public class Menu {
      * clears screen contents when not in debug mode
      */
     public static void clearScreen() {
-        if (!LogConfig.isDebug()) {
+        if (!LogConfig.is(Level.DEBUG)) {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();
-        if (LogConfig.isDebug()) {
+        if (LogConfig.is(Level.DEBUG)) {
             return;
         }
         printLogo();

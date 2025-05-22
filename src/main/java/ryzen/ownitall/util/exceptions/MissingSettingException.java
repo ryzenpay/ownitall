@@ -1,13 +1,17 @@
 package ryzen.ownitall.util.exceptions;
 
 /**
- * <p>MissingSettingException class.</p>
+ * <p>
+ * MissingSettingException class.
+ * </p>
  *
  * @author ryzen
  */
 public class MissingSettingException extends Exception {
     /**
-     * <p>Constructor for MissingSettingException.</p>
+     * <p>
+     * Constructor for MissingSettingException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
      */
@@ -17,11 +21,17 @@ public class MissingSettingException extends Exception {
 
     // TODO: more debugging like what setting?
     /**
-     * <p>Constructor for MissingSettingException.</p>
+     * <p>
+     * Constructor for MissingSettingException.
+     * </p>
      *
      * @param group a {@link java.lang.Class} object
      */
     public MissingSettingException(Class<?> group) {
         super("Missing Setting from group '" + group.getSimpleName() + "'");
+    }
+
+    public MissingSettingException(Throwable e) {
+        super(e);
     }
 }

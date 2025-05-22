@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -23,6 +22,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  */
 @Controller
 public class LibraryMenu {
+    private static final Logger logger = new Logger(LibraryMenu.class);
 
     /**
      * <p>
@@ -62,17 +62,16 @@ public class LibraryMenu {
                 Library.initLibrary(libraryClass);
                 return libraryMenu(model);
             } catch (MissingSettingException e) {
-                model.addAttribute("info",
-                        "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+                logger.info(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
                 return loginForm(model, library, "/library/change?library=" + library);
             } catch (AuthenticationException e) {
-                model.addAttribute("info",
+                logger.info(model,
                         "Authentication exception setting up library '" + libraryClass.getSimpleName()
                                 + "', retrying...");
                 Library.clearCredentials(libraryClass);
                 return loginForm(model, library, "/library/change?library=" + library);
             } catch (NoSuchMethodException e) {
-                model.addAttribute("error", "Error: Unsupported library type '" + library + "'");
+                logger.error(model, "Unsupported library type '" + library + "'", e);
             }
         }
         for (String currLibrary : Library.libraries.keySet()) {
@@ -98,21 +97,15 @@ public class LibraryMenu {
     public String loginForm(Model model,
             @RequestParam(value = "library", required = true) String library,
             @RequestParam(value = "callback", required = true) String callback) {
-
-        if (LogConfig.isDebug()) {
-            model.addAttribute("debug",
-                    "library=" + library + ", callback=" + callback);
-        }
-
         Class<? extends Library> libraryClass = Library.libraries.get(library);
         if (libraryClass == null) {
-            model.addAttribute("error", "Unsupported library provided");
+            logger.warn(model, "Unsupported library '" + library + "'' provided");
             return optionChange(model, null);
         }
         Settings settings = Settings.load();
         LinkedHashMap<String, String> classCredentials = settings.getGroup(libraryClass);
         if (classCredentials == null || classCredentials.isEmpty()) {
-            model.addAttribute("info", "No credentials required");
+            logger.info(model, "No credentials required");
             return optionChange(model, libraryClass.getSimpleName());
         }
         LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
@@ -149,7 +142,7 @@ public class LibraryMenu {
 
         Class<? extends Library> libraryClass = Library.libraries.get(library);
         if (libraryClass == null) {
-            model.addAttribute("error", "invalid library '" + library + "' provided");
+            logger.warn(model, "invalid library '" + library + "' provided");
             return loginForm(model, library, callback);
         }
         Settings settings = Settings.load();
@@ -159,13 +152,15 @@ public class LibraryMenu {
             for (String name : classCredentials.keySet()) {
                 String value = params.get(name);
                 if (value == null || value.trim().isEmpty()) {
-                    model.addAttribute("error",
-                            "Missing value for: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
+                    logger.warn(model, "Missing value for: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
                     return loginForm(model, library, callback);
                 }
-                if (!settings.set(classCredentials.get(name), value)) {
-                    model.addAttribute("error",
-                            "Failed to set credential: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
+                try {
+                    settings.set(classCredentials.get(name), value);
+                    logger.info(model, "Successfully changed setting '" + name + "'");
+                } catch (NoSuchFieldException e) {
+                    logger.error(model,
+                            "Failed to set credential: '" + name + "' for '" + libraryClass.getSimpleName() + "'", e);
                     return loginForm(model, library, callback);
                 }
             }
@@ -184,7 +179,7 @@ public class LibraryMenu {
     @GetMapping("/library/cache/clear")
     public String optionClearCache(Model model) {
         Library.clear();
-        model.addAttribute("info", "Successfully cleared library cache");
+        logger.info(model, "Successfully cleared library cache");
         return libraryMenu(model);
     }
 
@@ -199,7 +194,7 @@ public class LibraryMenu {
     @GetMapping("/library/cache")
     public String optionCache(Model model) {
         int size = Library.getCacheSize();
-        model.addAttribute("info", "There currently are '" + size + "' cache entries");
+        logger.info(model, "There currently are '" + size + "' cache entries");
         return libraryMenu(model);
     }
 

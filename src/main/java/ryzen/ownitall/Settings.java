@@ -63,13 +63,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public static File cacheFolder = new File(".cache");
 
     /**
-     * in the Spotify class, this decides if the user has to click "accept"
-     * everytime they "log in", set to true in case you use multiple accounts and
-     * want to easily switch between them
-     */
-    public static boolean spotifyShowdialog = true;
-
-    /**
      * to limit number of songs in each spotify API batch query
      */
     public static int spotifySongLimit = 50;
@@ -295,8 +288,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
     }
 
     /** {@inheritDoc} */
-    public boolean set(String name, Object value) {
-        return super.set(name, value);
+    public void set(String name, Object value) throws NoSuchFieldException {
+        super.set(name, value);
     }
 
     /**
@@ -306,8 +299,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
      *
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, Object> getAll(boolean hashSecrets) {
-        return super.getAll(hashSecrets);
+    public LinkedHashMap<String, Object> getAll() {
+        return super.getAll();
     }
 
     /** {@inheritDoc} */

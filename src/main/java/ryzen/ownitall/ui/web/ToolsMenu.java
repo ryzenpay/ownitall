@@ -23,6 +23,7 @@ import ryzen.ownitall.method.Method;
  */
 @Controller
 public class ToolsMenu {
+    private static final Logger logger = new Logger(ToolsMenu.class);
 
     /**
      * <p>
@@ -56,7 +57,7 @@ public class ToolsMenu {
     @GetMapping("/tools/archive")
     public String optionArchive(Model model) {
         Storage.archive();
-        model.addAttribute("info", "Successfully archived");
+        logger.info(model, "Successfully archived");
         return toolsMenu(model);
     }
 
@@ -79,7 +80,7 @@ public class ToolsMenu {
                     String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
                     options.put(file.getName(), "/tools/unarchive?folderPath=" + path);
                 } catch (UnsupportedEncodingException e) {
-                    model.addAttribute("error", "Exception converting file path: " + e);
+                    logger.error(model, "Exception converting file path", e);
                 }
             }
             model.addAttribute("menuName", "Choose Folder to Unarchive");
@@ -90,7 +91,7 @@ public class ToolsMenu {
             return toolsMenu(model);
         } else {
             Storage.unArchive(new File(folderPath));
-            model.addAttribute("info", "Successfully unarchived '" + folderPath + "'");
+            logger.info(model, "Successfully unarchived '" + folderPath + "'");
             return toolsMenu(model);
         }
     }
@@ -108,7 +109,7 @@ public class ToolsMenu {
         for (Class<? extends Method> methodClass : Method.getMethods().values()) {
             Method.clearCredentials(methodClass);
         }
-        model.addAttribute("info", "Successfully cleared credentials");
+        logger.info(model, "Successfully cleared credentials");
         return toolsMenu(model);
     }
 

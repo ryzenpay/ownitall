@@ -60,7 +60,6 @@ public class Settings {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     protected @interface Secret {
-        boolean mask() default true;
     }
 
     /**
@@ -104,7 +103,7 @@ public class Settings {
     protected void save() {
         this.setFolder();
         try {
-            objectMapper.writeValue(file, this.getAll(false));
+            objectMapper.writeValue(file, this.getAll());
         } catch (IOException e) {
             logger.error("Exception saving", e);
         }
@@ -123,7 +122,7 @@ public class Settings {
      * @return - LinkedHashSet of all settings with mapping field name : field
      *         value, only gets protected and non final entries
      */
-    protected LinkedHashMap<String, Object> getAll(boolean hashSecrets) {
+    protected LinkedHashMap<String, Object> getAll() {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             try {
@@ -133,9 +132,6 @@ public class Settings {
                 }
                 field.setAccessible(true);
                 Object value = field.get(null);
-                if (hashSecrets && field.isAnnotationPresent(Secret.class)) {
-                    value = "*".repeat(value.toString().length());
-                }
                 settings.put(field.getName(), value);
             } catch (IllegalAccessException e) {
                 logger.error("Field access error '" + field.getName() + "'", e);
@@ -154,7 +150,11 @@ public class Settings {
             return;
         }
         for (String name : settings.keySet()) {
-            this.set(name, settings.get(name));
+            try {
+                this.set(name, settings.get(name));
+            } catch (NoSuchFieldException e) {
+                logger.warn("Unable to find setting '" + name + "' declared");
+            }
         }
     }
 
@@ -167,14 +167,14 @@ public class Settings {
      * @param name  a {@link java.lang.String} object
      * @param value a {@link java.lang.Object} object
      */
-    protected boolean set(String name, Object value) {
+    protected void set(String name, Object value) throws NoSuchFieldException {
         if (name == null) {
             logger.debug("null name provided in change");
-            return false;
+            return;
         }
         if (value == null) {
             logger.debug("null value provided in change for '" + name + "'");
-            return false;
+            return;
         }
         try {
             Field setting = this.getClass().getDeclaredField(name);
@@ -182,13 +182,22 @@ public class Settings {
             setting.setAccessible(true);
             setting.set(this, converted);
             setting.setAccessible(false);
-            return true;
-        } catch (NoSuchFieldException e) {
-            logger.error("Unable to find field '" + name + "'", e);
         } catch (IllegalAccessException e) {
             logger.error("Exception modifying '" + name + "'", e);
         }
-        return false;
+    }
+
+    public boolean exists(String name) {
+        if (name == null) {
+            logger.debug("null name provided in exists");
+            return false;
+        }
+        try {
+            this.getClass().getDeclaredField(name);
+            return true;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
     }
 
     /**
@@ -345,7 +354,7 @@ public class Settings {
 
     public boolean isSecret(String name) {
         if (name == null) {
-            logger.debug("null field provided in isSecret");
+            logger.debug("null name provided in isSecret");
             return false;
         }
         try {
@@ -359,5 +368,17 @@ public class Settings {
             logger.debug("Unable to find field '" + name + "'");
         }
         return false;
+    }
+
+    public String getHashedValue(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getHashedValue");
+            return null;
+        }
+        if (isEmpty(name)) {
+            return "";
+        }
+        String value = get(name).toString();
+        return "*".repeat(value.length());
     }
 }
