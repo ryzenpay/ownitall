@@ -12,6 +12,7 @@ public class Logger extends ryzen.ownitall.util.Logger {
 
     // TODO: redesign as a FlashAttribute
     // TODO: logs site?
+    // showing the last 10 logs etc
     public void debug(Model model, String message) {
         if (LogConfig.is(Level.DEBUG)) {
             model.addAttribute("debug", message);

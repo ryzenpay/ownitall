@@ -19,7 +19,6 @@ public class MissingSettingException extends Exception {
         super(message);
     }
 
-    // TODO: more debugging like what setting?
     /**
      * <p>
      * Constructor for MissingSettingException.

@@ -1,5 +1,6 @@
 package ryzen.ownitall.ui.web;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -496,8 +497,18 @@ public class MethodMenu {
             logger.warn(model, "Method not initialized in export/albums");
             return methodMenu(model, null, "/method/export/albums");
         }
-        return process(model, "Exporting '" + getMethodName() + "' albums", "/method/export/albums",
-                "/method/export");
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("All", "/method/process?processName=Exporting all Albums from "
+                + getMethodName() + "&processFunction=/method/export/album&callback=/method/export");
+        for (Album album : Collection.getAlbums()) {
+            options.put(album.toString(), "/method/process?processName=Exporting '" + album.getName() + "' from "
+                    + getMethodName() + "&processFunction=/method/export/album?name=" + album.getName()
+                    + "&callback=/method/export");
+        }
+        model.addAttribute("menuName", "Album Export Menu");
+        model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/export");
+        return "menu";
     }
 
     /**
@@ -505,15 +516,30 @@ public class MethodMenu {
      * exportAlbums.
      * </p>
      */
-    @PostMapping("/method/export/albums")
-    public void exportAlbums() {
+    @PostMapping("/method/export/album")
+    public void exportAlbums(
+            @RequestParam(value = "name", required = false) String name) {
         if (this.method == null) {
             return;
         }
-        try {
-            method.uploadAlbums();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' albums");
+        if (name == null) {
+            try {
+                method.uploadAlbums();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' albums");
+            }
+        } else {
+            Album album = Collection.getAlbum(name);
+            if (album != null) {
+                try {
+                    method.uploadAlbum(album);
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' album '"
+                            + album.getName() + "'");
+                }
+            } else {
+                logger.warn("Unable to find album '" + name + "' in collection");
+            }
         }
     }
 
@@ -532,8 +558,18 @@ public class MethodMenu {
             logger.warn(model, "Method not initialized in export/playlists");
             return methodMenu(model, null, "/method/export/playlists");
         }
-        return process(model, "Exporting '" + getMethodName() + "' playlists",
-                "/method/export/playlists", "/method/export");
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("All", "/method/process?processName=Exporting all playlists from "
+                + getMethodName() + "&processFunction=/method/export/playlist&callback=/method/export");
+        for (Playlist playlist : Collection.getPlaylists()) {
+            options.put(playlist.toString(), "/method/process?processName=Exporting '" + playlist.getName() + "' from "
+                    + getMethodName() + "&processFunction=/method/export/playlist?name=" + playlist.getName()
+                    + "&callback=/method/export");
+        }
+        model.addAttribute("menuName", "Playlist Export Menu");
+        model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/method/export");
+        return "menu";
     }
 
     /**
@@ -541,15 +577,30 @@ public class MethodMenu {
      * exportPlaylists.
      * </p>
      */
-    @PostMapping("/method/export/playlists")
-    public void exportPlaylists() {
+    @PostMapping("/method/export/playlist")
+    public void exportPlaylists(
+            @RequestParam(value = "name", required = false) String name) {
         if (this.method == null) {
             return;
         }
-        try {
-            method.uploadPlaylists();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' playlists");
+        if (name == null) {
+            try {
+                method.uploadPlaylists();
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' playlists");
+            }
+        } else {
+            Playlist playlist = Collection.getPlaylist(name);
+            if (playlist != null) {
+                try {
+                    method.uploadPlaylist(playlist);
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted while exporting '" + method.getClass().getSimpleName() + "' playlist '"
+                            + playlist.getName() + "'");
+                }
+            } else {
+                logger.warn("Unable to find playlist '" + name + "' in collection");
+            }
         }
     }
 

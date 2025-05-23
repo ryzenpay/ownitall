@@ -343,6 +343,19 @@ public class Collection {
         return null;
     }
 
+    public static Album getAlbum(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getAlbum");
+            return null;
+        }
+        for (Album album : albums) {
+            if (album.getName().equals(name)) {
+                return album;
+            }
+        }
+        return null;
+    }
+
     /**
      * get this collections playlists
      *
@@ -366,6 +379,19 @@ public class Collection {
         for (Playlist thisPlaylist : playlists) {
             if (thisPlaylist.equals(playlist)) {
                 return thisPlaylist;
+            }
+        }
+        return null;
+    }
+
+    public static Playlist getPlaylist(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getPlaylist");
+            return null;
+        }
+        for (Playlist playlist : playlists) {
+            if (playlist.getName().equals(name)) {
+                return playlist;
             }
         }
         return null;
@@ -554,7 +580,9 @@ public class Collection {
     }
 
     /**
-     * <p>getSongFileName.</p>
+     * <p>
+     * getSongFileName.
+     * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @return a {@link java.lang.String} object
@@ -568,7 +596,9 @@ public class Collection {
     }
 
     /**
-     * <p>getCollectionFolderName.</p>
+     * <p>
+     * getCollectionFolderName.
+     * </p>
      *
      * @param collection a {@link ryzen.ownitall.classes.Playlist} object
      * @return a {@link java.lang.String} object
@@ -582,7 +612,9 @@ public class Collection {
     }
 
     /**
-     * <p>getCollectionCoverFileName.</p>
+     * <p>
+     * getCollectionCoverFileName.
+     * </p>
      *
      * @param collection a {@link ryzen.ownitall.classes.Playlist} object
      * @return a {@link java.lang.String} object

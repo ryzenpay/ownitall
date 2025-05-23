@@ -413,6 +413,9 @@ public class Jellyfin extends Method {
         if (response != null) {
             JsonNode responseNode = response.get("Items").get(0);
             if (responseNode != null) {
+                // TODO: add id to song's id's?
+                // would need functionality to not use "cached"
+                // clear cache also clears song ids?
                 return responseNode.path("Id").asText();
             }
         }
