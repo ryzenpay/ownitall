@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * <p>
@@ -17,6 +18,8 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Logger {
     /** Constant <code>globalLevel</code> */
+    public static Level globalLevel;
+    private static Stack<Map.Entry<Level, String>> globalHistory = new Stack<>();
     private Stack<Map.Entry<Level, String>> history = new Stack<>();
     private static final int historySize = 10;
     private org.apache.logging.log4j.Logger logger;
@@ -30,6 +33,40 @@ public class Logger {
      */
     public Logger(Class<?> clazz) {
         logger = LogManager.getLogger(clazz);
+    }
+
+    public static void setLogLevel(String level) {
+        if (level == null) {
+            System.err.println("null level provided in setLogLevel");
+            return;
+        }
+        switch (level) {
+            case "debug":
+                Configurator.setRootLevel(Level.DEBUG);
+                globalLevel = Level.DEBUG;
+                break;
+            case "info":
+                Configurator.setRootLevel(Level.INFO);
+                globalLevel = Level.INFO;
+                break;
+            case "off":
+                Configurator.setRootLevel(Level.OFF);
+                globalLevel = Level.OFF;
+                break;
+            default:
+                System.err.println("Unsuported log level parameter provided: " + level);
+        }
+    }
+
+    public static boolean is(Level level) {
+        if (globalLevel == null) {
+            System.err.println("Log level not set");
+            return false;
+        }
+        if (globalLevel.isLessSpecificThan(level)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -95,20 +132,24 @@ public class Logger {
         this.log(Level.ERROR, message, error);
     }
 
-    /**
-     * <p>
-     * getLatestLog.
-     * </p>
-     *
-     * @return a {@link java.util.Map.Entry} object
-     */
-    public Entry<Level, String> getLatestLog() {
-        for (Entry<Level, String> entry : history) {
-            if (entry.getKey().intLevel() == LogConfig.globalLevel.intLevel()) {
-                return entry;
+    public static LinkedHashSet<Entry<Level, String>> getGlobalLogs() {
+        LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
+        for (Entry<Level, String> entry : globalHistory) {
+            // log level or higher
+            if (entry.getKey().intLevel() <= globalLevel.intLevel()) {
+                logs.add(entry);
             }
         }
-        return null;
+        return logs;
+    }
+
+    public static void printLogs(Level level) {
+        for (Entry<Level, String> entry : globalHistory) {
+            // log level or higher
+            if (entry.getKey().intLevel() <= level.intLevel()) {
+                System.out.println("[" + entry.getKey().toString().toUpperCase() + "] " + entry.getValue());
+            }
+        }
     }
 
     /**
@@ -122,7 +163,7 @@ public class Logger {
         LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
         for (Entry<Level, String> entry : history) {
             // log level or higher
-            if (entry.getKey().intLevel() <= LogConfig.globalLevel.intLevel()) {
+            if (entry.getKey().intLevel() <= globalLevel.intLevel()) {
                 logs.add(entry);
             }
         }
@@ -134,6 +175,10 @@ public class Logger {
             history.remove(0);
         }
         history.add(entry);
-        LogConfig.addLog(entry);
+        globalHistory.add(entry);
+    }
+
+    public static void clearLogs() {
+        globalHistory.clear();
     }
 }

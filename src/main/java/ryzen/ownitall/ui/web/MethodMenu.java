@@ -1,6 +1,5 @@
 package ryzen.ownitall.ui.web;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -26,7 +25,6 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.Method.Export;
 import ryzen.ownitall.method.Method.Import;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.LogConfig;
 
 import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
@@ -482,7 +480,6 @@ public class MethodMenu {
         }
     }
 
-    // TODO: export individual album
     /**
      * <p>
      * optionExportAlbums.
@@ -543,7 +540,6 @@ public class MethodMenu {
         }
     }
 
-    // TODO: export individual playlist
     /**
      * <p>
      * optionExportPlaylists.
@@ -866,13 +862,13 @@ public class MethodMenu {
         ObjectNode rootNode = mapper.createObjectNode();
         ArrayNode logsArray = rootNode.putArray("logs");
 
-        for (Entry<Level, String> entity : LogConfig.getLogs()) {
+        for (Entry<Level, String> entity : Logger.getGlobalLogs()) {
             ObjectNode logNode = mapper.createObjectNode();
             logNode.put("level", entity.getKey().toString().toUpperCase());
             logNode.put("message", entity.getValue());
             logsArray.add(logNode);
         }
-        LogConfig.clearLogs();
+        Logger.clearLogs();
         return ResponseEntity.ok(rootNode.toPrettyString());
     }
 

@@ -36,16 +36,16 @@ public class Menu {
      * clears screen contents when not in debug mode
      */
     public static void clearScreen() {
-        if (!LogConfig.is(Level.DEBUG)) {
+        if (!Logger.is(Level.DEBUG)) {
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();
-        if (LogConfig.is(Level.DEBUG)) {
+        if (Logger.is(Level.DEBUG)) {
             return;
         }
         printLogo();
-        LogConfig.printLogs(Level.INFO);
-        LogConfig.clearLogs();
+        Logger.printLogs(Level.INFO);
+        Logger.clearLogs();
     }
 
     /**

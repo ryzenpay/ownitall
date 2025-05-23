@@ -8,7 +8,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import ryzen.ownitall.util.Input;
-import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Menu;
@@ -53,7 +52,7 @@ public class Main {
             if (cmd.hasOption("l")) {
                 String level = cmd.getOptionValue("l");
                 logger.debug("log level provided: " + level);
-                LogConfig.setLogLevel(level);
+                Logger.setLogLevel(level);
             }
             Storage.importCollection();
             if (cmd.hasOption("i")) {

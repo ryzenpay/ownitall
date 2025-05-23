@@ -13,7 +13,6 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
-import ryzen.ownitall.util.LogConfig;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
@@ -81,7 +80,7 @@ public class SoulSeek extends Download {
         command.add(Collection.getSongFileName(song));
         command.add("--fast-search");
         command.add(String.valueOf(Settings.downloadThreads));
-        if (LogConfig.is(Level.DEBUG)) {
+        if (Logger.is(Level.DEBUG)) {
             command.add("-v");
         }
         /**
