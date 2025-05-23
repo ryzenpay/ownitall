@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,10 +46,20 @@ public class Settings {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
+    protected @interface Name {
+        String value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    protected @interface Description {
+        String value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
     protected @interface Group {
         Class<?>[] group();
-
-        String desc();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -122,7 +133,7 @@ public class Settings {
      * @return - LinkedHashSet of all settings with mapping field name : field
      *         value, only gets protected and non final entries
      */
-    protected LinkedHashMap<String, Object> getAll() {
+    public LinkedHashMap<String, Object> getAll() {
         LinkedHashMap<String, Object> settings = new LinkedHashMap<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             try {
@@ -167,7 +178,7 @@ public class Settings {
      * @param name  a {@link java.lang.String} object
      * @param value a {@link java.lang.Object} object
      */
-    protected void set(String name, Object value) throws NoSuchFieldException {
+    public void set(String name, Object value) throws NoSuchFieldException {
         if (name == null) {
             logger.debug("null name provided in change");
             return;
@@ -229,7 +240,7 @@ public class Settings {
      * @param name a {@link java.lang.String} object
      * @return a boolean
      */
-    protected boolean isEmpty(String name) {
+    public boolean isEmpty(String name) {
         if (name == null) {
             logger.debug("null name provided in isEmpty");
             return true;
@@ -250,17 +261,17 @@ public class Settings {
      * @param group a {@link java.lang.Class} object
      * @return a boolean
      */
-    protected boolean isGroupEmpty(Class<?> group) {
+    public boolean isGroupEmpty(Class<?> group) {
         if (group == null) {
             logger.debug("null group provided in isGroupEmpty");
             return true;
         }
-        LinkedHashMap<String, String> vars = getGroup(group);
+        LinkedHashSet<String> vars = getGroup(group);
         if (vars == null) {
             logger.debug("Unable to find credentials for '" + group.getSimpleName() + "'");
             return false;
         }
-        for (String varName : vars.values()) {
+        for (String varName : vars) {
             if (isEmpty(varName)) {
                 return true;
             }
@@ -276,7 +287,7 @@ public class Settings {
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Object} object
      */
-    protected Object get(String name) {
+    public Object get(String name) {
         if (name == null) {
             logger.debug("null name provided in getFieldValue");
             return null;
@@ -287,10 +298,46 @@ public class Settings {
             Object value = field.get(this);
             field.setAccessible(false);
             return value;
-        } catch (NoSuchFieldException e) {
-            logger.warn("No field named '" + name + "' found"); // Use warn or debug
         } catch (IllegalAccessException e) {
             logger.error("Unable to access field named '" + name + "'", e);
+        } catch (NoSuchFieldException e) {
+            logger.warn("Unable to find value '" + name + "'");
+        }
+        return null;
+    }
+
+    public String getName(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getName");
+            return null;
+        }
+        try {
+            Field field = this.getClass().getDeclaredField(name);
+            if (field.isAnnotationPresent(Name.class)) {
+                Name annotation = (Name) field.getAnnotation(Name.class);
+                return annotation.value();
+            } else {
+                return field.getName();
+            }
+        } catch (NoSuchFieldException e) {
+            logger.warn("Unable to find variable '" + name + "'");
+        }
+        return null;
+    }
+
+    public String getDescription(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getDescription");
+            return null;
+        }
+        try {
+            Field field = this.getClass().getDeclaredField(name);
+            if (field.isAnnotationPresent(Description.class)) {
+                Description annotation = (Description) field.getAnnotation(Description.class);
+                return annotation.value();
+            }
+        } catch (NoSuchFieldException e) {
+            logger.warn("Unable to find variable '" + name + "'");
         }
         return null;
     }
@@ -303,18 +350,18 @@ public class Settings {
      * @param groupClass a {@link java.lang.Class} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
+    public LinkedHashSet<String> getGroup(Class<?> groupClass) {
         if (groupClass == null) {
             logger.debug("null groupClass provided in getGroup");
             return null;
         }
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        LinkedHashSet<String> values = new LinkedHashSet<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Group.class)) {
                 Group annotation = (Group) field.getAnnotation(Group.class);
                 for (Class<?> currClass : annotation.group()) {
                     if (currClass.equals(groupClass)) {
-                        values.put(annotation.desc(), field.getName());
+                        values.add(field.getName());
                         break;
                     }
                 }

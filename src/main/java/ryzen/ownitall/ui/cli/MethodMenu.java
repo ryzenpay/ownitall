@@ -3,6 +3,7 @@ package ryzen.ownitall.ui.cli;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -78,26 +79,14 @@ public class MethodMenu {
             logger.debug("null methodClass provided in setCredentials");
             return;
         }
-        Settings credentials = Settings.load();
-        LinkedHashMap<String, String> classCredentials = credentials.getGroup(methodClass);
-        if (classCredentials != null) {
-            for (String name : classCredentials.keySet()) {
-                if (!credentials.isEmpty(classCredentials.get(name))) {
-                    // skip already set values
-                    continue;
-                }
-                System.out.print("Enter '" + methodClass.getSimpleName() + " " + name + "': ");
-                Object value = Input.request().getValue(credentials.getType(classCredentials.get(name)));
-                try {
-                    credentials.set(classCredentials.get(name), value);
-                } catch (NoSuchFieldException e) {
-                    logger.warn("Unable to set credential '" + name + "' for '" + methodClass.getSimpleName() + "'");
-                    throw new MissingSettingException(e);
-                }
+        Settings settings = Settings.load();
+        LinkedHashSet<String> credentials = settings.getGroup(methodClass);
+        if (credentials != null) {
+            try {
+                SettingsMenu.changeSettings(credentials);
+            } catch (NoSuchFieldException e) {
+                logger.error("Unable to find setting to change", e);
             }
-        }
-        if (credentials.isGroupEmpty(methodClass)) {
-            throw new MissingSettingException("Unable to set credentials for '" + methodClass.getSimpleName() + "'");
         }
     }
 

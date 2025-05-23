@@ -1,12 +1,12 @@
 package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Settings;
@@ -108,69 +108,12 @@ public class LibraryMenu {
             return optionChange(model, null);
         }
         Settings settings = Settings.load();
-        LinkedHashMap<String, String> classCredentials = settings.getGroup(libraryClass);
-        if (classCredentials == null || classCredentials.isEmpty()) {
-            logger.info(model, "No credentials required");
-            return optionChange(model, libraryClass.getSimpleName());
+        LinkedHashSet<String> credentials = settings.getGroup(libraryClass);
+        String options = "";
+        for (String credential : credentials) {
+            options += credential + ",";
         }
-        LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
-        for (String name : classCredentials.keySet()) {
-            String settingName = classCredentials.get(name);
-            String value = "";
-            if (!settings.isEmpty(settingName)) {
-                value = settings.get(settingName).toString();
-            }
-            currentCredentials.put(name, value);
-        }
-        model.addAttribute("formName", libraryClass.getSimpleName() + " Credentials");
-        model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/library/login/" + library);
-        model.addAttribute("callback", callback);
-        return "login";
-    }
-
-    /**
-     * [POST] library login
-     *
-     * @param model            - model
-     * @param libraryClassName - library class
-     * @param callback         - callback
-     * @param params           - all parameters where credentials will be pulled
-     *                         from
-     * @return - successful or retry login
-     */
-    @PostMapping("/library/login/{library}")
-    public String login(Model model,
-            @PathVariable(value = "library") String library,
-            @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(required = false) LinkedHashMap<String, String> params) {
-
-        Class<? extends Library> libraryClass = Library.libraries.get(library);
-        if (libraryClass == null) {
-            logger.warn(model, "invalid library '" + library + "' provided");
-            return loginForm(model, library, callback);
-        }
-        Settings settings = Settings.load();
-        LinkedHashMap<String, String> classCredentials = settings.getGroup(libraryClass);
-
-        if (params != null) {
-            for (String name : classCredentials.keySet()) {
-                String value = params.get(name);
-                if (value == null || value.trim().isEmpty()) {
-                    logger.warn(model, "Missing value for: '" + name + "' for '" + libraryClass.getSimpleName() + "'");
-                    return loginForm(model, library, callback);
-                }
-                try {
-                    settings.set(classCredentials.get(name), value);
-                    logger.info(model, "Successfully changed setting '" + name + "'");
-                } catch (NoSuchFieldException e) {
-                    logger.error(model,
-                            "Failed to set credential: '" + name + "' for '" + libraryClass.getSimpleName() + "'", e);
-                    return loginForm(model, library, callback);
-                }
-            }
-        }
-        return "redirect:" + callback;
+        return SettingsMenu.changeSettingForm(model, options, callback);
     }
 
     /**

@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
@@ -119,6 +120,8 @@ abstract public class Method {
         }
     }
 
+    // TODO: centralize in settings
+    // and then also update in library
     /**
      * <p>
      * clearCredentials.
@@ -133,16 +136,16 @@ abstract public class Method {
             return;
         }
         Settings settings = Settings.load();
-        LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
-        if (credentialVars == null) {
+        LinkedHashSet<String> credentials = settings.getGroup(type);
+        if (credentials == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return;
         }
-        for (String varName : credentialVars.values()) {
+        for (String credential : credentials) {
             try {
-                settings.set(varName, "");
+                settings.set(credential, "");
             } catch (NoSuchFieldException e) {
-                logger.warn("Unable to find method setting '" + varName + "'");
+                logger.warn("Unable to find method setting '" + credential + "'");
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");

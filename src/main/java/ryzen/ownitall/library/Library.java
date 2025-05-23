@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -120,16 +121,16 @@ public class Library {
             return;
         }
         Settings settings = Settings.load();
-        LinkedHashMap<String, String> credentialVars = Settings.load().getGroup(type);
-        if (credentialVars == null) {
+        LinkedHashSet<String> credentials = settings.getGroup(type);
+        if (credentials == null) {
             logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
             return;
         }
-        for (String varName : credentialVars.values()) {
+        for (String credential : credentials) {
             try {
-                settings.set(varName, "");
+                settings.set(credential, "");
             } catch (NoSuchFieldException e) {
-                logger.warn("Unable to find library credential '" + varName + "'");
+                logger.warn("Unable to find method setting '" + credential + "'");
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");

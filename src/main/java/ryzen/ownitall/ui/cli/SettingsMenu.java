@@ -8,6 +8,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>
@@ -68,7 +69,7 @@ public class SettingsMenu {
                     break;
                 }
                 try {
-                    this.changeSetting(choice);
+                    changeSetting(choice);
                     logger.info("Successfully changed setting '" + choice + "'");
                 } catch (NoSuchFieldException e) {
                     logger.error("Unsuccessfully changed setting '" + choice + "'", e);
@@ -79,7 +80,7 @@ public class SettingsMenu {
         }
     }
 
-    private void changeSetting(String settingName) throws InterruptedException, NoSuchFieldException {
+    public static void changeSetting(String settingName) throws InterruptedException, NoSuchFieldException {
         if (settingName == null) {
             logger.debug("null settingName provided in changeSetting");
             return;
@@ -111,6 +112,23 @@ public class SettingsMenu {
             input = Input.request().getValue(settingType);
         }
         settings.set(settingName, input);
+    }
+
+    public static void changeSettings(LinkedHashSet<String> settingNames)
+            throws InterruptedException, NoSuchFieldException, MissingSettingException {
+        if (settingNames == null) {
+            logger.debug("null settingNames provided in changeSetting");
+            return;
+        }
+        Settings settings = Settings.load();
+        for (String setting : settingNames) {
+            changeSetting(setting);
+        }
+        for (String setting : settingNames) {
+            if (settings.isEmpty(setting)) {
+                throw new MissingSettingException("Unable to set setting for '" + setting + "'");
+            }
+        }
     }
 
     /**

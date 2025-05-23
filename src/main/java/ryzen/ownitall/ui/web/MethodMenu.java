@@ -2,6 +2,7 @@ package ryzen.ownitall.ui.web;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import org.springframework.http.ResponseEntity;
@@ -121,79 +122,20 @@ public class MethodMenu {
     public String loginForm(Model model,
             @PathVariable(value = "method") String method,
             @RequestParam(value = "callback", required = true) String callback) {
-        logger.debug("method=" + method + ", callback=" + callback);
+        logger.debug(model, "method=" + method + ", callback=" + callback);
 
         Class<? extends Method> methodClass = Method.getMethod(method);
         if (methodClass == null) {
             logger.warn(model, "Unsupported method '" + method + "'provided");
             return methodMenu(model, callback);
         }
-
-        LinkedHashMap<String, String> classCredentials = Settings.load().getGroup(methodClass);
-        if (classCredentials == null || classCredentials.isEmpty()) {
-            logger.info(model, "No credentials required");
-            return setMethod(model, methodClass.getSimpleName(), callback);
-        }
-        LinkedHashMap<String, String> currentCredentials = new LinkedHashMap<>();
-        Settings credentials = Settings.load();
-        for (String name : classCredentials.keySet()) {
-            String settingName = classCredentials.get(name);
-            String value = "";
-            if (!credentials.isEmpty(settingName)) {
-                value = credentials.get(settingName).toString();
-            }
-            currentCredentials.put(name, value);
-        }
-        model.addAttribute("formName", methodClass.getSimpleName() + " Credentials");
-        model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/method/login/" + method);
-        model.addAttribute("callback", callback);
-        return "form";
-    }
-
-    /**
-     * <p>
-     * login.
-     * </p>
-     *
-     * @param model           a {@link org.springframework.ui.Model} object
-     * @param methodClassName a {@link java.lang.String} object
-     * @param callback        a {@link java.lang.String} object
-     * @param params          a {@link java.util.LinkedHashMap} object
-     * @return a {@link java.lang.String} object
-     */
-    @PostMapping("/method/login/{method}")
-    public String login(Model model,
-            @PathVariable(value = "method") String method,
-            @RequestParam(value = "callback", required = true) String callback,
-            @RequestParam(required = false) LinkedHashMap<String, String> params) {
-
-        Class<? extends Method> methodClass = Method.getMethod(method);
-        if (methodClass == null) {
-            logger.warn(model, "Invalid method '" + method + "' provided");
-            return loginForm(model, method, callback);
-        }
         Settings settings = Settings.load();
-        LinkedHashMap<String, String> classCredentials = settings.getGroup(methodClass);
-
-        if (params != null) {
-            for (String name : classCredentials.keySet()) {
-                String value = params.get(name);
-                if (value == null || value.trim().isEmpty()) {
-                    logger.warn(model, "Missing value for: '" + name + "' for '" + methodClass.getSimpleName() + "'");
-                    return loginForm(model, method, callback);
-                }
-                try {
-                    settings.set(classCredentials.get(name), value);
-                    logger.info(model, "Successfully changed setting '" + name + "'");
-                } catch (NoSuchFieldException e) {
-                    logger.error(model,
-                            "Failed to set credential: '" + name + "' for '" + methodClass.getSimpleName() + "'", e);
-                    return loginForm(model, method, callback);
-                }
-            }
+        LinkedHashSet<String> credentials = settings.getGroup(methodClass);
+        String options = "";
+        for (String credential : credentials) {
+            options += credential + ",";
         }
-        return "redirect:" + callback;
+        return SettingsMenu.changeSettingForm(model, options, callback);
     }
 
     /**

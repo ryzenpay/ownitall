@@ -2,6 +2,7 @@ package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +73,8 @@ public class SettingsMenu {
                     value = settings.get(name).toString();
                 }
             }
-            options.put(name + ": " + value, "/settings/change/" + name + "?callback=/settings/change");
+            options.put(settings.getName(name) + ": " + value,
+                    "/settings/change/" + name + "?callback=/settings/change");
         }
         model.addAttribute("menuName", "Choose Setting Menu");
         model.addAttribute("menuOptions", options);
@@ -91,23 +93,29 @@ public class SettingsMenu {
     // TODO: hardencode predefined options as a dropdown
     // also in library and method /login
     // ^ point them to this
-    @GetMapping("/settings/change/{choice}")
-    public String changeSettingForm(Model model,
-            @PathVariable(value = "choice") String choice,
+    // TODO: make setting names work
+    // currently doesnt because choices depends on it
+    // and params doesnt pick up on it
+    @GetMapping("/settings/change/{choices}")
+    public static String changeSettingForm(Model model,
+            @PathVariable(value = "choices", required = true) String choices,
             @RequestParam(value = "callback", required = true) String callback) {
         Settings settings = Settings.load();
         LinkedHashMap<String, String> fields = new LinkedHashMap<>();
         // allows semi colon seperated list
-        for (String currChoice : choice.split(";")) {
-            if (settings.isEmpty(currChoice)) {
-                fields.put(currChoice, "");
+        for (String setting : choices.split(",")) {
+            if (setting == null || setting.isEmpty()) {
+                continue;
+            }
+            if (settings.isEmpty(setting)) {
+                fields.put(setting, "");
             } else {
-                fields.put(currChoice, settings.get(currChoice).toString());
+                fields.put(setting, settings.get(setting).toString());
             }
         }
         model.addAttribute("formName", "Change Setting(s)");
         model.addAttribute("loginFields", fields);
-        model.addAttribute("postAction", "/settings/change/" + choice);
+        model.addAttribute("postAction", "/settings/change/" + choices);
         model.addAttribute("callback", callback);
         return "form";
     }
@@ -122,22 +130,31 @@ public class SettingsMenu {
      * @param params   a {@link java.util.LinkedHashMap} object
      * @return a {@link java.lang.String} object
      */
-    @PostMapping("/settings/change/{choice}")
-    public void login(Model model,
-            @PathVariable(value = "choice") String choice,
+    @PostMapping("/settings/change/{choices}")
+    public ResponseEntity<Void> login(Model model,
+            @PathVariable(value = "choices", required = true) String choices,
             @RequestParam(required = true) LinkedHashMap<String, String> params) {
+        logger.debug("Change setting parameters: " + params);
         Settings settings = Settings.load();
-        for (String name : params.keySet()) {
-            if (settings.exists(name)) {
+        for (String setting : choices.split(",")) {
+            if (setting == null || setting.isEmpty()) {
+                continue;
+            }
+            String value = params.get(setting);
+            if (value != null) {
                 try {
-                    settings.set(name, params.get(name));
+                    settings.set(setting, value);
                 } catch (NoSuchFieldException e) {
-                    logger.warn(model, "Failed to set setting '" + name + "'");
-                    break;
+                    logger.warn(model, "Failed to set setting '" + setting + "'");
+                    return ResponseEntity.badRequest().build();
                 }
+            } else {
+                logger.warn("Missing parameter for setting '" + setting + "'");
+                return ResponseEntity.badRequest().build();
             }
         }
         logger.info(model, "Successfully updated Settings");
+        return ResponseEntity.ok().build();
     }
 
     /**

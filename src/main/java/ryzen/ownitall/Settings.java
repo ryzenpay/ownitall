@@ -2,7 +2,6 @@ package ryzen.ownitall;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.method.Jellyfin;
@@ -45,98 +44,183 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * default file names (without extensions)
      */
+    @Name("Data Folder")
     public static File dataFolder = new File("data");
     /** Constant <code>likedSongName="liked songs"</code> */
+    @Name("Liked Songs Playlist Name")
     public static String likedSongName = "liked songs";
     /** Constant <code>albumFile="albums"</code> */
+    @Name("Album Collection File Name")
     public static String albumFile = "albums";
     /** Constant <code>likedSongFile="likedsongs"</code> */
+    @Name("LikedSongs Collection File Name")
     public static String likedSongFile = "likedsongs";
     /** Constant <code>playlistFile="playlists"</code> */
+    @Name("Playlist Collection File Name")
     public static String playlistFile = "playlists";
     /** Constant <code>artistFile="artists"</code> */
+    @Name("Artist Collection File Name")
     public static String artistFile = "artists";
     /** Constant <code>songFile="songs"</code> */
+    @Name("Songs Collection File Name")
     public static String songFile = "songs";
 
     /** Constant <code>cacheFolder</code> */
+    @Name("Cache Folder")
     public static File cacheFolder = new File(".cache");
+
+    ///
+    ///
+    /// METHODS
+    ///
+    ///
+
+    ///
+    ///
+    /// JELLYFIN
+    ///
+    ///
+    @Group(group = { Jellyfin.class })
+    @Secret
+    @Name("JellyFin URL")
+    public static String jellyfinURL = "";
+    @Group(group = { Jellyfin.class })
+    @Secret
+    @Name("JellyFin Username")
+    /** Constant <code>jellyfinUsername=""</code> */
+    public static String jellyfinUsername = "";
+    @Group(group = { Jellyfin.class })
+    @Secret
+    @Name("JellyFin Password")
+    /** Constant <code>jellyfinPassword=""</code> */
+    public static String jellyfinPassword = "";
+
+    ///
+    ///
+    /// Spotify
+    ///
+    ///
 
     /**
      * to limit number of songs in each spotify API batch query
      */
+    @Name("Spotify API song limit")
     public static int spotifySongLimit = 50;
     /** Constant <code>spotifyAlbumLimit=20</code> */
+    @Name("Spotify API album limit")
     public static int spotifyAlbumLimit = 20;
     /** Constant <code>spotifyPlaylistLimit=20</code> */
+    @Name("Spotify API playlist limit")
     public static int spotifyPlaylistLimit = 20;
+
+    @Group(group = { Spotify.class })
+    @Secret
+    @Name("Spotify Client ID")
+    public static String spotifyClientID = "";
+    @Group(group = { Spotify.class })
+    @Secret
+    @Name("Spotify Client Secret")
+    /** Constant <code>spotifyClientSecret=""</code> */
+    public static String spotifyClientSecret = "";
+    @Group(group = { Spotify.class })
+    @Secret
+    @Name("Spotify Redirect URL")
+    /** Constant <code>spotifyRedirectURL=""</code> */
+    public static String spotifyRedirectURL = "";
+
+    ///
+    ///
+    /// YOUTUBE
+    ///
+    ///
 
     /**
      * to limit number of songs in each youtube API batch query
      */
+    @Name("Youtube API song limit")
     public static Long youtubeSongLimit = 50L;
     /** Constant <code>youtubePlaylistLimit</code> */
+    @Name("Youtube API playlist limit")
     public static Long youtubePlaylistLimit = 20L;
 
+    @Group(group = { Youtube.class })
+    @Secret
+    @Name("Google Application Name")
+    public static String youtubeApplicatioName = "";
+    @Group(group = { Youtube.class })
+    @Secret
+    @Name("Google Client ID")
+    /** Constant <code>youtubeClientID=""</code> */
+    public static String youtubeClientID = "";
+    @Group(group = { Youtube.class })
+    @Secret
+    @Name("Google Client Secret")
+    /** Constant <code>youtubeClientSecret=""</code> */
+    public static String youtubeClientSecret = "";
+
+    ///
+    ///
+    /// LIBRARY
+    ///
+    ///
     /**
      * only put songs in collection if they are library verified
      */
+    @Name("Verify using library")
     public static boolean libraryVerified = true;
 
     /**
      * class representative of which library to use
      * null for none
      */
+    @Name("Library Type")
     @Options(options = { "LastFM", "MusicBrainz" })
     public static String libraryType = null;
 
-    /**
-     * option to hardcode cookies file
-     */
-    public static File yt_dlCookieFile = null;
+    ///
+    ///
+    /// LASTFM
+    ///
+    ///
+    @Group(group = { LastFM.class })
+    @Secret
+    @Name("LastFM API Key")
+    public static String lastFMApiKey = "";
+
+    ///
+    ///
+    /// DOWNLOAD
+    ///
+    ///
 
     /**
-     * option to hardcode browser to get cookies from
-     * options: chrome, firefox, check yt-dlp docs,...
+     * local library path
      */
-    public static String yt_dlCookieBrowser = "";
+    @Group(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class })
+    @Name("Local Library")
+    public static File localFolder = null;
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    @Group(group = { Download.class, YT_dl.class, SoulSeek.class }, desc = "Format(ex: mp3)")
+    @Group(group = { Download.class, YT_dl.class, SoulSeek.class })
     @Options(options = { "mp3", "flac", "wav" })
+    @Name("Format (ex: mp3)")
     public static String downloadFormat = "mp3";
     /**
      * class representative of which download class to use
      * default is YT_dl.class
      */
-    @Group(group = { Download.class }, desc = "Method")
+    @Group(group = { Download.class })
     @Options(options = { "YT_dl", "SoulSeek" })
+    @Name("Method")
     public static String downloadMethod = "YT_dl";
 
     /**
-     * local library path
+     * enable multithreading
      */
-    @Group(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class }, desc = "Local Library")
-    public static File localFolder = null;
+    public static int downloadThreads = 1;
 
-    /**
-     * YT_dl credentials
-     */
-    /**
-     * ffmpeg path (required for youtubedl)
-     * 
-     */
-    @Group(group = { YT_dl.class }, desc = "FFMPEG file/folder")
-    public static File ffmpegFile = null;
-
-    /**
-     * youtube dl installation path
-     * 
-     */
-    @Group(group = { YT_dl.class }, desc = "Binary")
-    public static File yt_dlFile = null;
     /**
      * download all files in a hierachy method
      * if true:
@@ -154,6 +238,39 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * incase download hierachy is set to false but still want an m3u
      */
     public static boolean downloadLikedsongPlaylist = true;
+    ///
+    ///
+    /// YT_DL
+    ///
+    ///
+    /**
+     * option to hardcode cookies file
+     */
+    @Name("YT_DL cookie file")
+    public static File yt_dlCookieFile = null;
+
+    /**
+     * option to hardcode browser to get cookies from
+     * options: chrome, firefox, check yt-dlp docs,...
+     */
+    @Name("YT_DL cookie browser")
+    public static String yt_dlCookieBrowser = "";
+
+    /**
+     * ffmpeg path (required for youtubedl)
+     * 
+     */
+    @Group(group = { YT_dl.class })
+    @Name("FFMPEG file/folder")
+    public static File ffmpegFile = null;
+
+    /**
+     * youtube dl installation path
+     * 
+     */
+    @Group(group = { YT_dl.class })
+    @Name("YT_DL binary")
+    public static File yt_dlFile = null;
 
     /**
      * download quality of music
@@ -161,88 +278,33 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * also respectfully increases file size
      */
     public static int yt_dlQuality = 5;
-    /**
-     * enable yt-dlp threading
-     */
-    public static int downloadThreads = 1;
+
+    ///
+    ///
+    /// SOULSEEK
+    ///
+    ///
 
     /** Constant <code>soulSeekBitRate=320</code> */
     public static int soulSeekBitRate = 320;
 
     /**
-     * SoulSeek Credentials
-     */
-
-    /**
      * soulseek dl installation path
      */
-    @Group(group = { SoulSeek.class }, desc = "Binary")
+    @Group(group = { SoulSeek.class })
+    @Name("SoulSeek DL Binary")
     public static File soulSeekFile = null;
 
-    @Group(group = { SoulSeek.class }, desc = "Username")
+    @Group(group = { SoulSeek.class })
     @Secret
+    @Name("SoulSeek Username")
     /** Constant <code>soulSeekUsername=""</code> */
     public static String soulSeekUsername = "";
 
-    @Group(group = { SoulSeek.class }, desc = "Password")
+    @Group(group = { SoulSeek.class })
     @Secret
+    @Name("SoulSeek Password")
     public static String soulSeekPassword = "";
-
-    /**
-     * spotify credentials
-     */
-    @Group(group = { Spotify.class }, desc = "Client ID")
-    @Secret
-    public static String spotifyClientID = "";
-    @Group(group = { Spotify.class }, desc = "Client Secret")
-    @Secret
-    /** Constant <code>spotifyClientSecret=""</code> */
-    public static String spotifyClientSecret = "";
-    @Group(group = { Spotify.class }, desc = "Redirect URL")
-    @Secret
-    /** Constant <code>spotifyRedirectURL=""</code> */
-    public static String spotifyRedirectURL = "";
-
-    /**
-     * youtube credentials
-     * 
-     */
-    @Group(group = { Youtube.class }, desc = "Application Name")
-    @Secret
-    public static String youtubeApplicatioName = "";
-    @Group(group = { Youtube.class }, desc = "Client ID")
-    @Secret
-    /** Constant <code>youtubeClientID=""</code> */
-    public static String youtubeClientID = "";
-    @Group(group = { Youtube.class }, desc = "Client Secret")
-    @Secret
-    /** Constant <code>youtubeClientSecret=""</code> */
-    public static String youtubeClientSecret = "";
-
-    /**
-     * Last FM Credentials
-     * 
-     */
-
-    @Group(group = { LastFM.class }, desc = "API Key")
-    @Secret
-    public static String lastFMApiKey = "";
-
-    /**
-     * Jellyfin Credentials
-     * 
-     */
-    @Group(group = { Jellyfin.class }, desc = "URL")
-    @Secret
-    public static String jellyfinURL = "";
-    @Group(group = { Jellyfin.class }, desc = "Username")
-    @Secret
-    /** Constant <code>jellyfinUsername=""</code> */
-    public static String jellyfinUsername = "";
-    @Group(group = { Jellyfin.class }, desc = "Password")
-    @Secret
-    /** Constant <code>jellyfinPassword=""</code> */
-    public static String jellyfinPassword = "";
 
     private Settings() throws IOException {
         super("settings.json");
@@ -285,41 +347,5 @@ public class Settings extends ryzen.ownitall.util.Settings {
     public void clear() {
         instance = null;
         super.clear();
-    }
-
-    /** {@inheritDoc} */
-    public void set(String name, Object value) throws NoSuchFieldException {
-        super.set(name, value);
-    }
-
-    /**
-     * <p>
-     * getAll.
-     * </p>
-     *
-     * @return a {@link java.util.LinkedHashMap} object
-     */
-    public LinkedHashMap<String, Object> getAll() {
-        return super.getAll();
-    }
-
-    /** {@inheritDoc} */
-    public boolean isEmpty(String name) {
-        return super.isEmpty(name);
-    }
-
-    /** {@inheritDoc} */
-    public boolean isGroupEmpty(Class<?> group) {
-        return super.isGroupEmpty(group);
-    }
-
-    /** {@inheritDoc} */
-    public Object get(String name) {
-        return super.get(name);
-    }
-
-    /** {@inheritDoc} */
-    public LinkedHashMap<String, String> getGroup(Class<?> groupClass) {
-        return super.getGroup(groupClass);
     }
 }

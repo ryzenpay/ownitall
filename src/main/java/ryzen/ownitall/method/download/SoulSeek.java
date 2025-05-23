@@ -121,7 +121,6 @@ public class SoulSeek extends Download {
                     logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
                             + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
                             new Exception());
-                    // TODO: check possible exit codes
                 }
                 retries++;
             }

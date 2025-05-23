@@ -1,6 +1,7 @@
 package ryzen.ownitall.ui.cli;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.library.Library;
@@ -85,22 +86,14 @@ public class LibraryMenu {
             logger.debug("null type provided in setCredentials");
             return;
         }
-        Settings credentials = Settings.load();
-        LinkedHashMap<String, String> classCredentials = credentials.getGroup(type);
-        if (classCredentials != null) {
-            for (String name : classCredentials.keySet()) {
-                System.out.print("Enter '" + name + "': ");
-                String value = Input.request().getString();
-                try {
-                    credentials.set(classCredentials.get(name), value);
-                } catch (NoSuchFieldException e) {
-                    logger.warn("Unable to set credential '" + name + "' for '" + type.getSimpleName() + "'");
-                    throw new MissingSettingException(e);
-                }
+        Settings settings = Settings.load();
+        LinkedHashSet<String> credentials = settings.getGroup(type);
+        if (credentials != null) {
+            try {
+                SettingsMenu.changeSettings(credentials);
+            } catch (NoSuchFieldException e) {
+                logger.error("Unable to find setting to change", e);
             }
-        }
-        if (credentials.isGroupEmpty(type)) {
-            throw new MissingSettingException("Unable to set credentials for '" + type.getSimpleName() + "'");
         }
     }
 
