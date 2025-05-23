@@ -52,7 +52,7 @@ public class Input {
             return;
         }
         nonInteractive = new LinkedList<>();
-        String[] inputParams = params.split(",");
+        String[] inputParams = params.split(";");
         for (String param : inputParams) {
             nonInteractive.add(param);
         }

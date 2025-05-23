@@ -111,7 +111,7 @@ public class LibraryMenu {
         LinkedHashSet<String> credentials = settings.getGroup(libraryClass);
         String options = "";
         for (String credential : credentials) {
-            options += credential + ",";
+            options += credential + ";";
         }
         return SettingsMenu.changeSettingForm(model, options, callback);
     }

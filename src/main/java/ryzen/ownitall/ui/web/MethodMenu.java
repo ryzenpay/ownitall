@@ -133,7 +133,7 @@ public class MethodMenu {
         LinkedHashSet<String> credentials = settings.getGroup(methodClass);
         String options = "";
         for (String credential : credentials) {
-            options += credential + ",";
+            options += credential + ";";
         }
         return SettingsMenu.changeSettingForm(model, options, callback);
     }

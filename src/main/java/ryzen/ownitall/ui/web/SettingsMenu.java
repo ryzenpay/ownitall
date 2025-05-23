@@ -103,7 +103,7 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         LinkedHashMap<String, String> fields = new LinkedHashMap<>();
         // allows semi colon seperated list
-        for (String setting : choices.split(",")) {
+        for (String setting : choices.split(";")) {
             if (setting == null || setting.isEmpty()) {
                 continue;
             }
@@ -136,7 +136,7 @@ public class SettingsMenu {
             @RequestParam(required = true) LinkedHashMap<String, String> params) {
         logger.debug("Change setting parameters: " + params);
         Settings settings = Settings.load();
-        for (String setting : choices.split(",")) {
+        for (String setting : choices.split(";")) {
             if (setting == null || setting.isEmpty()) {
                 continue;
             }
