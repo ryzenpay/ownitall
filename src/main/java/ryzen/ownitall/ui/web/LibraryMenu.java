@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -44,6 +45,18 @@ public class LibraryMenu {
         return "menu";
     }
 
+    @GetMapping("/library/change")
+    public String optionChange(Model model) {
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        for (String currLibrary : Library.libraries.keySet()) {
+            options.put(currLibrary, "/library/change/" + currLibrary);
+        }
+        model.addAttribute("menuName", "Library Options");
+        model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/library");
+        return "menu";
+    }
+
     /**
      * <p>
      * optionChange.
@@ -53,34 +66,26 @@ public class LibraryMenu {
      * @param library a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/library/change")
-    public String optionChange(Model model, @RequestParam(value = "library", required = false) String library) {
-        LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        if (library != null) {
-            Class<? extends Library> libraryClass = Library.libraries.get(library);
-            try {
-                Library.initLibrary(libraryClass);
-                return libraryMenu(model);
-            } catch (MissingSettingException e) {
-                logger.info(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
-                return loginForm(model, library, "/library/change?library=" + library);
-            } catch (AuthenticationException e) {
-                logger.info(model,
-                        "Authentication exception setting up library '" + libraryClass.getSimpleName()
-                                + "', retrying...");
-                Library.clearCredentials(libraryClass);
-                return loginForm(model, library, "/library/change?library=" + library);
-            } catch (NoSuchMethodException e) {
-                logger.error(model, "Unsupported library type '" + library + "'", e);
-            }
+    @GetMapping("/library/change/{library}")
+    public String optionChange(Model model, @PathVariable(value = "library") String library) {
+        Class<? extends Library> libraryClass = Library.libraries.get(library);
+        try {
+            Library.initLibrary(libraryClass);
+            logger.info(model, "Successfully changed library to '" + libraryClass.getSimpleName() + "'");
+            return libraryMenu(model);
+        } catch (MissingSettingException e) {
+            logger.info(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+            return loginForm(model, library, "/library/change/" + library);
+        } catch (AuthenticationException e) {
+            logger.info(model,
+                    "Authentication exception setting up library '" + libraryClass.getSimpleName()
+                            + "', retrying...");
+            Library.clearCredentials(libraryClass);
+            return loginForm(model, library, "/library/change/" + library);
+        } catch (NoSuchMethodException e) {
+            logger.error(model, "Unsupported library type '" + library + "'", e);
         }
-        for (String currLibrary : Library.libraries.keySet()) {
-            options.put(currLibrary, "/library/change?library=" + currLibrary);
-        }
-        model.addAttribute("menuName", "Library Options");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/library");
-        return "menu";
+        return optionChange(model);
     }
 
     /**
@@ -93,9 +98,9 @@ public class LibraryMenu {
      * @param callback         a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/library/login")
+    @GetMapping("/library/login/{library}")
     public String loginForm(Model model,
-            @RequestParam(value = "library", required = true) String library,
+            @PathVariable(value = "library") String library,
             @RequestParam(value = "callback", required = true) String callback) {
         Class<? extends Library> libraryClass = Library.libraries.get(library);
         if (libraryClass == null) {
@@ -119,7 +124,7 @@ public class LibraryMenu {
         }
         model.addAttribute("formName", libraryClass.getSimpleName() + " Credentials");
         model.addAttribute("loginFields", currentCredentials);
-        model.addAttribute("postAction", "/library/login?library=" + library);
+        model.addAttribute("postAction", "/library/login/" + library);
         model.addAttribute("callback", callback);
         return "login";
     }
@@ -134,9 +139,9 @@ public class LibraryMenu {
      *                         from
      * @return - successful or retry login
      */
-    @PostMapping("/library/login")
+    @PostMapping("/library/login/{library}")
     public String login(Model model,
-            @RequestParam(value = "library", required = true) String library,
+            @PathVariable(value = "library") String library,
             @RequestParam(value = "callback", required = true) String callback,
             @RequestParam(required = false) LinkedHashMap<String, String> params) {
 

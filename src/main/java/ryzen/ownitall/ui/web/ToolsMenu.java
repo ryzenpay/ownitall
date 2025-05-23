@@ -2,6 +2,7 @@ package ryzen.ownitall.ui.web;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Storage;
@@ -61,6 +63,23 @@ public class ToolsMenu {
         return toolsMenu(model);
     }
 
+    @GetMapping("/tools/unarchive")
+    public String unarchiveMenu(Model model) {
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        for (File file : Storage.getArchiveFolders()) {
+            try {
+                String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
+                options.put(file.getName(), "/tools/unarchive/" + URLEncoder.encode(path, StandardCharsets.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                logger.error(model, "Exception converting file path", e);
+            }
+        }
+        model.addAttribute("menuName", "Choose Folder to Unarchive");
+        model.addAttribute("menuOptions", options);
+        model.addAttribute("callback", "/tools");
+        return "menu";
+    }
+
     /**
      * <p>
      * optionUnArchive.
@@ -70,30 +89,13 @@ public class ToolsMenu {
      * @param folderPath a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/tools/unarchive")
-    public String optionUnArchive(Model model,
-            @RequestParam(value = "folderPath", required = false) String folderPath) {
-        if (folderPath == null) {
-            LinkedHashMap<String, String> options = new LinkedHashMap<>();
-            for (File file : Storage.getArchiveFolders()) {
-                try {
-                    String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
-                    options.put(file.getName(), "/tools/unarchive?folderPath=" + path);
-                } catch (UnsupportedEncodingException e) {
-                    logger.error(model, "Exception converting file path", e);
-                }
-            }
-            model.addAttribute("menuName", "Choose Folder to Unarchive");
-            model.addAttribute("menuOptions", options);
-            model.addAttribute("callback", "/tools");
-            return "menu";
-        } else if (folderPath.equals("Exit")) {
-            return toolsMenu(model);
-        } else {
-            Storage.unArchive(new File(folderPath));
-            logger.info(model, "Successfully unarchived '" + folderPath + "'");
-            return toolsMenu(model);
-        }
+    @GetMapping("/tools/unarchive/{path}")
+    public String unarchive(Model model,
+            @PathVariable(value = "path") String path) {
+        path = URLDecoder.decode(path, StandardCharsets.UTF_8);
+        Storage.unArchive(new File(path));
+        logger.info(model, "Successfully unarchived '" + path + "'");
+        return toolsMenu(model);
     }
 
     /**
