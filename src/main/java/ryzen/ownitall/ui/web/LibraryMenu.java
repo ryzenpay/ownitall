@@ -74,10 +74,10 @@ public class LibraryMenu {
             logger.info(model, "Successfully changed library to '" + libraryClass.getSimpleName() + "'");
             return libraryMenu(model);
         } catch (MissingSettingException e) {
-            logger.info(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+            logger.warn(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
             return loginForm(model, library, "/library/change/" + library);
         } catch (AuthenticationException e) {
-            logger.info(model,
+            logger.warn(model,
                     "Authentication exception setting up library '" + libraryClass.getSimpleName()
                             + "', retrying...");
             Library.clearCredentials(libraryClass);
@@ -109,11 +109,11 @@ public class LibraryMenu {
         }
         Settings settings = Settings.load();
         LinkedHashSet<String> credentials = settings.getGroup(libraryClass);
-        String options = "";
-        for (String credential : credentials) {
-            options += credential + ";";
+        if (credentials == null || credentials.isEmpty()) {
+            logger.info(model, "Library '" + libraryClass.getSimpleName() + "' does not have credentials");
+            return "redirect:" + callback;
         }
-        return SettingsMenu.changeSettingForm(model, options, callback);
+        return SettingsMenu.changeSettingForm(model, credentials, callback);
     }
 
     /**

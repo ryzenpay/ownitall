@@ -62,8 +62,13 @@ abstract public class Method {
     public static LinkedHashMap<String, Class<? extends Method>> getMethods(Class<? extends Annotation> annotation) {
         LinkedHashMap<String, Class<? extends Method>> filteredMethods = new LinkedHashMap<>();
         for (String methodName : methods.keySet()) {
-            if (methods.get(methodName).isAnnotationPresent(annotation)) {
-                filteredMethods.put(methodName, methods.get(methodName));
+            Class<? extends Method> method = methods.get(methodName);
+            if (method != null) {
+                if (method.isAnnotationPresent(annotation)) {
+                    filteredMethods.put(methodName, methods.get(methodName));
+                }
+            } else {
+                logger.warn("Unable to find method '" + methodName + "'");
             }
         }
         return filteredMethods;

@@ -18,10 +18,22 @@
                 <h1 class="text-center mb-4" th:text="${formName}"></h1>
 
                 <form id="form">
-                    <div class="mb-3" th:each="field : ${loginFields}">
-                        <label th:for="${field.key}" class="form-label" th:text="${field.key}"></label>
-                        <input type="text" class="form-control" th:id="${field.key}" th:name="${field.key}"
-                            th:value="${field.value}" />
+                    <div class="mb-3" th:each="setting : ${values}">
+                        <label th:for="${setting.key}" class="form-label" th:text="${setting.name}"></label>
+                        <div th:if="${setting.description != null}">
+                            <small class="form-text text-muted" th:text="${setting.description}"></small>
+                        </div>
+                        <div th:if="${setting.options != null}">
+                            <select class="form-select" th:id="${setting.key}" th:name="${setting.key}">
+                                <option th:each="option : ${setting.options}" th:value="${option}" th:text="${option}"
+                                    th:selected="${setting.value != null and setting.value.toString().equals(option)}">
+                                </option>
+                            </select>
+                        </div>
+                        <div th:unless="${setting.options != null}">
+                            <input type="text" class="form-control" th:id="${setting.key}" th:name="${setting.key}"
+                                th:type="${setting.secret ? 'password' : 'text'}" th:value="${setting.value}" />
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-start mt-4">
@@ -33,7 +45,7 @@
         </div>
     </div>
     <input type="hidden" id="callback" th:value="${callback}" />
-    <input type="hidden" id="postAction" th:value="${postAction}" />
+    <input type="hidden" id="postUrl" th:value="${postUrl}" />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -42,24 +54,36 @@
 
             const form = event.target;
             const formData = new FormData(form);
-            const postAction = document.getElementById('postAction').value;
+            const postUrl = document.getElementById('postUrl').value;
             const callback = document.getElementById('callback').value;
             const submitButton = document.getElementById('submitButton');
+
+            // Construct the choices object
+            const choices = {};
+            formData.forEach((value, key) => {
+                if (value) { // Only add if there's a value
+                    choices[key] = value;
+                }
+            });
 
             // Change button to loading state
             submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
             submitButton.disabled = true;
 
             try {
-                const response = await fetch(postAction, {
+                const response = await fetch(postUrl, {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json' // Specify JSON content type
+                    },
+                    body: JSON.stringify(choices) // Send the choices as JSON
                 });
 
                 if (response.ok) {
+                    console.info("Successfully changed settings, redirecting...");
                     window.location.href = callback; // Redirect if successful
                 } else {
-                    console.error('Error:', response.status, response.statusText);
+                    console.error('Processing error:', response.status, await response.text());
                 }
             } catch (error) {
                 console.error('Fetch error:', error);

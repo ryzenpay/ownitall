@@ -80,16 +80,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /// JELLYFIN
     ///
     ///
-    @Group(group = { Jellyfin.class })
-    @Secret
+    @Group(Jellyfin.class)
     @Name("JellyFin URL")
     public static String jellyfinURL = "";
-    @Group(group = { Jellyfin.class })
-    @Secret
+    @Group(Jellyfin.class)
     @Name("JellyFin Username")
     /** Constant <code>jellyfinUsername=""</code> */
     public static String jellyfinUsername = "";
-    @Group(group = { Jellyfin.class })
+    @Group(Jellyfin.class)
     @Secret
     @Name("JellyFin Password")
     /** Constant <code>jellyfinPassword=""</code> */
@@ -113,17 +111,15 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("Spotify API playlist limit")
     public static int spotifyPlaylistLimit = 20;
 
-    @Group(group = { Spotify.class })
-    @Secret
+    @Group(Spotify.class)
     @Name("Spotify Client ID")
     public static String spotifyClientID = "";
-    @Group(group = { Spotify.class })
+    @Group(Spotify.class)
     @Secret
     @Name("Spotify Client Secret")
     /** Constant <code>spotifyClientSecret=""</code> */
     public static String spotifyClientSecret = "";
-    @Group(group = { Spotify.class })
-    @Secret
+    @Group(Spotify.class)
     @Name("Spotify Redirect URL")
     /** Constant <code>spotifyRedirectURL=""</code> */
     public static String spotifyRedirectURL = "";
@@ -143,16 +139,15 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("Youtube API playlist limit")
     public static Long youtubePlaylistLimit = 20L;
 
-    @Group(group = { Youtube.class })
-    @Secret
+    @Group(Youtube.class)
     @Name("Google Application Name")
     public static String youtubeApplicatioName = "";
-    @Group(group = { Youtube.class })
+    @Group(Youtube.class)
     @Secret
     @Name("Google Client ID")
     /** Constant <code>youtubeClientID=""</code> */
     public static String youtubeClientID = "";
-    @Group(group = { Youtube.class })
+    @Group(Youtube.class)
     @Secret
     @Name("Google Client Secret")
     /** Constant <code>youtubeClientSecret=""</code> */
@@ -182,7 +177,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /// LASTFM
     ///
     ///
-    @Group(group = { LastFM.class })
+    @Group(LastFM.class)
     @Secret
     @Name("LastFM API Key")
     public static String lastFMApiKey = "";
@@ -196,14 +191,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * local library path
      */
-    @Group(group = { Download.class, Upload.class, YT_dl.class, SoulSeek.class })
+    @Group({ Download.class, Upload.class, YT_dl.class, SoulSeek.class })
     @Name("Local Library")
     public static File localFolder = null;
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    @Group(group = { Download.class, YT_dl.class, SoulSeek.class })
+    @Group({ Download.class, YT_dl.class, SoulSeek.class })
     @Options(options = { "mp3", "flac", "wav" })
     @Name("Format (ex: mp3)")
     public static String downloadFormat = "mp3";
@@ -211,10 +206,10 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * class representative of which download class to use
      * default is YT_dl.class
      */
-    @Group(group = { Download.class })
-    @Options(options = { "YT_dl", "SoulSeek" })
-    @Name("Method")
-    public static String downloadMethod = "YT_dl";
+    @Group(Download.class)
+    @Options(options = { "ryzen.ownitall.method.download.YT_dl", "ryzen.ownitall.method.download.SoulSeek" })
+    @Name("Download Method")
+    public static String downloadMethod = "ryzen.ownitall.method.download.YT_dl";
 
     /**
      * enable multithreading
@@ -238,6 +233,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * incase download hierachy is set to false but still want an m3u
      */
     public static boolean downloadLikedsongPlaylist = true;
+
     ///
     ///
     /// YT_DL
@@ -260,7 +256,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * ffmpeg path (required for youtubedl)
      * 
      */
-    @Group(group = { YT_dl.class })
+    @Group(YT_dl.class)
     @Name("FFMPEG file/folder")
     public static File ffmpegFile = null;
 
@@ -268,7 +264,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * youtube dl installation path
      * 
      */
-    @Group(group = { YT_dl.class })
+    @Group(YT_dl.class)
     @Name("YT_DL binary")
     public static File yt_dlFile = null;
 
@@ -291,17 +287,16 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * soulseek dl installation path
      */
-    @Group(group = { SoulSeek.class })
+    @Group(SoulSeek.class)
     @Name("SoulSeek DL Binary")
     public static File soulSeekFile = null;
 
-    @Group(group = { SoulSeek.class })
-    @Secret
+    @Group(SoulSeek.class)
     @Name("SoulSeek Username")
     /** Constant <code>soulSeekUsername=""</code> */
     public static String soulSeekUsername = "";
 
-    @Group(group = { SoulSeek.class })
+    @Group(SoulSeek.class)
     @Secret
     @Name("SoulSeek Password")
     public static String soulSeekPassword = "";

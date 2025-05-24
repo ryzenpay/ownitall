@@ -59,10 +59,10 @@ public class MethodMenu {
                 method = Method.initMethod(methodClass);
                 break;
             } catch (MissingSettingException e) {
-                logger.info("Missing settings to set up method '" + methodClass.getSimpleName() + "'");
+                logger.warn("Missing settings to set up method '" + methodClass.getSimpleName() + "'");
                 setCredentials(methodClass);
             } catch (AuthenticationException e) {
-                logger.info("Authentication exception setting up method '" + methodClass.getSimpleName()
+                logger.warn("Authentication exception setting up method '" + methodClass.getSimpleName()
                         + "', retrying...");
                 Method.clearCredentials(methodClass);
                 setCredentials(methodClass);
@@ -454,8 +454,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -473,8 +473,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -491,8 +491,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -510,8 +510,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 }

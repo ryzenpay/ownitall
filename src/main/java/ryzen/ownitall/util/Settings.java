@@ -59,7 +59,7 @@ public class Settings {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     protected @interface Group {
-        Class<?>[] group();
+        Class<?>[] value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -359,7 +359,7 @@ public class Settings {
         for (Field field : this.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Group.class)) {
                 Group annotation = (Group) field.getAnnotation(Group.class);
-                for (Class<?> currClass : annotation.group()) {
+                for (Class<?> currClass : annotation.value()) {
                     if (currClass.equals(groupClass)) {
                         values.add(field.getName());
                         break;

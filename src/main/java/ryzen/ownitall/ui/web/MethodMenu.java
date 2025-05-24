@@ -94,8 +94,7 @@ public class MethodMenu {
                 logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "'");
                 return this.loginForm(model, method, "/method/" + method + "?callback=" + callback);
             } catch (AuthenticationException e) {
-                logger.error(model, "Failed to authenticate into method '" + method + "'", e);
-                Method.clearCredentials(methodClass);
+                logger.warn(model, "Failed to authenticate into method '" + method + "'");
                 return this.loginForm(model, methodClass
                         .getSimpleName(),
                         "/method/" + method + "?callback=" + callback);
@@ -131,11 +130,11 @@ public class MethodMenu {
         }
         Settings settings = Settings.load();
         LinkedHashSet<String> credentials = settings.getGroup(methodClass);
-        String options = "";
-        for (String credential : credentials) {
-            options += credential + ";";
+        if (credentials == null || credentials.isEmpty()) {
+            logger.info(model, "Method '" + methodClass.getSimpleName() + "' does not have credentials");
+            return "redirect:" + callback;
         }
-        return SettingsMenu.changeSettingForm(model, options, callback);
+        return SettingsMenu.changeSettingForm(model, credentials, callback);
     }
 
     /**
@@ -659,8 +658,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -699,8 +698,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -739,8 +738,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
@@ -779,8 +778,8 @@ public class MethodMenu {
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
         } catch (AuthenticationException e) {
-            logger.error(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library", e);
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
         }
     }
 
