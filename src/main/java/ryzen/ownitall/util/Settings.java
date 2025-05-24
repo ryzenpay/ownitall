@@ -111,7 +111,7 @@ public class Settings {
     /**
      * save settings to predefined file
      */
-    protected void save() {
+    public void save() {
         this.setFolder();
         try {
             objectMapper.writeValue(file, this.getAll());

@@ -327,15 +327,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     /**
      * <p>
-     * save.
-     * </p>
-     */
-    public void save() {
-        super.save();
-    }
-
-    /**
-     * <p>
      * clear.
      * </p>
      */

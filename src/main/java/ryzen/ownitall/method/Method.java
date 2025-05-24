@@ -125,8 +125,6 @@ abstract public class Method {
         }
     }
 
-    // TODO: centralize in settings
-    // and then also update in library
     /**
      * <p>
      * clearCredentials.
