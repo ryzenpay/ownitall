@@ -534,7 +534,7 @@ public class Jellyfin extends Method {
             logger.error("Exception while constructing jellyfin payloadQuery", e);
             return null;
         } catch (IOException e) {
-            logger.error("Exception while payloadQuery jellyfin", e);
+            logger.warn("Exception while payloadQuery jellyfin: " + e);
             return null;
         }
     }

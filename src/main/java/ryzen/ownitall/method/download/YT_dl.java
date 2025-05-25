@@ -149,8 +149,10 @@ public class YT_dl extends Download {
             } else {
                 logger.warn("song '" + song.toString() + "' failed to download, check logs");
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.error("Exception preparing yt-dlp: ", e);
+        } catch (InterruptedException e) {
+            logger.debug("Interruption caught while downloading yt-dlp song");
             InterruptionHandler.forceInterruption();
         }
     }

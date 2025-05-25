@@ -74,12 +74,13 @@ public class LibraryMenu {
             logger.info(model, "Successfully changed library to '" + libraryClass.getSimpleName() + "'");
             return libraryMenu(model);
         } catch (MissingSettingException e) {
-            logger.warn(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+            logger.warn(model, "Missing settings to set up library '" + libraryClass.getSimpleName() + "': "
+                    + e.getMessage());
             return loginForm(model, library, "/library/change/" + library);
         } catch (AuthenticationException e) {
             logger.warn(model,
                     "Authentication exception setting up library '" + libraryClass.getSimpleName()
-                            + "', retrying...");
+                            + "': " + e.getMessage());
             Library.clearCredentials(libraryClass);
             return loginForm(model, library, "/library/change/" + library);
         } catch (NoSuchMethodException e) {

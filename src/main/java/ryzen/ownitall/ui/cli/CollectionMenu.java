@@ -60,7 +60,8 @@ public class CollectionMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up export menu");
         } catch (MissingSettingException e) {
-            logger.warn("Unable to authenticate into selected method due to invalid / missing credentials");
+            logger.warn("Unable to set up selected method due to missing settings: "
+                    + e.getMessage());
         }
     }
 

@@ -26,6 +26,7 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -265,11 +266,10 @@ public class Download extends Method {
      * clean up local liked songs before downloading
      */
     @Override
-    public void syncLikedSongs() throws InterruptedException {
+    public void syncLikedSongs() throws InterruptedException, AuthenticationException {
         logger.debug("Getting local liked songs to remove mismatches");
         try {
-            Upload upload = new Upload();
-            LikedSongs likedSongs = upload.getLikedSongs();
+            LikedSongs likedSongs = new Upload().getLikedSongs();
             File songFolder = Settings.localFolder;
             if (Settings.downloadHierachy) {
                 songFolder = new File(Settings.localFolder, Settings.likedSongName);
@@ -285,7 +285,7 @@ public class Download extends Method {
                     }
                     File songFile = new File(songFolder, Collection.getSongFileName(song));
                     if (songFile.exists()) {
-                        if (songFolder.delete()) {
+                        if (songFile.delete()) {
                             logger.info("Deleted liked song '" + songFile.getAbsolutePath());
                         } else {
                             logger.warn("Failed to delete liked song: " + songFile.getAbsolutePath());
@@ -294,7 +294,7 @@ public class Download extends Method {
                 }
             }
         } catch (MissingSettingException e) {
-            logger.warn("Upload is missing credentials for download sync");
+            logger.warn("Upload is missing credentials for download sync: " + e.getMessage());
             return;
         }
     }
@@ -342,10 +342,9 @@ public class Download extends Method {
      * deletes entire playlists which are not in collection
      */
     @Override
-    public void syncPlaylists() throws InterruptedException, MissingSettingException {
+    public void syncPlaylists() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.debug("Getting local playlists to remove mismatches");
-        Upload upload = new Upload();
-        ArrayList<Playlist> playlists = upload.getPlaylists();
+        ArrayList<Playlist> playlists = new Upload().getPlaylists();
         if (playlists != null && !playlists.isEmpty()) {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
@@ -398,7 +397,8 @@ public class Download extends Method {
      * cleans up individual songs in a playlist
      */
     @Override
-    public void syncPlaylist(Playlist playlist) throws InterruptedException, MissingSettingException {
+    public void syncPlaylist(Playlist playlist) throws InterruptedException, MissingSettingException,
+            AuthenticationException {
         if (playlist == null) {
             logger.debug("null playlist provided in playlistSync");
             return;
@@ -406,10 +406,9 @@ public class Download extends Method {
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
         File playlistFolder = Settings.localFolder;
         Playlist localPlaylist = null;
-        Upload upload = new Upload();
         if (Settings.downloadHierachy) {
             playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
-            localPlaylist = upload.getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
+            localPlaylist = new Upload().getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
         } else {
             File m3uFile = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist) + ".m3u");
             if (m3uFile.exists()) {
@@ -482,10 +481,9 @@ public class Download extends Method {
      * deletes entire albums which are not in collection
      */
     @Override
-    public void syncAlbums() throws InterruptedException, MissingSettingException {
+    public void syncAlbums() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.debug("Getting local albums to remove mismatches");
-        Upload upload = new Upload();
-        ArrayList<Album> albums = upload.getAlbums();
+        ArrayList<Album> albums = new Upload().getAlbums();
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : albums) {
@@ -521,15 +519,14 @@ public class Download extends Method {
 
     /** {@inheritDoc} */
     @Override
-    public void syncAlbum(Album album) throws InterruptedException, MissingSettingException {
+    public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException {
         if (album == null) {
             logger.debug("null album provided in albumSync");
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
         File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
-        Upload upload = new Upload();
-        Album localAlbum = upload.getAlbum(albumFolder.getAbsolutePath(), album.getName(),
+        Album localAlbum = new Upload().getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
         if (localAlbum != null && !localAlbum.isEmpty()) {
             localAlbum.removeSongs(album.getSongs());

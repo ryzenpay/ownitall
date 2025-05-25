@@ -21,6 +21,7 @@ public class InterruptionHandler implements AutoCloseable {
      * which is thread save
      */
     public InterruptionHandler() {
+        interrupted.set(false);
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
             interrupted.set(true);
@@ -43,7 +44,9 @@ public class InterruptionHandler implements AutoCloseable {
     }
 
     /**
-     * <p>forceInterruption.</p>
+     * <p>
+     * forceInterruption.
+     * </p>
      */
     public static void forceInterruption() {
         interrupted.set(true);
@@ -51,7 +54,9 @@ public class InterruptionHandler implements AutoCloseable {
     }
 
     /**
-     * <p>resetInterruption.</p>
+     * <p>
+     * resetInterruption.
+     * </p>
      */
     public static void resetInterruption() {
         interrupted.set(false);

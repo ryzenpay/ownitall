@@ -91,10 +91,11 @@ public class MethodMenu {
                 this.method = Method.initMethod(methodClass);
                 return "redirect:" + callback;
             } catch (MissingSettingException e) {
-                logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "'");
+                logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "': "
+                        + e.getMessage());
                 return this.loginForm(model, method, "/method/" + method + "?callback=" + callback);
             } catch (AuthenticationException e) {
-                logger.warn(model, "Failed to authenticate into method '" + method + "'");
+                logger.warn(model, "Failed to authenticate into method '" + method + "': " + e.getMessage());
                 return this.loginForm(model, methodClass
                         .getSimpleName(),
                         "/method/" + method + "?callback=" + callback);
@@ -656,10 +657,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'collection");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         } catch (AuthenticationException e) {
             logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         }
     }
 
@@ -696,10 +697,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'liked songs");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         } catch (AuthenticationException e) {
             logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         }
     }
 
@@ -736,10 +737,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'albums");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         } catch (AuthenticationException e) {
             logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         }
     }
 
@@ -776,10 +777,10 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'playlists");
         } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library");
+            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         } catch (AuthenticationException e) {
             logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library");
+                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
         }
     }
 

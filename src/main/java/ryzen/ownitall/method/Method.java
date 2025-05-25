@@ -110,7 +110,7 @@ abstract public class Method {
             return null;
         }
         try {
-            logger.debug("Initializing '" + methodClass + "' method");
+            logger.debug("Initializing '" + methodClass.getSimpleName() + "' method");
             return methodClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Throwable cause = e.getCause();

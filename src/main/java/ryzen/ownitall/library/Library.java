@@ -94,9 +94,10 @@ public class Library {
             try {
                 instance = initLibrary(libraryClass);
             } catch (MissingSettingException e) {
-                logger.warn("Library '" + libraryClass.getSimpleName() + "' is missing credentials");
+                logger.warn("Library '" + libraryClass.getSimpleName() + "' is missing credentials: " + e.getMessage());
             } catch (AuthenticationException e) {
-                logger.warn("Library '" + libraryClass.getSimpleName() + "' had an exception authenticating");
+                logger.warn("Library '" + libraryClass.getSimpleName() + "' had an exception authenticating: "
+                        + e.getMessage());
             } catch (NoSuchMethodException e) {
                 logger.error("Library '" + libraryClass.getSimpleName() + "' does not exist", e);
             }

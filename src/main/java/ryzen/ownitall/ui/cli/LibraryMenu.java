@@ -56,11 +56,12 @@ public class LibraryMenu {
                     Library.initLibrary(libraryClass);
                     break;
                 } catch (MissingSettingException e) {
-                    logger.warn("Missing settings to set up library '" + libraryClass.getSimpleName() + "'");
+                    logger.warn("Missing settings to set up library '" + libraryClass.getSimpleName() + "': "
+                            + e.getMessage());
                     setCredentials(libraryClass);
                 } catch (AuthenticationException e) {
                     logger.warn("Authentication exception setting up library '" + libraryClass.getSimpleName()
-                            + "', retrying...");
+                            + "': " + e.getMessage());
                     Library.clearCredentials(libraryClass);
                     setCredentials(libraryClass);
                 } catch (NoSuchMethodException e) {

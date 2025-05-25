@@ -19,6 +19,7 @@ import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import java.time.Duration;
@@ -51,10 +52,13 @@ public class Upload extends Method {
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      */
-    public Upload() throws MissingSettingException {
+    public Upload() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Upload.class)) {
             logger.debug("Empty upload credentials");
             throw new MissingSettingException(Upload.class);
+        }
+        if (!Settings.localFolder.exists()) {
+            throw new AuthenticationException("Local Folder set in settings does not exist");
         }
     }
 
@@ -80,6 +84,7 @@ public class Upload extends Method {
                     ArrayList<Song> songs = getSongs(likedSongsFolder);
                     if (songs != null) {
                         likedSongs.addSongs(songs);
+                        pb.step(songs.size());
                     }
                 }
             } else {
@@ -87,6 +92,7 @@ public class Upload extends Method {
                 LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
                 if (rootLikedSongs != null) {
                     likedSongs.addSongs(rootLikedSongs.getSongs());
+                    pb.step(rootLikedSongs.size());
                 }
                 for (File folder : Settings.localFolder.listFiles()) {
                     interruptionHandler.throwInterruption();
@@ -118,7 +124,8 @@ public class Upload extends Method {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "'' liked songs", folder.listFiles().length);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
@@ -126,10 +133,12 @@ public class Upload extends Method {
                     if (song != null) {
                         if (Settings.downloadHierachy) {
                             likedSongs.addSong(song);
+                            pb.step(song.getName());
                         } else {
                             try {
                                 if (MusicTools.isSongLiked(file)) {
                                     likedSongs.addSong(song);
+                                    pb.step(song.getName());
                                 }
                             } catch (Exception e) {
                                 logger.error(
@@ -386,13 +395,15 @@ public class Upload extends Method {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' songs", folder.listFiles().length);
+                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
                 if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                     Song song = getSong(file);
                     if (song != null) {
                         songs.add(song);
+                        pb.step(song.getName());
                     }
                 }
             }
