@@ -307,7 +307,7 @@ public class Library {
      * @param message a {@link java.lang.String} object
      */
     protected void queryErrorHandle(int code, String message) {
-        logger.error("Received error code (" + code + ") while querying: " + message, new Exception());
+        logger.warn("Received error code (" + code + ") while querying: " + message);
     }
 
     /**

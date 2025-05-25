@@ -207,7 +207,7 @@ public class MusicBrainz extends Library {
                 this.ids.put(params.toString(), id);
                 return id;
             } else {
-                logger.error("Missing data while getting Song: " + response.toString(), new Exception());
+                logger.warn("Missing data while getting Song: " + response.toString());
             }
         }
         logger.info("Could not find song '" + song.getName() + "' in library");

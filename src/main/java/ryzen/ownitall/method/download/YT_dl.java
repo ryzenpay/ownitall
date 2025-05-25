@@ -129,18 +129,17 @@ public class YT_dl extends Download {
                 if (exitCode != 0) {
                     logger.warn("Attempt: " + retries);
                     if (exitCode == 2) {
-                        logger.debug("Error with user provided options: " + command.toString());
+                        logger.warn("Error with user provided options: " + command.toString());
                         break;
                     } else if (exitCode == 100) {
-                        logger.error("Your yt-dlp needs to update", new Exception());
+                        logger.warn("Your yt-dlp needs to update");
                         break;
                     } else if (exitCode == 101) {
-                        logger.debug("Download cancelled due to boundary criteria: '" + searchQuery + "'");
+                        logger.warn("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
                     } else {
-                        logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
-                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
-                                new Exception());
+                        logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode
+                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
                     }
                 }
                 retries++;

@@ -252,7 +252,7 @@ public class Download extends Method {
                     if (file.delete()) {
                         logger.debug("Cleaned up file: '" + file.getAbsolutePath() + "'");
                     } else {
-                        logger.error("Failed to clean up file: '" + file.getAbsolutePath() + "'", new Exception());
+                        logger.warn("Failed to clean up file: '" + file.getAbsolutePath() + "'");
                     }
                 }
             }
@@ -288,7 +288,7 @@ public class Download extends Method {
                         if (songFolder.delete()) {
                             logger.info("Deleted liked song '" + songFile.getAbsolutePath());
                         } else {
-                            logger.error("Failed to delete liked song: " + songFile.getAbsolutePath(), new Exception());
+                            logger.warn("Failed to delete liked song: " + songFile.getAbsolutePath());
                         }
                     }
                 }
@@ -355,8 +355,8 @@ public class Download extends Method {
                         logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
                                 + playlistFolder.getAbsolutePath());
                     } else {
-                        logger.error("Could not delete playlist '" + playlist.getName() + "' folder:"
-                                + playlistFolder.getAbsolutePath(), new Exception());
+                        logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
+                                + playlistFolder.getAbsolutePath());
                     }
                 } else {
                     // deletes all playlists songs
@@ -368,8 +368,8 @@ public class Download extends Method {
                                 "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
                                         + m3uFile.getAbsolutePath());
                     } else {
-                        logger.error("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                                + m3uFile.getAbsolutePath(), new Exception());
+                        logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                                + m3uFile.getAbsolutePath());
                     }
                 }
             }
@@ -495,8 +495,8 @@ public class Download extends Method {
                         logger.info(
                                 "Deleted album '" + album.getName() + "'' folder: " + albumFolder.getAbsolutePath());
                     } else {
-                        logger.error("Failed to delete album '" + album.getName() + "' folder: "
-                                + albumFolder.getAbsolutePath(), new Exception());
+                        logger.warn("Failed to delete album '" + album.getName() + "' folder: "
+                                + albumFolder.getAbsolutePath());
                     }
                 }
             }

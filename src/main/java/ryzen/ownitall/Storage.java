@@ -69,7 +69,7 @@ public class Storage {
             }
         }
         Collection.clear();
-        logger.info("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
+        logger.debug("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
     }
 
     /**
@@ -125,10 +125,10 @@ public class Storage {
             }
         }
         unarchiveFolder.delete();
-        logger.info("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
+        logger.debug("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
         Collection.clear();
         importCollection();
-        logger.info("Successfully unarchived music library");
+        logger.debug("Successfully unarchived music library");
     }
 
     /**
@@ -138,7 +138,7 @@ public class Storage {
         setCacheFolder();
         for (File file : Settings.cacheFolder.listFiles()) {
             file.delete();
-            logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
+            logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
         }
     }
 
@@ -152,7 +152,7 @@ public class Storage {
         for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
-                logger.info("Deleted file: '" + file.getAbsolutePath() + "'");
+                logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
             }
         }
     }
@@ -162,7 +162,7 @@ public class Storage {
      * orchestrates import albums, playlists and liked songs
      */
     public static void importCollection() {
-        logger.info("importing collection... ");
+        logger.debug("importing collection... ");
         try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
             pb.step("Albums");
             Collection.addAlbums(importAlbums());
@@ -170,7 +170,7 @@ public class Storage {
             Collection.addPlaylists(importPlaylists());
             pb.step("Liked Songs");
             Collection.addLikedSongs(importLikedSongs());
-            logger.info("Successfully imported collection");
+            logger.debug("Successfully imported collection");
         }
     }
 
@@ -179,7 +179,7 @@ public class Storage {
      * orchestrates export albums, playlists and liked songs
      */
     public static void exportCollection() {
-        logger.info("Exporting music collection...");
+        logger.debug("Exporting music collection...");
         try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
             pb.step("Albums");
             exportAlbums(Collection.getAlbums());
@@ -187,7 +187,7 @@ public class Storage {
             exportPlaylists(Collection.getPlaylists());
             pb.step("Liked Songs");
             exportLikedSongs(Collection.getLikedSongs());
-            logger.info("Successfully exported music collection");
+            logger.debug("Successfully exported music collection");
         }
     }
 

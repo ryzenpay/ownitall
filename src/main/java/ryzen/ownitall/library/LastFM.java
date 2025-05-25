@@ -289,7 +289,9 @@ public class LastFM extends Library {
                                             + album.size() + ")");
                                 }
                             } else {
-                                logger.debug("non corresponding artist '" + album.getMainArtist() + "' found in album '"
+                                // TODO: needs to be less harsh
+                                // or give options?
+                                logger.warn("non corresponding artist '" + album.getMainArtist() + "' found in album '"
                                         + album.getName() + "' while searching '" + artist.getName() + "' albums");
                             }
                         }

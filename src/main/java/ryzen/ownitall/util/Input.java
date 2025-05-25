@@ -48,7 +48,7 @@ public class Input {
      */
     public static void setNonInteractive(String params) {
         if (params == null) {
-            logger.error("null params provided in input request", new Exception());
+            logger.warn("null params provided in input request");
             return;
         }
         nonInteractive = new LinkedList<>();

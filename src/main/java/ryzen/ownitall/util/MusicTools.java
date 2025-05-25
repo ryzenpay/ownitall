@@ -351,13 +351,13 @@ public class MusicTools {
                 if (deleteFolder(file)) {
                     logger.info("Successfully deleted folder: " + file.getAbsolutePath());
                 } else {
-                    logger.error("Failed to delete folder: " + file.getAbsolutePath(), new Exception());
+                    logger.warn("Failed to delete folder: " + file.getAbsolutePath());
                 }
             } else {
                 if (file.delete()) {
                     logger.info("Successfully deleted file: " + file.getAbsolutePath());
                 } else {
-                    logger.error("Failed to delete file: " + file.getAbsolutePath(), new Exception());
+                    logger.warn("Failed to delete file: " + file.getAbsolutePath());
                 }
             }
         }

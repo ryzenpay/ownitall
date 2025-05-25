@@ -118,9 +118,8 @@ public class SoulSeek extends Download {
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     logger.warn("Attempt: " + retries);
-                    logger.error("Unkown error while downloading song: '" + song + "' with code: " + exitCode
-                            + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString(),
-                            new Exception());
+                    logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode
+                            + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
                 }
                 retries++;
             }

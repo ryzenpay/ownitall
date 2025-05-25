@@ -102,7 +102,7 @@ public class Settings {
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
         if (imported == null) {
-            logger.error("Failed to import from file '" + file.getAbsolutePath() + "'", new Exception());
+            logger.warn("Failed to import from file '" + file.getAbsolutePath() + "'");
         } else {
             this.setAll(imported);
         }

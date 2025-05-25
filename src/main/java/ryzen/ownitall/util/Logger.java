@@ -21,7 +21,7 @@ public class Logger {
     public static Level globalLevel;
     private static Stack<Map.Entry<Level, String>> globalHistory = new Stack<>();
     private Stack<Map.Entry<Level, String>> history = new Stack<>();
-    private static final int historySize = 10;
+    private static final int historySize = 5;
     private org.apache.logging.log4j.Logger logger;
 
     /**

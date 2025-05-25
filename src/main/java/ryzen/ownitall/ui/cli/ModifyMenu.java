@@ -10,6 +10,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
@@ -191,7 +192,7 @@ public class ModifyMenu {
     }
 
     private void optionAddArtist() {
-        if (Settings.libraryType != "LastFM") {
+        if (!(Library.load() instanceof LastFM)) {
             logger.warn("LastFM library is required to add artist albums");
             return;
         }

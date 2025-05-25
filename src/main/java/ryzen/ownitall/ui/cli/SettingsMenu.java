@@ -73,6 +73,8 @@ public class SettingsMenu {
                     logger.info("Successfully changed setting '" + choice + "'");
                 } catch (NoSuchFieldException e) {
                     logger.error("Unsuccessfully changed setting '" + choice + "'", e);
+                } catch (MissingSettingException e) {
+                    logger.warn("Unable to find setting '" + choice + "'");
                 }
             }
         } catch (InterruptedException e) {
@@ -80,7 +82,8 @@ public class SettingsMenu {
         }
     }
 
-    public static void changeSetting(String settingName) throws InterruptedException, NoSuchFieldException {
+    public static void changeSetting(String settingName)
+            throws InterruptedException, NoSuchFieldException, MissingSettingException {
         if (settingName == null) {
             logger.debug("null settingName provided in changeSetting");
             return;
@@ -88,8 +91,7 @@ public class SettingsMenu {
         Settings settings = Settings.load();
         Class<?> settingType = settings.getType(settingName);
         if (settingType == null) {
-            logger.error("Unable to find setting type  of '" + settingName + "'", new Exception());
-            return;
+            throw new MissingSettingException("Unable to find setting type  of '" + settingName + "'");
         }
         String[] options = settings.getOptions(settingName);
         Object input;
