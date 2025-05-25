@@ -54,6 +54,7 @@ public class Main {
                 logger.debug("log level provided: " + level);
                 Logger.setLogLevel(level);
             }
+            Settings.load();
             Storage.importCollection();
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");

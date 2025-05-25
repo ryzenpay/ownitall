@@ -51,6 +51,10 @@ public class ModifyMenu {
     }
 
     private void addMenu() {
+        if (Settings.libraryType.isEmpty()) {
+            logger.warn("Manually adding requires library to be enabled in settings");
+            return;
+        }
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add Album", this::optionAddAlbum);
         options.put("Add Playlist", this::optionAddPlaylist);

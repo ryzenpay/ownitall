@@ -170,7 +170,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     @Name("Library Type")
     @Options(options = { "LastFM", "MusicBrainz" })
-    public static String libraryType = null;
+    public static String libraryType = "";
 
     ///
     ///
