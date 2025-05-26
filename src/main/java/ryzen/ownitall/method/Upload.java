@@ -124,7 +124,7 @@ public class Upload extends Method {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "'' liked songs", folder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' liked songs", folder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();

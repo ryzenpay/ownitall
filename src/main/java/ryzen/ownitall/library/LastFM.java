@@ -279,20 +279,12 @@ public class LastFM extends Library {
                         album.addArtist(artist);
                         album = this.getAlbum(album);
                         if (album != null) {
-                            // ensure the search worked
-                            if (album.getArtists().contains(artist)) {
-                                // filter out singles / empty albums
-                                if (album.size() > 2) {
-                                    albums.add(album);
-                                } else {
-                                    logger.debug("skipping album '" + album.getName() + "' as it is a single / empty ("
-                                            + album.size() + ")");
-                                }
+                            // filter out singles / empty albums
+                            if (album.size() > 2) {
+                                albums.add(album);
                             } else {
-                                // TODO: needs to be less harsh
-                                // or give options?
-                                logger.warn("non corresponding artist '" + album.getMainArtist() + "' found in album '"
-                                        + album.getName() + "' while searching '" + artist.getName() + "' albums");
+                                logger.debug("skipping album '" + album.getName() + "' as it is a single / empty ("
+                                        + album.size() + ")");
                             }
                         }
                     }

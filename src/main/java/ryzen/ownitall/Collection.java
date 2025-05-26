@@ -79,100 +79,6 @@ public class Collection {
     }
 
     /**
-     * merge array of albums into current collection
-     *
-     * @param albums - linkedhashset of albums to merge
-     */
-    public static void addAlbums(ArrayList<Album> albums) {
-        if (albums == null) {
-            logger.debug("null album array in addAlbums");
-            return;
-        }
-        for (Album album : albums) {
-            addAlbum(album);
-        }
-    }
-
-    /**
-     * add album to collection
-     * merges if one is already existing (see contains() and equals())
-     *
-     * @param album - constructed album to merge
-     */
-    public static void addAlbum(Album album) {
-        if (album == null) {
-            logger.debug("null album provided in addAlbum");
-            return;
-        }
-        Album foundAlbum = getAlbum(album);
-        if (foundAlbum != null) {
-            foundAlbum.merge(album);
-        } else {
-            albums.add(album);
-        }
-    }
-
-    /**
-     * remove album from collection
-     *
-     * @param album - album to remove
-     */
-    public static void removeAlbum(Album album) {
-        if (album == null) {
-            logger.debug("null album provided in removeAlbum");
-            return;
-        }
-        albums.remove(album);
-    }
-
-    /**
-     * merge array of playlists into current collection
-     *
-     * @param playlists - linkedhashset of playlists to merge
-     */
-    public static void addPlaylists(ArrayList<Playlist> playlists) {
-        if (playlists == null) {
-            logger.debug("null playlist array passed in addPlaylists");
-            return;
-        }
-        for (Playlist playlist : playlists) {
-            addPlaylist(playlist);
-        }
-    }
-
-    /**
-     * add playlist to collection
-     * merges if one already exists (see contains() and equals())
-     *
-     * @param playlist - constructed playlist to add
-     */
-    public static void addPlaylist(Playlist playlist) {
-        if (playlist == null) {
-            logger.debug("null playlist provided in addPlaylist");
-            return;
-        }
-        Playlist foundPlaylist = getPlaylist(playlist);
-        if (foundPlaylist != null) {
-            foundPlaylist.merge(playlist);
-        } else {
-            playlists.add(playlist);
-        }
-    }
-
-    /**
-     * removes playlist from collection
-     *
-     * @param playlist - constructed playlist to remove
-     */
-    public static void removePlaylist(Playlist playlist) {
-        if (playlist == null) {
-            logger.debug("null playlist provided in removePlaylist");
-            return;
-        }
-        playlists.remove(playlist);
-    }
-
-    /**
      * merge liked songs into current collection
      *
      * @param fromLikedSongs a {@link ryzen.ownitall.classes.LikedSongs} object
@@ -220,6 +126,19 @@ public class Collection {
         return likedSongs;
     }
 
+    public static Song getLikedSong(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getLikedSong");
+            return null;
+        }
+        for (Song song : likedSongs.getSongs()) {
+            if (song.getName().equals(name)) {
+                return song;
+            }
+        }
+        return null;
+    }
+
     /**
      * function to get standalone liked songs (not in any albums or playlists)
      *
@@ -241,22 +160,67 @@ public class Collection {
     }
 
     /**
-     * get arraylist of playlists songs which are not in albums
+     * check if song is liked (in likedSongs)
      *
-     * @param playlist - playlist to get songs from
-     * @return - arraylist of songs only in that playlist
+     * @param song - constructed song to check if liked
+     * @return - true if liked, false if not
      */
-    public static ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
-        if (playlist == null) {
-            logger.debug("null playlist passed in getStandalonePlaylistSongs");
-            return null;
+    public static boolean isLiked(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in isLiked");
+            return false;
         }
-        Playlist tmpPlaylist = new Playlist("");
-        tmpPlaylist.addSongs(playlist.getSongs());
+        if (likedSongs.contains(song)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * merge array of albums into current collection
+     *
+     * @param albums - linkedhashset of albums to merge
+     */
+    public static void addAlbums(ArrayList<Album> albums) {
+        if (albums == null) {
+            logger.debug("null album array in addAlbums");
+            return;
+        }
         for (Album album : albums) {
-            tmpPlaylist.removeSongs(album.getSongs());
+            addAlbum(album);
         }
-        return tmpPlaylist.getSongs();
+    }
+
+    /**
+     * add album to collection
+     * merges if one is already existing (see contains() and equals())
+     *
+     * @param album - constructed album to merge
+     */
+    public static void addAlbum(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in addAlbum");
+            return;
+        }
+        Album foundAlbum = getAlbum(album);
+        if (foundAlbum != null) {
+            foundAlbum.merge(album);
+        } else {
+            albums.add(album);
+        }
+    }
+
+    /**
+     * remove album from collection
+     *
+     * @param album - album to remove
+     */
+    public static void removeAlbum(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in removeAlbum");
+            return;
+        }
+        albums.remove(album);
     }
 
     /**
@@ -276,42 +240,6 @@ public class Collection {
             }
         }
         return null;
-    }
-
-    /**
-     * get the first playlist the song is part of
-     *
-     * @param song - song to check
-     * @return - constructed playlist
-     */
-    public static Playlist getSongPlaylist(Song song) {
-        if (song == null) {
-            logger.debug("null song provided in getSongPlaylist");
-            return null;
-        }
-        for (Playlist playlist : getPlaylists()) {
-            if (playlist.contains(song)) {
-                return playlist;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * check if song is liked (in likedSongs)
-     *
-     * @param song - constructed song to check if liked
-     * @return - true if liked, false if not
-     */
-    public static boolean isLiked(Song song) {
-        if (song == null) {
-            logger.debug("null song provided in isLiked");
-            return false;
-        }
-        if (likedSongs.contains(song)) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -354,6 +282,128 @@ public class Collection {
             }
         }
         return null;
+    }
+
+    /**
+     * get an albums nfo String to write to a file
+     *
+     * @param album - album to get songs from
+     * @return - string of an xml nfo file to write to a file
+     */
+    public static String getAlbumNFO(Album album) {
+        if (album == null) {
+            logger.debug("null album provided in getAlbumNFO");
+            return null;
+        }
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root element
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("album");
+            doc.appendChild(rootElement);
+
+            // Title
+            Element title = doc.createElement("title");
+            title.appendChild(doc.createTextNode(album.getName()));
+            rootElement.appendChild(title);
+
+            // Artists
+            Element artistsElement = doc.createElement("artists");
+            rootElement.appendChild(artistsElement);
+            for (Artist artist : album.getArtists()) {
+                Element artistElement = doc.createElement("artist");
+                artistElement.appendChild(doc.createTextNode(artist.getName()));
+                artistsElement.appendChild(artistElement);
+            }
+
+            // Songs
+            Element tracksElement = doc.createElement("tracks");
+            rootElement.appendChild(tracksElement);
+            for (Song song : album.getSongs()) {
+                Element trackElement = doc.createElement("track");
+
+                Element trackTitle = doc.createElement("title");
+                trackTitle.appendChild(doc.createTextNode(song.getName()));
+                trackElement.appendChild(trackTitle);
+
+                Element trackDuration = doc.createElement("duration");
+                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
+                trackElement.appendChild(trackDuration);
+
+                tracksElement.appendChild(trackElement);
+            }
+
+            // Cover image
+            if (album.getCoverImage() != null) {
+                Element thumb = doc.createElement("thumb");
+                thumb.appendChild(doc.createTextNode(getCollectionCoverFileName(album)));
+                rootElement.appendChild(thumb);
+            }
+
+            // Transform the DOM to XML string
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(source, result);
+
+            return writer.toString();
+
+        } catch (Exception e) {
+            logger.error("exception generating NFO content", e);
+            return null;
+        }
+    }
+
+    /**
+     * merge array of playlists into current collection
+     *
+     * @param playlists - linkedhashset of playlists to merge
+     */
+    public static void addPlaylists(ArrayList<Playlist> playlists) {
+        if (playlists == null) {
+            logger.debug("null playlist array passed in addPlaylists");
+            return;
+        }
+        for (Playlist playlist : playlists) {
+            addPlaylist(playlist);
+        }
+    }
+
+    /**
+     * add playlist to collection
+     * merges if one already exists (see contains() and equals())
+     *
+     * @param playlist - constructed playlist to add
+     */
+    public static void addPlaylist(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in addPlaylist");
+            return;
+        }
+        Playlist foundPlaylist = getPlaylist(playlist);
+        if (foundPlaylist != null) {
+            foundPlaylist.merge(playlist);
+        } else {
+            playlists.add(playlist);
+        }
+    }
+
+    /**
+     * removes playlist from collection
+     *
+     * @param playlist - constructed playlist to remove
+     */
+    public static void removePlaylist(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist provided in removePlaylist");
+            return;
+        }
+        playlists.remove(playlist);
     }
 
     /**
@@ -434,78 +484,41 @@ public class Collection {
     }
 
     /**
-     * get an albums nfo String to write to a file
+     * get arraylist of playlists songs which are not in albums
      *
-     * @param album - album to get songs from
-     * @return - string of an xml nfo file to write to a file
+     * @param playlist - playlist to get songs from
+     * @return - arraylist of songs only in that playlist
      */
-    public static String getAlbumNFO(Album album) {
-        if (album == null) {
-            logger.debug("null album provided in getAlbumNFO");
+    public static ArrayList<Song> getStandalonePlaylistSongs(Playlist playlist) {
+        if (playlist == null) {
+            logger.debug("null playlist passed in getStandalonePlaylistSongs");
             return null;
         }
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        Playlist tmpPlaylist = new Playlist("");
+        tmpPlaylist.addSongs(playlist.getSongs());
+        for (Album album : albums) {
+            tmpPlaylist.removeSongs(album.getSongs());
+        }
+        return tmpPlaylist.getSongs();
+    }
 
-            // Root element
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("album");
-            doc.appendChild(rootElement);
-
-            // Title
-            Element title = doc.createElement("title");
-            title.appendChild(doc.createTextNode(album.getName()));
-            rootElement.appendChild(title);
-
-            // Artists
-            Element artistsElement = doc.createElement("artists");
-            rootElement.appendChild(artistsElement);
-            for (Artist artist : album.getArtists()) {
-                Element artistElement = doc.createElement("artist");
-                artistElement.appendChild(doc.createTextNode(artist.getName()));
-                artistsElement.appendChild(artistElement);
-            }
-
-            // Songs
-            Element tracksElement = doc.createElement("tracks");
-            rootElement.appendChild(tracksElement);
-            for (Song song : album.getSongs()) {
-                Element trackElement = doc.createElement("track");
-
-                Element trackTitle = doc.createElement("title");
-                trackTitle.appendChild(doc.createTextNode(song.getName()));
-                trackElement.appendChild(trackTitle);
-
-                Element trackDuration = doc.createElement("duration");
-                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
-                trackElement.appendChild(trackDuration);
-
-                tracksElement.appendChild(trackElement);
-            }
-
-            // Cover image
-            if (album.getCoverImage() != null) {
-                Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(getCollectionCoverFileName(album)));
-                rootElement.appendChild(thumb);
-            }
-
-            // Transform the DOM to XML string
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-            transformer.transform(source, result);
-
-            return writer.toString();
-
-        } catch (Exception e) {
-            logger.error("exception generating NFO content", e);
+    /**
+     * get the first playlist the song is part of
+     *
+     * @param song - song to check
+     * @return - constructed playlist
+     */
+    public static Playlist getSongPlaylist(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getSongPlaylist");
             return null;
         }
+        for (Playlist playlist : getPlaylists()) {
+            if (playlist.contains(song)) {
+                return playlist;
+            }
+        }
+        return null;
     }
 
     /**
