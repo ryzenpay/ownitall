@@ -312,7 +312,7 @@ public class MethodMenu {
     }
 
     private void optionExportCollection() {
-        logger.debug("Uploading '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
+        logger.debug("Exporting '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
             pb.step("Liked Songs");
@@ -336,9 +336,9 @@ public class MethodMenu {
 
     private void optionExportLikedSongs() {
         try {
-            logger.info("Uploading " + Collection.getLikedSongs().size() + " liked songs to '"
+            logger.info("Exporting " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName()
-                    + "'");
+                    + "'...");
             method.uploadLikedSongs();
             logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName() + "'");
@@ -359,7 +359,7 @@ public class MethodMenu {
                 return;
             }
             if (choice.equals("All")) {
-                logger.info("Uploading " + Collection.getPlaylistCount() + " playlists to '"
+                logger.info("Exporting " + Collection.getPlaylistCount() + " playlists to '"
                         + getMethodName()
                         + "'");
                 method.uploadPlaylists();
@@ -368,7 +368,7 @@ public class MethodMenu {
             } else {
                 Playlist playlist = options.get(choice);
                 logger.info("Uploading playlist '" + playlist.getName() + "' (" + playlist.size() + ") to '"
-                        + getMethodName() + "'");
+                        + getMethodName() + "'...");
                 method.uploadPlaylist(playlist);
                 logger.info("Exported playlist '" + playlist.getName() + "' to '" + getMethodName()
                         + "'");
@@ -390,15 +390,15 @@ public class MethodMenu {
                 return;
             }
             if (choice.equals("All")) {
-                logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
-                        + getMethodName() + "'");
+                logger.info("Exporting " + Collection.getAlbumCount() + " albums to '"
+                        + getMethodName() + "'...");
                 method.uploadAlbums();
                 logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
                         + getMethodName() + "'");
             } else {
                 Album album = options.get(choice);
                 logger.info("Uploading album '" + album.getName() + "' (" + album.size() + ") to '"
-                        + getMethodName() + "'");
+                        + getMethodName() + "'...");
                 method.uploadAlbum(album);
                 logger.info("Exported album '" + album.getName() + "' to '" + getMethodName() + "'");
             }
@@ -464,7 +464,7 @@ public class MethodMenu {
         try {
             logger.info("Syncronizing " + Collection.getLikedSongCount() + " liked songs to '"
                     + getMethodName()
-                    + "'");
+                    + "'...");
             method.syncLikedSongs();
             logger.info("Syncronized " + Collection.getLikedSongCount() + " liked songs to '"
                     + getMethodName()
@@ -483,7 +483,7 @@ public class MethodMenu {
         try {
             logger.info(
                     "Syncronizing " + Collection.getAlbumCount() + " albums to '" + getMethodName()
-                            + "'");
+                            + "'...");
             method.syncAlbums();
             logger.info("Syncronized " + Collection.getAlbumCount() + " albums to '" + getMethodName()
                     + "'");
@@ -501,7 +501,7 @@ public class MethodMenu {
         try {
             logger.info("Syncronizing " + Collection.getPlaylistCount() + " playlists to '"
                     + getMethodName()
-                    + "'");
+                    + "'...");
             method.syncPlaylists();
             logger.info("Syncronized " + Collection.getPlaylistCount() + " playlists to '"
                     + getMethodName()

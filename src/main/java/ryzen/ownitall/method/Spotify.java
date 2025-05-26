@@ -374,6 +374,7 @@ public class Spotify extends Method {
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
         likedSongs.addSongs(Collection.getLikedSongs().getSongs());
+        logger.info("Getting current liked songs to prevent duplicates");
         LikedSongs currLikedSongs = this.getLikedSongs();
         if (currLikedSongs != null) {
             likedSongs.removeSongs(currLikedSongs.getSongs());

@@ -94,6 +94,9 @@ public class YT_dl extends Download {
         } else {
             // search query filters
             searchQuery = song.toString() + " (official audio)"; // youtube search criteria
+            if (song.getAlbumName() != null) {
+                searchQuery += "(" + song.getAlbumName() + ")";
+            }
             // prevent any search impacting triggers + pipeline starters
             searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         }
