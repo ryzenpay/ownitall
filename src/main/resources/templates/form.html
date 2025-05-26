@@ -20,9 +20,9 @@
                 <form id="form">
                     <div class="mb-3" th:each="setting : ${values}">
                         <label th:for="${setting.key}" class="form-label" th:text="${setting.name}"></label>
-                        <div th:if="${setting.description != null}">
+                        <!-- <div th:if="${setting.description != null}">
                             <small class="form-text text-muted" th:text="${setting.description}"></small>
-                        </div>
+                        </div> -->
                         <div th:if="${setting.options != null}">
                             <select class="form-select" th:id="${setting.key}" th:name="${setting.key}">
                                 <option th:each="option : ${setting.options}" th:value="${option}" th:text="${option}"
