@@ -14,25 +14,25 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div th:insert="~{templates :: logging}"></div>
-
                 <h1 class="text-center mb-4" th:text="${formName}"></h1>
-
                 <form id="form">
-                    <div class="mb-3" th:each="setting : ${values}">
-                        <label th:for="${setting.key}" class="form-label" th:text="${setting.name}"></label>
-                        <!-- <div th:if="${setting.description != null}">
-                            <small class="form-text text-muted" th:text="${setting.description}"></small>
-                        </div> -->
-                        <div th:if="${setting.options != null}">
-                            <select class="form-select" th:id="${setting.key}" th:name="${setting.key}">
-                                <option th:each="option : ${setting.options}" th:value="${option}" th:text="${option}"
-                                    th:selected="${setting.value != null and setting.value.toString().equals(option)}">
+                    <div class="mb-3" th:each="value : ${values}">
+                        <label th:for="${value.key}" class="form-label" th:text="${value.name}"></label>
+                        <div th:if="${value.description != null}">
+                            <small class="form-text text-muted" th:text="${value.description}"></small>
+                        </div>
+                        <div th:if="${value.options != null}">
+                            <select class="form-select" th:id="${value.key}" th:name="${value.key}"
+                                th:required="${value.required}">
+                                <option th:each="option : ${value.options}" th:value="${option}" th:text="${option}"
+                                    th:selected="${value.value != null and value.value.toString().equals(option)}">
                                 </option>
                             </select>
                         </div>
-                        <div th:unless="${setting.options != null}">
-                            <input type="text" class="form-control" th:id="${setting.key}" th:name="${setting.key}"
-                                th:type="${setting.secret ? 'password' : 'text'}" th:value="${setting.value}" />
+                        <div th:unless="${value.options != null}">
+                            <input type="text" class="form-control" th:id="${value.key}" th:name="${value.key}"
+                                th:type="${value.secret ? 'password' : 'text'}" th:value="${value.value}"
+                                th:required="${value.required}" />
                         </div>
                     </div>
 
@@ -58,11 +58,10 @@
             const callback = document.getElementById('callback').value;
             const submitButton = document.getElementById('submitButton');
 
-            // Construct the choices object
-            const choices = {};
+            const values = {};
             formData.forEach((value, key) => {
                 if (value) { // Only add if there's a value
-                    choices[key] = value;
+                    values[key] = value;
                 }
             });
 
@@ -76,14 +75,16 @@
                     headers: {
                         'Content-Type': 'application/json' // Specify JSON content type
                     },
-                    body: JSON.stringify(choices) // Send the choices as JSON
+                    body: JSON.stringify(values)
                 });
 
                 if (response.ok) {
                     console.info("Successfully changed settings, redirecting...");
                     window.location.href = callback; // Redirect if successful
                 } else {
-                    console.error('Processing error:', response.status, await response.text());
+                    const responseText = await response.text();
+                    console.error('Processing error:', response.status, responseText);
+                    alert("Exception submitting form: " + responseText);
                 }
             } catch (error) {
                 console.error('Fetch error:', error);

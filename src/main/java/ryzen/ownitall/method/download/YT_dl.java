@@ -65,8 +65,15 @@ public class YT_dl extends Download {
         command.add("ytsearch1");
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
-        command.add("--break-match-filter");
-        command.add("duration>=45"); // exclude shorts
+        if (!song.getDuration().isZero()) {
+            command.add("--match-filters");
+            long upperBound = song.getDuration().getSeconds() + 10L;
+            long lowerBound = song.getDuration().getSeconds() - 10L;
+            command.add("duration<=" + upperBound + "&duration>=" + lowerBound);
+        } else {
+            command.add("--break-match-filter");
+            command.add("duration>=45"); // exclude shorts
+        }
         // metadata and formatting
         command.add("--extract-audio");
         // command.add("--embed-thumbnail");

@@ -60,7 +60,10 @@ public class LastFM extends Library {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("album", album.getName());
         if (album.getMainArtist() != null) {
-            params.put("artist", album.getMainArtist().getName());
+            Artist artist = this.getArtist(album.getMainArtist());
+            if (artist != null) {
+                params.put("artist", artist.getName());
+            }
         } else {
             logger.debug(album.toString() + ": Album requires atleast one artist");
             return null;
@@ -85,7 +88,10 @@ public class LastFM extends Library {
                 }
                 JsonNode mbidNode = albumNode.path("mbid");
                 if (!mbidNode.isMissingNode()) {
-                    album.addId("mbid", mbidNode.asText());
+                    // only needed for albums
+                    if (!mbidNode.asText().isEmpty()) {
+                        album.addId("mbid", mbidNode.asText());
+                    }
                 }
                 JsonNode imageNode = albumNode.path("image");
                 if (imageNode.isArray() && !imageNode.isEmpty()) {
@@ -146,7 +152,10 @@ public class LastFM extends Library {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("track", song.getName());
         if (song.getMainArtist() != null) {
-            params.put("artist", song.getMainArtist().getName());
+            Artist artist = this.getArtist(song.getMainArtist());
+            if (artist != null) {
+                params.put("artist", artist.getName());
+            }
         }
         params.put("autocorrect", "1");
         if (this.songs.containsKey(params.toString())) {
@@ -264,6 +273,10 @@ public class LastFM extends Library {
         if (artist == null) {
             logger.debug("null artist passed to getArtistAlbums");
             return null;
+        }
+        Artist foundArtist = this.getArtist(artist);
+        if (foundArtist != null) {
+            artist = foundArtist;
         }
         ArrayList<Album> albums = new ArrayList<>();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();

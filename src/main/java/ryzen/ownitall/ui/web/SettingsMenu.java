@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ryzen.ownitall.Settings;
 
@@ -71,17 +72,30 @@ public class SettingsMenu {
     public static String changeSettingForm(Model model,
             @RequestParam(value = "choices", required = false) LinkedHashSet<String> choices,
             @RequestParam(value = "callback", required = true) String callback) {
-        LinkedHashSet<Setting> fields = new LinkedHashSet<>();
+        boolean required = true;
+        LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         // allows semi colon seperated list
+        Settings settings = Settings.load();
         if (choices == null) {
-            choices = new LinkedHashSet<>(Settings.load().getAll().keySet());
+            choices = new LinkedHashSet<>(settings.getAll().keySet());
+            required = false;
         }
         for (String setting : choices) {
-            fields.add(new Setting(setting));
+            FormVariable field = new FormVariable(setting);
+            field.setName(settings.getName(setting));
+            if (!settings.isEmpty(setting)) {
+                field.setValue(settings.get(setting));
+            }
+            if (settings.getOptions(setting) != null) {
+                field.setOptions(settings.getOptions(setting));
+            }
+            field.setSecret(settings.isSecret(setting));
+            field.setRequired(required);
+            fields.add(field);
         }
         model.addAttribute("formName", "Change Setting(s)");
         model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/settings/change?choices=");
+        model.addAttribute("postUrl", "/settings/change");
         model.addAttribute("callback", callback);
         return "form";
     }
@@ -97,14 +111,15 @@ public class SettingsMenu {
      * @return a {@link java.lang.String} object
      */
     @PostMapping("/settings/change")
+    @ResponseBody
     public ResponseEntity<String> login(Model model,
-            @RequestBody LinkedHashMap<String, String> choices) {
+            @RequestBody LinkedHashMap<String, String> variables) {
         Settings settings = Settings.load();
-        for (String setting : choices.keySet()) {
+        for (String setting : variables.keySet()) {
             if (setting == null || setting.isEmpty()) {
                 continue;
             }
-            String value = choices.get(setting);
+            String value = variables.get(setting);
             if (value != null) {
                 try {
                     settings.set(setting, value);

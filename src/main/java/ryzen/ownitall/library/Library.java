@@ -288,6 +288,7 @@ public class Library {
                 // to prevent it triggering on songs named "error" or "failed"
                 if (errorCode != 0) {
                     String errorMessage = rootNode.path("message").asText();
+                    logger.debug("Received error code on query: " + url.toString());
                     this.queryErrorHandle(errorCode, errorMessage);
                     return null;
                 }

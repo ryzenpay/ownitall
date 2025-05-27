@@ -194,11 +194,11 @@ public class MethodMenu {
         try {
             try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
                 pb.step("Liked Songs");
-                method.uploadLikedSongs();
+                method.getLikedSongs();
                 pb.step("Albums");
-                method.uploadAlbums();
+                method.getAlbums();
                 pb.step("Playlists");
-                method.uploadPlaylists();
+                method.getPlaylists();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' collection");

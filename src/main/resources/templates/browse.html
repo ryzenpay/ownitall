@@ -21,10 +21,14 @@
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Liked songs (' + ${likedsongs.size()} + ')'"></h2>
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent">
-                    Expand/Collapse
-                </button>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-info btn-sm me-2" type="button" th:inline="javascript"
+                        data-redirect-url="/collection/create/likedsongs/song" onclick="redirect(this)">Add</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent">
+                        Expand/Collapse
+                    </button>
+                </div>
             </div>
             <div class="collapse" id="likedSongsContent">
                 <div class="list-group list-group-flush">
@@ -41,7 +45,7 @@
                                 </p>
                             </div>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" th:data-item-name="${song.toString()}"
+                        <button class="btn btn-outline-danger btn-sm me-2" th:data-item-name="${song.toString()}"
                             th:data-url="'/collection/likedsongs/' + ${song.getName()}" th:inline="javascript"
                             onclick="deleteItem(this)">Delete</button>
                     </div>
@@ -54,14 +58,18 @@
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Albums (' + ${albums.size()} + ')'"></h2>
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent">
-                    Expand/Collapse
-                </button>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-info btn-sm me-2" type="button" th:inline="javascript"
+                        data-redirect-url="/collection/create/album" onclick="redirect(this)">Add</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent">
+                        Expand/Collapse
+                    </button>
+                </div>
             </div>
             <div class="collapse" id="albumsContent">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item" th:each="album, iterStat : ${albums}">
+                    <div class="list-group-item" th:each="album : ${albums}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <img class="me-3" th:src="${album.getCoverImage()}" th:alt="${album.toString()}"
@@ -76,16 +84,16 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-outline-info btn-sm me-2" type="button" data-bs-toggle="collapse"
-                                    th:data-bs-target="'#albumCollapse' + ${iterStat.index}" aria-expanded="false"
-                                    th:aria-controls="'albumCollapse' + ${iterStat.index}">
+                                    th:data-bs-target="'#albumCollapse' + ${album.hashCode()}" aria-expanded="false"
+                                    th:aria-controls="'albumCollapse' + ${album.hashCode()}">
                                     Expand/Collapse
                                 </button>
-                                <button class="btn btn-outline-danger btn-sm" th:data-item-name="${album.toString()}"
+                                <button class="btn btn-outline-danger btn-sm" th:data-item-name="${album.getName()}"
                                     th:data-url="'/collection/album/' + ${album.getName()}" th:inline="javascript"
                                     onclick="deleteItem(this)">Delete Album</button>
                             </div>
                         </div>
-                        <div class="collapse mt-2" th:id="'albumCollapse' + ${iterStat.index}">
+                        <div class="collapse mt-2" th:id="'albumCollapse' + ${album.hashCode()}">
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex align-items-center justify-content-between"
                                     th:each="song : ${album.getSongs()}">
@@ -102,9 +110,6 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <button class="btn btn-outline-danger btn-sm" th:data-item-name="${song.toString()}"
-                                        th:data-url="'/collection/album/' + ${album.getName()} + '/' + ${song.getName()}"
-                                        th:inline="javascript" onclick="deleteItem(this)">Delete Song</button>
                                 </div>
                             </div>
                         </div>
@@ -119,14 +124,18 @@
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Playlists (' + ${playlists.size()} + ')'"></h2>
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent">
-                    Expand/Collapse
-                </button>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-info btn-sm me-2" type="button" th:inline="javascript"
+                        data-redirect-url="/collection/create/playlist" onclick="redirect(this)">Add</button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent">
+                        Expand/Collapse
+                    </button>
+                </div>
             </div>
             <div class="collapse" id="playlistsContent">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item" th:each="playlist, iterStat : ${playlists}">
+                    <div class="list-group-item" th:each="playlist : ${playlists}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <img class="me-3" th:src="${playlist.getCoverImage()}" th:alt="${playlist.toString()}"
@@ -140,16 +149,20 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-outline-info btn-sm me-2" type="button" data-bs-toggle="collapse"
-                                    th:data-bs-target="'#playlistCollapse' + ${iterStat.index}" aria-expanded="false"
-                                    th:aria-controls="'playlistCollapse' + ${iterStat.index}">
+                                    th:data-bs-target="'#playlistCollapse' + ${playlist.hashCode()}"
+                                    aria-expanded="false"
+                                    th:aria-controls="'playlistCollapse' + ${playlist.hashCode()}">
                                     Expand/Collapse
                                 </button>
+                                <button class="btn btn-outline-info btn-sm me-2" type="button" th:inline="javascript"
+                                    th:data-redirect-url="'/collection/create/playlist/song?playlist=' + ${playlist.getName()}"
+                                    onclick="redirect(this)">Add Song</button>
                                 <button class="btn btn-outline-danger btn-sm" th:data-item-name="${playlist.toString()}"
                                     th:data-url="'/collection/playlist/' + ${playlist.getName()}" th:inline="javascript"
                                     onclick="deleteItem(this)">Delete Playlist</button>
                             </div>
                         </div>
-                        <div class="collapse mt-2" th:id="'playlistCollapse' + ${iterStat.index}">
+                        <div class="collapse mt-2" th:id="'playlistCollapse' + ${playlist.hashCode()}">
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex align-items-center justify-content-between"
                                     th:each="song : ${playlist.getSongs()}">
@@ -166,7 +179,8 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <button class="btn btn-outline-danger btn-sm" th:data-item-name="${song.toString()}"
+                                    <button class="btn btn-outline-danger btn-sm me-2"
+                                        th:data-item-name="${song.toString()}"
                                         th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.getName()}"
                                         th:inline="javascript" onclick="deleteItem(this)">Delete Song</button>
                                 </div>
@@ -201,6 +215,11 @@
                         alert('Error deleting: ' + error);
                     });
             }
+        }
+
+        function redirect(buttonElement) {
+            const url = buttonElement.dataset.redirectUrl;
+            window.location.replace(url);
         }
     </script>
 

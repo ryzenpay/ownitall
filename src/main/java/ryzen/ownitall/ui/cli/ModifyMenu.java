@@ -1,5 +1,6 @@
 package ryzen.ownitall.ui.cli;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -115,16 +116,22 @@ public class ModifyMenu {
 
     private void optionAddPlaylist() {
         String playlistName = null;
+        URI coverImage = null;
         try {
             while (playlistName == null || playlistName.isEmpty()) {
                 System.out.print("*Enter Playlist Name: ");
                 playlistName = Input.request().getString();
             }
+            System.out.print("Enter Cover image URL: ");
+            coverImage = Input.request().getURL();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting Playlist details");
             return;
         }
         Playlist playlist = new Playlist(playlistName);
+        if (coverImage != null) {
+            playlist.setCoverImage(coverImage);
+        }
         Collection.addPlaylist(playlist);
         logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
     }
