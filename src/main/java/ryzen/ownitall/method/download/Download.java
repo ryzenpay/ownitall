@@ -321,7 +321,7 @@ public class Download extends Method {
                 this.writePlaylistData(likedSongsPlaylist, Settings.localFolder);
             }
         }
-        try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
+        try (ProgressBar pb = ProgressBar.load("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
@@ -383,7 +383,7 @@ public class Download extends Method {
     @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
-        try (ProgressBar pb = new ProgressBar("Playlist Downloads", playlists.size())) {
+        try (ProgressBar pb = ProgressBar.load("Playlist Downloads", playlists.size())) {
             for (Playlist playlist : playlists) {
                 this.uploadPlaylist(playlist);
                 pb.step(playlist.getName());
@@ -459,8 +459,9 @@ public class Download extends Method {
             playlistFolder = Settings.localFolder;
             this.writePlaylistData(playlist, playlistFolder);
         }
-        try (ProgressBar pb = new ProgressBar("Downloading Playlists: " + playlist.getName(),
-                playlist.size() + 1);
+        try (ProgressBar pb = ProgressBar
+                .load("Downloading Playlists: " + playlist.getName(),
+                        playlist.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
@@ -509,7 +510,7 @@ public class Download extends Method {
     @Override
     public void uploadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
-        try (ProgressBar pb = new ProgressBar("Album Downloads", albums.size())) {
+        try (ProgressBar pb = ProgressBar.load("Album Downloads", albums.size())) {
             for (Album album : albums) {
                 this.uploadAlbum(album);
                 pb.step(album.getName());
@@ -560,7 +561,7 @@ public class Download extends Method {
         // albums are always in a folder
         File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
         albumFolder.mkdirs();
-        try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
+        try (ProgressBar pb = ProgressBar.load("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {

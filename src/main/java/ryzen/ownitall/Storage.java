@@ -163,7 +163,7 @@ public class Storage {
      */
     public static void importCollection() {
         logger.debug("importing collection... ");
-        try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
+        try (ProgressBar pb = ProgressBar.load("Loading data", 3)) {
             pb.step("Albums");
             Collection.addAlbums(importAlbums());
             pb.step("Playlists");
@@ -180,7 +180,7 @@ public class Storage {
      */
     public static void exportCollection() {
         logger.debug("Exporting music collection...");
-        try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
+        try (ProgressBar pb = ProgressBar.load("Saving data", 3)) {
             pb.step("Albums");
             exportAlbums(Collection.getAlbums());
             pb.step("Playlists");

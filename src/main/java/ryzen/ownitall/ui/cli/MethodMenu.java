@@ -120,7 +120,7 @@ public class MethodMenu {
 
     private void optionImportCollection() {
         logger.debug("Importing '" + getMethodName() + "' library...");
-        try (ProgressBar pb = new ProgressBar(getMethodName() + " Import", 3)) {
+        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Import", 3)) {
             pb.step("Liked Songs");
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
@@ -314,7 +314,7 @@ public class MethodMenu {
     private void optionExportCollection() {
         logger.debug("Exporting '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
-        try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
+        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Upload", 3)) {
             pb.step("Liked Songs");
             method.uploadLikedSongs();
             logger.debug("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
@@ -436,7 +436,7 @@ public class MethodMenu {
 
     private void optionSyncCollection() {
         logger.debug("Syncronizing '" + getMethodName() + "' library...");
-        try (ProgressBar pb = new ProgressBar(getMethodName() + " Sync", 3)) {
+        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Sync", 3)) {
             pb.step("Liked Songs");
             method.syncLikedSongs();
             logger.debug("Syncronized " + Collection.getLikedSongCount() + " liked songs from '"

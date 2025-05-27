@@ -84,7 +84,7 @@ public class Jellyfin extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
+        try (ProgressBar pb = ProgressBar.load("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("mediaTypes", "Audio");
@@ -139,7 +139,7 @@ public class Jellyfin extends Method {
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size());
+        try (ProgressBar pb = ProgressBar.load("Liked Songs", likedSongs.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : likedSongs.getSongs()) {
                 String songId = this.getSongId(song);
@@ -157,7 +157,7 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+        try (ProgressBar pb = ProgressBar.load("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "Playlist");
@@ -237,7 +237,7 @@ public class Jellyfin extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+        try (ProgressBar pb = ProgressBar.load("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             LinkedHashMap<String, String> params = new LinkedHashMap<>();
             params.put("IncludeItemTypes", "MusicAlbum");

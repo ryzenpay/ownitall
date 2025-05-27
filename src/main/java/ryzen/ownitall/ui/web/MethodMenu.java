@@ -1,5 +1,6 @@
 package ryzen.ownitall.ui.web;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -27,6 +28,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.Method.Export;
 import ryzen.ownitall.method.Method.Import;
 import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.MusicTools;
 
 import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
@@ -187,12 +189,12 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/import/collection")
-    public void importCollection() {
+    public ResponseEntity<Void> importCollection() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
-            try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
+            try (ProgressBar pb = ProgressBar.load("Import Collection", 3)) {
                 pb.step("Liked Songs");
                 method.getLikedSongs();
                 pb.step("Albums");
@@ -203,6 +205,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' collection");
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -229,9 +232,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/import/likedsongs")
-    public void importLikedSongs() {
+    public ResponseEntity<Void> importLikedSongs() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             LikedSongs likedSongs = method.getLikedSongs();
@@ -241,6 +244,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' liked songs");
         }
+        return ResponseEntity.ok().build();
     }
 
     // TODO: import individual album
@@ -269,9 +273,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/import/albums")
-    public void importAlbums() {
+    public ResponseEntity<Void> importAlbums() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             ArrayList<Album> albums = method.getAlbums();
@@ -282,18 +286,20 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' albums");
         }
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/method/import/album/{id}")
-    public void importAlbum(@PathVariable(value = "id") String id) {
+    public ResponseEntity<Void> importAlbum(@PathVariable(value = "id") String id) {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             Album album = method.getAlbum(id, null, null);
             if (album != null) {
                 Collection.addAlbum(album);
                 logger.info("Successfully added album '" + album.toString() + "' to collection");
+                return ResponseEntity.ok().build();
             } else {
                 logger.warn(
                         "Unable to find album '" + id + "' for method '" + getMethodName() + "'");
@@ -302,6 +308,7 @@ public class MethodMenu {
             logger.debug(
                     "Interrupted while importing '" + getMethodName() + "' album '" + id + "'");
         }
+        return ResponseEntity.badRequest().build();
     }
 
     // TODO: import individual playlist
@@ -324,19 +331,21 @@ public class MethodMenu {
     }
 
     @PostMapping("/method/import/playlists")
-    public void importPlaylists() {
+    public ResponseEntity<Void> importPlaylists() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             ArrayList<Playlist> playlists = method.getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info("Successfully added " + playlists.size() + "'" + getMethodName() + "' playlists");
+                return ResponseEntity.ok().build();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' playlists");
         }
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -345,21 +354,23 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/import/playlist/{id}")
-    public void importPlaylist(@PathVariable(value = "id") String id) {
+    public ResponseEntity<Void> importPlaylist(@PathVariable(value = "id") String id) {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             Playlist playlist = method.getPlaylist(id, null);
             if (playlist != null) {
                 Collection.addPlaylist(playlist);
                 logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
+                return ResponseEntity.ok().build();
             } else {
                 logger.warn("Unable to find playlist '" + id + "' in " + getMethodName());
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting playlist '" + id + "' from '" + getMethodName() + "'");
         }
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -411,12 +422,12 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/export/collection")
-    public void exportCollection() {
+    public ResponseEntity<Void> exportCollection() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
-            try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
+            try (ProgressBar pb = ProgressBar.load("Export Collection", 3)) {
                 pb.step("Liked Songs");
                 method.uploadLikedSongs();
                 pb.step("Albums");
@@ -427,6 +438,7 @@ public class MethodMenu {
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' collection");
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -453,15 +465,16 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/export/likedsongs")
-    public void exportLikedSongs() {
+    public ResponseEntity<Void> exportLikedSongs() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.uploadLikedSongs();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' liked songs");
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -493,15 +506,16 @@ public class MethodMenu {
     }
 
     @PostMapping("/method/export/albums")
-    public void exportAlbums() {
+    public ResponseEntity<Void> exportAlbums() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.uploadAlbums();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' albums");
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -510,10 +524,10 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/export/album/{name}")
-    public void exportAlbum(
+    public ResponseEntity<Void> exportAlbum(
             @PathVariable(value = "name") String name) {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         Album album = Collection.getAlbum(name);
         if (album != null) {
@@ -525,7 +539,9 @@ public class MethodMenu {
             }
         } else {
             logger.warn("Unable to find album '" + name + "' in collection");
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -557,15 +573,16 @@ public class MethodMenu {
     }
 
     @PostMapping("/method/export/playlists")
-    public void exportPlaylists() {
+    public ResponseEntity<Void> exportPlaylists() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.uploadPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' playlists");
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -574,10 +591,10 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/export/playlist/{name}")
-    public void exportPlaylist(
+    public ResponseEntity<Void> exportPlaylist(
             @PathVariable(value = "name") String name) {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         Playlist playlist = Collection.getPlaylist(name);
         if (playlist != null) {
@@ -589,7 +606,9 @@ public class MethodMenu {
             }
         } else {
             logger.warn("Unable to find playlist '" + name + "' in collection");
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -641,12 +660,12 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/sync/collection")
-    public void syncCollection() {
+    public ResponseEntity<Void> syncCollection() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
-            try (ProgressBar pb = new ProgressBar("Sync Collection", 3)) {
+            try (ProgressBar pb = ProgressBar.load("Sync Collection", 3)) {
                 pb.step("Liked Songs");
                 method.syncLikedSongs();
                 pb.step("Albums");
@@ -658,10 +677,13 @@ public class MethodMenu {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'collection");
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AuthenticationException e) {
             logger.warn(
                     "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -688,9 +710,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/sync/likedsongs")
-    public void syncLikedSongs() {
+    public ResponseEntity<Void> syncLikedSongs() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.syncLikedSongs();
@@ -698,10 +720,13 @@ public class MethodMenu {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'liked songs");
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AuthenticationException e) {
             logger.warn(
                     "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -728,9 +753,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/sync/albums")
-    public void syncAlbums() {
+    public ResponseEntity<Void> syncAlbums() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.syncAlbums();
@@ -738,10 +763,13 @@ public class MethodMenu {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'albums");
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AuthenticationException e) {
             logger.warn(
                     "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -768,9 +796,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/sync/playlists")
-    public void syncPlaylists() {
+    public ResponseEntity<Void> syncPlaylists() {
         if (this.method == null) {
-            return;
+            return ResponseEntity.badRequest().build();
         }
         try {
             method.syncPlaylists();
@@ -778,10 +806,13 @@ public class MethodMenu {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'playlists");
         } catch (MissingSettingException e) {
             logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AuthenticationException e) {
             logger.warn(
                     "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -824,16 +855,18 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        ProgressBar pb = ProgressBar.getCurrentInstance();
+        ProgressBar pb = ProgressBar.getInstance();
         if (pb != null) {
             rootNode.put("title", pb.getTitle());
             rootNode.put("step", pb.getStep());
+            rootNode.put("time", MusicTools.musicTime(Duration.ofMillis(ProgressBar.getElapsedTime())));
             rootNode.put("message", pb.getMessage());
             rootNode.put("maxstep", pb.getMaxStep());
             return ResponseEntity.ok(rootNode.toPrettyString());
         } else {
             rootNode.put("title", "");
             rootNode.put("step", 0);
+            rootNode.put("time", 0);
             rootNode.put("message", "");
             rootNode.put("maxstep", 0);
             return ResponseEntity.ok(rootNode.toPrettyString());
@@ -870,8 +903,9 @@ public class MethodMenu {
      * </p>
      */
     @PostMapping("/method/cancel")
-    public void cancel() {
+    public ResponseEntity<Void> cancel() {
         InterruptionHandler.forceInterruption();
+        return ResponseEntity.ok().build();
     }
 
     /**

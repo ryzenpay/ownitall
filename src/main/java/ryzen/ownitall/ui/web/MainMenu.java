@@ -74,10 +74,10 @@ public class MainMenu {
     @GetMapping("/")
     public String mainMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("collection", "/collection");
-        options.put("save", "/save");
-        options.put("tools", "/tools");
-        options.put("settings", "/settings");
+        options.put("Collection", "/collection");
+        options.put("Save", "/save");
+        options.put("Tools", "/tools");
+        options.put("Settings", "/settings");
         model.addAttribute("menuName", "Main Menu");
         model.addAttribute("menuOptions", options);
         model.addAttribute("callback", "/exit");

@@ -267,7 +267,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Liked", -1);
+        try (ProgressBar pb = ProgressBar.load("Spotify Liked", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -393,7 +393,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Liked Songs", songIds.size());
+        try (ProgressBar pb = ProgressBar.load("Liked Songs", songIds.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -432,7 +432,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifyAlbumLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Albums", -1);
+        try (ProgressBar pb = ProgressBar.load("Spotify Albums", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -630,7 +630,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifyAlbumLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Albums", albumIds.size());
+        try (ProgressBar pb = ProgressBar.load("Spotify Albums", albumIds.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -668,7 +668,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifyPlaylistLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Playlists", -1);
+        try (ProgressBar pb = ProgressBar.load("Spotify Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -751,7 +751,7 @@ public class Spotify extends Method {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar(playlistId, -1);
+        try (ProgressBar pb = ProgressBar.load(playlistId, -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (hasMore) {
                 interruptionHandler.throwInterruption();
@@ -843,7 +843,7 @@ public class Spotify extends Method {
     @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
-        try (ProgressBar pb = new ProgressBar("Uploading Playlists", playlists.size())) {
+        try (ProgressBar pb = ProgressBar.load("Uploading Playlists", playlists.size())) {
             for (Playlist playlist : playlists) {
                 pb.step(playlist.getName());
                 this.uploadPlaylist(playlist);

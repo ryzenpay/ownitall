@@ -403,7 +403,7 @@ public class ModifyMenu {
             return;
         }
         logger.debug("updating current collection with library...");
-        try (ProgressBar pb = new ProgressBar("Updating Collection", Collection.getTotalTrackCount())) {
+        try (ProgressBar pb = ProgressBar.load("Updating Collection", Collection.getTotalTrackCount())) {
             for (Song song : Collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {

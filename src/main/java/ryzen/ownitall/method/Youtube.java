@@ -117,7 +117,7 @@ public class Youtube extends Method {
         }
         LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
-        try (ProgressBar pb = new ProgressBar("Liked Song", -1);
+        try (ProgressBar pb = ProgressBar.load("Liked Song", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -179,7 +179,7 @@ public class Youtube extends Method {
             return null;
         }
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
+        try (ProgressBar pb = ProgressBar.load("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -224,7 +224,7 @@ public class Youtube extends Method {
         }
         ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
-        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
+        try (ProgressBar pb = ProgressBar.load("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
