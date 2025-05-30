@@ -71,9 +71,7 @@ abstract public class Method implements Import, Export, Sync {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      * @throws java.lang.NoSuchMethodException                        if any.
      */
-    // https://stackoverflow.com/questions/262367/type-safety-unchecked-cast
-    @SuppressWarnings("unchecked")
-    public static <T> T initMethod(Class<?> methodClass, Class<T> type)
+    public static Object initMethod(Class<?> methodClass)
             throws MissingSettingException, AuthenticationException,
             NoSuchMethodException {
         if (methodClass == null) {
@@ -82,7 +80,7 @@ abstract public class Method implements Import, Export, Sync {
         }
         try {
             logger.debug("Initializing '" + methodClass.getSimpleName() + "' method");
-            return (T) methodClass.getDeclaredConstructor().newInstance();
+            return methodClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof MissingSettingException) {
@@ -94,6 +92,18 @@ abstract public class Method implements Import, Export, Sync {
             logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
             throw new NoSuchMethodException(methodClass.getName());
         }
+    }
+
+    public static Import getImportMethod(Object method) {
+        return (Import) method;
+    }
+
+    public static Export getExportMethod(Object method) {
+        return (Export) method;
+    }
+
+    public static Sync getSyncMethod(Object method) {
+        return (Sync) method;
     }
 
     /**

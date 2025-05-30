@@ -49,7 +49,7 @@ public class MethodMenu {
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public <T> MethodMenu(Class<T> filter)
+    public MethodMenu(Class<?> filter)
             throws InterruptedException, MissingSettingException {
         LinkedHashMap<String, Class<?>> options = new LinkedHashMap<>();
         for (Class<?> method : Method.getMethods(filter)) {
@@ -62,7 +62,7 @@ public class MethodMenu {
         Class<?> methodClass = Method.getMethod(choice);
         while (true) {
             try {
-                method = Method.initMethod(methodClass, filter);
+                method = Method.initMethod(methodClass);
                 break;
             } catch (MissingSettingException e) {
                 logger.warn(
@@ -125,8 +125,7 @@ public class MethodMenu {
     }
 
     private void optionImportCollection() {
-        // TODO: this is ugly, fix
-        Import method = (Import) this.method;
+        Import method = Method.getImportMethod(this.method);
         logger.debug("Importing '" + getMethodName() + "' library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Import", 3)) {
             pb.step("Liked Songs");
@@ -156,10 +155,9 @@ public class MethodMenu {
     }
 
     private void optionImportLikedSongs() {
-        Import method = (Import) this.method;
         try {
             logger.info("Getting liked songs from '" + getMethodName() + "'...");
-            LikedSongs likedSongs = method.getLikedSongs();
+            LikedSongs likedSongs = Method.getImportMethod(this.method).getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
                 logger.info(
@@ -191,10 +189,9 @@ public class MethodMenu {
     }
 
     private void optionImportAlbums() {
-        Import method = (Import) this.method;
         try {
             logger.info("Getting albums from '" + getMethodName() + "'...");
-            ArrayList<Album> albums = method.getAlbums();
+            ArrayList<Album> albums = Method.getImportMethod(this.method).getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
                 logger.info("Imported " + albums.size() + " albums from '" + getMethodName() + "'");
@@ -205,7 +202,6 @@ public class MethodMenu {
     }
 
     private void optionImportAlbum() {
-        Import method = (Import) this.method;
         String albumId = null;
         String albumName = null;
         String albumArtistName = null;
@@ -224,7 +220,7 @@ public class MethodMenu {
         }
         try {
             logger.info("Getting album '" + albumId + "' from '" + getMethodName() + "'...");
-            Album album = method.getAlbum(albumId, albumName, albumArtistName);
+            Album album = Method.getImportMethod(this.method).getAlbum(albumId, albumName, albumArtistName);
             if (album != null) {
                 Collection.addAlbum(album);
                 logger.info("Imported album '" + album.getName() + "' (" + album.size() + ") from '"
@@ -255,10 +251,9 @@ public class MethodMenu {
     }
 
     private void optionImportPlaylists() {
-        Import method = (Import) this.method;
         try {
             logger.info("Getting playlists from '" + getMethodName() + "'...");
-            ArrayList<Playlist> playlists = method.getPlaylists();
+            ArrayList<Playlist> playlists = Method.getImportMethod(this.method).getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info(
@@ -270,7 +265,6 @@ public class MethodMenu {
     }
 
     private void optionImportPlaylist() {
-        Import method = (Import) this.method;
         String playlistId = null;
         String playlistName = null;
         try {
@@ -286,7 +280,7 @@ public class MethodMenu {
         }
         try {
             logger.info("Getting playlist '" + playlistId + "' from '" + getMethodName() + "'...");
-            Playlist playlist = method.getPlaylist(playlistId, playlistName);
+            Playlist playlist = Method.getImportMethod(this.method).getPlaylist(playlistId, playlistName);
             if (playlist != null) {
                 Collection.addPlaylist(playlist);
                 logger.info("Imported playlist '" + playlist.getName() + "' (" + playlist.size() + ") from '"
@@ -325,7 +319,7 @@ public class MethodMenu {
     }
 
     private void optionExportCollection() {
-        Export method = (Export) this.method;
+        Export method = Method.getExportMethod(this.method);
         logger.debug("Exporting '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
@@ -349,12 +343,11 @@ public class MethodMenu {
     }
 
     private void optionExportLikedSongs() {
-        Export method = (Export) this.method;
         try {
             logger.info("Exporting " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName()
                     + "'...");
-            method.uploadLikedSongs();
+            Method.getExportMethod(this.method).uploadLikedSongs();
             logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName() + "'");
         } catch (InterruptedException e) {
@@ -363,7 +356,7 @@ public class MethodMenu {
     }
 
     private void optionExportPlaylists() {
-        Export method = (Export) this.method;
+        Export method = Method.getExportMethod(this.method);
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Playlist playlist : Collection.getPlaylists()) {
@@ -395,7 +388,7 @@ public class MethodMenu {
     }
 
     private void optionExportAlbums() {
-        Export method = (Export) this.method;
+        Export method = Method.getExportMethod(this.method);
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Album album : Collection.getAlbums()) {
