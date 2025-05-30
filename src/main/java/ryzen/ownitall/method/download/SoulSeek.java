@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Level;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -25,8 +24,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
-@Method.Export
-public class SoulSeek extends Download {
+public class SoulSeek extends Download implements DownloadInterface {
     private static final Logger logger = new Logger(SoulSeek.class);
 
     /**
@@ -118,8 +116,8 @@ public class SoulSeek extends Download {
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     logger.warn("Attempt: " + retries);
-                    logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode
-                            + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
+                    logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
+                    logger.debug(" Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
                 }
                 retries++;
             }

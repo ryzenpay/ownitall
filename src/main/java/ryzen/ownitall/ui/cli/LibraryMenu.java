@@ -46,11 +46,15 @@ public class LibraryMenu {
 
     private void optionChange() {
         try {
-            String choice = Menu.optionMenu(Library.libraries.keySet(), "LIBRARIES");
+            LinkedHashMap<String, Class<? extends Library>> options = new LinkedHashMap<>();
+            for (Class<? extends Library> libraryClass : Library.getLibraries()) {
+                options.put(libraryClass.getSimpleName(), libraryClass);
+            }
+            String choice = Menu.optionMenu(options.keySet(), "LIBRARIES");
             if (choice.equals("Exit")) {
                 throw new InterruptedException("Exited");
             }
-            Class<? extends Library> libraryClass = Library.libraries.get(choice);
+            Class<? extends Library> libraryClass = options.get(choice);
             while (true) {
                 try {
                     Library.initLibrary(libraryClass);
@@ -69,13 +73,8 @@ public class LibraryMenu {
                     break;
                 }
             }
-            try {
-                Settings.load().set("libraryType", Library.libraries.get(choice));
-                logger.info("Successfully changed library type to '" + choice + "'");
-            } catch (NoSuchFieldException e) {
-                logger.error("Unable to find library setting 'libraryType'", e);
-                throw new MissingSettingException(e);
-            }
+            Settings.libraryType = options.get(choice).getSimpleName();
+            logger.info("Successfully changed library type to '" + choice + "'");
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while getting library change option");
         }
@@ -103,7 +102,7 @@ public class LibraryMenu {
             System.out.print("Are you sure you wan to clear cache (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing cache...");
-                Library.clear();
+                Library.load().clear();
                 logger.info("Done clearing cache");
             }
         } catch (InterruptedException e) {
@@ -112,8 +111,7 @@ public class LibraryMenu {
     }
 
     private void optionCacheSize() {
-        Library.load();
-        int size = Library.getCacheSize();
+        int size = Library.load().getCacheSize();
         logger.info("The library cache has '" + size + "' entries");
     }
 }

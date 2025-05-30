@@ -110,6 +110,16 @@ public class Logger {
     }
 
     /**
+     * info log in console but no file
+     * also excluded from log history
+     * 
+     * @param message
+     */
+    public void temp(String message) {
+        this.logger.log(Level.forName("TEMP", 350), message);
+    }
+
+    /**
      * <p>
      * warn.
      * </p>

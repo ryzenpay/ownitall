@@ -1,6 +1,5 @@
 package ryzen.ownitall.ui.web;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,8 +24,9 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
-import ryzen.ownitall.method.Method.Export;
-import ryzen.ownitall.method.Method.Import;
+import ryzen.ownitall.method.interfaces.Export;
+import ryzen.ownitall.method.interfaces.Import;
+import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 
@@ -46,7 +46,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private Method method;
+    private Object method;
 
     private String getMethodName() {
         if (method == null) {
@@ -69,14 +69,17 @@ public class MethodMenu {
     public String methodMenu(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        Class<?> filter;
         if (callback.contains("import")) {
-            for (String currMethod : Method.getMethods(Import.class).keySet()) {
-                options.put(currMethod, "/method/" + currMethod + "?callback=" + callback);
-            }
+            filter = Import.class;
+        } else if (callback.contains("export")) {
+            filter = Export.class;
         } else {
-            for (String currMethod : Method.getMethods(Export.class).keySet()) {
-                options.put(currMethod, "/method/" + currMethod + "?callback=" + callback);
-            }
+            filter = Sync.class;
+        }
+        for (Class<?> currMethod : Method.getMethods(filter)) {
+            String methodName = currMethod.getSimpleName();
+            options.put(methodName, "/method/" + methodName + "?callback=" + callback);
         }
         model.addAttribute("menuName", "Method Menu");
         model.addAttribute("menuOptions", options);
@@ -87,10 +90,18 @@ public class MethodMenu {
     @GetMapping("/method/{method}")
     public String setMethod(Model model, @PathVariable(value = "method") String method,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<? extends Method> methodClass = Method.getMethod(method);
+        Class<?> methodClass = Method.getMethod(method);
         if (methodClass != null) {
+            Class<?> filter;
+            if (callback.contains("import")) {
+                filter = Import.class;
+            } else if (callback.contains("export")) {
+                filter = Export.class;
+            } else {
+                filter = Sync.class;
+            }
             try {
-                this.method = Method.initMethod(methodClass);
+                this.method = Method.initMethod(methodClass, filter);
                 return "redirect:" + callback;
             } catch (MissingSettingException e) {
                 logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "': "
@@ -126,7 +137,7 @@ public class MethodMenu {
             @RequestParam(value = "callback", required = true) String callback) {
         logger.debug(model, "method=" + method + ", callback=" + callback);
 
-        Class<? extends Method> methodClass = Method.getMethod(method);
+        Class<?> methodClass = Method.getMethod(method);
         if (methodClass == null) {
             logger.warn(model, "Unsupported method '" + method + "'provided");
             return methodMenu(model, callback);
@@ -193,8 +204,9 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
-            try (ProgressBar pb = ProgressBar.load("Import Collection", 3)) {
+            try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
                 pb.step("Liked Songs");
                 method.getLikedSongs();
                 pb.step("Albums");
@@ -236,6 +248,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
@@ -277,6 +290,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
             ArrayList<Album> albums = method.getAlbums();
             if (albums != null) {
@@ -294,6 +308,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
             Album album = method.getAlbum(id, null, null);
             if (album != null) {
@@ -335,6 +350,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
             ArrayList<Playlist> playlists = method.getPlaylists();
             if (playlists != null) {
@@ -358,6 +374,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Import method = (Import) this.method;
         try {
             Playlist playlist = method.getPlaylist(id, null);
             if (playlist != null) {
@@ -426,8 +443,9 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         try {
-            try (ProgressBar pb = ProgressBar.load("Export Collection", 3)) {
+            try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
                 pb.step("Liked Songs");
                 method.uploadLikedSongs();
                 pb.step("Albums");
@@ -469,6 +487,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         try {
             method.uploadLikedSongs();
         } catch (InterruptedException e) {
@@ -510,6 +529,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         try {
             method.uploadAlbums();
         } catch (InterruptedException e) {
@@ -529,6 +549,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         Album album = Collection.getAlbum(name);
         if (album != null) {
             try {
@@ -577,6 +598,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         try {
             method.uploadPlaylists();
         } catch (InterruptedException e) {
@@ -596,6 +618,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Export method = (Export) this.method;
         Playlist playlist = Collection.getPlaylist(name);
         if (playlist != null) {
             try {
@@ -664,8 +687,9 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Sync method = (Sync) this.method;
         try {
-            try (ProgressBar pb = ProgressBar.load("Sync Collection", 3)) {
+            try (ProgressBar pb = new ProgressBar("Sync Collection", 3)) {
                 pb.step("Liked Songs");
                 method.syncLikedSongs();
                 pb.step("Albums");
@@ -714,6 +738,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Sync method = (Sync) this.method;
         try {
             method.syncLikedSongs();
         } catch (InterruptedException e) {
@@ -757,6 +782,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Sync method = (Sync) this.method;
         try {
             method.syncAlbums();
         } catch (InterruptedException e) {
@@ -800,6 +826,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
+        Sync method = (Sync) this.method;
         try {
             method.syncPlaylists();
         } catch (InterruptedException e) {
@@ -855,11 +882,11 @@ public class MethodMenu {
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        ProgressBar pb = ProgressBar.getInstance();
+        ProgressBar pb = ProgressBar.getRootInstance();
         if (pb != null) {
             rootNode.put("title", pb.getTitle());
             rootNode.put("step", pb.getStep());
-            rootNode.put("time", MusicTools.musicTime(Duration.ofMillis(ProgressBar.getElapsedTime())));
+            rootNode.put("time", MusicTools.musicTime(pb.getElapsedTime()));
             rootNode.put("message", pb.getMessage());
             rootNode.put("maxstep", pb.getMaxStep());
             return ResponseEntity.ok(rootNode.toPrettyString());

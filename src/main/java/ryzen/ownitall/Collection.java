@@ -39,7 +39,7 @@ public class Collection {
      * save all data from collection
      */
     public static void save() {
-        Storage.exportCollection();
+        new Storage().exportCollection();
     }
 
     /**

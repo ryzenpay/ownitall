@@ -57,7 +57,7 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/archive")
     public String optionArchive(Model model) {
-        Storage.archive();
+        new Storage().archive();
         logger.info(model, "Successfully archived");
         return toolsMenu(model);
     }
@@ -65,7 +65,7 @@ public class ToolsMenu {
     @GetMapping("/tools/unarchive")
     public String unarchiveMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        for (File file : Storage.getArchiveFolders()) {
+        for (File file : new Storage().getArchiveFolders()) {
             try {
                 String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
                 options.put(file.getName(), "/tools/unarchive/" + URLEncoder.encode(path, StandardCharsets.UTF_8));
@@ -92,7 +92,7 @@ public class ToolsMenu {
     public String unarchive(Model model,
             @PathVariable(value = "path") String path) {
         path = URLDecoder.decode(path, StandardCharsets.UTF_8);
-        Storage.unArchive(new File(path));
+        new Storage().unArchive(new File(path));
         logger.info(model, "Successfully unarchived '" + path + "'");
         return toolsMenu(model);
     }
@@ -107,7 +107,7 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/clearcredentials")
     public String optionClearCredentials(Model model) {
-        for (Class<? extends Method> methodClass : Method.getMethods().values()) {
+        for (Class<?> methodClass : Method.getMethods()) {
             Method.clearCredentials(methodClass);
         }
         logger.info(model, "Successfully cleared credentials");

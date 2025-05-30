@@ -43,6 +43,10 @@ public class InterruptionHandler implements AutoCloseable {
         }
     }
 
+    public boolean isInterrupted() {
+        return interrupted.get();
+    }
+
     /**
      * <p>
      * forceInterruption.

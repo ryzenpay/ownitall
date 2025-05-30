@@ -1,29 +1,27 @@
 package ryzen.ownitall.util;
 
+import java.time.Duration;
+
+import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 //http://tongfei.me/progressbar/
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 
 /**
- * <p>
- * ProgressBar class.
- * </p>
+ * there is one root progressbar which is the first created progress bar,
+ * every progressbar is its own "instance" but if they were not the first, will
+ * append to the root instance
+ * you can still get details of each individual progress bar with their own
+ * instance, but the printed output is of the root progressbar
  *
  * @author ryzen
  */
+// TODO: progressbar EVERYWHERE
 public class ProgressBar implements AutoCloseable {
-    private String title;
-    private int maxStep;
-    private int step;
-    private long startTime;
-    private String message;
+    Logger logger = new Logger(ProgressBar.class);
+
+    private static ProgressBar rootInstance;
     private me.tongfei.progressbar.ProgressBar pb;
-    /** Constant <code>output=true</code> */
-    public static boolean output = true;
-    private static long elapsedTime;
-    private static ProgressBar instance;
-    // cheat method of when to close pb
-    private static int loadCounter = 0;
 
     /**
      * <p>
@@ -33,47 +31,17 @@ public class ProgressBar implements AutoCloseable {
      * @param title   a {@link java.lang.String} object
      * @param maxStep a int
      */
-    private ProgressBar(String title, int maxStep) {
-        this.title = title;
-        this.step = 0;
-        this.startTime = System.currentTimeMillis();
-        this.maxStep = maxStep;
-        if (output) {
-            this.pb = new ProgressBarBuilder()
-                    .setTaskName(title)
-                    .setInitialMax(maxStep)
-                    .setStyle(ProgressBarStyle.ASCII)
-                    .hideEta()
-                    .build();
+    public ProgressBar(String title, int maxStep) {
+        this.pb = new ProgressBarBuilder()
+                .setTaskName(title)
+                .setInitialMax(maxStep)
+                .setStyle(ProgressBarStyle.ASCII)
+                .setConsumer(new DelegatingProgressBarConsumer(logger::temp))
+                .hideEta()
+                .build();
+        if (rootInstance == null) {
+            rootInstance = this;
         }
-    }
-
-    public static ProgressBar load(String title, int maxStep) {
-        if (instance == null) {
-            instance = new ProgressBar(title, maxStep);
-        } else {
-            instance.title += ": " + title;
-            if (maxStep < 0) {
-                instance.maxStep = maxStep;
-            } else {
-                if (instance.maxStep < 0) {
-                    instance.maxStep = maxStep;
-                } else {
-                    instance.maxStep += maxStep;
-                }
-            }
-            if (output) {
-                instance.pb = new ProgressBarBuilder()
-                        .setTaskName(title)
-                        .setInitialMax(instance.maxStep)
-                        .setStyle(ProgressBarStyle.ASCII)
-                        .hideEta()
-                        .build();
-                instance.pb.stepTo(instance.step);
-            }
-        }
-        loadCounter++;
-        return instance;
     }
 
     /**
@@ -84,7 +52,7 @@ public class ProgressBar implements AutoCloseable {
      * @return a {@link java.lang.String} object
      */
     public String getTitle() {
-        return this.title;
+        return this.pb.getTaskName();
     }
 
     /**
@@ -94,8 +62,8 @@ public class ProgressBar implements AutoCloseable {
      *
      * @return a int
      */
-    public int getStep() {
-        return this.step;
+    public long getStep() {
+        return this.pb.getCurrent();
     }
 
     /**
@@ -105,8 +73,8 @@ public class ProgressBar implements AutoCloseable {
      *
      * @return a int
      */
-    public int getMaxStep() {
-        return this.maxStep;
+    public long getMaxStep() {
+        return this.pb.getMax();
     }
 
     /**
@@ -117,14 +85,11 @@ public class ProgressBar implements AutoCloseable {
      * @return a {@link java.lang.String} object
      */
     public String getMessage() {
-        return this.message;
+        return this.pb.getExtraMessage();
     }
 
-    public static long getElapsedTime() {
-        if (instance == null) {
-            return elapsedTime;
-        }
-        return System.currentTimeMillis() - getInstance().startTime;
+    public Duration getElapsedTime() {
+        return this.pb.getElapsedAfterStart();
     }
 
     /**
@@ -136,11 +101,7 @@ public class ProgressBar implements AutoCloseable {
      * @param by      a int
      */
     public void step(String message, int by) {
-        step = step + by;
-        this.message = message;
-        if (output) {
-            pb.setExtraMessage(message).stepTo(step);
-        }
+        pb.setExtraMessage(message).stepBy(by);
     }
 
     /**
@@ -181,27 +142,15 @@ public class ProgressBar implements AutoCloseable {
      *
      * @return a {@link ryzen.ownitall.util.ProgressBar} object
      */
-    public static ProgressBar getInstance() {
-        if (instance == null) {
-            return null;
-        }
-        return instance;
+    public static ProgressBar getRootInstance() {
+        return rootInstance;
     }
 
     @Override
     public void close() {
-        elapsedTime = getElapsedTime();
-        // remove sub category of progress bar
-        instance.title = instance.title.split(":")[0];
-        loadCounter--;
-        if (loadCounter == 0) {
-            if (output) {
-                pb.setExtraMessage("Done").stepTo(instance.maxStep);
-                pb.close();
-            }
-            // needed to trigger web gui completion
-            this.maxStep = 1;
-            instance = null;
+        this.pb.close();
+        if (this.equals(rootInstance)) {
+            rootInstance = null;
         }
     }
 }

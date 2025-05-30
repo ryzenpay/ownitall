@@ -48,8 +48,8 @@ public class LibraryMenu {
     @GetMapping("/library/change")
     public String optionChange(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        for (String currLibrary : Library.libraries.keySet()) {
-            options.put(currLibrary, "/library/change/" + currLibrary);
+        for (Class<? extends Library> libraryClass : Library.getLibraries()) {
+            options.put(libraryClass.getSimpleName(), "/library/change/" + libraryClass.getName());
         }
         model.addAttribute("menuName", "Library Options");
         model.addAttribute("menuOptions", options);
@@ -68,9 +68,10 @@ public class LibraryMenu {
      */
     @GetMapping("/library/change/{library}")
     public String optionChange(Model model, @PathVariable(value = "library") String library) {
-        Class<? extends Library> libraryClass = Library.libraries.get(library);
+        Class<? extends Library> libraryClass = Library.getLibrary(library);
         try {
             Library.initLibrary(libraryClass);
+            Settings.libraryType = library;
             logger.info(model, "Successfully changed library to '" + libraryClass.getSimpleName() + "'");
             return libraryMenu(model);
         } catch (MissingSettingException e) {
@@ -103,7 +104,7 @@ public class LibraryMenu {
     public String loginForm(Model model,
             @PathVariable(value = "library") String library,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<? extends Library> libraryClass = Library.libraries.get(library);
+        Class<? extends Library> libraryClass = Library.getLibrary(library);
         if (libraryClass == null) {
             logger.warn(model, "Unsupported library '" + library + "'' provided");
             return optionChange(model, null);
@@ -127,7 +128,7 @@ public class LibraryMenu {
      */
     @GetMapping("/library/cache/clear")
     public String optionClearCache(Model model) {
-        Library.clear();
+        Library.load().clear();
         logger.info(model, "Successfully cleared library cache");
         return libraryMenu(model);
     }
@@ -142,7 +143,7 @@ public class LibraryMenu {
      */
     @GetMapping("/library/cache")
     public String optionCache(Model model) {
-        int size = Library.getCacheSize();
+        int size = Library.load().getCacheSize();
         logger.info(model, "There currently are '" + size + "' cache entries");
         return libraryMenu(model);
     }

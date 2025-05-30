@@ -20,8 +20,9 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.Upload;
+import ryzen.ownitall.method.interfaces.Export;
+import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
@@ -36,18 +37,66 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
-@Method.Export
-public class Download extends Method {
+public class Download implements Sync, Export {
     // more download sources
     // qobuz
     // deezer
     // tidal
     private static final Logger logger = new Logger(Download.class);
     private ExecutorService executor;
+    private DownloadInterface downloadClass;
     private static final ArrayList<String> whiteList = new ArrayList<>(
-            Arrays.asList("m3u", "png", "nfo", Settings.downloadFormat));
+            Arrays.asList("m3u", "png", "nfo"));
+    static {
+        // so when user changes it doesnt delete their old
+        whiteList.addAll(Arrays.asList(Settings.load().getOptions("downloadFormat")));
+    }
     /** Constant <code>downloadThreads=Settings.downloadThreads</code> */
     protected static int downloadThreads = Settings.downloadThreads;
+
+    // https://stackoverflow.com/questions/262367/type-safety-unchecked-cast
+    @SuppressWarnings("unchecked")
+    public Download() throws MissingSettingException, AuthenticationException {
+        try {
+            Class<?> downloadClass = Class.forName(Settings.downloadMethod);
+            if (Settings.load().isGroupEmpty(downloadClass)) {
+                logger.debug("Empty " + downloadClass.getSimpleName() + " credentials");
+                throw new MissingSettingException(downloadClass);
+            }
+            if (DownloadInterface.class.isAssignableFrom(downloadClass)) {
+                this.downloadClass = initDownload((Class<DownloadInterface>) downloadClass);
+            } else {
+                throw new AuthenticationException(
+                        "Invalid download class '" + downloadClass.getSimpleName() + "' set in settings");
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            logger.error("Invalid or missing download class set in settings", e);
+            throw new AuthenticationException(e);
+        }
+    }
+
+    private static DownloadInterface initDownload(Class<DownloadInterface> downloadClass)
+            throws MissingSettingException, AuthenticationException,
+            NoSuchMethodException {
+        if (downloadClass == null) {
+            logger.debug("null download class provided in initMethod");
+            return null;
+        }
+        try {
+            logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
+            return downloadClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof MissingSettingException) {
+                throw new MissingSettingException(e);
+            }
+            if (cause instanceof AuthenticationException) {
+                throw new AuthenticationException(e);
+            }
+            logger.error("Exception while setting up download class '" + downloadClass.getSimpleName() + "'", e);
+            throw new NoSuchMethodException(downloadClass.getName());
+        }
+    }
 
     /**
      * <p>
@@ -122,7 +171,7 @@ public class Download extends Method {
      * @param path a {@link java.io.File} object
      */
     public void downloadSong(Song song, File path) {
-        logger.warn("Unsupported download method to downloadSong");
+        downloadClass.downloadSong(song, path);
     }
 
     /**
@@ -266,17 +315,20 @@ public class Download extends Method {
      * clean up local liked songs before downloading
      */
     @Override
-    public void syncLikedSongs() throws InterruptedException, AuthenticationException {
+    public void syncLikedSongs() throws InterruptedException, AuthenticationException, MissingSettingException {
         logger.debug("Getting local liked songs to remove mismatches");
-        try {
-            LikedSongs likedSongs = new Upload().getLikedSongs();
-            File songFolder = Settings.localFolder;
-            if (Settings.downloadHierachy) {
-                songFolder = new File(Settings.localFolder, Settings.likedSongName);
-            }
-            if (likedSongs != null && !likedSongs.isEmpty()) {
+        LikedSongs likedSongs = new Upload().getLikedSongs();
+        File songFolder = Settings.localFolder;
+        if (Settings.downloadHierachy) {
+            songFolder = new File(Settings.localFolder, Settings.likedSongName);
+        }
+        if (likedSongs != null && !likedSongs.isEmpty()) {
+            try (ProgressBar pb = new ProgressBar("Sync Liked Songs", likedSongs.size());
+                    InterruptionHandler interruptionHandler = new InterruptionHandler()) {
                 likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
                 for (Song song : likedSongs.getSongs()) {
+                    interruptionHandler.throwInterruption();
+                    pb.step(song.getName());
                     if (!Settings.downloadHierachy) {
                         // skip if in a playlist
                         if (Collection.getSongPlaylist(song) != null) {
@@ -293,9 +345,6 @@ public class Download extends Method {
                     }
                 }
             }
-        } catch (MissingSettingException e) {
-            logger.warn("Upload is missing credentials for download sync: " + e.getMessage());
-            return;
         }
     }
 
@@ -321,7 +370,7 @@ public class Download extends Method {
                 this.writePlaylistData(likedSongsPlaylist, Settings.localFolder);
             }
         }
-        try (ProgressBar pb = ProgressBar.load("Downloading Liked songs", songs.size() + 1);
+        try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
@@ -346,29 +395,35 @@ public class Download extends Method {
         logger.debug("Getting local playlists to remove mismatches");
         ArrayList<Playlist> playlists = new Upload().getPlaylists();
         if (playlists != null && !playlists.isEmpty()) {
-            playlists.removeAll(Collection.getPlaylists());
-            for (Playlist playlist : playlists) {
-                if (Settings.downloadHierachy) {
-                    File playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
-                    if (MusicTools.deleteFolder(playlistFolder)) {
-                        logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
-                                + playlistFolder.getAbsolutePath());
+            try (ProgressBar pb = new ProgressBar("Sync Playlists", playlists.size());
+                    InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+                playlists.removeAll(Collection.getPlaylists());
+                for (Playlist playlist : playlists) {
+                    interruptionHandler.throwInterruption();
+                    pb.step(playlist.getName());
+                    if (Settings.downloadHierachy) {
+                        File playlistFolder = new File(Settings.localFolder,
+                                Collection.getCollectionFolderName(playlist));
+                        if (MusicTools.deleteFolder(playlistFolder)) {
+                            logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
+                                    + playlistFolder.getAbsolutePath());
+                        } else {
+                            logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
+                                    + playlistFolder.getAbsolutePath());
+                        }
                     } else {
-                        logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
-                                + playlistFolder.getAbsolutePath());
-                    }
-                } else {
-                    // deletes all playlists songs
-                    this.syncPlaylist(new Playlist(playlist.getName()));
-                    File m3uFile = new File(Settings.localFolder,
-                            Collection.getCollectionFolderName(playlist) + ".m3u");
-                    if (m3uFile.delete()) {
-                        logger.info(
-                                "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
-                                        + m3uFile.getAbsolutePath());
-                    } else {
-                        logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                                + m3uFile.getAbsolutePath());
+                        // deletes all playlists songs
+                        this.syncPlaylist(new Playlist(playlist.getName()));
+                        File m3uFile = new File(Settings.localFolder,
+                                Collection.getCollectionFolderName(playlist) + ".m3u");
+                        if (m3uFile.delete()) {
+                            logger.info(
+                                    "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
+                                            + m3uFile.getAbsolutePath());
+                        } else {
+                            logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                                    + m3uFile.getAbsolutePath());
+                        }
                     }
                 }
             }
@@ -383,7 +438,7 @@ public class Download extends Method {
     @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
-        try (ProgressBar pb = ProgressBar.load("Playlist Downloads", playlists.size())) {
+        try (ProgressBar pb = new ProgressBar("Download Playlists", playlists.size())) {
             for (Playlist playlist : playlists) {
                 this.uploadPlaylist(playlist);
                 pb.step(playlist.getName());
@@ -417,20 +472,23 @@ public class Download extends Method {
         }
         if (localPlaylist != null && !localPlaylist.isEmpty()) {
             localPlaylist.removeSongs(playlist.getSongs());
-            for (Song song : localPlaylist.getSongs()) {
-                File songFile = new File(playlistFolder, Collection.getSongFileName(song));
-                if (songFile.exists()) {
-                    if (!Settings.downloadHierachy) {
-                        if (Collection.isLiked(song)) {
-                            continue;
+            try (ProgressBar pb = new ProgressBar("sync " + localPlaylist.getName(), localPlaylist.size())) {
+                for (Song song : localPlaylist.getSongs()) {
+                    pb.step(song.getName());
+                    File songFile = new File(playlistFolder, Collection.getSongFileName(song));
+                    if (songFile.exists()) {
+                        if (!Settings.downloadHierachy) {
+                            if (Collection.isLiked(song)) {
+                                continue;
+                            }
                         }
-                    }
-                    if (songFile.delete()) {
-                        logger.info("Deleted playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
-                    } else {
-                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
+                        if (songFile.delete()) {
+                            logger.info("Deleted playlist '" + playlist.getName() + "' song: "
+                                    + songFile.getAbsolutePath());
+                        } else {
+                            logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                                    + songFile.getAbsolutePath());
+                        }
                     }
                 }
             }
@@ -459,9 +517,7 @@ public class Download extends Method {
             playlistFolder = Settings.localFolder;
             this.writePlaylistData(playlist, playlistFolder);
         }
-        try (ProgressBar pb = ProgressBar
-                .load("Downloading Playlists: " + playlist.getName(),
-                        playlist.size() + 1);
+        try (ProgressBar pb = new ProgressBar("Downloading Playlist: " + playlist.getName(), playlist.size());
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (Song song : songs) {
                 interruptionHandler.throwInterruption();
@@ -510,7 +566,7 @@ public class Download extends Method {
     @Override
     public void uploadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
-        try (ProgressBar pb = ProgressBar.load("Album Downloads", albums.size())) {
+        try (ProgressBar pb = new ProgressBar("Album Downloads", albums.size())) {
             for (Album album : albums) {
                 this.uploadAlbum(album);
                 pb.step(album.getName());
@@ -561,7 +617,7 @@ public class Download extends Method {
         // albums are always in a folder
         File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
         albumFolder.mkdirs();
-        try (ProgressBar pb = ProgressBar.load("Download Album: " + album.getName(), album.size() + 1);
+        try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             this.writeAlbumData(album, albumFolder);
             for (Song song : album.getSongs()) {

@@ -13,11 +13,13 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
@@ -39,9 +41,7 @@ import java.util.List;
  *
  * @author ryzen
  */
-@Method.Import
-@Method.Export
-public class Youtube extends Method {
+public class Youtube implements Import {
     private static final Logger logger = new Logger(Youtube.class);
     private static final Library library = Library.load();
     private com.google.api.services.youtube.YouTube youtubeApi;
@@ -117,7 +117,7 @@ public class Youtube extends Method {
         }
         LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
-        try (ProgressBar pb = ProgressBar.load("Liked Song", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Song", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -179,7 +179,7 @@ public class Youtube extends Method {
             return null;
         }
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.load("Playlists", -1);
+        try (ProgressBar pb = new ProgressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -224,7 +224,7 @@ public class Youtube extends Method {
         }
         ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
-        try (ProgressBar pb = ProgressBar.load("Liked Songs", -1);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
                 interruptionHandler.throwInterruption();
@@ -262,6 +262,24 @@ public class Youtube extends Method {
             logger.error("Exception retrieving playlist songs", e);
         }
         return songs;
+    }
+
+    @Override
+    public Playlist getPlaylist(String playlistId, String playlistName) {
+        logger.debug("Unsupported method getPlaylists called");
+        return null;
+    }
+
+    @Override
+    public ArrayList<Album> getAlbums() {
+        logger.debug("Unsupported method getAlbums called");
+        return null;
+    }
+
+    @Override
+    public Album getAlbum(String albumId, String albumName, String albumArtistName) {
+        logger.debug("Unsupported method getAlbum called");
+        return null;
     }
 
     /**

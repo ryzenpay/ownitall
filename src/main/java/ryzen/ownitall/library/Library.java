@@ -29,13 +29,12 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
-public class Library {
+abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     /** Constant <code>libraries</code> */
-    public static final LinkedHashMap<String, Class<? extends Library>> libraries;
-    private static Library instance;
-    private long lastQueryTime = 0;
+    private static final LinkedHashSet<Class<? extends Library>> libraries;
+    private static long lastQueryTime = 0;
     protected long queryDiff;
     /**
      * arrays to cache api queries
@@ -45,10 +44,40 @@ public class Library {
     protected LinkedHashMap<String, Song> songs;
     protected LinkedHashMap<String, String> ids;
 
+    // TODO: make it detect these
     static {
-        libraries = new LinkedHashMap<>();
-        libraries.put("LastFM", LastFM.class);
-        libraries.put("MusicBrainz", MusicBrainz.class);
+        libraries = new LinkedHashSet<>();
+        libraries.add(LastFM.class);
+        libraries.add(MusicBrainz.class);
+    }
+
+    /**
+     * default Library constructor
+     * initializes all values and loads from cache
+     */
+    protected Library() {
+        this.artists = new LinkedHashMap<>();
+        this.albums = new LinkedHashMap<>();
+        this.songs = new LinkedHashMap<>();
+        this.ids = new LinkedHashMap<>();
+        this.cache();
+    }
+
+    public static LinkedHashSet<Class<? extends Library>> getLibraries() {
+        return libraries;
+    }
+
+    public static Class<? extends Library> getLibrary(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getLibrary");
+            return null;
+        }
+        for (Class<? extends Library> library : libraries) {
+            if (library.getSimpleName().equals(name)) {
+                return library;
+            }
+        }
+        return null;
     }
 
     public static Library initLibrary(Class<? extends Library> libraryClass)
@@ -56,7 +85,7 @@ public class Library {
             NoSuchMethodException {
         if (libraryClass == null) {
             logger.debug("null library class provided in initLibrary");
-            return null;
+            throw new NoSuchMethodException();
         }
         try {
             logger.debug("Initializing '" + libraryClass + "' library");
@@ -85,27 +114,18 @@ public class Library {
         if (Settings.libraryType.isEmpty()) {
             return null;
         }
-        Class<? extends Library> libraryClass = Library.libraries.get(Settings.libraryType);
-        if (libraryClass == null) {
-            logger.warn("Invalid library type set in settings");
-            return null;
+        try {
+            Class<? extends Library> libraryClass = getLibrary(Settings.libraryType);
+            return initLibrary(libraryClass);
+        } catch (MissingSettingException e) {
+            logger.warn("Library '" + Settings.libraryType + "' is missing credentials: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn("Library '" + Settings.libraryType + "' had an exception authenticating: "
+                    + e.getMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error("Library '" + Settings.libraryType + "' does not exist", e);
         }
-        if (instance == null || !instance.getClass().isInstance(libraryClass)) {
-            try {
-                instance = initLibrary(libraryClass);
-            } catch (MissingSettingException e) {
-                logger.warn("Library '" + libraryClass.getSimpleName() + "' is missing credentials: " + e.getMessage());
-            } catch (AuthenticationException e) {
-                logger.warn("Library '" + libraryClass.getSimpleName() + "' had an exception authenticating: "
-                        + e.getMessage());
-            } catch (NoSuchMethodException e) {
-                logger.error("Library '" + libraryClass.getSimpleName() + "' does not exist", e);
-            }
-        }
-        if (instance != null) {
-            instance.cache();
-        }
-        return instance;
+        return null;
     }
 
     /**
@@ -138,94 +158,25 @@ public class Library {
     }
 
     /**
-     * check if library has an instance
-     * to prevent setting it up and logging in when clearing
-     *
-     * @return - true if instance set
-     */
-    public static boolean checkInstance() {
-        if (instance != null) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * default Library constructor
-     * initializes all values and loads from cache
-     */
-    public Library() {
-        this.artists = new LinkedHashMap<>();
-        this.albums = new LinkedHashMap<>();
-        this.songs = new LinkedHashMap<>();
-        this.ids = new LinkedHashMap<>();
-        this.cache();
-    }
-
-    /**
      * dump all data into cache
      */
     public void cache() {
-        this.artists = Storage.cacheArtists(this.artists);
-        this.albums = Storage.cacheAlbums(this.albums);
-        this.songs = Storage.cacheSongs(this.songs);
-        this.ids = Storage.cacheIds(this.ids);
+        Storage storage = new Storage();
+        this.artists = storage.cacheArtists(this.artists);
+        this.albums = storage.cacheAlbums(this.albums);
+        this.songs = storage.cacheSongs(this.songs);
+        this.ids = storage.cacheIds(this.ids);
     }
 
     /**
      * clear in memory cache
      */
-    public static void clear() {
-        if (instance != null) {
-            instance.artists.clear();
-            instance.albums.clear();
-            instance.songs.clear();
-            instance.ids.clear();
-            instance = null;
-        }
-        Storage.clearCacheFiles();
-    }
-
-    /**
-     * <p>
-     * getAlbum.
-     * </p>
-     *
-     * @param album a {@link ryzen.ownitall.classes.Album} object
-     * @return a {@link ryzen.ownitall.classes.Album} object
-     * @throws java.lang.InterruptedException if any.
-     */
-    public Album getAlbum(Album album) throws InterruptedException {
-        logger.warn("get album unsupported for library type: " + Settings.libraryType);
-        return null;
-    }
-
-    /**
-     * <p>
-     * getSong.
-     * </p>
-     *
-     * @param song a {@link ryzen.ownitall.classes.Song} object
-     * @return a {@link ryzen.ownitall.classes.Song} object
-     * @throws java.lang.InterruptedException if any.
-     */
-    public Song getSong(Song song) throws InterruptedException {
-        logger.warn("get song unsupported for library type: " + Settings.libraryType);
-        return null;
-    }
-
-    /**
-     * <p>
-     * getArtist.
-     * </p>
-     *
-     * @param artist a {@link ryzen.ownitall.classes.Artist} object
-     * @return a {@link ryzen.ownitall.classes.Artist} object
-     * @throws java.lang.InterruptedException if any.
-     */
-    public Artist getArtist(Artist artist) throws InterruptedException {
-        logger.warn("get artist unsupported for library type: " + Settings.libraryType);
-        return null;
+    public void clear() {
+        this.artists.clear();
+        this.albums.clear();
+        this.songs.clear();
+        this.ids.clear();
+        new Storage().clearCacheFiles();
     }
 
     /**
@@ -319,14 +270,12 @@ public class Library {
      *
      * @return a int
      */
-    public static int getCacheSize() {
+    public int getCacheSize() {
         int size = 0;
-        if (instance != null) {
-            size += instance.getArtistCacheSize();
-            size += instance.getAlbumCacheSize();
-            size += instance.getSongCacheSize();
-            size += instance.getIdCacheSize();
-        }
+        size += this.getArtistCacheSize();
+        size += this.getAlbumCacheSize();
+        size += this.getSongCacheSize();
+        size += this.getIdCacheSize();
         return size;
     }
 

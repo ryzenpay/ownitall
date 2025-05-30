@@ -15,6 +15,7 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
@@ -33,8 +34,9 @@ import org.jaudiotagger.tag.FieldKey;
  *
  * @author ryzen
  */
-@Method.Import
-public class Upload extends Method {
+// TODO: threading
+// especially when reading metadata
+public class Upload implements Import {
     private static final Logger logger = new Logger(Upload.class);
     private static final Library library = Library.load();
     private static final ArrayList<String> extensions = new ArrayList<>() {
@@ -75,7 +77,7 @@ public class Upload extends Method {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = ProgressBar.load("Liked Songs", Settings.localFolder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Liked Songs", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             if (Settings.downloadHierachy) {
                 File likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
@@ -124,7 +126,7 @@ public class Upload extends Method {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = ProgressBar.load("'" + folder.getName() + "' liked songs", folder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' liked songs", folder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();
@@ -156,7 +158,7 @@ public class Upload extends Method {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.load("Playlists", Settings.localFolder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Playlists", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
@@ -279,7 +281,7 @@ public class Upload extends Method {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.load("Albums", Settings.localFolder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("Albums", Settings.localFolder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : Settings.localFolder.listFiles()) {
                 interruptionHandler.throwInterruption();
@@ -395,7 +397,7 @@ public class Upload extends Method {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        try (ProgressBar pb = ProgressBar.load("'" + folder.getName() + "' songs", folder.listFiles().length);
+        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' songs", folder.listFiles().length);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             for (File file : folder.listFiles()) {
                 interruptionHandler.throwInterruption();

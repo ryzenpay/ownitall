@@ -343,7 +343,7 @@ public class ModifyMenu {
             if (Input.request().getAgreement()) {
                 logger.info("Clearing inventory...");
                 Collection.clear();
-                Storage.clearInventoryFiles();
+                new Storage().clearInventoryFiles();
                 logger.info("Successfully cleared inventory");
             }
         } catch (InterruptedException e) {
@@ -403,7 +403,7 @@ public class ModifyMenu {
             return;
         }
         logger.debug("updating current collection with library...");
-        try (ProgressBar pb = ProgressBar.load("Updating Collection", Collection.getTotalTrackCount())) {
+        try (ProgressBar pb = new ProgressBar("Updating Collection", Collection.getTotalTrackCount())) {
             for (Song song : Collection.getLikedSongs().getSongs()) {
                 Song foundSong = library.getSong(song);
                 if (foundSong != null) {

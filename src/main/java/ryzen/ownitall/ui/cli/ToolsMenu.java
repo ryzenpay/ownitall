@@ -44,13 +44,14 @@ public class ToolsMenu {
     }
 
     private void optionArchive() {
-        Storage.archive();
+        new Storage().archive();
         logger.info("Successfully archived");
     }
 
     private void optionUnArchive() {
         LinkedHashMap<String, File> options = new LinkedHashMap<>();
-        for (File file : Storage.getArchiveFolders()) {
+        Storage storage = new Storage();
+        for (File file : storage.getArchiveFolders()) {
             options.put(file.getName(), file);
         }
         try {
@@ -58,7 +59,7 @@ public class ToolsMenu {
             if (choice.equals("Exit")) {
                 return;
             }
-            Storage.unArchive(options.get(choice));
+            storage.unArchive(options.get(choice));
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting unarchive folder choice");
             return;
@@ -78,7 +79,7 @@ public class ToolsMenu {
             System.out.print("Are you sure you wan to clear Credentials (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing Credentials...");
-                for (Class<? extends Method> methodClass : Method.getMethods().values()) {
+                for (Class<?> methodClass : Method.getMethods()) {
                     Method.clearCredentials(methodClass);
                 }
                 logger.info("Done clearing Credentials");

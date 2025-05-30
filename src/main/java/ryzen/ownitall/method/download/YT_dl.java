@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
@@ -22,8 +21,7 @@ import ryzen.ownitall.util.exceptions.AuthenticationException;
  *
  * @author ryzen
  */
-@Method.Export
-public class YT_dl extends Download {
+public class YT_dl extends Download implements DownloadInterface {
     private static final Logger logger = new Logger(YT_dl.class);
 
     /**
@@ -148,8 +146,9 @@ public class YT_dl extends Download {
                         logger.warn("Download cancelled due to boundary criteria: '" + searchQuery + "'");
                         break;
                     } else {
-                        logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode
-                                + "\n Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
+                        logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
+                        logger.debug(
+                                "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
                     }
                 }
                 retries++;

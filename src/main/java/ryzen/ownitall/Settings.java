@@ -207,9 +207,9 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * default is YT_dl.class
      */
     @Group(Download.class)
-    @Options(options = { "ryzen.ownitall.method.download.YT_dl", "ryzen.ownitall.method.download.SoulSeek" })
+    @Options(options = { "YT_dl", "SoulSeek" })
     @Name("Download Method")
-    public static String downloadMethod = "ryzen.ownitall.method.download.YT_dl";
+    public static String downloadMethod = "YT_dl";
 
     /**
      * enable multithreading

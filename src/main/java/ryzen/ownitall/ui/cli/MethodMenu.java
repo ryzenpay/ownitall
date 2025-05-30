@@ -1,6 +1,5 @@
 package ryzen.ownitall.ui.cli;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -11,6 +10,9 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
+import ryzen.ownitall.method.interfaces.Export;
+import ryzen.ownitall.method.interfaces.Import;
+import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
@@ -27,7 +29,8 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  */
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
-    private Method method;
+
+    private Object method;
 
     private String getMethodName() {
         if (method == null) {
@@ -46,17 +49,20 @@ public class MethodMenu {
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
-    public MethodMenu(Class<? extends Annotation> annotation)
+    public <T> MethodMenu(Class<T> filter)
             throws InterruptedException, MissingSettingException {
-        LinkedHashMap<String, Class<? extends Method>> methods = Method.getMethods(annotation);
-        String choice = Menu.optionMenu(methods.keySet(), "METHODS");
+        LinkedHashMap<String, Class<?>> options = new LinkedHashMap<>();
+        for (Class<?> method : Method.getMethods(filter)) {
+            options.put(method.getSimpleName(), method);
+        }
+        String choice = Menu.optionMenu(options.keySet(), "METHODS");
         if (choice.equals("Exit")) {
             throw new InterruptedException("Cancelled method selection");
         }
-        Class<? extends Method> methodClass = methods.get(choice);
+        Class<?> methodClass = Method.getMethod(choice);
         while (true) {
             try {
-                method = Method.initMethod(methodClass);
+                method = Method.initMethod(methodClass, filter);
                 break;
             } catch (MissingSettingException e) {
                 logger.warn(
@@ -74,7 +80,7 @@ public class MethodMenu {
         }
     }
 
-    private static void setCredentials(Class<? extends Method> methodClass)
+    private static void setCredentials(Class<?> methodClass)
             throws MissingSettingException, InterruptedException {
         if (methodClass == null) {
             logger.debug("null methodClass provided in setCredentials");
@@ -119,8 +125,10 @@ public class MethodMenu {
     }
 
     private void optionImportCollection() {
+        // TODO: this is ugly, fix
+        Import method = (Import) this.method;
         logger.debug("Importing '" + getMethodName() + "' library...");
-        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Import", 3)) {
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Import", 3)) {
             pb.step("Liked Songs");
             LikedSongs likedSongs = method.getLikedSongs();
             if (likedSongs != null) {
@@ -148,6 +156,7 @@ public class MethodMenu {
     }
 
     private void optionImportLikedSongs() {
+        Import method = (Import) this.method;
         try {
             logger.info("Getting liked songs from '" + getMethodName() + "'...");
             LikedSongs likedSongs = method.getLikedSongs();
@@ -182,6 +191,7 @@ public class MethodMenu {
     }
 
     private void optionImportAlbums() {
+        Import method = (Import) this.method;
         try {
             logger.info("Getting albums from '" + getMethodName() + "'...");
             ArrayList<Album> albums = method.getAlbums();
@@ -195,6 +205,7 @@ public class MethodMenu {
     }
 
     private void optionImportAlbum() {
+        Import method = (Import) this.method;
         String albumId = null;
         String albumName = null;
         String albumArtistName = null;
@@ -244,6 +255,7 @@ public class MethodMenu {
     }
 
     private void optionImportPlaylists() {
+        Import method = (Import) this.method;
         try {
             logger.info("Getting playlists from '" + getMethodName() + "'...");
             ArrayList<Playlist> playlists = method.getPlaylists();
@@ -258,6 +270,7 @@ public class MethodMenu {
     }
 
     private void optionImportPlaylist() {
+        Import method = (Import) this.method;
         String playlistId = null;
         String playlistName = null;
         try {
@@ -312,9 +325,10 @@ public class MethodMenu {
     }
 
     private void optionExportCollection() {
+        Export method = (Export) this.method;
         logger.debug("Exporting '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
-        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Upload", 3)) {
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
             pb.step("Liked Songs");
             method.uploadLikedSongs();
             logger.debug("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
@@ -335,6 +349,7 @@ public class MethodMenu {
     }
 
     private void optionExportLikedSongs() {
+        Export method = (Export) this.method;
         try {
             logger.info("Exporting " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName()
@@ -348,6 +363,7 @@ public class MethodMenu {
     }
 
     private void optionExportPlaylists() {
+        Export method = (Export) this.method;
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Playlist playlist : Collection.getPlaylists()) {
@@ -379,6 +395,7 @@ public class MethodMenu {
     }
 
     private void optionExportAlbums() {
+        Export method = (Export) this.method;
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Album album : Collection.getAlbums()) {
@@ -435,8 +452,9 @@ public class MethodMenu {
     }
 
     private void optionSyncCollection() {
+        Sync method = (Sync) this.method;
         logger.debug("Syncronizing '" + getMethodName() + "' library...");
-        try (ProgressBar pb = ProgressBar.load(getMethodName() + " Sync", 3)) {
+        try (ProgressBar pb = new ProgressBar(getMethodName() + " Sync", 3)) {
             pb.step("Liked Songs");
             method.syncLikedSongs();
             logger.debug("Syncronized " + Collection.getLikedSongCount() + " liked songs from '"
@@ -461,6 +479,7 @@ public class MethodMenu {
     }
 
     private void optionSyncLikedSongs() {
+        Sync method = (Sync) this.method;
         try {
             logger.info("Syncronizing " + Collection.getLikedSongCount() + " liked songs to '"
                     + getMethodName()
@@ -480,6 +499,7 @@ public class MethodMenu {
     }
 
     private void optionSyncAlbums() {
+        Sync method = (Sync) this.method;
         try {
             logger.info(
                     "Syncronizing " + Collection.getAlbumCount() + " albums to '" + getMethodName()
@@ -498,6 +518,7 @@ public class MethodMenu {
     }
 
     private void optionSyncPlaylists() {
+        Sync method = (Sync) this.method;
         try {
             logger.info("Syncronizing " + Collection.getPlaylistCount() + " playlists to '"
                     + getMethodName()

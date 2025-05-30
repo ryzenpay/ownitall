@@ -6,6 +6,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
@@ -55,20 +57,20 @@ public class Main {
                 Logger.setLogLevel(level);
             }
             Settings.load();
-            Storage.importCollection();
+            new Storage().importCollection();
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
                 Settings.interactive = false;
                 Input.setNonInteractive(trace);
+                Configurator.setLevel(ProgressBar.class, Level.OFF);
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
-                ProgressBar.output = false;
+                Configurator.setLevel(ProgressBar.class, Level.OFF);
                 ryzen.ownitall.ui.web.MainMenu.main(args);
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
-                ProgressBar.output = true;
                 Menu.setLogo(Settings.logo);
                 new ryzen.ownitall.ui.cli.MainMenu();
             }
@@ -85,8 +87,6 @@ public class Main {
     public static void save() {
         Collection.save();
         Settings.load().save();
-        if (Library.checkInstance()) {
-            Library.load();
-        }
+        Library.load();
     }
 }
