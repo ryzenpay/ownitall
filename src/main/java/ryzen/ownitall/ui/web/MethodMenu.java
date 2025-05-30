@@ -46,7 +46,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private Object method;
+    private Method method;
 
     private String getMethodName() {
         if (method == null) {
@@ -93,7 +93,7 @@ public class MethodMenu {
         Class<?> methodClass = Method.getMethod(method);
         if (methodClass != null) {
             try {
-                this.method = Method.initMethod(methodClass);
+                this.method = new Method(methodClass);
                 return "redirect:" + callback;
             } catch (MissingSettingException e) {
                 logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "': "
@@ -196,15 +196,14 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Import method = Method.getImportMethod(this.method);
         try {
             try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
                 pb.step("Liked Songs");
-                method.getLikedSongs();
+                this.method.getImport().getLikedSongs();
                 pb.step("Albums");
-                method.getAlbums();
+                this.method.getImport().getAlbums();
                 pb.step("Playlists");
-                method.getPlaylists();
+                this.method.getImport().getPlaylists();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while importing '" + getMethodName() + "' collection");
@@ -241,7 +240,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            LikedSongs likedSongs = Method.getImportMethod(this.method).getLikedSongs();
+            LikedSongs likedSongs = this.method.getImport().getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
             }
@@ -282,7 +281,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            ArrayList<Album> albums = Method.getImportMethod(this.method).getAlbums();
+            ArrayList<Album> albums = this.method.getImport().getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
                 logger.info("Successfully added '" + getMethodName() + "' albums to collection");
@@ -299,7 +298,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            Album album = Method.getImportMethod(this.method).getAlbum(id, null, null);
+            Album album = this.method.getImport().getAlbum(id, null, null);
             if (album != null) {
                 Collection.addAlbum(album);
                 logger.info("Successfully added album '" + album.toString() + "' to collection");
@@ -340,7 +339,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            ArrayList<Playlist> playlists = Method.getImportMethod(this.method).getPlaylists();
+            ArrayList<Playlist> playlists = this.method.getImport().getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info("Successfully added " + playlists.size() + "'" + getMethodName() + "' playlists");
@@ -363,7 +362,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            Playlist playlist = Method.getImportMethod(this.method).getPlaylist(id, null);
+            Playlist playlist = this.method.getImport().getPlaylist(id, null);
             if (playlist != null) {
                 Collection.addPlaylist(playlist);
                 logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
@@ -430,15 +429,14 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Export method = Method.getExportMethod(this.method);
         try {
             try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
                 pb.step("Liked Songs");
-                method.uploadLikedSongs();
+                this.method.getExport().uploadLikedSongs();
                 pb.step("Albums");
-                method.uploadAlbums();
+                this.method.getExport().uploadAlbums();
                 pb.step("Playlists");
-                method.uploadPlaylists();
+                this.method.getExport().uploadPlaylists();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' collection");
@@ -475,7 +473,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            Method.getExportMethod(this.method).uploadLikedSongs();
+            this.method.getExport().uploadLikedSongs();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' liked songs");
         }
@@ -516,7 +514,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            Method.getExportMethod(this.method).uploadAlbums();
+            this.method.getExport().uploadAlbums();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' albums");
         }
@@ -537,7 +535,7 @@ public class MethodMenu {
         Album album = Collection.getAlbum(name);
         if (album != null) {
             try {
-                Method.getExportMethod(this.method).uploadAlbum(album);
+                this.method.getExport().uploadAlbum(album);
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while exporting '" + getMethodName() + "' album '"
                         + album.getName() + "'");
@@ -583,7 +581,7 @@ public class MethodMenu {
             return ResponseEntity.badRequest().build();
         }
         try {
-            Method.getExportMethod(this.method).uploadPlaylists();
+            this.method.getExport().uploadPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while exporting '" + getMethodName() + "' playlists");
         }
@@ -604,7 +602,7 @@ public class MethodMenu {
         Playlist playlist = Collection.getPlaylist(name);
         if (playlist != null) {
             try {
-                Method.getExportMethod(this.method).uploadPlaylist(playlist);
+                this.method.getExport().uploadPlaylist(playlist);
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while exporting '" + getMethodName() + "' playlist '"
                         + playlist.getName() + "'");
@@ -669,15 +667,14 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Sync method = (Sync) this.method;
         try {
             try (ProgressBar pb = new ProgressBar("Sync Collection", 3)) {
                 pb.step("Liked Songs");
-                method.syncLikedSongs();
+                this.method.getSync().syncLikedSongs();
                 pb.step("Albums");
-                method.syncAlbums();
+                this.method.getSync().syncAlbums();
                 pb.step("Playlists");
-                method.syncPlaylists();
+                this.method.getSync().syncPlaylists();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'collection");
@@ -720,9 +717,8 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Sync method = (Sync) this.method;
         try {
-            method.syncLikedSongs();
+            this.method.getSync().syncLikedSongs();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'liked songs");
         } catch (MissingSettingException e) {
@@ -764,9 +760,8 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Sync method = (Sync) this.method;
         try {
-            method.syncAlbums();
+            this.method.getSync().syncAlbums();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'albums");
         } catch (MissingSettingException e) {
@@ -808,9 +803,8 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        Sync method = (Sync) this.method;
         try {
-            method.syncPlaylists();
+            this.method.getSync().syncPlaylists();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while syncronizing '" + getMethodName() + "'playlists");
         } catch (MissingSettingException e) {

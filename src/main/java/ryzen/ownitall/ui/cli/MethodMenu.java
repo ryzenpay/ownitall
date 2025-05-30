@@ -30,7 +30,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
 
-    private Object method;
+    private Method method;
 
     private String getMethodName() {
         if (method == null) {
@@ -62,7 +62,7 @@ public class MethodMenu {
         Class<?> methodClass = Method.getMethod(choice);
         while (true) {
             try {
-                method = Method.initMethod(methodClass);
+                method = new Method(methodClass);
                 break;
             } catch (MissingSettingException e) {
                 logger.warn(
@@ -125,24 +125,23 @@ public class MethodMenu {
     }
 
     private void optionImportCollection() {
-        Import method = Method.getImportMethod(this.method);
         logger.debug("Importing '" + getMethodName() + "' library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Import", 3)) {
             pb.step("Liked Songs");
-            LikedSongs likedSongs = method.getLikedSongs();
+            LikedSongs likedSongs = method.getImport().getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
                 logger.info("Imported " + likedSongs.size() + " liked songs from '" + getMethodName()
                         + "'");
             }
             pb.step("Saved Albums");
-            ArrayList<Album> albums = method.getAlbums();
+            ArrayList<Album> albums = method.getImport().getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
                 logger.info("Imported " + albums.size() + " albums from '" + getMethodName() + "'");
             }
             pb.step("Playlists");
-            ArrayList<Playlist> playlists = method.getPlaylists();
+            ArrayList<Playlist> playlists = method.getImport().getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info(
@@ -157,7 +156,7 @@ public class MethodMenu {
     private void optionImportLikedSongs() {
         try {
             logger.info("Getting liked songs from '" + getMethodName() + "'...");
-            LikedSongs likedSongs = Method.getImportMethod(this.method).getLikedSongs();
+            LikedSongs likedSongs = method.getImport().getLikedSongs();
             if (likedSongs != null) {
                 Collection.addLikedSongs(likedSongs);
                 logger.info(
@@ -191,7 +190,7 @@ public class MethodMenu {
     private void optionImportAlbums() {
         try {
             logger.info("Getting albums from '" + getMethodName() + "'...");
-            ArrayList<Album> albums = Method.getImportMethod(this.method).getAlbums();
+            ArrayList<Album> albums = method.getImport().getAlbums();
             if (albums != null) {
                 Collection.addAlbums(albums);
                 logger.info("Imported " + albums.size() + " albums from '" + getMethodName() + "'");
@@ -220,7 +219,7 @@ public class MethodMenu {
         }
         try {
             logger.info("Getting album '" + albumId + "' from '" + getMethodName() + "'...");
-            Album album = Method.getImportMethod(this.method).getAlbum(albumId, albumName, albumArtistName);
+            Album album = method.getImport().getAlbum(albumId, albumName, albumArtistName);
             if (album != null) {
                 Collection.addAlbum(album);
                 logger.info("Imported album '" + album.getName() + "' (" + album.size() + ") from '"
@@ -253,7 +252,7 @@ public class MethodMenu {
     private void optionImportPlaylists() {
         try {
             logger.info("Getting playlists from '" + getMethodName() + "'...");
-            ArrayList<Playlist> playlists = Method.getImportMethod(this.method).getPlaylists();
+            ArrayList<Playlist> playlists = method.getImport().getPlaylists();
             if (playlists != null) {
                 Collection.addPlaylists(playlists);
                 logger.info(
@@ -280,7 +279,7 @@ public class MethodMenu {
         }
         try {
             logger.info("Getting playlist '" + playlistId + "' from '" + getMethodName() + "'...");
-            Playlist playlist = Method.getImportMethod(this.method).getPlaylist(playlistId, playlistName);
+            Playlist playlist = method.getImport().getPlaylist(playlistId, playlistName);
             if (playlist != null) {
                 Collection.addPlaylist(playlist);
                 logger.info("Imported playlist '" + playlist.getName() + "' (" + playlist.size() + ") from '"
@@ -319,20 +318,19 @@ public class MethodMenu {
     }
 
     private void optionExportCollection() {
-        Export method = Method.getExportMethod(this.method);
         logger.debug("Exporting '" + getMethodName() + "' (" + Collection.getTotalTrackCount()
                 + ") library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Upload", 3)) {
             pb.step("Liked Songs");
-            method.uploadLikedSongs();
+            this.method.getExport().uploadLikedSongs();
             logger.debug("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName() + "'");
             pb.step("Saved Albums");
-            method.uploadAlbums();
+            this.method.getExport().uploadAlbums();
             logger.debug("Exported " + Collection.getAlbumCount() + " albums to '"
                     + getMethodName() + "'");
             pb.step("Playlists");
-            method.uploadPlaylists();
+            this.method.getExport().uploadPlaylists();
             logger.debug(
                     "Exported " + Collection.getPlaylistCount() + " playlists to '" + getMethodName()
                             + "'");
@@ -347,7 +345,7 @@ public class MethodMenu {
             logger.info("Exporting " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName()
                     + "'...");
-            Method.getExportMethod(this.method).uploadLikedSongs();
+            this.method.getExport().uploadLikedSongs();
             logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '"
                     + getMethodName() + "'");
         } catch (InterruptedException e) {
@@ -356,7 +354,6 @@ public class MethodMenu {
     }
 
     private void optionExportPlaylists() {
-        Export method = Method.getExportMethod(this.method);
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Playlist playlist : Collection.getPlaylists()) {
@@ -371,14 +368,14 @@ public class MethodMenu {
                 logger.info("Exporting " + Collection.getPlaylistCount() + " playlists to '"
                         + getMethodName()
                         + "'");
-                method.uploadPlaylists();
+                this.method.getExport().uploadPlaylists();
                 logger.info("Exported " + Collection.getPlaylistCount() + " playlists to '"
                         + getMethodName() + "'");
             } else {
                 Playlist playlist = options.get(choice);
                 logger.info("Uploading playlist '" + playlist.getName() + "' (" + playlist.size() + ") to '"
                         + getMethodName() + "'...");
-                method.uploadPlaylist(playlist);
+                this.method.getExport().uploadPlaylist(playlist);
                 logger.info("Exported playlist '" + playlist.getName() + "' to '" + getMethodName()
                         + "'");
             }
@@ -388,7 +385,6 @@ public class MethodMenu {
     }
 
     private void optionExportAlbums() {
-        Export method = Method.getExportMethod(this.method);
         LinkedHashMap<String, Album> options = new LinkedHashMap<>();
         options.put("All", null);
         for (Album album : Collection.getAlbums()) {
@@ -402,14 +398,14 @@ public class MethodMenu {
             if (choice.equals("All")) {
                 logger.info("Exporting " + Collection.getAlbumCount() + " albums to '"
                         + getMethodName() + "'...");
-                method.uploadAlbums();
+                this.method.getExport().uploadAlbums();
                 logger.info("Exported " + Collection.getAlbumCount() + " albums to '"
                         + getMethodName() + "'");
             } else {
                 Album album = options.get(choice);
                 logger.info("Uploading album '" + album.getName() + "' (" + album.size() + ") to '"
                         + getMethodName() + "'...");
-                method.uploadAlbum(album);
+                this.method.getExport().uploadAlbum(album);
                 logger.info("Exported album '" + album.getName() + "' to '" + getMethodName() + "'");
             }
         } catch (InterruptedException e) {
@@ -445,19 +441,18 @@ public class MethodMenu {
     }
 
     private void optionSyncCollection() {
-        Sync method = (Sync) this.method;
         logger.debug("Syncronizing '" + getMethodName() + "' library...");
         try (ProgressBar pb = new ProgressBar(getMethodName() + " Sync", 3)) {
             pb.step("Liked Songs");
-            method.syncLikedSongs();
+            this.method.getSync().syncLikedSongs();
             logger.debug("Syncronized " + Collection.getLikedSongCount() + " liked songs from '"
                     + getMethodName() + "'");
             pb.step("Saved Albums");
-            method.syncAlbums();
+            this.method.getSync().syncAlbums();
             logger.debug("Syncronized " + Collection.getAlbumCount() + " albums from '"
                     + getMethodName() + "'");
             pb.step("Playlists");
-            method.syncPlaylists();
+            this.method.getSync().syncPlaylists();
             logger.debug("Syncronized " + Collection.getPlaylistCount() + " playlists from '"
                     + getMethodName() + "'");
             logger.debug("done syncronizing '" + getMethodName() + "' library");
@@ -472,12 +467,11 @@ public class MethodMenu {
     }
 
     private void optionSyncLikedSongs() {
-        Sync method = (Sync) this.method;
         try {
             logger.info("Syncronizing " + Collection.getLikedSongCount() + " liked songs to '"
                     + getMethodName()
                     + "'...");
-            method.syncLikedSongs();
+            this.method.getSync().syncLikedSongs();
             logger.info("Syncronized " + Collection.getLikedSongCount() + " liked songs to '"
                     + getMethodName()
                     + "'");
@@ -492,12 +486,11 @@ public class MethodMenu {
     }
 
     private void optionSyncAlbums() {
-        Sync method = (Sync) this.method;
         try {
             logger.info(
                     "Syncronizing " + Collection.getAlbumCount() + " albums to '" + getMethodName()
                             + "'...");
-            method.syncAlbums();
+            this.method.getSync().syncAlbums();
             logger.info("Syncronized " + Collection.getAlbumCount() + " albums to '" + getMethodName()
                     + "'");
         } catch (InterruptedException e) {
@@ -511,12 +504,11 @@ public class MethodMenu {
     }
 
     private void optionSyncPlaylists() {
-        Sync method = (Sync) this.method;
         try {
             logger.info("Syncronizing " + Collection.getPlaylistCount() + " playlists to '"
                     + getMethodName()
                     + "'...");
-            method.syncPlaylists();
+            this.method.getSync().syncPlaylists();
             logger.info("Syncronized " + Collection.getPlaylistCount() + " playlists to '"
                     + getMethodName()
                     + "'");

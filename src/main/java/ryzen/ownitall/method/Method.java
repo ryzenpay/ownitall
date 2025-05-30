@@ -18,7 +18,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
-abstract public class Method implements Import, Export, Sync {
+public class Method {
     private static final Logger logger = new Logger(Method.class);
     /** Constant <code>methods</code> */
     private static final LinkedHashSet<Class<?>> methods;
@@ -29,6 +29,42 @@ abstract public class Method implements Import, Export, Sync {
         methods.add(Youtube.class);
         methods.add(Upload.class);
         methods.add(Download.class);
+    }
+
+    private Object method;
+
+    /**
+     * <p>
+     * initMethod.
+     * </p>
+     *
+     * @param methodClass a {@link java.lang.Class} object
+     * @return a {@link ryzen.ownitall.method.Method} object
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.NoSuchMethodException                        if any.
+     */
+    public Method(Class<?> methodClass)
+            throws MissingSettingException, AuthenticationException,
+            NoSuchMethodException {
+        if (methodClass == null) {
+            logger.debug("null method class provided in initMethod");
+            throw new NoSuchMethodException();
+        }
+        try {
+            logger.debug("Initializing '" + methodClass.getSimpleName() + "' method");
+            this.method = methodClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof MissingSettingException) {
+                throw new MissingSettingException(e);
+            }
+            if (cause instanceof AuthenticationException) {
+                throw new AuthenticationException(e);
+            }
+            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
+            throw new NoSuchMethodException(methodClass.getName());
+        }
     }
 
     public static LinkedHashSet<Class<?>> getMethods() {
@@ -60,50 +96,16 @@ abstract public class Method implements Import, Export, Sync {
         return null;
     }
 
-    /**
-     * <p>
-     * initMethod.
-     * </p>
-     *
-     * @param methodClass a {@link java.lang.Class} object
-     * @return a {@link ryzen.ownitall.method.Method} object
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
-     * @throws java.lang.NoSuchMethodException                        if any.
-     */
-    public static Object initMethod(Class<?> methodClass)
-            throws MissingSettingException, AuthenticationException,
-            NoSuchMethodException {
-        if (methodClass == null) {
-            logger.debug("null method class provided in initMethod");
-            throw new NoSuchMethodException();
-        }
-        try {
-            logger.debug("Initializing '" + methodClass.getSimpleName() + "' method");
-            return methodClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof MissingSettingException) {
-                throw new MissingSettingException(e);
-            }
-            if (cause instanceof AuthenticationException) {
-                throw new AuthenticationException(e);
-            }
-            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
-            throw new NoSuchMethodException(methodClass.getName());
-        }
+    public Import getImport() {
+        return (Import) this.method;
     }
 
-    public static Import getImportMethod(Object method) {
-        return (Import) method;
+    public Export getExport() {
+        return (Export) this.method;
     }
 
-    public static Export getExportMethod(Object method) {
-        return (Export) method;
-    }
-
-    public static Sync getSyncMethod(Object method) {
-        return (Sync) method;
+    public Sync getSync() {
+        return (Sync) this.method;
     }
 
     /**
