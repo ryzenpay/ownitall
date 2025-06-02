@@ -1,13 +1,19 @@
 package ryzen.ownitall.method;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.classes.Album;
+import ryzen.ownitall.classes.LikedSongs;
+import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -95,15 +101,23 @@ public class Method {
         return null;
     }
 
-    public Import getImport() {
+    @Override
+    public String toString() {
+        if (this.method == null) {
+            return "";
+        }
+        return this.method.getClass().getSimpleName();
+    }
+
+    private Import getImport() {
         return (Import) this.method;
     }
 
-    public Export getExport() {
+    private Export getExport() {
         return (Export) this.method;
     }
 
-    public Sync getSync() {
+    private Sync getSync() {
         return (Sync) this.method;
     }
 
@@ -134,5 +148,252 @@ public class Method {
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
+    }
+
+    public void importCollection() {
+        logger.debug("Importing '" + this + "' collection...");
+        try (ProgressBar pb = new ProgressBar(this + " Import", 3)) {
+            pb.step("Liked Songs");
+            LikedSongs likedSongs = this.getImport().getLikedSongs();
+            if (likedSongs != null) {
+                Collection.addLikedSongs(likedSongs);
+                logger.info("Imported " + likedSongs.size() + " liked songs from '" + this + "'");
+            }
+            pb.step("Saved Albums");
+            ArrayList<Album> albums = this.getImport().getAlbums();
+            if (albums != null) {
+                Collection.addAlbums(albums);
+                logger.info("Imported " + albums.size() + " albums from '" + this + "'");
+            }
+            pb.step("Playlists");
+            ArrayList<Playlist> playlists = this.getImport().getPlaylists();
+            if (playlists != null) {
+                Collection.addPlaylists(playlists);
+                logger.info(
+                        "Imported " + playlists.size() + " playlists from '" + this + "'");
+            }
+            logger.debug("done importing '" + this + "' music");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + this + "' collection");
+        }
+    }
+
+    public void importLikedSongs() {
+        try {
+            logger.info("Getting liked songs from '" + this + "'...");
+            LikedSongs likedSongs = this.getImport().getLikedSongs();
+            if (likedSongs != null) {
+                Collection.addLikedSongs(likedSongs);
+                logger.info(
+                        "Imported " + likedSongs.size() + " liked songs from '" + this + "'");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + this + "' liked songs");
+        }
+    }
+
+    public void importAlbums() {
+        try {
+            logger.info("Getting albums from '" + this + "'...");
+            ArrayList<Album> albums = this.getImport().getAlbums();
+            if (albums != null) {
+                Collection.addAlbums(albums);
+                logger.info("Imported " + albums.size() + " albums from '" + this + "'");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing albums");
+        }
+    }
+
+    public void importAlbum(String albumId, String albumName, String albumArtistName) {
+        try {
+            logger.info("Getting album '" + albumId + "' from '" + this + "'...");
+            Album album = this.getImport().getAlbum(albumId, albumName, albumArtistName);
+            if (album != null) {
+                Collection.addAlbum(album);
+                logger.info("Imported album '" + album.getName() + "' (" + album.size() + ") from '" + this + "'");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting '" + this + "' album '" + albumName + "'");
+        }
+    }
+
+    public void importPlaylists() {
+        try {
+            logger.info("Getting playlists from '" + this + "'...");
+            ArrayList<Playlist> playlists = this.getImport().getPlaylists();
+            if (playlists != null) {
+                Collection.addPlaylists(playlists);
+                logger.info("Imported " + playlists.size() + " playlists from '" + this + "'");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing playlists");
+        }
+    }
+
+    public void importPlaylist(String playlistId, String playlistName) {
+        try {
+            logger.info("Getting playlist '" + playlistName + "' from '" + this + "'...");
+            Playlist playlist = this.getImport().getPlaylist(playlistId, playlistName);
+            if (playlist != null) {
+                Collection.addPlaylist(playlist);
+                logger.info(
+                        "Imported playlist '" + playlist.getName() + "' (" + playlist.size() + ") from '" + this + "'");
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting '" + this + "' playlist");
+        }
+    }
+
+    public void exportCollection() {
+        logger.debug("Exporting '" + this + "' (" + Collection.getTotalTrackCount() + ") collection...");
+        try (ProgressBar pb = new ProgressBar(this + " Export", 3)) {
+            pb.step("Liked Songs");
+            this.getExport().uploadLikedSongs();
+            logger.debug("Exported " + Collection.getLikedSongs().size() + " liked songs to '" + this + "'");
+            pb.step("Saved Albums");
+            this.getExport().uploadAlbums();
+            logger.debug("Exported " + Collection.getAlbumCount() + " albums to '" + this + "'");
+            pb.step("Playlists");
+            this.getExport().uploadPlaylists();
+            logger.debug("Exported " + Collection.getPlaylistCount() + " playlists to '" + this + "'");
+            logger.debug("done exporting '" + this + "' music");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' music");
+        }
+    }
+
+    public void exportLikedSongs() {
+        try {
+            logger.info("Exporting " + Collection.getLikedSongs().size() + " liked songs to '" + this + "'...");
+            this.getExport().uploadLikedSongs();
+            logger.info("Exported " + Collection.getLikedSongs().size() + " liked songs to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' liked songs");
+        }
+    }
+
+    public void exportPlaylists() {
+        logger.info("Exporting " + Collection.getPlaylistCount() + " playlists to '" + this + "'");
+        try {
+            this.getExport().uploadPlaylists();
+            logger.info("Exported " + Collection.getPlaylistCount() + " playlists to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' playlists");
+        }
+    }
+
+    public void exportPlaylist(Playlist playlist) {
+        logger.info("Uploading playlist '" + playlist.getName() + "' (" + playlist.size() + ") to '" + this + "'...");
+        try {
+            this.getExport().uploadPlaylist(playlist);
+            logger.info("Exported playlist '" + playlist.getName() + "' to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' playlist '" + playlist.getName() + "'");
+        }
+    }
+
+    public void exportAlbums() {
+        logger.info("Exporting " + Collection.getAlbumCount() + " albums to '" + this + "'...");
+        try {
+            this.getExport().uploadAlbums();
+            logger.info("Exported " + Collection.getAlbumCount() + " albums to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' albums");
+        }
+    }
+
+    public void exportAlbum(Album album) {
+        logger.info("Uploading album '" + album.getName() + "' (" + album.size() + ") to '" + this + "'...");
+        try {
+            this.getExport().uploadAlbum(album);
+            logger.info("Exported album '" + album.getName() + "' to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while exporting '" + this + "' album '" + album.getName() + "'");
+        }
+    }
+
+    public void syncCollection() {
+        logger.debug("Syncronizing '" + this + "' collection...");
+        try (ProgressBar pb = new ProgressBar(this + " Sync", 3)) {
+            pb.step("Liked Songs");
+            this.getSync().syncLikedSongs();
+            logger.debug("Syncronized " + Collection.getLikedSongCount() + " liked songs from '" + this + "'");
+            pb.step("Saved Albums");
+            this.getSync().syncAlbums();
+            logger.debug("Syncronized " + Collection.getAlbumCount() + " albums from '" + this + "'");
+            pb.step("Playlists");
+            this.getSync().syncPlaylists();
+            logger.debug("Syncronized " + Collection.getPlaylistCount() + " playlists from '" + this + "'");
+            logger.debug("done syncronizing '" + this + "' collection");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + this + "' collection");
+        } catch (MissingSettingException e) {
+            logger.warn("Missing credentials while syncronizing '" + this + "' collection: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
+    }
+
+    public void syncLikedSongs() {
+        try {
+            logger.info("Syncronizing " + Collection.getLikedSongCount() + " liked songs to '" + this + "'...");
+            this.getSync().syncLikedSongs();
+            logger.info("Syncronized " + Collection.getLikedSongCount() + " liked songs to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + this + "' liked songs");
+        } catch (MissingSettingException e) {
+            logger.warn("Missing credentials while syncronizing '" + this + "' collection: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
+    }
+
+    public void syncAlbums() {
+        try {
+            logger.info(
+                    "Syncronizing " + Collection.getAlbumCount() + " albums to '" + this + "'...");
+            this.getSync().syncAlbums();
+            logger.info("Syncronized " + Collection.getAlbumCount() + " albums to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + this + "' albums");
+        } catch (MissingSettingException e) {
+            logger.warn("Missing credentials while syncronizing '" + this + "' collection: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
+    }
+
+    public void syncPlaylists() {
+        try {
+            logger.info("Syncronizing " + Collection.getPlaylistCount() + " playlists to '" + this + "'...");
+            this.getSync().syncPlaylists();
+            logger.info("Syncronized " + Collection.getPlaylistCount() + " playlists to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + this + "' playlists");
+        } catch (MissingSettingException e) {
+            logger.warn("Missing credentials while syncronizing '" + this + "' collection: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
+    }
+
+    public void syncPlaylist(Playlist playlist) {
+        try {
+            logger.info("Syncronizing playlist '" + playlist + "' to '" + this + "'");
+            this.getSync().syncPlaylist(playlist);
+            logger.info("Syncronized playlist '" + playlist + " to '" + this + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while syncronizing '" + this + "' playlist '" + playlist.getName() + "'");
+        } catch (MissingSettingException e) {
+            logger.warn("Missing credentials while syncronizing '" + this + "' collection: " + e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn(
+                    "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
     }
 }

@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Level;
  *
  * @author ryzen
  */
+// TODO: create custom exception ClosedMenu
+// enforces catching the "exit" option
 public class Menu {
     private static final Logger logger = new Logger(Menu.class);
     /**

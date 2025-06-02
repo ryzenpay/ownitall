@@ -1,6 +1,5 @@
 package ryzen.ownitall.ui.web;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
@@ -21,7 +20,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.method.interfaces.Export;
@@ -196,18 +194,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            try (ProgressBar pb = new ProgressBar("Import Collection", 3)) {
-                pb.step("Liked Songs");
-                this.method.getImport().getLikedSongs();
-                pb.step("Albums");
-                this.method.getImport().getAlbums();
-                pb.step("Playlists");
-                this.method.getImport().getPlaylists();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + getMethodName() + "' collection");
-        }
+        this.method.importCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -239,14 +226,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            LikedSongs likedSongs = this.method.getImport().getLikedSongs();
-            if (likedSongs != null) {
-                Collection.addLikedSongs(likedSongs);
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + getMethodName() + "' liked songs");
-        }
+        this.method.importLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -280,37 +260,18 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            ArrayList<Album> albums = this.method.getImport().getAlbums();
-            if (albums != null) {
-                Collection.addAlbums(albums);
-                logger.info("Successfully added '" + getMethodName() + "' albums to collection");
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + getMethodName() + "' albums");
-        }
+        this.method.importAlbums();
         return ResponseEntity.ok().build();
     }
 
+    // TODO: use a form to get id, name and album artist name
+    // also update for playlist
     @PostMapping("/method/import/album/{id}")
     public ResponseEntity<Void> importAlbum(@PathVariable(value = "id") String id) {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            Album album = this.method.getImport().getAlbum(id, null, null);
-            if (album != null) {
-                Collection.addAlbum(album);
-                logger.info("Successfully added album '" + album.toString() + "' to collection");
-                return ResponseEntity.ok().build();
-            } else {
-                logger.warn(
-                        "Unable to find album '" + id + "' for method '" + getMethodName() + "'");
-            }
-        } catch (InterruptedException e) {
-            logger.debug(
-                    "Interrupted while importing '" + getMethodName() + "' album '" + id + "'");
-        }
+        this.method.importAlbum(id, null, null);
         return ResponseEntity.badRequest().build();
     }
 
@@ -338,16 +299,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            ArrayList<Playlist> playlists = this.method.getImport().getPlaylists();
-            if (playlists != null) {
-                Collection.addPlaylists(playlists);
-                logger.info("Successfully added " + playlists.size() + "'" + getMethodName() + "' playlists");
-                return ResponseEntity.ok().build();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while importing '" + getMethodName() + "' playlists");
-        }
+        this.method.importPlaylists();
         return ResponseEntity.badRequest().build();
     }
 
@@ -361,18 +313,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            Playlist playlist = this.method.getImport().getPlaylist(id, null);
-            if (playlist != null) {
-                Collection.addPlaylist(playlist);
-                logger.info("Successfully added playlist '" + playlist.toString() + "' to collection");
-                return ResponseEntity.ok().build();
-            } else {
-                logger.warn("Unable to find playlist '" + id + "' in " + getMethodName());
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting playlist '" + id + "' from '" + getMethodName() + "'");
-        }
+        this.method.importPlaylist(id, null);
         return ResponseEntity.badRequest().build();
     }
 
@@ -429,18 +370,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            try (ProgressBar pb = new ProgressBar("Export Collection", 3)) {
-                pb.step("Liked Songs");
-                this.method.getExport().uploadLikedSongs();
-                pb.step("Albums");
-                this.method.getExport().uploadAlbums();
-                pb.step("Playlists");
-                this.method.getExport().uploadPlaylists();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + getMethodName() + "' collection");
-        }
+        this.method.exportCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -472,11 +402,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getExport().uploadLikedSongs();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + getMethodName() + "' liked songs");
-        }
+        this.method.exportLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -513,11 +439,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getExport().uploadAlbums();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + getMethodName() + "' albums");
-        }
+        this.method.exportAlbums();
         return ResponseEntity.ok().build();
     }
 
@@ -534,12 +456,7 @@ public class MethodMenu {
         }
         Album album = Collection.getAlbum(name);
         if (album != null) {
-            try {
-                this.method.getExport().uploadAlbum(album);
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while exporting '" + getMethodName() + "' album '"
-                        + album.getName() + "'");
-            }
+            this.method.exportAlbum(album);
         } else {
             logger.warn("Unable to find album '" + name + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -580,11 +497,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getExport().uploadPlaylists();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while exporting '" + getMethodName() + "' playlists");
-        }
+        this.method.exportPlaylists();
         return ResponseEntity.ok().build();
     }
 
@@ -601,12 +514,7 @@ public class MethodMenu {
         }
         Playlist playlist = Collection.getPlaylist(name);
         if (playlist != null) {
-            try {
-                this.method.getExport().uploadPlaylist(playlist);
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while exporting '" + getMethodName() + "' playlist '"
-                        + playlist.getName() + "'");
-            }
+            this.method.exportPlaylist(playlist);
         } else {
             logger.warn("Unable to find playlist '" + name + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -667,25 +575,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            try (ProgressBar pb = new ProgressBar("Sync Collection", 3)) {
-                pb.step("Liked Songs");
-                this.method.getSync().syncLikedSongs();
-                pb.step("Albums");
-                this.method.getSync().syncAlbums();
-                pb.step("Playlists");
-                this.method.getSync().syncPlaylists();
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + getMethodName() + "'collection");
-        } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (AuthenticationException e) {
-            logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        this.method.syncCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -717,18 +607,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getSync().syncLikedSongs();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + getMethodName() + "'liked songs");
-        } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (AuthenticationException e) {
-            logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        this.method.syncLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -760,18 +639,7 @@ public class MethodMenu {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getSync().syncAlbums();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + getMethodName() + "'albums");
-        } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (AuthenticationException e) {
-            logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        this.method.syncAlbums();
         return ResponseEntity.ok().build();
     }
 
@@ -798,23 +666,13 @@ public class MethodMenu {
      * syncPlaylists.
      * </p>
      */
+    // TODO: sync individual playlists
     @PostMapping("/method/sync/playlists")
     public ResponseEntity<Void> syncPlaylists() {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        try {
-            this.method.getSync().syncPlaylists();
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while syncronizing '" + getMethodName() + "'playlists");
-        } catch (MissingSettingException e) {
-            logger.warn("Missing credentials while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (AuthenticationException e) {
-            logger.warn(
-                    "Failed to Authenticate while syncronizing '" + getMethodName() + "' library: " + e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        this.method.syncPlaylists();
         return ResponseEntity.ok().build();
     }
 

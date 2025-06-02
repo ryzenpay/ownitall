@@ -18,6 +18,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.util.IPIterator;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -86,16 +87,20 @@ public class Upload implements Import {
                 }
             }
         } else {
-            LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
-            if (rootLikedSongs != null) {
-                likedSongs.addSongs(rootLikedSongs.getSongs());
-            }
-            File[] files = Settings.localFolder.listFiles();
-            for (File folder : IPIterator.wrap(Arrays.stream(files), "Liked Songs", files.length)) {
-                if (folder.isDirectory()) {
-                    LikedSongs folderLikedSongs = getLikedSongs(folder);
-                    if (folderLikedSongs != null) {
-                        likedSongs.addSongs(folderLikedSongs.getSongs());
+            try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+                LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
+                if (rootLikedSongs != null) {
+                    likedSongs.addSongs(rootLikedSongs.getSongs());
+                }
+                interruptionHandler.checkInterruption();
+                File[] files = Settings.localFolder.listFiles();
+                for (File folder : IPIterator.wrap(Arrays.stream(files), "Liked Songs", files.length)) {
+                    if (folder.isDirectory()) {
+                        interruptionHandler.checkInterruption();
+                        LikedSongs folderLikedSongs = getLikedSongs(folder);
+                        if (folderLikedSongs != null) {
+                            likedSongs.addSongs(folderLikedSongs.getSongs());
+                        }
                     }
                 }
             }
