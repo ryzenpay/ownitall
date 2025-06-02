@@ -1,8 +1,9 @@
 package ryzen.ownitall.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>
@@ -13,18 +14,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class InterruptionHandler implements AutoCloseable {
     private static final Logger logger = new Logger(InterruptionHandler.class);
+    private static AtomicBoolean isInterrupted = new AtomicBoolean();
     private SignalHandler signalHandler;
-    private static AtomicBoolean interrupted = new AtomicBoolean(false);
 
     /**
      * initialize interruption handler
      * which is thread save
      */
     public InterruptionHandler() {
-        interrupted.set(false);
+        resetInterruption();
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
-            interrupted.set(true);
+            isInterrupted.set(true);
+        });
+    }
+
+    public InterruptionHandler(boolean resetInterruption) {
+        if (resetInterruption) {
+            resetInterruption();
+        }
+        signalHandler = Signal.handle(new Signal("INT"), signal -> {
+            logger.debug("SIGINT received");
+            isInterrupted.set(true);
         });
     }
 
@@ -36,15 +47,14 @@ public class InterruptionHandler implements AutoCloseable {
      *
      * @throws java.lang.InterruptedException - when interruption caught
      */
-    public void throwInterruption() throws InterruptedException {
-        if (interrupted.get()) {
-            interrupted.set(false);
+    public void checkInterruption() throws InterruptedException {
+        if (isInterrupted()) {
             throw new InterruptedException("Interruption caught");
         }
     }
 
-    public boolean isInterrupted() {
-        return interrupted.get();
+    public static boolean isInterrupted() {
+        return isInterrupted.get();
     }
 
     /**
@@ -53,7 +63,7 @@ public class InterruptionHandler implements AutoCloseable {
      * </p>
      */
     public static void forceInterruption() {
-        interrupted.set(true);
+        isInterrupted.set(true);
         logger.debug("Forcibly set interruption to true");
     }
 
@@ -63,14 +73,14 @@ public class InterruptionHandler implements AutoCloseable {
      * </p>
      */
     public static void resetInterruption() {
-        interrupted.set(false);
+        // clears interrupted flag
+        isInterrupted.set(false);
         logger.debug("Reset interruption to false");
     }
 
     /** {@inheritDoc} */
     @Override
     public void close() {
-        interrupted.set(false);
         Signal.handle(new Signal("INT"), signalHandler);
     }
 }

@@ -23,10 +23,10 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -115,16 +115,18 @@ public class Download implements Sync, Export {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        while (true) {
-            try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-                interruptionHandler.throwInterruption();
-                // Attempt to execute the task
-                this.executor.execute(() -> {
-                    this.downloadSong(song, path);
-                });
-                break;
-            } catch (RejectedExecutionException e) {
-                Thread.sleep(1000);
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (true) {
+                try {
+                    interruptionHandler.checkInterruption();
+                    // Attempt to execute the task
+                    this.executor.execute(() -> {
+                        this.downloadSong(song, path);
+                    });
+                    break;
+                } catch (RejectedExecutionException e) {
+                    Thread.sleep(1000);
+                }
             }
         }
     }
@@ -323,25 +325,20 @@ public class Download implements Sync, Export {
             songFolder = new File(Settings.localFolder, Settings.likedSongName);
         }
         if (likedSongs != null && !likedSongs.isEmpty()) {
-            try (ProgressBar pb = new ProgressBar("Sync Liked Songs", likedSongs.size());
-                    InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-                likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
-                for (Song song : likedSongs.getSongs()) {
-                    interruptionHandler.throwInterruption();
-                    pb.step(song.getName());
-                    if (!Settings.downloadHierachy) {
-                        // skip if in a playlist
-                        if (Collection.getSongPlaylist(song) != null) {
-                            continue;
-                        }
+            likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
+            for (Song song : IPIterator.wrap(likedSongs.getSongs(), "Liked Songs", likedSongs.size())) {
+                if (!Settings.downloadHierachy) {
+                    // skip if in a playlist
+                    if (Collection.getSongPlaylist(song) != null) {
+                        continue;
                     }
-                    File songFile = new File(songFolder, Collection.getSongFileName(song));
-                    if (songFile.exists()) {
-                        if (songFile.delete()) {
-                            logger.info("Deleted liked song '" + songFile.getAbsolutePath());
-                        } else {
-                            logger.warn("Failed to delete liked song: " + songFile.getAbsolutePath());
-                        }
+                }
+                File songFile = new File(songFolder, Collection.getSongFileName(song));
+                if (songFile.exists()) {
+                    if (songFile.delete()) {
+                        logger.info("Deleted liked song '" + songFile.getAbsolutePath());
+                    } else {
+                        logger.warn("Failed to delete liked song: " + songFile.getAbsolutePath());
                     }
                 }
             }
@@ -370,11 +367,8 @@ public class Download implements Sync, Export {
                 this.writePlaylistData(likedSongsPlaylist, Settings.localFolder);
             }
         }
-        try (ProgressBar pb = new ProgressBar("Downloading Liked songs", songs.size() + 1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (Song song : songs) {
-                interruptionHandler.throwInterruption();
-                pb.step(song.getName());
+        try {
+            for (Song song : IPIterator.wrap(songs, "Liked Songs", songs.size())) {
                 this.threadDownload(song, likedSongsFolder);
             }
         } catch (InterruptedException e) {
@@ -395,35 +389,30 @@ public class Download implements Sync, Export {
         logger.debug("Getting local playlists to remove mismatches");
         ArrayList<Playlist> playlists = new Upload().getPlaylists();
         if (playlists != null && !playlists.isEmpty()) {
-            try (ProgressBar pb = new ProgressBar("Sync Playlists", playlists.size());
-                    InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-                playlists.removeAll(Collection.getPlaylists());
-                for (Playlist playlist : playlists) {
-                    interruptionHandler.throwInterruption();
-                    pb.step(playlist.getName());
-                    if (Settings.downloadHierachy) {
-                        File playlistFolder = new File(Settings.localFolder,
-                                Collection.getCollectionFolderName(playlist));
-                        if (MusicTools.deleteFolder(playlistFolder)) {
-                            logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
-                                    + playlistFolder.getAbsolutePath());
-                        } else {
-                            logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
-                                    + playlistFolder.getAbsolutePath());
-                        }
+            playlists.removeAll(Collection.getPlaylists());
+            for (Playlist playlist : IPIterator.wrap(playlists, "Playlists", playlists.size())) {
+                if (Settings.downloadHierachy) {
+                    File playlistFolder = new File(Settings.localFolder,
+                            Collection.getCollectionFolderName(playlist));
+                    if (MusicTools.deleteFolder(playlistFolder)) {
+                        logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
+                                + playlistFolder.getAbsolutePath());
                     } else {
-                        // deletes all playlists songs
-                        this.syncPlaylist(new Playlist(playlist.getName()));
-                        File m3uFile = new File(Settings.localFolder,
-                                Collection.getCollectionFolderName(playlist) + ".m3u");
-                        if (m3uFile.delete()) {
-                            logger.info(
-                                    "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
-                                            + m3uFile.getAbsolutePath());
-                        } else {
-                            logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                                    + m3uFile.getAbsolutePath());
-                        }
+                        logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
+                                + playlistFolder.getAbsolutePath());
+                    }
+                } else {
+                    // deletes all playlists songs
+                    this.syncPlaylist(new Playlist(playlist.getName()));
+                    File m3uFile = new File(Settings.localFolder,
+                            Collection.getCollectionFolderName(playlist) + ".m3u");
+                    if (m3uFile.delete()) {
+                        logger.info(
+                                "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
+                                        + m3uFile.getAbsolutePath());
+                    } else {
+                        logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                                + m3uFile.getAbsolutePath());
                     }
                 }
             }
@@ -438,11 +427,8 @@ public class Download implements Sync, Export {
     @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
-        try (ProgressBar pb = new ProgressBar("Download Playlists", playlists.size())) {
-            for (Playlist playlist : playlists) {
-                this.uploadPlaylist(playlist);
-                pb.step(playlist.getName());
-            }
+        for (Playlist playlist : IPIterator.wrap(playlists, "Playlists", playlists.size())) {
+            this.uploadPlaylist(playlist);
         }
     }
 
@@ -472,23 +458,21 @@ public class Download implements Sync, Export {
         }
         if (localPlaylist != null && !localPlaylist.isEmpty()) {
             localPlaylist.removeSongs(playlist.getSongs());
-            try (ProgressBar pb = new ProgressBar("sync " + localPlaylist.getName(), localPlaylist.size())) {
-                for (Song song : localPlaylist.getSongs()) {
-                    pb.step(song.getName());
-                    File songFile = new File(playlistFolder, Collection.getSongFileName(song));
-                    if (songFile.exists()) {
-                        if (!Settings.downloadHierachy) {
-                            if (Collection.isLiked(song)) {
-                                continue;
-                            }
+            for (Song song : IPIterator.wrap(localPlaylist.getSongs(), localPlaylist.getName(),
+                    localPlaylist.size())) {
+                File songFile = new File(playlistFolder, Collection.getSongFileName(song));
+                if (songFile.exists()) {
+                    if (!Settings.downloadHierachy) {
+                        if (Collection.isLiked(song)) {
+                            continue;
                         }
-                        if (songFile.delete()) {
-                            logger.info("Deleted playlist '" + playlist.getName() + "' song: "
-                                    + songFile.getAbsolutePath());
-                        } else {
-                            logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
-                                    + songFile.getAbsolutePath());
-                        }
+                    }
+                    if (songFile.delete()) {
+                        logger.info("Deleted playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
+                    } else {
+                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                                + songFile.getAbsolutePath());
                     }
                 }
             }
@@ -517,11 +501,8 @@ public class Download implements Sync, Export {
             playlistFolder = Settings.localFolder;
             this.writePlaylistData(playlist, playlistFolder);
         }
-        try (ProgressBar pb = new ProgressBar("Downloading Playlist: " + playlist.getName(), playlist.size());
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (Song song : songs) {
-                interruptionHandler.throwInterruption();
-                pb.step(song.getName());
+        try {
+            for (Song song : IPIterator.wrap(songs, "Playlist '" + playlist.getName() + "'", playlist.size())) {
                 this.threadDownload(song, playlistFolder);
             }
         } catch (InterruptedException e) {
@@ -566,11 +547,8 @@ public class Download implements Sync, Export {
     @Override
     public void uploadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
-        try (ProgressBar pb = new ProgressBar("Album Downloads", albums.size())) {
-            for (Album album : albums) {
-                this.uploadAlbum(album);
-                pb.step(album.getName());
-            }
+        for (Album album : IPIterator.wrap(albums, "Albums", albums.size())) {
+            this.uploadAlbum(album);
         }
     }
 
@@ -617,12 +595,9 @@ public class Download implements Sync, Export {
         // albums are always in a folder
         File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
         albumFolder.mkdirs();
-        try (ProgressBar pb = new ProgressBar("Download Album: " + album.getName(), album.size() + 1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try {
             this.writeAlbumData(album, albumFolder);
-            for (Song song : album.getSongs()) {
-                interruptionHandler.throwInterruption();
-                pb.step(song.getName());
+            for (Song song : IPIterator.wrap(album.getSongs(), "Album '" + album.getName() + "'", album.size())) {
                 this.threadDownload(song, albumFolder);
             }
         } catch (InterruptedException e) {

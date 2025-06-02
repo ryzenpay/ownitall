@@ -28,9 +28,9 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -85,34 +85,29 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            LinkedHashMap<String, String> params = new LinkedHashMap<>();
-            params.put("mediaTypes", "Audio");
-            params.put("recursive", "true");
-            params.put("isFavorite", "true");
-            JsonNode response = this.paramQuery("get", "/Items", params);
-            if (response != null) {
-                JsonNode itemsNode = response.get("Items");
-                if (itemsNode != null && itemsNode.isArray()) {
-                    for (JsonNode itemNode : itemsNode) {
-                        interruptionHandler.throwInterruption();
-                        String id = itemNode.get("Id").asText();
-                        if (id != null && !id.isEmpty()) {
-                            Song song = this.getSong(id);
-                            if (song != null) {
-                                likedSongs.addSong(song);
-                                pb.step(song.getName());
-                            }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("mediaTypes", "Audio");
+        params.put("recursive", "true");
+        params.put("isFavorite", "true");
+        JsonNode response = this.paramQuery("get", "/Items", params);
+        if (response != null) {
+            JsonNode itemsNode = response.get("Items");
+            if (itemsNode != null && itemsNode.isArray()) {
+                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Liked Songs", -1)) {
+                    String id = itemNode.get("Id").asText();
+                    if (id != null && !id.isEmpty()) {
+                        Song song = this.getSong(id);
+                        if (song != null) {
+                            likedSongs.addSong(song);
                         }
                     }
                 }
-            } else {
-                logger.debug("Unable to get ids of favorite items");
-                return null;
             }
-            return likedSongs;
+        } else {
+            logger.debug("Unable to get ids of favorite items");
+            return null;
         }
+        return likedSongs;
     }
 
     /** {@inheritDoc} */
@@ -124,7 +119,7 @@ public class Jellyfin implements Import, Export, Sync {
             if (likedSongs != null && !likedSongs.isEmpty()) {
                 likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
                 for (Song song : likedSongs.getSongs()) {
-                    interruptionHandler.throwInterruption();
+                    interruptionHandler.checkInterruption();
                     String songId = this.getSongId(song);
                     if (songId != null) {
                         this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
@@ -140,15 +135,10 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public void uploadLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = Collection.getLikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", likedSongs.size());
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (Song song : likedSongs.getSongs()) {
-                String songId = this.getSongId(song);
-                if (songId != null) {
-                    interruptionHandler.throwInterruption();
-                    this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
-                    pb.step(song.getName());
-                }
+        for (Song song : IPIterator.wrap(likedSongs.getSongs().iterator(), "Liked Songs", likedSongs.size())) {
+            String songId = this.getSongId(song);
+            if (songId != null) {
+                this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
             }
         }
     }
@@ -158,31 +148,26 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            LinkedHashMap<String, String> params = new LinkedHashMap<>();
-            params.put("IncludeItemTypes", "Playlist");
-            params.put("recursive", "true");
-            JsonNode response = this.paramQuery("get", "/Items", params);
-            if (response != null) {
-                JsonNode itemsNode = response.get("Items");
-                if (itemsNode != null && itemsNode.isArray()) {
-                    for (JsonNode itemNode : itemsNode) {
-                        interruptionHandler.throwInterruption();
-                        Playlist playlist = this.getPlaylist(itemNode.get("Id").asText(),
-                                itemNode.get("Name").asText());
-                        if (playlist != null && !playlist.isEmpty()) {
-                            playlists.add(playlist);
-                            pb.step(playlist.getName());
-                        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("IncludeItemTypes", "Playlist");
+        params.put("recursive", "true");
+        JsonNode response = this.paramQuery("get", "/Items", params);
+        if (response != null) {
+            JsonNode itemsNode = response.get("Items");
+            if (itemsNode != null && itemsNode.isArray()) {
+                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Playlists", -1)) {
+                    Playlist playlist = this.getPlaylist(itemNode.get("Id").asText(),
+                            itemNode.get("Name").asText());
+                    if (playlist != null && !playlist.isEmpty()) {
+                        playlists.add(playlist);
                     }
                 }
-            } else {
-                logger.debug("Unable to get ids of playlists");
-                return null;
             }
-            return playlists;
+        } else {
+            logger.debug("Unable to get ids of playlists");
+            return null;
         }
+        return playlists;
     }
 
     /** {@inheritDoc} */
@@ -258,36 +243,31 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            LinkedHashMap<String, String> params = new LinkedHashMap<>();
-            params.put("IncludeItemTypes", "MusicAlbum");
-            params.put("recursive", "true");
-            JsonNode response = this.paramQuery("get", "/Items", params);
-            if (response != null) {
-                JsonNode itemsNode = response.get("Items");
-                if (itemsNode != null && itemsNode.isArray()) {
-                    for (JsonNode itemNode : itemsNode) {
-                        interruptionHandler.throwInterruption();
-                        String artistName = null;
-                        JsonNode artistNode = response.get("Artists").get(0);
-                        if (artistNode != null) {
-                            artistName = artistNode.asText();
-                        }
-                        Album album = this.getAlbum(itemNode.get("Id").asText(), itemNode.get("Name").asText(),
-                                artistName);
-                        if (album != null && !album.isEmpty()) {
-                            albums.add(album);
-                            pb.step(album.getName());
-                        }
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        params.put("IncludeItemTypes", "MusicAlbum");
+        params.put("recursive", "true");
+        JsonNode response = this.paramQuery("get", "/Items", params);
+        if (response != null) {
+            JsonNode itemsNode = response.get("Items");
+            if (itemsNode != null && itemsNode.isArray()) {
+                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Playlists", -1)) {
+                    String artistName = null;
+                    JsonNode artistNode = response.get("Artists").get(0);
+                    if (artistNode != null) {
+                        artistName = artistNode.asText();
+                    }
+                    Album album = this.getAlbum(itemNode.get("Id").asText(), itemNode.get("Name").asText(),
+                            artistName);
+                    if (album != null && !album.isEmpty()) {
+                        albums.add(album);
                     }
                 }
-            } else {
-                logger.debug("Unable to get ids of albums");
-                return null;
             }
-            return albums;
+        } else {
+            logger.debug("Unable to get ids of albums");
+            return null;
         }
+        return albums;
     }
 
     /** {@inheritDoc} */

@@ -6,8 +6,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
@@ -62,12 +60,12 @@ public class Main {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);
                 Settings.interactive = false;
+                ProgressBar.output = false;
                 Input.setNonInteractive(trace);
-                Configurator.setLevel(ProgressBar.class, Level.OFF);
             }
             if (cmd.hasOption("w") && !cmd.hasOption("i")) {
                 logger.debug("Web parameter provided");
-                Configurator.setLevel(ProgressBar.class, Level.OFF);
+                ProgressBar.output = false;
                 ryzen.ownitall.ui.web.MainMenu.main(args);
             } else {
                 Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);

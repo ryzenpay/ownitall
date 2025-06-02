@@ -120,7 +120,7 @@ public class Youtube implements Import {
         try (ProgressBar pb = new ProgressBar("Liked Song", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                interruptionHandler.throwInterruption();
+                interruptionHandler.checkInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
@@ -131,7 +131,7 @@ public class Youtube implements Import {
 
                 List<Video> items = response.getItems();
                 for (Video video : items) {
-                    interruptionHandler.throwInterruption();
+                    interruptionHandler.checkInterruption();
                     VideoSnippet snippet = video.getSnippet();
                     VideoContentDetails contentDetails = video.getContentDetails();
                     if (snippet != null && contentDetails != null) {
@@ -182,7 +182,7 @@ public class Youtube implements Import {
         try (ProgressBar pb = new ProgressBar("Playlists", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                interruptionHandler.throwInterruption();
+                interruptionHandler.checkInterruption();
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
@@ -192,7 +192,7 @@ public class Youtube implements Import {
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
 
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
-                    interruptionHandler.throwInterruption();
+                    interruptionHandler.checkInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (songs != null) {
@@ -227,7 +227,7 @@ public class Youtube implements Import {
         try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
                 InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             do {
-                interruptionHandler.throwInterruption();
+                interruptionHandler.checkInterruption();
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
@@ -235,7 +235,7 @@ public class Youtube implements Import {
                         .setPageToken(pageToken);
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
                 for (PlaylistItem item : itemResponse.getItems()) {
-                    interruptionHandler.throwInterruption();
+                    interruptionHandler.checkInterruption();
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();

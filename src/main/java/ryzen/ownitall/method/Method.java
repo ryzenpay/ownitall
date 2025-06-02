@@ -44,8 +44,7 @@ public class Method {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      * @throws java.lang.NoSuchMethodException                        if any.
      */
-    public Method(Class<?> methodClass)
-            throws MissingSettingException, AuthenticationException,
+    public Method(Class<?> methodClass) throws MissingSettingException, AuthenticationException,
             NoSuchMethodException {
         if (methodClass == null) {
             logger.debug("null method class provided in initMethod");

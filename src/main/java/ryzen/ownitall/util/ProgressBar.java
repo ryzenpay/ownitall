@@ -17,8 +17,10 @@ import me.tongfei.progressbar.ProgressBarStyle;
  * @author ryzen
  */
 // TODO: progressbar EVERYWHERE
+// TODO: make logs not affect progressbar
 public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
+    public static boolean output = true;
 
     private static ProgressBar rootInstance;
     private me.tongfei.progressbar.ProgressBar pb;
@@ -32,13 +34,14 @@ public class ProgressBar implements AutoCloseable {
      * @param maxStep a int
      */
     public ProgressBar(String title, int maxStep) {
-        this.pb = new ProgressBarBuilder()
-                .setTaskName(title)
+        ProgressBarBuilder pbInit = new ProgressBarBuilder().setTaskName(title)
                 .setInitialMax(maxStep)
                 .setStyle(ProgressBarStyle.ASCII)
-                .setConsumer(new DelegatingProgressBarConsumer(logger::temp))
-                .hideEta()
-                .build();
+                .hideEta();
+        if (!output) {
+            pbInit.setConsumer(new DelegatingProgressBarConsumer(null));
+        }
+        this.pb = pbInit.build();
         if (rootInstance == null) {
             rootInstance = this;
         }

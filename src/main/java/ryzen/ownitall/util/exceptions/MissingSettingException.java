@@ -33,4 +33,8 @@ public class MissingSettingException extends Exception {
     public MissingSettingException(Throwable e) {
         super(e);
     }
+
+    public MissingSettingException(String message, Throwable e) {
+        super(message, e);
+    }
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import ryzen.ownitall.Collection;
@@ -16,10 +17,9 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -77,33 +77,25 @@ public class Upload implements Import {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("Liked Songs", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            if (Settings.downloadHierachy) {
-                File likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
-                if (likedSongsFolder.exists()) {
-                    pb.step(likedSongsFolder.getName());
-                    ArrayList<Song> songs = getSongs(likedSongsFolder);
-                    if (songs != null) {
-                        likedSongs.addSongs(songs);
-                        pb.step(songs.size());
-                    }
+        if (Settings.downloadHierachy) {
+            File likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
+            if (likedSongsFolder.exists()) {
+                ArrayList<Song> songs = getSongs(likedSongsFolder);
+                if (songs != null) {
+                    likedSongs.addSongs(songs);
                 }
-            } else {
-                pb.step(Settings.localFolder.getName());
-                LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
-                if (rootLikedSongs != null) {
-                    likedSongs.addSongs(rootLikedSongs.getSongs());
-                    pb.step(rootLikedSongs.size());
-                }
-                for (File folder : Settings.localFolder.listFiles()) {
-                    interruptionHandler.throwInterruption();
-                    if (folder.isDirectory()) {
-                        pb.step(folder.getName());
-                        LikedSongs folderLikedSongs = getLikedSongs(folder);
-                        if (folderLikedSongs != null) {
-                            likedSongs.addSongs(folderLikedSongs.getSongs());
-                        }
+            }
+        } else {
+            LikedSongs rootLikedSongs = getLikedSongs(Settings.localFolder);
+            if (rootLikedSongs != null) {
+                likedSongs.addSongs(rootLikedSongs.getSongs());
+            }
+            File[] files = Settings.localFolder.listFiles();
+            for (File folder : IPIterator.wrap(Arrays.stream(files), "Liked Songs", files.length)) {
+                if (folder.isDirectory()) {
+                    LikedSongs folderLikedSongs = getLikedSongs(folder);
+                    if (folderLikedSongs != null) {
+                        likedSongs.addSongs(folderLikedSongs.getSongs());
                     }
                 }
             }
@@ -126,26 +118,22 @@ public class Upload implements Import {
             return null;
         }
         LikedSongs likedSongs = new LikedSongs();
-        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' liked songs", folder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : folder.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                    Song song = getSong(file);
-                    if (song != null) {
-                        if (Settings.downloadHierachy) {
-                            likedSongs.addSong(song);
-                            pb.step(song.getName());
-                        } else {
-                            try {
-                                if (MusicTools.isSongLiked(file)) {
-                                    likedSongs.addSong(song);
-                                    pb.step(song.getName());
-                                }
-                            } catch (Exception e) {
-                                logger.error(
-                                        "Exception checking if song '" + file.getAbsolutePath() + "' is liked", e);
+        File[] files = folder.listFiles();
+        for (File file : IPIterator.wrap(Arrays.stream(files), "'" + folder.getName() + "' liked songs",
+                files.length)) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                Song song = getSong(file);
+                if (song != null) {
+                    if (Settings.downloadHierachy) {
+                        likedSongs.addSong(song);
+                    } else {
+                        try {
+                            if (MusicTools.isSongLiked(file)) {
+                                likedSongs.addSong(song);
                             }
+                        } catch (Exception e) {
+                            logger.error(
+                                    "Exception checking if song '" + file.getAbsolutePath() + "' is liked", e);
                         }
                     }
                 }
@@ -158,30 +146,25 @@ public class Upload implements Import {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : Settings.localFolder.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (Settings.downloadHierachy) {
-                    if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
-                        if (!isAlbum(file)) {
-                            pb.step(file.getName());
-                            Playlist playlist = this.getPlaylist(file.getAbsolutePath(), null);
-                            if (playlist != null) {
-                                playlists.add(playlist);
-                            }
-                        }
-                    }
-                } else if (file.isFile()) {
-                    if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
-                        if (file.getName().equalsIgnoreCase(Settings.likedSongName + ".m3u")) {
-                            continue;
-                        }
-                        pb.step(file.getName());
-                        Playlist playlist = getM3UPlaylist(file);
+        File[] files = Settings.localFolder.listFiles();
+        for (File file : IPIterator.wrap(Arrays.stream(files), "Playlists", files.length)) {
+            if (Settings.downloadHierachy) {
+                if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
+                    if (!isAlbum(file)) {
+                        Playlist playlist = this.getPlaylist(file.getAbsolutePath(), null);
                         if (playlist != null) {
                             playlists.add(playlist);
                         }
+                    }
+                }
+            } else if (file.isFile()) {
+                if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+                    if (file.getName().equalsIgnoreCase(Settings.likedSongName + ".m3u")) {
+                        continue;
+                    }
+                    Playlist playlist = getM3UPlaylist(file);
+                    if (playlist != null) {
+                        playlists.add(playlist);
                     }
                 }
             }
@@ -281,17 +264,13 @@ public class Upload implements Import {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Albums", Settings.localFolder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : Settings.localFolder.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
-                    if (isAlbum(file)) {
-                        pb.step(file.getName());
-                        Album album = this.getAlbum(file.getAbsolutePath(), null, null);
-                        if (album != null) {
-                            albums.add(album);
-                        }
+        File[] files = Settings.localFolder.listFiles();
+        for (File file : IPIterator.wrap(Arrays.stream(files), "Albums", files.length)) {
+            if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
+                if (isAlbum(file)) {
+                    Album album = this.getAlbum(file.getAbsolutePath(), null, null);
+                    if (album != null) {
+                        albums.add(album);
                     }
                 }
             }
@@ -397,16 +376,13 @@ public class Upload implements Import {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("'" + folder.getName() + "' songs", folder.listFiles().length);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            for (File file : folder.listFiles()) {
-                interruptionHandler.throwInterruption();
-                if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                    Song song = getSong(file);
-                    if (song != null) {
-                        songs.add(song);
-                        pb.step(song.getName());
-                    }
+        File[] files = folder.listFiles();
+        for (File file : IPIterator.wrap(Arrays.stream(files), "'" + folder.getName() + "' songs",
+                files.length)) {
+            if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+                Song song = getSong(file);
+                if (song != null) {
+                    songs.add(song);
                 }
             }
         }

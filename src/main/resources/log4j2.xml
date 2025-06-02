@@ -23,8 +23,5 @@
         <Logger name="org.apache.hc.client5.http" level="ERROR" additivity="false" />
         <Logger name="org.apache.hc.client5.http.impl.classic.InternalHttpClient" level="ERROR"
             additivity="false" />
-        <Logger level="TEMP" name="ryzen.ownitall.util.ProgressBar">
-            <AppenderRef ref="Console" />
-        </Logger>
     </Loggers>
 </Configuration>
