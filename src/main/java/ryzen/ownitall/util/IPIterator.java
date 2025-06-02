@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 // TODO: task lists?
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
+    private static IPIterator<?> rootInstance;
 
     private Iterator<T> iterated;
     private ProgressBar pb;
@@ -21,7 +22,12 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
         this.iterated = iterated;
         this.pb = new ProgressBar(title, maxStep);
         interruptionHandler = new InterruptionHandler(false);
-        interruptionHandler.checkInterruption();
+        if (rootInstance == null) {
+            InterruptionHandler.resetInterruption();
+            rootInstance = this;
+        } else {
+            interruptionHandler.checkInterruption();
+        }
     }
 
     public static <T> IPIterator<T> wrap(Iterator<T> iterated, String title, int maxStep) throws InterruptedException {
@@ -79,5 +85,8 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     public void close() {
         pb.close();
         interruptionHandler.close();
+        if (this.equals(rootInstance)) {
+            rootInstance = null;
+        }
     }
 }
