@@ -142,10 +142,6 @@ public class Logger {
         this.log(Level.ERROR, message, error);
     }
 
-    public void off(String message) {
-
-    }
-
     public static LinkedHashSet<Entry<Level, String>> getGlobalLogs() {
         LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
         for (Entry<Level, String> entry : globalHistory) {

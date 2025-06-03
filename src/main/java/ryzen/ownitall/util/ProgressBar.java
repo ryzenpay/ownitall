@@ -35,12 +35,13 @@ public class ProgressBar implements AutoCloseable {
      * @param maxStep a int
      */
     public ProgressBar(String title, int maxStep) {
-        ProgressBarBuilder pbInit = new ProgressBarBuilder().setTaskName(title)
+        ProgressBarBuilder pbInit = new ProgressBarBuilder()
+                .setTaskName(title)
                 .setInitialMax(maxStep)
                 .setStyle(ProgressBarStyle.ASCII)
                 .hideEta();
         if (!output) {
-            pbInit.setConsumer(new DelegatingProgressBarConsumer(logger::off));
+            pbInit.setConsumer(new DelegatingProgressBarConsumer(null));
         }
         this.pb = pbInit.build();
         if (instances == null) {
@@ -79,6 +80,10 @@ public class ProgressBar implements AutoCloseable {
      * @return a int
      */
     public long getMaxStep() {
+        // needed since we are using builder
+        if (this.pb.isIndefinite()) {
+            return -1;
+        }
         return this.pb.getMax();
     }
 

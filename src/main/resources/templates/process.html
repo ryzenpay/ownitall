@@ -27,6 +27,7 @@
         }
     </style>
     <script type="text/javascript">
+        let initialized = false;
         let progressTimer = setInterval(fetchProgress, 1000); // 1s
         let logTimer = setInterval(fetchLogs, 1000);
 
@@ -35,11 +36,15 @@
                 const response = await fetch('[[${processProgress}]]');
                 if (response.ok) {
                     if (response.status === 200) {
+                        initialized = true;
                         const progressData = await response.json();
                         console.debug("ProgressBars response: ", progressData);
                         updateProgressUI(progressData.bars);
                     } else {
                         console.debug("Waiting for progressbar data, status=" + response.status);
+                        if (initialized) {
+                            updateProgressUI([]);
+                        }
                     }
                 } else {
                     console.error('Error fetching progress:', response.status, response.statusText);
@@ -58,7 +63,7 @@
                         container.removeChild(childElement);
                     }
                 });
-            };
+            }
 
             progressBarsData.forEach((pbData) => {
                 const pbId = String(pbData.id);
@@ -84,8 +89,7 @@
                     progressBar: pbContainer.querySelector(`[data-role="progressbar"]`),
                     message: pbContainer.querySelector(`[data-role="message"]`),
                     elapsedTime: pbContainer.querySelector(`[data-role="time"]`)
-                };
-
+                }
                 updateIndividualProgressBar(pbData, elements)
             });
 
@@ -120,7 +124,7 @@
                 elements.progressBar.style.width = '100%';
                 elements.progressBar.setAttribute('aria-valuenow', 100);
                 elements.progressBar.textContent = "Done";
-                elements.message.innerText = pbData.message || "Process finished.";
+                elements.message.innerText = pbData.message;
             } else {
                 elements.title.innerText = pbData.title;
                 elements.message.innerText = pbData.message;
@@ -130,7 +134,7 @@
                 if (pbData.maxstep < 0) {
                     elements.progressBar.style.width = '100%';
                     elements.progressBar.setAttribute('aria-valuenow', 100);
-                    elements.progressBar.textContent = pbData.step || "Processing...";
+                    elements.progressBar.textContent = pbData.step;
                 } else {
                     let progress = (pbData.maxstep && pbData.maxstep > 0) ? Math.min(pbData.step / pbData.maxstep * 100, 100) : 0;
                     elements.progressBar.style.width = progress + '%';
@@ -208,7 +212,7 @@
                             title: pbContainer.querySelector(`[data-role="title"]`),
                             progressBar: pbContainer.querySelector(`[data-role="progressbar"]`),
                             message: pbContainer.querySelector(`[data-role="message"]`),
-                        };
+                        }
                         if (elements.title) elements.title.innerText = (elements.title.innerText || "Process") + " - Cancelled";
                         if (elements.progressBar) {
                             elements.progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped', 'bg-success');
