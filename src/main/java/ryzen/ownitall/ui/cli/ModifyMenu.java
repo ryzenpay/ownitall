@@ -17,7 +17,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 
 /**
  * <p>
@@ -45,9 +45,7 @@ public class ModifyMenu {
                 String choice = Menu.optionMenu(options.keySet(), "MODIFY MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting modify menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -66,9 +64,7 @@ public class ModifyMenu {
                 String choice = Menu.optionMenu(options.keySet(), "ADD MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting modify add menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -147,10 +143,7 @@ public class ModifyMenu {
                     options.get(choice).addSong(song);
                     logger.info("Succesfully added '" + song.getName() + "' to: '" + choice + "'");
                 }
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting modify add song playlist choice");
-                return;
-            } catch (ClosedMenu e) {
+            } catch (MenuClosed e) {
             }
         }
     }
@@ -236,9 +229,7 @@ public class ModifyMenu {
                 String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting collection edit menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -261,10 +252,7 @@ public class ModifyMenu {
                     Collection.removePlaylist(options.get(choice));
                 }
                 logger.info("Successfully removed playlist: '" + choice + "'");
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting collection delete playlist choice");
-                return;
-            } catch (ClosedMenu e) {
+            } catch (MenuClosed e) {
             }
         }
     }
@@ -287,10 +275,7 @@ public class ModifyMenu {
                     Collection.removeAlbum(options.get(choice));
                 }
                 logger.info("Successfully removed album: '" + choice + "'");
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting collection delete album choice");
-                return;
-            } catch (ClosedMenu e) {
+            } catch (MenuClosed e) {
             }
         }
     }
@@ -313,10 +298,7 @@ public class ModifyMenu {
                     Collection.removeLikedSong(options.get(choice));
                 }
                 logger.info("Successfully removed liked song: '" + choice + "'");
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while getting collection delete liked song choice");
-                return;
-            } catch (ClosedMenu e) {
+            } catch (MenuClosed e) {
             }
         }
     }
@@ -346,9 +328,7 @@ public class ModifyMenu {
                 String choice = Menu.optionMenu(options.keySet(), "MERGE MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting modify merge menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -368,9 +348,7 @@ public class ModifyMenu {
             playlist.merge(options.get(choice2));
             Collection.removePlaylist(options.get(choice2));
             logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting collection merge playlist choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 

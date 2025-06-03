@@ -13,7 +13,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -41,9 +41,7 @@ public class CollectionMenu {
                 String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interruption caught while getting collection menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 

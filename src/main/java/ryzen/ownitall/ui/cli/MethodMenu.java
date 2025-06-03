@@ -12,7 +12,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -72,7 +72,7 @@ public class MethodMenu {
                     break;
                 }
             }
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
             throw new InterruptedException("Cancelled method selection");
         }
     }
@@ -113,9 +113,7 @@ public class MethodMenu {
                         "IMPORT " + getMethodName());
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -129,10 +127,7 @@ public class MethodMenu {
                         "IMPORT ALBUM" + getMethodName().toUpperCase());
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug(
-                    "Interrupted while getting " + getMethodName() + " import album menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -166,10 +161,7 @@ public class MethodMenu {
                         "IMPORT PlAYLIST" + getMethodName().toUpperCase());
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug(
-                    "Interrupted while getting " + getMethodName() + " import playlist menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -209,9 +201,7 @@ public class MethodMenu {
                         "EXPORT " + getMethodName().toUpperCase());
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + getMethodName() + " export menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -228,9 +218,7 @@ public class MethodMenu {
             } else {
                 method.exportPlaylist(options.get(choice));
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting export playlist choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -247,9 +235,7 @@ public class MethodMenu {
             } else {
                 method.exportAlbum(options.get(choice));
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting export album choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -272,9 +258,7 @@ public class MethodMenu {
                         "SYNC " + getMethodName());
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -291,9 +275,7 @@ public class MethodMenu {
             } else {
                 method.syncPlaylist(options.get(choice));
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting sync playlist choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 }

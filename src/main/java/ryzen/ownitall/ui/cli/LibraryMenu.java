@@ -9,7 +9,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -40,9 +40,7 @@ public class LibraryMenu {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 options.get(choice).run();
             }
-        } catch (ClosedMenu e) {
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting LibraryMenu choice");
+        } catch (MenuClosed e) {
         }
     }
 
@@ -74,7 +72,7 @@ public class LibraryMenu {
             }
             Settings.libraryType = options.get(choice).getSimpleName();
             logger.info("Successfully changed library type to '" + choice + "'");
-        } catch (InterruptedException | MissingSettingException | ClosedMenu e) {
+        } catch (InterruptedException | MissingSettingException | MenuClosed e) {
             logger.debug("Interrupted while getting library change option");
         }
     }

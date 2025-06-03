@@ -8,7 +8,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -36,9 +36,7 @@ public class SettingsMenu {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting tools menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -73,7 +71,7 @@ public class SettingsMenu {
                     logger.warn("Unable to find setting '" + choice + "'");
                 }
             }
-        } catch (InterruptedException | ClosedMenu e) {
+        } catch (InterruptedException | MenuClosed e) {
             logger.debug("Interrupted while getting change setting choice");
         }
     }
@@ -96,7 +94,7 @@ public class SettingsMenu {
                 String choice = Menu.optionMenu(new LinkedHashSet<String>(Arrays.asList(options)),
                         "'" + settingName.toUpperCase() + "' OPTIONS");
                 input = choice;
-            } catch (InterruptedException | ClosedMenu e) {
+            } catch (MenuClosed e) {
                 logger.info("Interruption caught changing setting");
                 return;
             }

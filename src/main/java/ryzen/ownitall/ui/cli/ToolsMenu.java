@@ -8,7 +8,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 
 /**
  * <p>
@@ -36,9 +36,7 @@ public class ToolsMenu {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
                 options.get(choice).run();
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting tools menu choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 
@@ -56,9 +54,7 @@ public class ToolsMenu {
         try {
             String choice = Menu.optionMenu(options.keySet(), "UNARCHIVING");
             storage.unArchive(options.get(choice));
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting unarchive folder choice");
-        } catch (ClosedMenu e) {
+        } catch (MenuClosed e) {
         }
     }
 

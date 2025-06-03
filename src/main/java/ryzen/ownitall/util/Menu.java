@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 
-import ryzen.ownitall.util.exceptions.ClosedMenu;
+import ryzen.ownitall.util.exceptions.MenuClosed;
 
 /**
  * <p>
@@ -71,7 +71,7 @@ public class Menu {
      * @return - string choice
      * @throws java.lang.InterruptedException - when user interrupts
      */
-    public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException, ClosedMenu {
+    public static String optionMenu(Set<String> setOptions, String menuName) throws MenuClosed {
         if (setOptions == null) {
             logger.debug("null optionset provided in optionMenu");
             return null;
@@ -89,15 +89,20 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            choice = Input.request().getInt();
-            if (choice < 0 || choice > options.size()) {
-                System.err.println("Incorrect option, try again");
-                System.out.print("Enter your choice: ");
-            } else {
-                if (choice == 0) {
-                    throw new ClosedMenu();
+            try {
+                choice = Input.request().getInt();
+                if (choice < 0 || choice > options.size()) {
+                    System.err.println("Incorrect option, try again");
+                    System.out.print("Enter your choice: ");
+                } else {
+                    if (choice == 0) {
+                        throw new MenuClosed();
+                    }
+                    return options.get(choice);
                 }
-                return options.get(choice);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting menu '" + menuName + "' option");
+                throw new MenuClosed(e);
             }
         }
     }
@@ -111,7 +116,7 @@ public class Menu {
      * @throws java.lang.InterruptedException - when user interrupts
      */
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName)
-            throws InterruptedException, ClosedMenu {
+            throws MenuClosed {
         if (setOptions == null) {
             logger.debug("null optionset provided in optionMenuWithValue");
             return null;
@@ -133,15 +138,20 @@ public class Menu {
             }
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
-            choice = Input.request().getInt();
-            if (choice < 0 || choice > options.size()) {
-                System.err.println("Incorrect option, try again");
-                System.out.print("Enter your choice: ");
-            } else {
-                if (choice == 0) {
-                    throw new ClosedMenu();
+            try {
+                choice = Input.request().getInt();
+                if (choice < 0 || choice > options.size()) {
+                    System.err.println("Incorrect option, try again");
+                    System.out.print("Enter your choice: ");
+                } else {
+                    if (choice == 0) {
+                        throw new MenuClosed();
+                    }
+                    return options.get(choice);
                 }
-                return options.get(choice);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while getting menu '" + menuName + "' option");
+                throw new MenuClosed(e);
             }
         }
     }
