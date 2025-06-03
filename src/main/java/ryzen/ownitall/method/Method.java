@@ -28,6 +28,7 @@ public class Method {
     private static final Logger logger = new Logger(Method.class);
     /** Constant <code>methods</code> */
     private static final LinkedHashSet<Class<?>> methods;
+    // TODO: make it detect these
     static {
         methods = new LinkedHashSet<>();
         methods.add(Jellyfin.class);
@@ -72,7 +73,9 @@ public class Method {
     }
 
     /**
-     * <p>Getter for the field <code>methods</code>.</p>
+     * <p>
+     * Getter for the field <code>methods</code>.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
@@ -81,7 +84,9 @@ public class Method {
     }
 
     /**
-     * <p>Getter for the field <code>methods</code>.</p>
+     * <p>
+     * Getter for the field <code>methods</code>.
+     * </p>
      *
      * @param filter a type object
      * @param <type> a type class
@@ -100,7 +105,9 @@ public class Method {
     }
 
     /**
-     * <p>Getter for the field <code>method</code>.</p>
+     * <p>
+     * Getter for the field <code>method</code>.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Class} object
@@ -168,7 +175,9 @@ public class Method {
     }
 
     /**
-     * <p>importCollection.</p>
+     * <p>
+     * importCollection.
+     * </p>
      */
     public void importCollection() {
         logger.info("Importing '" + this + "' collection...");
@@ -199,7 +208,9 @@ public class Method {
     }
 
     /**
-     * <p>importLikedSongs.</p>
+     * <p>
+     * importLikedSongs.
+     * </p>
      */
     public void importLikedSongs() {
         try {
@@ -216,7 +227,9 @@ public class Method {
     }
 
     /**
-     * <p>importAlbums.</p>
+     * <p>
+     * importAlbums.
+     * </p>
      */
     public void importAlbums() {
         try {
@@ -232,10 +245,12 @@ public class Method {
     }
 
     /**
-     * <p>importAlbum.</p>
+     * <p>
+     * importAlbum.
+     * </p>
      *
-     * @param albumId a {@link java.lang.String} object
-     * @param albumName a {@link java.lang.String} object
+     * @param albumId         a {@link java.lang.String} object
+     * @param albumName       a {@link java.lang.String} object
      * @param albumArtistName a {@link java.lang.String} object
      */
     public void importAlbum(String albumId, String albumName, String albumArtistName) {
@@ -252,7 +267,9 @@ public class Method {
     }
 
     /**
-     * <p>importPlaylists.</p>
+     * <p>
+     * importPlaylists.
+     * </p>
      */
     public void importPlaylists() {
         try {
@@ -268,9 +285,11 @@ public class Method {
     }
 
     /**
-     * <p>importPlaylist.</p>
+     * <p>
+     * importPlaylist.
+     * </p>
      *
-     * @param playlistId a {@link java.lang.String} object
+     * @param playlistId   a {@link java.lang.String} object
      * @param playlistName a {@link java.lang.String} object
      */
     public void importPlaylist(String playlistId, String playlistName) {
@@ -288,7 +307,9 @@ public class Method {
     }
 
     /**
-     * <p>exportCollection.</p>
+     * <p>
+     * exportCollection.
+     * </p>
      */
     public void exportCollection() {
         logger.info("Exporting '" + this + "' (" + Collection.getTotalTrackCount() + ") collection...");
@@ -309,7 +330,9 @@ public class Method {
     }
 
     /**
-     * <p>exportLikedSongs.</p>
+     * <p>
+     * exportLikedSongs.
+     * </p>
      */
     public void exportLikedSongs() {
         try {
@@ -322,7 +345,9 @@ public class Method {
     }
 
     /**
-     * <p>exportPlaylists.</p>
+     * <p>
+     * exportPlaylists.
+     * </p>
      */
     public void exportPlaylists() {
         logger.info("Exporting " + Collection.getPlaylistCount() + " playlists to '" + this + "'");
@@ -335,7 +360,9 @@ public class Method {
     }
 
     /**
-     * <p>exportPlaylist.</p>
+     * <p>
+     * exportPlaylist.
+     * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
      */
@@ -350,7 +377,9 @@ public class Method {
     }
 
     /**
-     * <p>exportAlbums.</p>
+     * <p>
+     * exportAlbums.
+     * </p>
      */
     public void exportAlbums() {
         logger.info("Exporting " + Collection.getAlbumCount() + " albums to '" + this + "'...");
@@ -363,7 +392,9 @@ public class Method {
     }
 
     /**
-     * <p>exportAlbum.</p>
+     * <p>
+     * exportAlbum.
+     * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
      */
@@ -378,7 +409,9 @@ public class Method {
     }
 
     /**
-     * <p>syncCollection.</p>
+     * <p>
+     * syncCollection.
+     * </p>
      */
     public void syncCollection() {
         logger.info("Syncronizing '" + this + "' collection...");
@@ -404,7 +437,9 @@ public class Method {
     }
 
     /**
-     * <p>syncLikedSongs.</p>
+     * <p>
+     * syncLikedSongs.
+     * </p>
      */
     public void syncLikedSongs() {
         try {
@@ -422,7 +457,9 @@ public class Method {
     }
 
     /**
-     * <p>syncAlbums.</p>
+     * <p>
+     * syncAlbums.
+     * </p>
      */
     public void syncAlbums() {
         try {
@@ -441,7 +478,9 @@ public class Method {
     }
 
     /**
-     * <p>syncPlaylists.</p>
+     * <p>
+     * syncPlaylists.
+     * </p>
      */
     public void syncPlaylists() {
         try {
@@ -459,7 +498,9 @@ public class Method {
     }
 
     /**
-     * <p>syncPlaylist.</p>
+     * <p>
+     * syncPlaylist.
+     * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
      */

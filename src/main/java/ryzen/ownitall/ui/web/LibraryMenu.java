@@ -46,7 +46,9 @@ public class LibraryMenu {
     }
 
     /**
-     * <p>optionChange.</p>
+     * <p>
+     * optionChange.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -101,8 +103,8 @@ public class LibraryMenu {
      * loginForm.
      * </p>
      *
-     * @param model            a {@link org.springframework.ui.Model} object
-     * @param callback         a {@link java.lang.String} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      * @param library a {@link java.lang.String} object
      */
@@ -134,7 +136,7 @@ public class LibraryMenu {
      */
     @GetMapping("/library/cache/clear")
     public String optionClearCache(Model model) {
-        Library.load().clear();
+        Library.clear();
         logger.info(model, "Successfully cleared library cache");
         return libraryMenu(model);
     }
@@ -149,7 +151,8 @@ public class LibraryMenu {
      */
     @GetMapping("/library/cache")
     public String optionCache(Model model) {
-        int size = Library.load().getCacheSize();
+        int size = Library.getAlbumCacheSize() + Library.getArtistCacheSize() + Library.getIdCacheSize()
+                + Library.getSongCacheSize();
         logger.info(model, "There currently are '" + size + "' cache entries");
         return libraryMenu(model);
     }

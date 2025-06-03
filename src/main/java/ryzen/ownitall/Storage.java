@@ -32,7 +32,9 @@ public class Storage {
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     /**
-     * <p>Constructor for Storage.</p>
+     * <p>
+     * Constructor for Storage.
+     * </p>
      */
     public Storage() {
         if (!Settings.dataFolder.exists()) { // create folder if it does not exist

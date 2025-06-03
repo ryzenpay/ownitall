@@ -39,10 +39,10 @@ abstract public class Library implements LibraryInterface {
     /**
      * arrays to cache api queries
      */
-    protected LinkedHashMap<String, Artist> artists;
-    protected LinkedHashMap<String, Album> albums;
-    protected LinkedHashMap<String, Song> songs;
-    protected LinkedHashMap<String, String> ids;
+    protected static LinkedHashMap<String, Artist> artists;
+    protected static LinkedHashMap<String, Album> albums;
+    protected static LinkedHashMap<String, Song> songs;
+    protected static LinkedHashMap<String, String> ids;
 
     // TODO: make it detect these
     static {
@@ -56,11 +56,19 @@ abstract public class Library implements LibraryInterface {
      * initializes all values and loads from cache
      */
     protected Library() {
-        this.artists = new LinkedHashMap<>();
-        this.albums = new LinkedHashMap<>();
-        this.songs = new LinkedHashMap<>();
-        this.ids = new LinkedHashMap<>();
-        this.cache();
+        if (artists == null) {
+            artists = new LinkedHashMap<>();
+        }
+        if (albums == null) {
+            albums = new LinkedHashMap<>();
+        }
+        if (songs == null) {
+            songs = new LinkedHashMap<>();
+        }
+        if (ids == null) {
+            ids = new LinkedHashMap<>();
+        }
+        cache();
     }
 
     /**
@@ -185,22 +193,22 @@ abstract public class Library implements LibraryInterface {
     /**
      * dump all data into cache
      */
-    public void cache() {
+    public static void cache() {
         Storage storage = new Storage();
-        this.artists = storage.cacheArtists(this.artists);
-        this.albums = storage.cacheAlbums(this.albums);
-        this.songs = storage.cacheSongs(this.songs);
-        this.ids = storage.cacheIds(this.ids);
+        artists = storage.cacheArtists(artists);
+        albums = storage.cacheAlbums(albums);
+        songs = storage.cacheSongs(songs);
+        ids = storage.cacheIds(ids);
     }
 
     /**
      * clear in memory cache
      */
-    public void clear() {
-        this.artists.clear();
-        this.albums.clear();
-        this.songs.clear();
-        this.ids.clear();
+    public static void clear() {
+        artists.clear();
+        albums.clear();
+        songs.clear();
+        ids.clear();
         new Storage().clearCacheFiles();
     }
 
@@ -290,29 +298,13 @@ abstract public class Library implements LibraryInterface {
 
     /**
      * <p>
-     * getCacheSize.
-     * </p>
-     *
-     * @return a int
-     */
-    public int getCacheSize() {
-        int size = 0;
-        size += this.getArtistCacheSize();
-        size += this.getAlbumCacheSize();
-        size += this.getSongCacheSize();
-        size += this.getIdCacheSize();
-        return size;
-    }
-
-    /**
-     * <p>
      * getArtistCacheSize.
      * </p>
      *
      * @return a int
      */
-    public int getArtistCacheSize() {
-        return this.artists.size();
+    public static int getArtistCacheSize() {
+        return artists.size();
     }
 
     /**
@@ -322,8 +314,8 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public int getAlbumCacheSize() {
-        return this.albums.size();
+    public static int getAlbumCacheSize() {
+        return albums.size();
     }
 
     /**
@@ -333,8 +325,8 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public int getSongCacheSize() {
-        return this.songs.size();
+    public static int getSongCacheSize() {
+        return songs.size();
     }
 
     /**
@@ -344,8 +336,8 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public int getIdCacheSize() {
-        return this.ids.size();
+    public static int getIdCacheSize() {
+        return ids.size();
     }
 
     /**

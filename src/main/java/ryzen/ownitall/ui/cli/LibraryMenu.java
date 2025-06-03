@@ -97,7 +97,7 @@ public class LibraryMenu {
             System.out.print("Are you sure you wan to clear cache (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing cache...");
-                Library.load().clear();
+                Library.clear();
                 logger.info("Done clearing cache");
             }
         } catch (InterruptedException e) {
@@ -106,7 +106,10 @@ public class LibraryMenu {
     }
 
     private void optionCacheSize() {
-        int size = Library.load().getCacheSize();
-        logger.info("The library cache has '" + size + "' entries");
+        System.out.println("The Library cache has: ");
+        System.out.println(Library.getAlbumCacheSize() + " albums");
+        System.out.println(Library.getArtistCacheSize() + " artists");
+        System.out.println(Library.getIdCacheSize() + " ids");
+        System.out.println(Library.getSongCacheSize() + " songs");
     }
 }

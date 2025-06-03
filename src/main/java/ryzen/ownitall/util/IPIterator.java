@@ -11,6 +11,7 @@ import java.util.stream.Stream;
  * @author ryzen
  */
 // TODO: implement while loops
+// define the iterator, append to the array in the iterator
 // TODO: task lists?
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
@@ -33,12 +34,14 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     /**
-     * <p>wrap.</p>
+     * <p>
+     * wrap.
+     * </p>
      *
      * @param iterated a {@link java.util.Iterator} object
-     * @param title a {@link java.lang.String} object
-     * @param maxStep a int
-     * @param <T> a T class
+     * @param title    a {@link java.lang.String} object
+     * @param maxStep  a int
+     * @param <T>      a T class
      * @return a {@link ryzen.ownitall.util.IPIterator} object
      * @throws java.lang.InterruptedException if any.
      */
@@ -51,12 +54,14 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     /**
-     * <p>wrap.</p>
+     * <p>
+     * wrap.
+     * </p>
      *
      * @param iterated a {@link java.util.ArrayList} object
-     * @param title a {@link java.lang.String} object
-     * @param maxStep a int
-     * @param <T> a T class
+     * @param title    a {@link java.lang.String} object
+     * @param maxStep  a int
+     * @param <T>      a T class
      * @return a {@link ryzen.ownitall.util.IPIterator} object
      * @throws java.lang.InterruptedException if any.
      */
@@ -69,12 +74,14 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     /**
-     * <p>wrap.</p>
+     * <p>
+     * wrap.
+     * </p>
      *
      * @param iterated a {@link java.util.stream.Stream} object
-     * @param title a {@link java.lang.String} object
-     * @param maxStep a int
-     * @param <T> a T class
+     * @param title    a {@link java.lang.String} object
+     * @param maxStep  a int
+     * @param <T>      a T class
      * @return a {@link ryzen.ownitall.util.IPIterator} object
      * @throws java.lang.InterruptedException if any.
      */

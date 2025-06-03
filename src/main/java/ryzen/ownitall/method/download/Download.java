@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -44,6 +45,9 @@ public class Download implements Sync, Export {
     // tidal
     private static final Logger logger = new Logger(Download.class);
     private ExecutorService executor;
+    // TODO: remove this
+    // currently needed to prevent infinite looping of constructors
+    private static boolean initiated = false;
     private DownloadInterface downloadClass;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo"));
@@ -51,57 +55,66 @@ public class Download implements Sync, Export {
         // so when user changes it doesnt delete their old
         whiteList.addAll(Arrays.asList(Settings.load().getOptions("downloadFormat")));
     }
+    private static final LinkedHashSet<Class<?>> methods;
+    // TODO: make it detect these
+    static {
+        methods = new LinkedHashSet<>();
+        methods.add(YT_dl.class);
+        methods.add(SoulSeek.class);
+    }
     /** Constant <code>downloadThreads=Settings.downloadThreads</code> */
     protected static int downloadThreads = Settings.downloadThreads;
 
-    // https://stackoverflow.com/questions/262367/type-safety-unchecked-cast
-    @SuppressWarnings("unchecked")
     /**
-     * <p>Constructor for Download.</p>
+     * <p>
+     * Constructor for Download.
+     * </p>
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Download() throws MissingSettingException, AuthenticationException {
+        if (initiated) {
+            initiated = false;
+            return;
+        }
+        if (Settings.downloadMethod.isEmpty()) {
+            throw new MissingSettingException("Missing downloadMethod");
+        }
         try {
-            Class<?> downloadClass = Class.forName(Settings.downloadMethod);
-            if (Settings.load().isGroupEmpty(downloadClass)) {
-                logger.debug("Empty " + downloadClass.getSimpleName() + " credentials");
-                throw new MissingSettingException(downloadClass);
+            Class<?> downloadClass = getMethod(Settings.downloadMethod);
+            try {
+                logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
+                initiated = true;
+                this.downloadClass = (DownloadInterface) downloadClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof MissingSettingException) {
+                    throw new MissingSettingException(e);
+                }
+                if (cause instanceof AuthenticationException) {
+                    throw new AuthenticationException(e);
+                }
+                logger.error("Exception while setting up download class '" + downloadClass.getSimpleName() + "'", e);
+                throw new NoSuchMethodException(downloadClass.getName());
             }
-            if (DownloadInterface.class.isAssignableFrom(downloadClass)) {
-                this.downloadClass = initDownload((Class<DownloadInterface>) downloadClass);
-            } else {
-                throw new AuthenticationException(
-                        "Invalid download class '" + downloadClass.getSimpleName() + "' set in settings");
-            }
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             logger.error("Invalid or missing download class set in settings", e);
             throw new AuthenticationException(e);
         }
     }
 
-    private static DownloadInterface initDownload(Class<DownloadInterface> downloadClass)
-            throws MissingSettingException, AuthenticationException,
-            NoSuchMethodException {
-        if (downloadClass == null) {
-            logger.debug("null download class provided in initMethod");
+    public static Class<?> getMethod(String name) {
+        if (name == null) {
+            logger.debug("null name provided in getMethod");
             return null;
         }
-        try {
-            logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
-            return downloadClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof MissingSettingException) {
-                throw new MissingSettingException(e);
+        for (Class<?> method : methods) {
+            if (method.getSimpleName().equals(name)) {
+                return method;
             }
-            if (cause instanceof AuthenticationException) {
-                throw new AuthenticationException(e);
-            }
-            logger.error("Exception while setting up download class '" + downloadClass.getSimpleName() + "'", e);
-            throw new NoSuchMethodException(downloadClass.getName());
         }
+        return null;
     }
 
     /**
@@ -121,7 +134,7 @@ public class Download implements Sync, Export {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler(false)) {
             while (true) {
                 try {
                     interruptionHandler.checkInterruption();

@@ -68,7 +68,7 @@ public class MusicBrainz extends Library {
             }
         }
         params.put("primarytype", "Album");
-        String foundId = this.ids.get(params.toString());
+        String foundId = ids.get(params.toString());
         if (foundId != null) {
             return foundId;
         }
@@ -77,7 +77,7 @@ public class MusicBrainz extends Library {
             JsonNode albumNode = response.path("releases").get(0);
             if (albumNode != null) {
                 String id = albumNode.path("id").asText();
-                this.ids.put(params.toString(), id);
+                ids.put(params.toString(), id);
                 return id;
             } else {
                 logger.debug("missing data in album search result " + response.toString());
@@ -107,7 +107,7 @@ public class MusicBrainz extends Library {
             logger.debug("null or empty id provided in getAlbum");
             return null;
         }
-        Album foundAlbum = this.albums.get(id);
+        Album foundAlbum = albums.get(id);
         if (foundAlbum != null) {
             return foundAlbum;
         }
@@ -160,7 +160,7 @@ public class MusicBrainz extends Library {
             } else {
                 logger.debug("Album missing songs: " + response.toString());
             }
-            this.albums.put(id, album);
+            albums.put(id, album);
             return album;
         }
         logger.info("Unable to find Album: '" + id + "' in library");
@@ -201,7 +201,7 @@ public class MusicBrainz extends Library {
         }
         params.put("type", "Single");
         params.put("video", "false");
-        String foundId = this.ids.get(params.toString());
+        String foundId = ids.get(params.toString());
         if (foundId != null) {
             return foundId;
         }
@@ -210,7 +210,7 @@ public class MusicBrainz extends Library {
             JsonNode trackNode = response.path("recordings").get(0);
             if (trackNode != null) {
                 String id = trackNode.path("id").asText();
-                this.ids.put(params.toString(), id);
+                ids.put(params.toString(), id);
                 return id;
             } else {
                 logger.warn("Missing data while getting Song: " + response.toString());
@@ -240,7 +240,7 @@ public class MusicBrainz extends Library {
             logger.debug("null or empty id provided in getSong");
             return null;
         }
-        Song foundSong = this.songs.get(id);
+        Song foundSong = songs.get(id);
         if (foundSong != null) {
             return foundSong;
         }
@@ -269,7 +269,7 @@ public class MusicBrainz extends Library {
                     song.setCoverImage(songCover);
                 }
             }
-            this.songs.put(id, song);
+            songs.put(id, song);
             return song;
         }
         logger.info("Could not find Song '" + id + "' in library");
@@ -305,7 +305,7 @@ public class MusicBrainz extends Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
-        String foundId = this.ids.get(params.toString());
+        String foundId = ids.get(params.toString());
         if (foundId != null) {
             return foundId;
         }
@@ -314,7 +314,7 @@ public class MusicBrainz extends Library {
             JsonNode artistNode = response.path("artists").get(0);
             if (artistNode != null) {
                 String id = artistNode.path("id").asText();
-                this.ids.put(params.toString(), id);
+                ids.put(params.toString(), id);
                 return id;
             }
         }
@@ -336,7 +336,7 @@ public class MusicBrainz extends Library {
             logger.debug("null or empty id provided in getArtist");
             return null;
         }
-        Artist foundArtist = this.artists.get(id);
+        Artist foundArtist = artists.get(id);
         if (foundArtist != null) {
             return foundArtist;
         }
@@ -346,7 +346,7 @@ public class MusicBrainz extends Library {
         if (response != null) {
             Artist artist = new Artist(response.path("name").asText());
             artist.addId("mbid", response.path("id").asText());
-            this.artists.put(id, artist);
+            artists.put(id, artist);
             return artist;
         }
         logger.info("Could not find Artist '" + id + "' in library");

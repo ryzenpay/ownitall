@@ -69,8 +69,8 @@ public class LastFM extends Library {
             return null;
         }
         params.put("autocorrect", "1");
-        if (this.albums.containsKey(params.toString())) {
-            return this.albums.get(params.toString());
+        if (albums.containsKey(params.toString())) {
+            return albums.get(params.toString());
         }
         JsonNode response = this.query("album.getInfo", this.queryBuilder(params));
         if (response != null) {
@@ -127,7 +127,7 @@ public class LastFM extends Library {
                     logger.debug(album.toString() + ": album missing tracks: " + albumNode.toString());
                 }
                 if (!album.isEmpty()) {
-                    this.albums.put(params.toString(), album);
+                    albums.put(params.toString(), album);
                     return album;
                 }
             } else {
@@ -163,8 +163,8 @@ public class LastFM extends Library {
             }
         }
         params.put("autocorrect", "1");
-        if (this.songs.containsKey(params.toString())) {
-            return this.songs.get(params.toString());
+        if (songs.containsKey(params.toString())) {
+            return songs.get(params.toString());
         }
         JsonNode response = this.query("track.getInfo", this.queryBuilder(params));
         if (response != null) {
@@ -208,7 +208,7 @@ public class LastFM extends Library {
                     // logger.debug(song.toString() + ": track missing album: " +
                     // trackNode.toString());
                 }
-                this.songs.put(params.toString(), song);
+                songs.put(params.toString(), song);
                 return song;
             } else {
                 logger.debug(song.toString() + ": track.getInfo missing track: " + response.toString());
@@ -236,8 +236,8 @@ public class LastFM extends Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
-        if (this.artists.containsKey(params.toString())) {
-            return this.artists.get(params.toString());
+        if (artists.containsKey(params.toString())) {
+            return artists.get(params.toString());
         }
         JsonNode response = this.query("artist.getInfo", this.queryBuilder(params));
         if (response != null) {
@@ -263,7 +263,7 @@ public class LastFM extends Library {
                 } else {
                     logger.debug(artist.toString() + ": artist missing images: " + artistNode.toString());
                 }
-                this.artists.put(params.toString(), artist);
+                artists.put(params.toString(), artist);
                 return artist;
             } else {
                 logger.debug(artist.toString() + ": artist.getInfo missing artist");
