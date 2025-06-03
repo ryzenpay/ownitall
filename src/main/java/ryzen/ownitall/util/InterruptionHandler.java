@@ -29,6 +29,11 @@ public class InterruptionHandler implements AutoCloseable {
         });
     }
 
+    /**
+     * <p>Constructor for InterruptionHandler.</p>
+     *
+     * @param resetInterruption a boolean
+     */
     public InterruptionHandler(boolean resetInterruption) {
         if (resetInterruption) {
             resetInterruption();
@@ -53,6 +58,11 @@ public class InterruptionHandler implements AutoCloseable {
         }
     }
 
+    /**
+     * <p>isInterrupted.</p>
+     *
+     * @return a boolean
+     */
     public static boolean isInterrupted() {
         return isInterrupted.get();
     }

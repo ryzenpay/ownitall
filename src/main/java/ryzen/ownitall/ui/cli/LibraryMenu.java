@@ -26,8 +26,6 @@ public class LibraryMenu {
      * <p>
      * Constructor for LibraryMenu.
      * </p>
-     *
-     * @throws java.lang.InterruptedException if any.
      */
     public LibraryMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

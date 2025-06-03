@@ -664,11 +664,13 @@ public class Spotify implements Import, Export, Sync {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadAlbum(Album album) {
         logger.debug("Unsupported method uploadAlbum called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncAlbum(Album album) {
         logger.debug("Unsupported method syncAlbum called");

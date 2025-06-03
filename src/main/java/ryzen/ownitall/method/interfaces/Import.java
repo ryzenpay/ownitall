@@ -6,6 +6,11 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 
+/**
+ * <p>Import interface.</p>
+ *
+ * @author ryzen
+ */
 public interface Import {
     /**
      * <p>

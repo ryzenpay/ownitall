@@ -39,10 +39,9 @@ public class MethodMenu {
      * Constructor for MethodMenu.
      * </p>
      *
-     * @param annotation a {@link java.lang.Class} object
      * @throws java.lang.InterruptedException                         if any.
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @param filter a {@link java.lang.Class} object
      */
     public MethodMenu(Class<?> filter)
             throws InterruptedException, MissingSettingException {
@@ -98,8 +97,6 @@ public class MethodMenu {
      * <p>
      * importMenu.
      * </p>
-     *
-     * @throws java.lang.InterruptedException if any.
      */
     public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -186,8 +183,6 @@ public class MethodMenu {
      * <p>
      * exportMenu.
      * </p>
-     *
-     * @throws java.lang.InterruptedException if any.
      */
     public void exportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
@@ -243,8 +238,6 @@ public class MethodMenu {
      * <p>
      * syncMenu.
      * </p>
-     *
-     * @throws java.lang.InterruptedException if any.
      */
     public void syncMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();

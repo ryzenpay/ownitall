@@ -67,6 +67,8 @@ public class SettingsMenu {
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
+     * @param choices a {@link java.util.LinkedHashSet} object
+     * @param callback a {@link java.lang.String} object
      */
     @GetMapping("/settings/change")
     public static String changeSettingForm(Model model,
@@ -106,9 +108,8 @@ public class SettingsMenu {
      * </p>
      *
      * @param model    a {@link org.springframework.ui.Model} object
-     * @param callback a {@link java.lang.String} object
-     * @param params   a {@link java.util.LinkedHashMap} object
      * @return a {@link java.lang.String} object
+     * @param variables a {@link java.util.LinkedHashMap} object
      */
     @PostMapping("/settings/change")
     @ResponseBody

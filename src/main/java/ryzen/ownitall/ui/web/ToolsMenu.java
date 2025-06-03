@@ -62,6 +62,12 @@ public class ToolsMenu {
         return toolsMenu(model);
     }
 
+    /**
+     * <p>unarchiveMenu.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/tools/unarchive")
     public String unarchiveMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -85,8 +91,8 @@ public class ToolsMenu {
      * </p>
      *
      * @param model      a {@link org.springframework.ui.Model} object
-     * @param folderPath a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
+     * @param path a {@link java.lang.String} object
      */
     @GetMapping("/tools/unarchive/{path}")
     public String unarchive(Model model,

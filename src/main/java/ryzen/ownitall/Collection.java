@@ -126,6 +126,12 @@ public class Collection {
         return likedSongs;
     }
 
+    /**
+     * <p>getLikedSong.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     */
     public static Song getLikedSong(String name) {
         if (name == null) {
             logger.debug("null name provided in getLikedSong");
@@ -271,6 +277,12 @@ public class Collection {
         return null;
     }
 
+    /**
+     * <p>getAlbum.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Album} object
+     */
     public static Album getAlbum(String name) {
         if (name == null) {
             logger.debug("null name provided in getAlbum");
@@ -434,6 +446,12 @@ public class Collection {
         return null;
     }
 
+    /**
+     * <p>getPlaylist.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link ryzen.ownitall.classes.Playlist} object
+     */
     public static Playlist getPlaylist(String name) {
         if (name == null) {
             logger.debug("null name provided in getPlaylist");

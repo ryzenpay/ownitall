@@ -60,7 +60,6 @@ public class MethodMenu {
      * </p>
      *
      * @param model           a {@link org.springframework.ui.Model} object
-     * @param methodClassName a {@link java.lang.String} object
      * @param callback        a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
@@ -86,6 +85,14 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>Setter for the field <code>method</code>.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param method a {@link java.lang.String} object
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/method/{method}")
     public String setMethod(Model model, @PathVariable(value = "method") String method,
             @RequestParam(value = "callback", required = true) String callback) {
@@ -118,9 +125,9 @@ public class MethodMenu {
      * </p>
      *
      * @param model           a {@link org.springframework.ui.Model} object
-     * @param methodClassName a {@link java.lang.String} object
      * @param callback        a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
+     * @param method a {@link java.lang.String} object
      */
     @GetMapping("/method/login/{method}")
     public String loginForm(Model model,
@@ -189,6 +196,8 @@ public class MethodMenu {
      * <p>
      * importCollection.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/import/collection")
     public ResponseEntity<Void> importCollection() {
@@ -221,6 +230,8 @@ public class MethodMenu {
      * <p>
      * importLikedSongs.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/import/likedsongs")
     public ResponseEntity<Void> importLikedSongs() {
@@ -255,6 +266,8 @@ public class MethodMenu {
      * <p>
      * importAlbums.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/import/albums")
     public ResponseEntity<Void> importAlbums() {
@@ -267,6 +280,12 @@ public class MethodMenu {
 
     // TODO: use a form to get id, name and album artist name
     // also update for playlist
+    /**
+     * <p>importAlbum.</p>
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/import/album/{id}")
     public ResponseEntity<Void> importAlbum(@PathVariable(value = "id") String id) {
         if (this.method == null) {
@@ -295,6 +314,11 @@ public class MethodMenu {
                 "/method/import/playlists", "/method/import");
     }
 
+    /**
+     * <p>importPlaylists.</p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/import/playlists")
     public ResponseEntity<Void> importPlaylists() {
         if (this.method == null) {
@@ -308,6 +332,9 @@ public class MethodMenu {
      * <p>
      * importPlaylists.
      * </p>
+     *
+     * @param id a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/import/playlist/{id}")
     public ResponseEntity<Void> importPlaylist(@PathVariable(value = "id") String id) {
@@ -365,6 +392,8 @@ public class MethodMenu {
      * <p>
      * exportCollection.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/export/collection")
     public ResponseEntity<Void> exportCollection() {
@@ -397,6 +426,8 @@ public class MethodMenu {
      * <p>
      * exportLikedSongs.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/export/likedsongs")
     public ResponseEntity<Void> exportLikedSongs() {
@@ -435,6 +466,11 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>exportAlbums.</p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/export/albums")
     public ResponseEntity<Void> exportAlbums() {
         if (this.method == null) {
@@ -448,6 +484,9 @@ public class MethodMenu {
      * <p>
      * exportAlbums.
      * </p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/export/album/{name}")
     public ResponseEntity<Void> exportAlbum(
@@ -493,6 +532,11 @@ public class MethodMenu {
         return "menu";
     }
 
+    /**
+     * <p>exportPlaylists.</p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/method/export/playlists")
     public ResponseEntity<Void> exportPlaylists() {
         if (this.method == null) {
@@ -506,6 +550,9 @@ public class MethodMenu {
      * <p>
      * exportPlaylists.
      * </p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/export/playlist/{name}")
     public ResponseEntity<Void> exportPlaylist(
@@ -570,6 +617,8 @@ public class MethodMenu {
      * <p>
      * syncCollection.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/sync/collection")
     public ResponseEntity<Void> syncCollection() {
@@ -602,6 +651,8 @@ public class MethodMenu {
      * <p>
      * syncLikedSongs.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/sync/likedsongs")
     public ResponseEntity<Void> syncLikedSongs() {
@@ -634,6 +685,8 @@ public class MethodMenu {
      * <p>
      * syncAlbums.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/sync/albums")
     public ResponseEntity<Void> syncAlbums() {
@@ -666,6 +719,8 @@ public class MethodMenu {
      * <p>
      * syncPlaylists.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     // TODO: sync individual playlists
     @PostMapping("/method/sync/playlists")
@@ -765,6 +820,8 @@ public class MethodMenu {
      * <p>
      * cancel.
      * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @PostMapping("/method/cancel")
     public ResponseEntity<Void> cancel() {

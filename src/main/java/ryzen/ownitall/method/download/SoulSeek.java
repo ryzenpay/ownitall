@@ -33,6 +33,7 @@ public class SoulSeek extends Download implements DownloadInterface {
      * </p>
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public SoulSeek() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(SoulSeek.class)) {

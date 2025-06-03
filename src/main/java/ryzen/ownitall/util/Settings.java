@@ -174,9 +174,9 @@ public class Settings {
      * set.
      * </p>
      *
-     * @return - true if modified, false if not
      * @param name  a {@link java.lang.String} object
      * @param value a {@link java.lang.Object} object
+     * @throws java.lang.NoSuchFieldException if any.
      */
     public void set(String name, Object value) throws NoSuchFieldException {
         if (name == null) {
@@ -198,6 +198,12 @@ public class Settings {
         }
     }
 
+    /**
+     * <p>exists.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a boolean
+     */
     public boolean exists(String name) {
         if (name == null) {
             logger.debug("null name provided in exists");
@@ -306,6 +312,12 @@ public class Settings {
         return null;
     }
 
+    /**
+     * <p>getName.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     public String getName(String name) {
         if (name == null) {
             logger.debug("null name provided in getName");
@@ -325,6 +337,12 @@ public class Settings {
         return null;
     }
 
+    /**
+     * <p>getDescription.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     public String getDescription(String name) {
         if (name == null) {
             logger.debug("null name provided in getDescription");
@@ -399,6 +417,12 @@ public class Settings {
         return null;
     }
 
+    /**
+     * <p>isSecret.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a boolean
+     */
     public boolean isSecret(String name) {
         if (name == null) {
             logger.debug("null name provided in isSecret");
@@ -417,6 +441,12 @@ public class Settings {
         return false;
     }
 
+    /**
+     * <p>getHashedValue.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     public String getHashedValue(String name) {
         if (name == null) {
             logger.debug("null name provided in getHashedValue");

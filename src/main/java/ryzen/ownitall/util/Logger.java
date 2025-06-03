@@ -35,6 +35,11 @@ public class Logger {
         logger = LogManager.getLogger(clazz);
     }
 
+    /**
+     * <p>setLogLevel.</p>
+     *
+     * @param level a {@link java.lang.String} object
+     */
     public static void setLogLevel(String level) {
         if (level == null) {
             System.err.println("null level provided in setLogLevel");
@@ -58,6 +63,12 @@ public class Logger {
         }
     }
 
+    /**
+     * <p>is.</p>
+     *
+     * @param level a {@link org.apache.logging.log4j.Level} object
+     * @return a boolean
+     */
     public static boolean is(Level level) {
         if (globalLevel == null) {
             System.err.println("Log level not set");
@@ -112,8 +123,8 @@ public class Logger {
     /**
      * info log in console but no file
      * also excluded from log history
-     * 
-     * @param message
+     *
+     * @param message a {@link java.lang.String} object
      */
     public void temp(String message) {
         this.logger.log(Level.forName("TEMP", 350), message);
@@ -142,6 +153,11 @@ public class Logger {
         this.log(Level.ERROR, message, error);
     }
 
+    /**
+     * <p>getGlobalLogs.</p>
+     *
+     * @return a {@link java.util.LinkedHashSet} object
+     */
     public static LinkedHashSet<Entry<Level, String>> getGlobalLogs() {
         LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
         for (Entry<Level, String> entry : globalHistory) {
@@ -153,6 +169,11 @@ public class Logger {
         return logs;
     }
 
+    /**
+     * <p>printLogs.</p>
+     *
+     * @param level a {@link org.apache.logging.log4j.Level} object
+     */
     public static void printLogs(Level level) {
         for (Entry<Level, String> entry : globalHistory) {
             // log level or higher
@@ -188,6 +209,9 @@ public class Logger {
         globalHistory.add(entry);
     }
 
+    /**
+     * <p>clearLogs.</p>
+     */
     public static void clearLogs() {
         globalHistory.clear();
     }

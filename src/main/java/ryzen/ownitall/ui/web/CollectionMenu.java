@@ -109,6 +109,12 @@ public class CollectionMenu {
     }
 
     // TODO: edit playlists / liked songs / playlist songs
+    /**
+     * <p>addLikedSongForm.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/collection/create/likedsongs/song")
     public String addLikedSongForm(Model model) {
         if (Library.load() == null) {
@@ -130,6 +136,13 @@ public class CollectionMenu {
         return "form";
     }
 
+    /**
+     * <p>addLikedSong.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/collection/create/likedsongs/song")
     @ResponseBody
     public ResponseEntity<String> addLikedSong(Model model, @RequestBody LinkedHashMap<String, String> variables) {
@@ -167,6 +180,12 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * <p>deleteLikedSong.</p>
+     *
+     * @param songName a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @DeleteMapping("/collection/likedsongs/{song}")
     @ResponseBody
     public ResponseEntity<String> deleteLikedSong(@PathVariable(value = "song") String songName) {
@@ -179,6 +198,13 @@ public class CollectionMenu {
         return ResponseEntity.ok("Successfully removed likedsong '" + song.getName() + "'");
     }
 
+    /**
+     * <p>addPlaylistSongForm.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param playlistName a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/collection/create/playlist/song")
     public String addPlaylistSongForm(Model model,
             @RequestParam(value = "playlist", required = false) String playlistName) {
@@ -214,6 +240,13 @@ public class CollectionMenu {
         return "form";
     }
 
+    /**
+     * <p>addPlaylistSong.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/collection/create/playlist/song")
     @ResponseBody
     public ResponseEntity<String> addPlaylistSong(Model model, @RequestBody LinkedHashMap<String, String> variables) {
@@ -262,6 +295,12 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * <p>addPlaylistForm.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/collection/create/playlist")
     public String addPlaylistForm(Model model) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
@@ -277,6 +316,13 @@ public class CollectionMenu {
         return "form";
     }
 
+    /**
+     * <p>addPlaylist.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/collection/create/playlist")
     @ResponseBody
     public ResponseEntity<String> addPlaylist(Model model, @RequestBody LinkedHashMap<String, String> variables) {
@@ -295,6 +341,12 @@ public class CollectionMenu {
         return ResponseEntity.ok("Successfully added playlist '" + playlist.getName() + "'");
     }
 
+    /**
+     * <p>deletePlaylist.</p>
+     *
+     * @param playlistName a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @DeleteMapping("/collection/playlist/{playlist}")
     @ResponseBody
     public ResponseEntity<String> deletePlaylist(@PathVariable(value = "playlist") String playlistName) {
@@ -307,6 +359,13 @@ public class CollectionMenu {
         return ResponseEntity.ok("Successfully deleted playlist '" + playlist.getName() + "'");
     }
 
+    /**
+     * <p>deletePlaylistSong.</p>
+     *
+     * @param playlistName a {@link java.lang.String} object
+     * @param songName a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @DeleteMapping("/collection/playlist/{playlist}/{song}")
     @ResponseBody
     public ResponseEntity<String> deletePlaylistSong(@PathVariable(value = "playlist") String playlistName,
@@ -328,6 +387,12 @@ public class CollectionMenu {
                 .body("Unable to find song '" + songName + "' in  playlist '" + playlist.getName() + "'");
     }
 
+    /**
+     * <p>addAlbumForm.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/collection/create/album")
     public String addAlbumForm(Model model) {
         if (Library.load() == null) {
@@ -349,6 +414,13 @@ public class CollectionMenu {
         return "form";
     }
 
+    /**
+     * <p>addAlbum.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @PostMapping("/collection/create/album")
     @ResponseBody
     public ResponseEntity<String> addAlbum(Model model, @RequestBody LinkedHashMap<String, String> variables) {
@@ -386,6 +458,12 @@ public class CollectionMenu {
         }
     }
 
+    /**
+     * <p>deleteAlbum.</p>
+     *
+     * @param albumName a {@link java.lang.String} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
     @DeleteMapping("/collection/album/{album}")
     @ResponseBody
     public ResponseEntity<String> deleteAlbum(@PathVariable(value = "album") String albumName) {

@@ -31,6 +31,9 @@ public class Storage {
     private static final Logger logger = new Logger(Storage.class);
     private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
+    /**
+     * <p>Constructor for Storage.</p>
+     */
     public Storage() {
         if (!Settings.dataFolder.exists()) { // create folder if it does not exist
             Settings.dataFolder.mkdirs();

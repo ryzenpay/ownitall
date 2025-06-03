@@ -5,6 +5,11 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
+/**
+ * <p>Sync interface.</p>
+ *
+ * @author ryzen
+ */
 public interface Sync {
     /**
      * <p>

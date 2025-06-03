@@ -63,10 +63,21 @@ abstract public class Library implements LibraryInterface {
         this.cache();
     }
 
+    /**
+     * <p>Getter for the field <code>libraries</code>.</p>
+     *
+     * @return a {@link java.util.LinkedHashSet} object
+     */
     public static LinkedHashSet<Class<? extends Library>> getLibraries() {
         return libraries;
     }
 
+    /**
+     * <p>getLibrary.</p>
+     *
+     * @param name a {@link java.lang.String} object
+     * @return a {@link java.lang.Class} object
+     */
     public static Class<? extends Library> getLibrary(String name) {
         if (name == null) {
             logger.debug("null name provided in getLibrary");
@@ -80,6 +91,15 @@ abstract public class Library implements LibraryInterface {
         return null;
     }
 
+    /**
+     * <p>initLibrary.</p>
+     *
+     * @param libraryClass a {@link java.lang.Class} object
+     * @return a {@link ryzen.ownitall.library.Library} object
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.NoSuchMethodException if any.
+     */
     public static Library initLibrary(Class<? extends Library> libraryClass)
             throws MissingSettingException, AuthenticationException,
             NoSuchMethodException {
@@ -134,7 +154,6 @@ abstract public class Library implements LibraryInterface {
      * </p>
      *
      * @param type a {@link java.lang.Class} object
-     * @return a boolean
      */
     public static void clearCredentials(Class<? extends Library> type) {
         if (type == null) {
@@ -323,6 +342,12 @@ abstract public class Library implements LibraryInterface {
         return this.ids.size();
     }
 
+    /**
+     * <p>removeBrackets.</p>
+     *
+     * @param string a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
     protected static String removeBrackets(String string) {
         if (string == null) {
             logger.debug("null string provided in removeBrackets");

@@ -218,21 +218,25 @@ public class Jellyfin implements Import, Export, Sync {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadPlaylists() {
         logger.debug("Unsupported method uploadPlaylists called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadPlaylist(Playlist playlist) {
         logger.debug("Unsupported method uploadPlaylist called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncPlaylists() {
         logger.debug("Unsupported method syncPlaylists called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncPlaylist(Playlist playlist) {
         logger.debug("Unsupported method syncPlaylist called");
@@ -337,21 +341,25 @@ public class Jellyfin implements Import, Export, Sync {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadAlbums() {
         logger.debug("Unsupported method uploadAlbums called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void uploadAlbum(Album album) {
         logger.debug("Unsupported method uploadAlbum called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncAlbums() {
         logger.debug("Unsupported method syncAlbums called");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void syncAlbum(Album Album) {
         logger.debug("Unsupported method syncAlbum called");

@@ -21,6 +21,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
 // TODO: make logs not affect progressbar
 public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
+    /** Constant <code>output=true</code> */
     public static boolean output = true;
     private static Stack<ProgressBar> instances;
 
@@ -98,6 +99,11 @@ public class ProgressBar implements AutoCloseable {
         return this.pb.getExtraMessage();
     }
 
+    /**
+     * <p>getElapsedTime.</p>
+     *
+     * @return a {@link java.time.Duration} object
+     */
     public Duration getElapsedTime() {
         return this.pb.getElapsedAfterStart();
     }
@@ -156,6 +162,7 @@ public class ProgressBar implements AutoCloseable {
         return instances;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         this.pb.close();

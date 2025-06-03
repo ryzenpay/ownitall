@@ -4,6 +4,11 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 
+/**
+ * <p>LibraryInterface interface.</p>
+ *
+ * @author ryzen
+ */
 public interface LibraryInterface {
     /**
      * <p>

@@ -82,6 +82,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     ///
     @Group(Jellyfin.class)
     @Name("JellyFin URL")
+    /** Constant <code>jellyfinURL=""</code> */
     public static String jellyfinURL = "";
     @Group(Jellyfin.class)
     @Name("JellyFin Username")
@@ -113,6 +114,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     @Group(Spotify.class)
     @Name("Spotify Client ID")
+    /** Constant <code>spotifyClientID=""</code> */
     public static String spotifyClientID = "";
     @Group(Spotify.class)
     @Secret
@@ -141,6 +143,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     @Group(Youtube.class)
     @Name("Google Application Name")
+    /** Constant <code>youtubeApplicatioName=""</code> */
     public static String youtubeApplicatioName = "";
     @Group(Youtube.class)
     @Secret
@@ -180,6 +183,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Group(LastFM.class)
     @Secret
     @Name("LastFM API Key")
+    /** Constant <code>lastFMApiKey=""</code> */
     public static String lastFMApiKey = "";
 
     ///
@@ -299,6 +303,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Group(SoulSeek.class)
     @Secret
     @Name("SoulSeek Password")
+    /** Constant <code>soulSeekPassword=""</code> */
     public static String soulSeekPassword = "";
 
     private Settings() throws IOException {

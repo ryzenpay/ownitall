@@ -45,6 +45,12 @@ public class LibraryMenu {
         return "menu";
     }
 
+    /**
+     * <p>optionChange.</p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
     @GetMapping("/library/change")
     public String optionChange(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
@@ -96,9 +102,9 @@ public class LibraryMenu {
      * </p>
      *
      * @param model            a {@link org.springframework.ui.Model} object
-     * @param libraryClassName a {@link java.lang.String} object
      * @param callback         a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
+     * @param library a {@link java.lang.String} object
      */
     @GetMapping("/library/login/{library}")
     public String loginForm(Model model,

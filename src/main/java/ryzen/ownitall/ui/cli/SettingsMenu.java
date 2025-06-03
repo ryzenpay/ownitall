@@ -76,6 +76,14 @@ public class SettingsMenu {
         }
     }
 
+    /**
+     * <p>changeSetting.</p>
+     *
+     * @param settingName a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.NoSuchFieldException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     */
     public static void changeSetting(String settingName)
             throws InterruptedException, NoSuchFieldException, MissingSettingException {
         if (settingName == null) {
@@ -106,6 +114,14 @@ public class SettingsMenu {
         settings.set(settingName, input);
     }
 
+    /**
+     * <p>changeSettings.</p>
+     *
+     * @param settingNames a {@link java.util.LinkedHashSet} object
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.NoSuchFieldException if any.
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     */
     public static void changeSettings(LinkedHashSet<String> settingNames)
             throws InterruptedException, NoSuchFieldException, MissingSettingException {
         if (settingNames == null) {

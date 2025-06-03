@@ -56,6 +56,12 @@ public class Download implements Sync, Export {
 
     // https://stackoverflow.com/questions/262367/type-safety-unchecked-cast
     @SuppressWarnings("unchecked")
+    /**
+     * <p>Constructor for Download.</p>
+     *
+     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     */
     public Download() throws MissingSettingException, AuthenticationException {
         try {
             Class<?> downloadClass = Class.forName(Settings.downloadMethod);

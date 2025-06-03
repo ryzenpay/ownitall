@@ -264,18 +264,21 @@ public class Youtube implements Import {
         return songs;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Playlist getPlaylist(String playlistId, String playlistName) {
         logger.debug("Unsupported method getPlaylists called");
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ArrayList<Album> getAlbums() {
         logger.debug("Unsupported method getAlbums called");
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Album getAlbum(String albumId, String albumName, String albumArtistName) {
         logger.debug("Unsupported method getAlbum called");

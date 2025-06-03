@@ -29,6 +29,7 @@ public class YT_dl extends Download implements DownloadInterface {
      * setting all settings / credentials
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public YT_dl() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(YT_dl.class)) {

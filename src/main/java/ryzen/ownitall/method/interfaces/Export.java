@@ -3,6 +3,11 @@ package ryzen.ownitall.method.interfaces;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 
+/**
+ * <p>Export interface.</p>
+ *
+ * @author ryzen
+ */
 public interface Export {
 
     /**

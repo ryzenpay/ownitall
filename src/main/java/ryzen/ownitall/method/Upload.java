@@ -54,6 +54,7 @@ public class Upload implements Import {
      * </p>
      *
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Upload() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Upload.class)) {

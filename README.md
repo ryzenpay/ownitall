@@ -109,7 +109,7 @@ to update the javadoc documentation, run the command `mvn doc` in the root of th
 please fix any of the errors it throws as they show incomplete documentation  
 
 ## Compile new jar file
-run the command `mvn assembly:single`  
+run the command `mvn clean compile assembly:single`  
 look for the compiled `.jar` file in `target` directory  
 run the compiled with `java -jar target/ownitall-<VERSION>-jar-with-dependencies.jar`
 
