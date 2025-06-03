@@ -8,6 +8,7 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.exceptions.ClosedMenu;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -33,13 +34,11 @@ public class SettingsMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "TOOL MENU");
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting tools menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -65,9 +64,6 @@ public class SettingsMenu {
                     }
                 }
                 String choice = Menu.optionMenuWithValue(options, "SETTINGS");
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 try {
                     changeSetting(choice);
                     logger.info("Successfully changed setting '" + choice + "'");
@@ -77,7 +73,7 @@ public class SettingsMenu {
                     logger.warn("Unable to find setting '" + choice + "'");
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | ClosedMenu e) {
             logger.debug("Interrupted while getting change setting choice");
         }
     }
@@ -99,12 +95,8 @@ public class SettingsMenu {
             try {
                 String choice = Menu.optionMenu(new LinkedHashSet<String>(Arrays.asList(options)),
                         "'" + settingName.toUpperCase() + "' OPTIONS");
-                if (choice.equals("Exit")) {
-                    throw new InterruptedException("Cancelled setting change option");
-                } else {
-                    input = choice;
-                }
-            } catch (InterruptedException e) {
+                input = choice;
+            } catch (InterruptedException | ClosedMenu e) {
                 logger.info("Interruption caught changing setting");
                 return;
             }

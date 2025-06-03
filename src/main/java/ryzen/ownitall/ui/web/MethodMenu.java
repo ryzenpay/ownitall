@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.Stack;
 import java.util.Map.Entry;
 
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -714,7 +713,6 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    // TODO: needs trigger for when completed
     @GetMapping("/method/progress")
     @ResponseBody
     public ResponseEntity<String> methodProgress() {

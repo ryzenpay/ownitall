@@ -12,6 +12,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.ClosedMenu;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -49,28 +50,30 @@ public class MethodMenu {
         for (Class<?> method : Method.getMethods(filter)) {
             options.put(method.getSimpleName(), method);
         }
-        String choice = Menu.optionMenu(options.keySet(), "METHODS");
-        if (choice.equals("Exit")) {
-            throw new InterruptedException("Cancelled method selection");
-        }
-        Class<?> methodClass = Method.getMethod(choice);
-        while (true) {
-            try {
-                method = new Method(methodClass);
-                break;
-            } catch (MissingSettingException e) {
-                logger.warn(
-                        "Missing settings to set up method '" + methodClass.getSimpleName() + "': " + e.getMessage());
-                setCredentials(methodClass);
-            } catch (AuthenticationException e) {
-                logger.warn("Authentication exception setting up method '" + methodClass.getSimpleName()
-                        + "': " + e.getMessage());
-                Method.clearCredentials(methodClass);
-                setCredentials(methodClass);
-            } catch (NoSuchMethodException e) {
-                logger.error("method '" + methodClass.getSimpleName() + "' does not exist", e);
-                break;
+        try {
+            String choice = Menu.optionMenu(options.keySet(), "METHODS");
+            Class<?> methodClass = Method.getMethod(choice);
+            while (true) {
+                try {
+                    method = new Method(methodClass);
+                    break;
+                } catch (MissingSettingException e) {
+                    logger.warn(
+                            "Missing settings to set up method '" + methodClass.getSimpleName() + "': "
+                                    + e.getMessage());
+                    setCredentials(methodClass);
+                } catch (AuthenticationException e) {
+                    logger.warn("Authentication exception setting up method '" + methodClass.getSimpleName()
+                            + "': " + e.getMessage());
+                    Method.clearCredentials(methodClass);
+                    setCredentials(methodClass);
+                } catch (NoSuchMethodException e) {
+                    logger.error("method '" + methodClass.getSimpleName() + "' does not exist", e);
+                    break;
+                }
             }
+        } catch (ClosedMenu e) {
+            throw new InterruptedException("Cancelled method selection");
         }
     }
 
@@ -98,7 +101,7 @@ public class MethodMenu {
      *
      * @throws java.lang.InterruptedException if any.
      */
-    public void importMenu() throws InterruptedException {
+    public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Import Library", method::importCollection);
         options.put("Import liked songs", method::importLikedSongs);
@@ -108,13 +111,11 @@ public class MethodMenu {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT " + getMethodName());
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -126,14 +127,12 @@ public class MethodMenu {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT ALBUM" + getMethodName().toUpperCase());
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug(
                     "Interrupted while getting " + getMethodName() + " import album menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -165,14 +164,12 @@ public class MethodMenu {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
                         "IMPORT PlAYLIST" + getMethodName().toUpperCase());
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug(
                     "Interrupted while getting " + getMethodName() + " import playlist menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -200,7 +197,7 @@ public class MethodMenu {
      *
      * @throws java.lang.InterruptedException if any.
      */
-    public void exportMenu() throws InterruptedException {
+    public void exportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Export Library", method::exportCollection);
         options.put("Export Liked Songs", method::exportLikedSongs);
@@ -210,13 +207,11 @@ public class MethodMenu {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
                         "EXPORT " + getMethodName().toUpperCase());
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting " + getMethodName() + " export menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -228,9 +223,6 @@ public class MethodMenu {
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST EXPORT MENU");
-            if (choice.equals("Exit")) {
-                return;
-            }
             if (choice.equals("All")) {
                 method.exportPlaylists();
             } else {
@@ -238,6 +230,7 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting export playlist choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -249,9 +242,6 @@ public class MethodMenu {
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "ALBUM EXPORT MENU");
-            if (choice.equals("Exit")) {
-                return;
-            }
             if (choice.equals("All")) {
                 method.exportAlbums();
             } else {
@@ -259,6 +249,7 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting export album choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -269,7 +260,7 @@ public class MethodMenu {
      *
      * @throws java.lang.InterruptedException if any.
      */
-    public void syncMenu() throws InterruptedException {
+    public void syncMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Sync Library", method::syncCollection);
         options.put("Sync liked songs", method::syncLikedSongs);
@@ -279,13 +270,11 @@ public class MethodMenu {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
                         "SYNC " + getMethodName());
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting " + getMethodName() + " import menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -297,9 +286,6 @@ public class MethodMenu {
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SYNC MENU");
-            if (choice.equals("Exit")) {
-                return;
-            }
             if (choice.equals("All")) {
                 method.syncPlaylists();
             } else {
@@ -307,6 +293,7 @@ public class MethodMenu {
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting sync playlist choice");
+        } catch (ClosedMenu e) {
         }
     }
 }

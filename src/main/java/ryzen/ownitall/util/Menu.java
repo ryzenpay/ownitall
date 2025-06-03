@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 
+import ryzen.ownitall.util.exceptions.ClosedMenu;
+
 /**
  * <p>
  * Menu class.
@@ -69,7 +71,7 @@ public class Menu {
      * @return - string choice
      * @throws java.lang.InterruptedException - when user interrupts
      */
-    public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException {
+    public static String optionMenu(Set<String> setOptions, String menuName) throws InterruptedException, ClosedMenu {
         if (setOptions == null) {
             logger.debug("null optionset provided in optionMenu");
             return null;
@@ -92,10 +94,11 @@ public class Menu {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");
             } else {
-                options.add(0, "Exit");
+                if (choice == 0) {
+                    throw new ClosedMenu();
+                }
                 return options.get(choice);
             }
-
         }
     }
 
@@ -107,7 +110,8 @@ public class Menu {
      * @return - name of selected option
      * @throws java.lang.InterruptedException - when user interrupts
      */
-    public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName) throws InterruptedException {
+    public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName)
+            throws InterruptedException, ClosedMenu {
         if (setOptions == null) {
             logger.debug("null optionset provided in optionMenuWithValue");
             return null;
@@ -134,10 +138,11 @@ public class Menu {
                 System.err.println("Incorrect option, try again");
                 System.out.print("Enter your choice: ");
             } else {
-                options.add(0, "Exit");
+                if (choice == 0) {
+                    throw new ClosedMenu();
+                }
                 return options.get(choice);
             }
-
         }
     }
 }

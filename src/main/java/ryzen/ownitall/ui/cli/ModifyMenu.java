@@ -17,6 +17,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
+import ryzen.ownitall.util.exceptions.ClosedMenu;
 
 /**
  * <p>
@@ -42,13 +43,11 @@ public class ModifyMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "MODIFY MENU");
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting modify menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -65,13 +64,11 @@ public class ModifyMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "ADD MENU");
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting modify add menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -145,9 +142,6 @@ public class ModifyMenu {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SELECTION MENU");
-                if (choice.equals("Exit")) {
-                    return;
-                }
                 Song song = interactiveCreateSong();
                 if (song != null) {
                     options.get(choice).addSong(song);
@@ -156,6 +150,7 @@ public class ModifyMenu {
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting modify add song playlist choice");
                 return;
+            } catch (ClosedMenu e) {
             }
         }
     }
@@ -239,13 +234,11 @@ public class ModifyMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
-                if (choice.equals("Exit")) {
-                    break;
-                }
                 options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting collection edit menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -262,9 +255,6 @@ public class ModifyMenu {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "PLAYLIST DELETION MENU");
-                if (choice.equals("Exit")) {
-                    return;
-                }
                 if (choice.equals("All")) {
                     Collection.clearPlaylists();
                 } else {
@@ -274,6 +264,7 @@ public class ModifyMenu {
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete playlist choice");
                 return;
+            } catch (ClosedMenu e) {
             }
         }
     }
@@ -290,9 +281,6 @@ public class ModifyMenu {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "ALBUM DELETION MENU");
-                if (choice.equals("Exit")) {
-                    return;
-                }
                 if (choice.equals("All")) {
                     Collection.clearAlbums();
                 } else {
@@ -302,6 +290,7 @@ public class ModifyMenu {
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete album choice");
                 return;
+            } catch (ClosedMenu e) {
             }
         }
     }
@@ -318,9 +307,6 @@ public class ModifyMenu {
             }
             try {
                 String choice = Menu.optionMenu(options.keySet(), "SONG DELETION MENU");
-                if (choice.equals("Exit")) {
-                    return;
-                }
                 if (choice.equals("All")) {
                     Collection.clearLikedSongs();
                 } else {
@@ -330,6 +316,7 @@ public class ModifyMenu {
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while getting collection delete liked song choice");
                 return;
+            } catch (ClosedMenu e) {
             }
         }
     }
@@ -357,12 +344,11 @@ public class ModifyMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "MERGE MENU");
-                if (choice.equals("Exit")) {
-                    break;
-                }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting modify merge menu choice");
+        } catch (ClosedMenu e) {
         }
     }
 
@@ -376,20 +362,15 @@ public class ModifyMenu {
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE INTO");
-            if (choice.equals("Exit")) {
-                return;
-            }
             Playlist playlist = options.get(choice);
             options.remove(choice);
             String choice2 = Menu.optionMenu(options.keySet(), "PLAYLIST MERGE FROM");
-            if (choice2.equals("Exit")) {
-                return;
-            }
             playlist.merge(options.get(choice2));
             Collection.removePlaylist(options.get(choice2));
             logger.info("Successfully merged playlist: '" + choice2 + "' into: '" + choice + "'");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting collection merge playlist choice");
+        } catch (ClosedMenu e) {
         }
     }
 

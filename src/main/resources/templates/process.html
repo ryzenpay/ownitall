@@ -105,6 +105,9 @@
                     msg.className = 'text-success mt-2';
                     msg.textContent = 'All processes have completed.';
                     container.appendChild(msg);
+                    container.children.forEach(childElement => {
+                        childElement.remove();
+                    });
                 }
             } else {
                 cancelButton.style.display = 'inline-block';

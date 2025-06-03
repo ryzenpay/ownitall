@@ -9,6 +9,7 @@ import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.ClosedMenu;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
@@ -28,19 +29,20 @@ public class LibraryMenu {
      *
      * @throws java.lang.InterruptedException if any.
      */
-    public LibraryMenu() throws InterruptedException {
+    public LibraryMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         // main menu
         options.put("Change Provider", this::optionChange);
         options.put("Clear Cache", this::optionClearCache);
         options.put("Cache Size", this::optionCacheSize);
-        while (true) {
-            String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-            if (choice.equals("Exit")) {
-                return;
-            } else {
+        try {
+            while (true) {
+                String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
                 options.get(choice).run();
             }
+        } catch (ClosedMenu e) {
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting LibraryMenu choice");
         }
     }
 
@@ -51,9 +53,6 @@ public class LibraryMenu {
                 options.put(libraryClass.getSimpleName(), libraryClass);
             }
             String choice = Menu.optionMenu(options.keySet(), "LIBRARIES");
-            if (choice.equals("Exit")) {
-                throw new InterruptedException("Exited");
-            }
             Class<? extends Library> libraryClass = options.get(choice);
             while (true) {
                 try {
@@ -75,7 +74,7 @@ public class LibraryMenu {
             }
             Settings.libraryType = options.get(choice).getSimpleName();
             logger.info("Successfully changed library type to '" + choice + "'");
-        } catch (InterruptedException | MissingSettingException e) {
+        } catch (InterruptedException | MissingSettingException | ClosedMenu e) {
             logger.debug("Interrupted while getting library change option");
         }
     }

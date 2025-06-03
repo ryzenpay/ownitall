@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import ryzen.ownitall.Main;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.exceptions.ClosedMenu;
 
 /**
  * <p>
@@ -31,14 +32,12 @@ public class MainMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(), "MAIN MENU");
-                if (choice.equals("Exit")) {
-                    exit();
-                } else {
-                    options.get(choice).run();
-                }
+                options.get(choice).run();
             }
         } catch (InterruptedException e) {
             logger.info("Interruption caught in main menu, gracefully closing program");
+            exit();
+        } catch (ClosedMenu e) {
             exit();
         }
     }

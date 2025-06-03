@@ -520,7 +520,8 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         int offset = 0;
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler();
+                ProgressBar pb = new ProgressBar(albumId, -1)) {
             ArrayList<Song> songs = new ArrayList<>();
             int limit = Settings.spotifySongLimit;
             boolean hasMore = true;
@@ -554,6 +555,7 @@ public class Spotify implements Import, Export, Sync {
                             }
                             if (song != null) {
                                 songs.add(song);
+                                pb.step(song.getName());
                             }
                         }
                     }
