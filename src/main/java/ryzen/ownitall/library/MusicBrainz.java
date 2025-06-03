@@ -54,8 +54,8 @@ public class MusicBrainz extends Library {
             logger.debug("null album passed in searchAlbum");
             return null;
         }
-        if (album.getId("id") != null) {
-            return album.getId("id");
+        if (album.getId("mbid") != null) {
+            return album.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("release", album.getName());
@@ -83,8 +83,14 @@ public class MusicBrainz extends Library {
                 logger.debug("missing data in album search result " + response.toString());
             }
         }
-        logger.info("Could not find Album '" + album.getName() + "' in Library");
-        return null;
+        if (!album.getName().equals(removeBrackets(album.getName()))) {
+            logger.debug("Trying album '" + album.getName() + "' again with trimmed brackets");
+            album.setName(removeBrackets(album.getName()));
+            return searchAlbum(album);
+        } else {
+            logger.info("Unable to find album '" + album.toString() + "' in library");
+            return null;
+        }
     }
 
     /**
@@ -112,7 +118,7 @@ public class MusicBrainz extends Library {
         JsonNode response = this.query("release", this.directQueryBuilder(id, inclusions));
         if (response != null) {
             Album album = new Album(response.path("title").asText());
-            album.addId("id", response.path("id").asText());
+            album.addId("mbid", response.path("id").asText());
             JsonNode coverArt = response.path("cover-art-archive");
             if (!coverArt.isMissingNode()) {
                 if (coverArt.path("count").asInt() > 1) {
@@ -176,8 +182,8 @@ public class MusicBrainz extends Library {
             logger.debug("null song passed in searchRecordingSong");
             return null;
         }
-        if (song.getId("id") != null) {
-            return song.getId("id");
+        if (song.getId("mbid") != null) {
+            return song.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
@@ -210,8 +216,14 @@ public class MusicBrainz extends Library {
                 logger.warn("Missing data while getting Song: " + response.toString());
             }
         }
-        logger.info("Could not find song '" + song.getName() + "' in library");
-        return null;
+        if (!song.getName().equals(removeBrackets(song.getName()))) {
+            logger.debug("Trying song '" + song.getName() + "' again with trimmed brackets");
+            song.setName(removeBrackets(song.getName()));
+            return searchSong(song);
+        } else {
+            logger.info("Unable to find song '" + song.toString() + "' in library");
+            return null;
+        }
     }
 
     /**
@@ -240,7 +252,7 @@ public class MusicBrainz extends Library {
         if (response != null) {
             Song song = new Song(response.path("title").asText());
             song.setDuration(response.path("length").asLong(), ChronoUnit.MILLIS);
-            song.addId("id", response.path("id").asText());
+            song.addId("mbid", response.path("id").asText());
             JsonNode artistNode = response.path("artist-credit").get(0).path("artist");
             if (artistNode != null && !artistNode.isMissingNode()) {
                 Artist artist = this.getArtist(artistNode.path("id").asText());
@@ -288,8 +300,8 @@ public class MusicBrainz extends Library {
             logger.debug("null artist passed in searchArtist");
             return null;
         }
-        if (artist.getId("id") != null) {
-            return artist.getId("id");
+        if (artist.getId("mbid") != null) {
+            return artist.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
@@ -333,7 +345,7 @@ public class MusicBrainz extends Library {
         JsonNode response = this.query("artist", this.directQueryBuilder(id, inclusions));
         if (response != null) {
             Artist artist = new Artist(response.path("name").asText());
-            artist.addId("id", response.path("id").asText());
+            artist.addId("mbid", response.path("id").asText());
             this.artists.put(id, artist);
             return artist;
         }

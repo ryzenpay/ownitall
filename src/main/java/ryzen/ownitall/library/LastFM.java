@@ -126,7 +126,7 @@ public class LastFM extends Library {
                 } else {
                     logger.debug(album.toString() + ": album missing tracks: " + albumNode.toString());
                 }
-                if (album.size() != 0) {
+                if (!album.isEmpty()) {
                     this.albums.put(params.toString(), album);
                     return album;
                 }
@@ -134,7 +134,12 @@ public class LastFM extends Library {
                 logger.debug(album.toString() + ": album.getInfo missing album: " + response.toString());
             }
         }
-        logger.info("Unable to find Album '" + album.toString() + "' in library ");
+        if (!album.getName().equals(removeBrackets(album.getName()))) {
+            logger.debug("Trying album '" + album.getName() + "' again with trimmed brackets");
+            album.setName(removeBrackets(album.getName()));
+            return getAlbum(album);
+        }
+        logger.info("Unable to find album '" + album.toString() + "' in library");
         return null;
     }
 
@@ -208,6 +213,11 @@ public class LastFM extends Library {
             } else {
                 logger.debug(song.toString() + ": track.getInfo missing track: " + response.toString());
             }
+        }
+        if (!song.getName().equals(removeBrackets(song.getName()))) {
+            logger.debug("Trying song '" + song.getName() + "' again with trimmed brackets");
+            song.setName(removeBrackets(song.getName()));
+            return getSong(song);
         }
         logger.info("Unable to find song '" + song.toString() + "' in library");
         return null;

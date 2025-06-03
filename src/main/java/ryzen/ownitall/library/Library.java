@@ -322,4 +322,20 @@ abstract public class Library implements LibraryInterface {
     public int getIdCacheSize() {
         return this.ids.size();
     }
+
+    protected static String removeBrackets(String string) {
+        if (string == null) {
+            logger.debug("null string provided in removeBrackets");
+            return null;
+        }
+        if (!string.contains("(")) {
+            return string;
+        }
+        // ()
+        string = string.replaceAll("\\(.*?\\)", "");
+        // []
+        string = string.replaceAll("\\[.*?\\]", "");
+        // remove spaces in middle of string
+        return string.trim().replaceAll("  ", " ");
+    }
 }
