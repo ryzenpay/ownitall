@@ -85,6 +85,7 @@ public class Menu {
                 System.out.println("[" + i + "] " + option);
                 i++;
             }
+            options.add(0, "Exit");
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
             try {
@@ -134,6 +135,7 @@ public class Menu {
                 System.out.println("[" + i + "] " + option + ": " + object.toString());
                 i++;
             }
+            options.add(0, "Exit");
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
             try {
