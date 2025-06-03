@@ -85,6 +85,9 @@ public class Main {
     public static void save() {
         Collection.save();
         Settings.load().save();
-        Library.load();
+        Library library = Library.load();
+        if (library != null) {
+            library.cache();
+        }
     }
 }

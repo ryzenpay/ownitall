@@ -64,7 +64,9 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * <p>Getter for the field <code>libraries</code>.</p>
+     * <p>
+     * Getter for the field <code>libraries</code>.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
@@ -73,7 +75,9 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * <p>getLibrary.</p>
+     * <p>
+     * getLibrary.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Class} object
@@ -92,13 +96,15 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * <p>initLibrary.</p>
+     * <p>
+     * initLibrary.
+     * </p>
      *
      * @param libraryClass a {@link java.lang.Class} object
      * @return a {@link ryzen.ownitall.library.Library} object
      * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
-     * @throws java.lang.NoSuchMethodException if any.
+     * @throws java.lang.NoSuchMethodException                        if any.
      */
     public static Library initLibrary(Class<? extends Library> libraryClass)
             throws MissingSettingException, AuthenticationException,
@@ -343,7 +349,9 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * <p>removeBrackets.</p>
+     * <p>
+     * removeBrackets.
+     * </p>
      *
      * @param string a {@link java.lang.String} object
      * @return a {@link java.lang.String} object

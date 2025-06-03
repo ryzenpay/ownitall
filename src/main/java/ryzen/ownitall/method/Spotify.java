@@ -316,7 +316,7 @@ public class Spotify implements Import, Export, Sync {
                         }
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception fetching liked songs", e);
@@ -363,7 +363,7 @@ public class Spotify implements Import, Export, Sync {
                             hasMore = false;
                         }
                     } catch (TooManyRequestsException e) {
-                        logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                        logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                         this.sleep(e.getRetryAfter());
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
                         logger.error("Exception adding users saved tracks", e);
@@ -416,7 +416,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception adding users saved tracks", e);
@@ -467,7 +467,7 @@ public class Spotify implements Import, Export, Sync {
                         }
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception getting albums", e);
@@ -564,7 +564,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception fetching songs for album: " + albumId + "", e);
@@ -610,7 +610,7 @@ public class Spotify implements Import, Export, Sync {
                             hasMore = false;
                         }
                     } catch (TooManyRequestsException e) {
-                        logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                        logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                         this.sleep(e.getRetryAfter());
                     } catch (IOException | SpotifyWebApiException | ParseException e) {
                         logger.error("Exception adding users saved tracks", e);
@@ -655,7 +655,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception adding users Albums", e);
@@ -727,7 +727,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception fetching playlists", e);
@@ -835,7 +835,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception fetching playlist tracks", e);
@@ -925,7 +925,7 @@ public class Spotify implements Import, Export, Sync {
                                 hasMore = false;
                             }
                         } catch (TooManyRequestsException e) {
-                            logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                            logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                             this.sleep(e.getRetryAfter());
                         } catch (IOException | SpotifyWebApiException | ParseException e) {
                             logger.error("Exception adding users saved tracks", e);
@@ -994,7 +994,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception adding users saved tracks", e);
@@ -1033,7 +1033,7 @@ public class Spotify implements Import, Export, Sync {
                 song.addId("spotify", items[0].getId());
                 return items[0].getId();
             } catch (TooManyRequestsException e) {
-                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Exception searching for song", e);
@@ -1089,7 +1089,7 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     }
                 } catch (TooManyRequestsException e) {
-                    logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                     this.sleep(e.getRetryAfter());
                 } catch (IOException | SpotifyWebApiException | ParseException e) {
                     logger.error("Exception fetching playlists", e);
@@ -1130,7 +1130,7 @@ public class Spotify implements Import, Export, Sync {
                 album.addId("spotify", items[0].getId());
                 return items[0].getId();
             } catch (TooManyRequestsException e) {
-                logger.debug("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
+                logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
                 this.sleep(e.getRetryAfter());
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 logger.error("Exception searching for Album", e);
