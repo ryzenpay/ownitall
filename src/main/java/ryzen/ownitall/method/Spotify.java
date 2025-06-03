@@ -289,7 +289,9 @@ public class Spotify implements Import, Export, Sync {
                             Track track = savedTrack.getTrack();
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
-                                song.addArtist(new Artist(artist.getName()));
+                                if (!artist.getName().equals("Various Artists")) {
+                                    song.addArtist(new Artist(artist.getName()));
+                                }
                             }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
@@ -538,7 +540,9 @@ public class Spotify implements Import, Export, Sync {
                             interruptionHandler.checkInterruption();
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
-                                song.addArtist(new Artist(artist.getName()));
+                                if (!artist.getName().equals("Various Artists")) {
+                                    song.addArtist(new Artist(artist.getName()));
+                                }
                             }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
@@ -785,7 +789,9 @@ public class Spotify implements Import, Export, Sync {
                                 pb.step(track.getName());
                                 song = new Song(track.getName());
                                 for (ArtistSimplified artist : track.getArtists()) {
-                                    song.addArtist(new Artist(artist.getName()));
+                                    if (!artist.getName().equals("Various Artists")) {
+                                        song.addArtist(new Artist(artist.getName()));
+                                    }
                                 }
                                 song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                                 Image[] images = track.getAlbum().getImages();

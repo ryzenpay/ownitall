@@ -2,8 +2,10 @@ package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Stack;
 import java.util.Map.Entry;
 
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -712,25 +714,28 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/progress")
+    // TODO: needs trigger for when completed
+    @GetMapping("/method/progress")
     @ResponseBody
     public ResponseEntity<String> methodProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
-        ProgressBar pb = ProgressBar.getRootInstance();
-        if (pb != null) {
-            rootNode.put("title", pb.getTitle());
-            rootNode.put("step", pb.getStep());
-            rootNode.put("time", MusicTools.musicTime(pb.getElapsedTime()));
-            rootNode.put("message", pb.getMessage());
-            rootNode.put("maxstep", pb.getMaxStep());
+        Stack<ProgressBar> pbs = ProgressBar.getInstances();
+        if (!pbs.isEmpty()) {
+            ArrayNode pbNodes = mapper.createArrayNode();
+            for (ProgressBar pb : pbs) {
+                ObjectNode pbNode = mapper.createObjectNode();
+                pbNode.put("id", pb.hashCode());
+                pbNode.put("title", pb.getTitle());
+                pbNode.put("step", pb.getStep());
+                pbNode.put("time", MusicTools.musicTime(pb.getElapsedTime()));
+                pbNode.put("message", pb.getMessage());
+                pbNode.put("maxstep", pb.getMaxStep());
+                pbNodes.add(pbNode);
+            }
+            rootNode.set("bars", pbNodes);
             return ResponseEntity.ok(rootNode.toPrettyString());
         } else {
-            rootNode.put("title", "");
-            rootNode.put("step", 0);
-            rootNode.put("time", 0);
-            rootNode.put("message", "");
-            rootNode.put("maxstep", 0);
-            return ResponseEntity.ok(rootNode.toPrettyString());
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -741,7 +746,7 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/logs")
+    @GetMapping("/method/logs")
     @ResponseBody
     public ResponseEntity<String> methodLogs() {
         ObjectMapper mapper = new ObjectMapper();

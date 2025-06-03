@@ -1,6 +1,7 @@
 package ryzen.ownitall.util;
 
 import java.time.Duration;
+import java.util.Stack;
 
 import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 //http://tongfei.me/progressbar/
@@ -21,8 +22,8 @@ import me.tongfei.progressbar.ProgressBarStyle;
 public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
     public static boolean output = true;
+    private static Stack<ProgressBar> instances;
 
-    private static ProgressBar rootInstance;
     private me.tongfei.progressbar.ProgressBar pb;
 
     /**
@@ -39,12 +40,13 @@ public class ProgressBar implements AutoCloseable {
                 .setStyle(ProgressBarStyle.ASCII)
                 .hideEta();
         if (!output) {
-            pbInit.setConsumer(new DelegatingProgressBarConsumer(null));
+            pbInit.setConsumer(new DelegatingProgressBarConsumer(logger::off));
         }
         this.pb = pbInit.build();
-        if (rootInstance == null) {
-            rootInstance = this;
+        if (instances == null) {
+            instances = new Stack<>();
         }
+        instances.add(this);
     }
 
     /**
@@ -145,15 +147,13 @@ public class ProgressBar implements AutoCloseable {
      *
      * @return a {@link ryzen.ownitall.util.ProgressBar} object
      */
-    public static ProgressBar getRootInstance() {
-        return rootInstance;
+    public static Stack<ProgressBar> getInstances() {
+        return instances;
     }
 
     @Override
     public void close() {
         this.pb.close();
-        if (this.equals(rootInstance)) {
-            rootInstance = null;
-        }
+        instances.remove(this);
     }
 }

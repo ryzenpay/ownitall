@@ -8,10 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <title th:text="${processName}"></title>
     <style>
-        /* Styles for log display */
         #log-container {
             max-height: 240px;
-            /* Adjust this height as needed */
             overflow-y: auto;
             background-color: #f5f5f5;
             border: 1px solid #e0e0e0;
@@ -20,72 +18,141 @@
             font-family: "Courier New", Courier, monospace;
             white-space: pre-wrap;
         }
+
+        .progress-bar-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
     <script type="text/javascript">
-        let progressTimer = null;
-        let logTimer = setInterval(fetchLogs, 1000); // Poll every 1 second
+        let progressTimer = setInterval(fetchProgress, 1000); // 1s
+        let logTimer = setInterval(fetchLogs, 1000);
 
         async function fetchProgress() {
             try {
-                // Fetch progress
-                await fetch('[[${processProgress}]]', { method: 'POST' })
-                    .then(response => response.json())
-                    .then(progressData => {
-                        console.debug("ProgressBar response: ", progressData);
-                        updateProgressBar(progressData.title, progressData.step, progressData.maxstep, progressData.message, progressData.time);
-                    });
+                const response = await fetch('[[${processProgress}]]');
+                if (response.ok) {
+                    if (response.status === 200) {
+                        const progressData = await response.json();
+                        console.debug("ProgressBars response: ", progressData);
+                        updateProgressUI(progressData.bars);
+                    } else {
+                        console.debug("Waiting for progressbar data, status=" + response.status);
+                    }
+                } else {
+                    console.error('Error fetching progress:', response.status, response.statusText);
+                }
             } catch (error) {
-                console.error('Error fetching updates:', error);
+                console.error('Error fetching or parsing progress updates:', error);
+            }
+        }
+
+        function updateProgressUI(progressBarsData) {
+            const container = document.getElementById('progress-bars-container');
+            if (progressBarsData.length != 0) {
+                const incomingPbIds = new Set(progressBarsData.map(pb => String(pb.id)));
+                Array.from(container.children).forEach(childElement => {
+                    if (!incomingPbIds.has(childElement.dataset.pbId)) {
+                        container.removeChild(childElement);
+                    }
+                });
+            };
+
+            progressBarsData.forEach((pbData) => {
+                const pbId = String(pbData.id);
+                let pbContainer = container.querySelector(`[data-pb-id="${pbId}"]`);
+
+                if (!pbContainer) {
+                    pbContainer = document.createElement('div');
+                    pbContainer.className = 'progress-bar-container';
+                    pbContainer.dataset.pbId = pbId;
+                    pbContainer.innerHTML = `
+                        <h5 data-role="title" class="mb-1"></h5>
+                        <div class="progress mt-1 mb-1" role="progressbar" aria-label="Process progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 25px;">
+                            <div data-role="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;">0%</div>
+                        </div>
+                        <div data-role="message" class="alert alert-light py-1 mt-1 mb-1" role="status" style="font-size: 0.9em;"></div>
+                        <div data-role="time" class="small text-muted" style="font-size: 0.8em;"></div>
+                    `;
+                    container.appendChild(pbContainer);
+                }
+
+                const elements = {
+                    title: pbContainer.querySelector(`[data-role="title"]`),
+                    progressBar: pbContainer.querySelector(`[data-role="progressbar"]`),
+                    message: pbContainer.querySelector(`[data-role="message"]`),
+                    elapsedTime: pbContainer.querySelector(`[data-role="time"]`)
+                };
+
+                updateIndividualProgressBar(pbData, elements)
+            });
+
+            const backButton = document.getElementById('back-button');
+            const cancelButton = document.getElementById('cancel-button');
+
+            if (progressBarsData.length === 0) {
+                cancelButton.style.display = 'none';
+                backButton.style.display = 'inline-block';
+                if (!document.getElementById('all-done-message')) {
+                    let msg = document.createElement('p');
+                    msg.id = 'all-done-message';
+                    msg.className = 'text-success mt-2';
+                    msg.textContent = 'All processes have completed.';
+                    container.appendChild(msg);
+                }
+            } else {
+                cancelButton.style.display = 'inline-block';
+                backButton.style.display = 'none';
+                const allDoneMsg = document.getElementById('all-done-message');
+                if (allDoneMsg) allDoneMsg.remove();
+            }
+        }
+
+        function updateIndividualProgressBar(pbData, elements) {
+            elements.elapsedTime.innerText = `Elapsed Time: ${pbData.time}`;
+
+            if (pbData.step >= pbData.maxstep && pbData.maxstep > 0) {
+                elements.title.innerText = pbData.title || "Completed";
+                elements.progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped', 'bg-warning');
+                elements.progressBar.classList.add('bg-success');
+                elements.progressBar.style.width = '100%';
+                elements.progressBar.setAttribute('aria-valuenow', 100);
+                elements.progressBar.textContent = "Done";
+                elements.message.innerText = pbData.message || "Process finished.";
+            } else {
+                elements.title.innerText = pbData.title;
+                elements.message.innerText = pbData.message;
+                elements.progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
+                elements.progressBar.classList.remove('bg-success', 'bg-warning');
+
+                if (pbData.maxstep < 0) {
+                    elements.progressBar.style.width = '100%';
+                    elements.progressBar.setAttribute('aria-valuenow', 100);
+                    elements.progressBar.textContent = pbData.step || "Processing...";
+                } else {
+                    let progress = (pbData.maxstep && pbData.maxstep > 0) ? Math.min(pbData.step / pbData.maxstep * 100, 100) : 0;
+                    elements.progressBar.style.width = progress + '%';
+                    elements.progressBar.setAttribute('aria-valuenow', progress.toFixed(0));
+                    elements.progressBar.textContent = progress.toFixed(0) + '%';
+                }
             }
         }
 
         async function fetchLogs() {
-            await fetch('[[${processLogs}]]', { method: 'POST' })
-                .then(response => response.json())
-                .then(logsData => {
-                    console.debug("Logs response:", logsData);
-                    displayLogs(logsData.logs);
-                });
-        }
-
-        function updateProgressBar(title, step, maxStep, message, elapsedTime) {
-            let progressBar = document.getElementById('progress-bar');
-            let progressTitle = document.getElementById('progress-title');
-            let progressMessage = document.getElementById('message-block');
-            let elapsedTimeBlock = document.getElementById('elapsed-time-block');
-
-            let backButton = document.getElementById('back-button');
-            let cancelButton = document.getElementById('cancel-button');
-
-            elapsedTimeBlock.innerText = `Elapsed Time: ${elapsedTime}`;
-
-            if (title === "" && step === 0 && maxStep === 0 && message === "") {
-                progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                progressBar.classList.add('bg-success');
-                progressBar.style.width = '100%';
-                progressBar.setAttribute('aria-valuenow', 100);
-                progressBar.textContent = "Done";
-                cancelButton.style.display = 'none';
-                backButton.style.display = 'inline-block';
-            } else {
-                progressTitle.innerText = title;
-                progressMessage.innerText = message;
-                // reset incase were set
-                progressBar.classList.add('progress-bar-animated', 'progress-bar-striped');
-                progressBar.classList.remove('bg-success');
-                cancelButton.style.display = 'inline-block';
-                backButton.style.display = 'none';
-
-                if (maxStep < 0) {
-                    progressBar.style.width = '100%';
-                    progressBar.setAttribute('aria-valuenow', 100);
-                    progressBar.textContent = step;
-                } else {
-                    let progress = maxStep && maxStep > 0 ? Math.min(step / maxStep * 100, 100) : 0;
-                    progressBar.style.width = progress + '%';
-                    progressBar.setAttribute('aria-valuenow', progress.toFixed(0));
-                    progressBar.textContent = progress.toFixed(0) + '%';
+            try {
+                const response = await fetch('[[${processLogs}]]');
+                if (!response.ok) {
+                    console.error('Error fetching logs:', response.status, response.statusText);
+                    return;
                 }
+                const logsData = await response.json();
+                if (logsData && logsData.logs) {
+                    displayLogs(logsData.logs);
+                }
+            } catch (error) {
+                console.error('Error fetching or parsing log updates:', error);
             }
         }
 
@@ -93,7 +160,7 @@
             const logContainer = document.getElementById('log-container');
             logs.forEach(log => {
                 const logEntry = document.createElement('span');
-                logEntry.style.color = "green";
+                logEntry.style.color = "green"; // Default
                 if (log.level === 'WARN') {
                     logEntry.style.color = "orange";
                 } else if (log.level === 'ERROR') {
@@ -102,34 +169,27 @@
                     logEntry.style.color = "blue";
                 }
                 logEntry.style.display = "block";
-                logEntry.innerHTML = `[${log.level}] ${log.message}`;
+                const timestamp = log.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                logEntry.innerHTML = `[${timestamp}] [${log.level}] ${log.message}`;
                 logContainer.appendChild(logEntry);
             });
-
-            // Ensure scrolling exposes the newest entries
             logContainer.scrollTop = logContainer.scrollHeight;
-        }
-
-        function stopProgressPolling() {
-            if (progressTimer) {
-                clearInterval(progressTimer);
-                progressTimer = null;
-                console.debug("Stopped progress polling.");
-            }
         }
 
         function startProcess() {
             document.getElementById('cancel-button').style.display = 'inline-block';
             document.getElementById('back-button').style.display = 'none';
-            document.getElementById('message-block').innerText = 'Starting process...';
+            document.getElementById('progress-bars-container').innerHTML = '';
+            fetchLogs(); // log once ahead to see all logs
+            const existingAllDoneMsg = document.getElementById('all-done-message');
+            if (existingAllDoneMsg) existingAllDoneMsg.remove();
+
             try {
                 fetch('[[${processFunction}]]', { method: 'POST' });
                 console.debug("Started process, beginning polling.");
-                progressTimer = setInterval(fetchProgress, 1000); // Poll every 1 second
             } catch (error) {
                 console.error('Error starting process:', error);
                 document.getElementById('message-block').innerText = "An error occurred while trying to start the process.";
-                stopProgressPolling();
                 document.getElementById('cancel-button').style.display = 'none';
                 document.getElementById('back-button').style.display = 'inline-block';
             }
@@ -137,24 +197,41 @@
 
         function cancelProcess() {
             console.debug("Attempting to cancel process...");
-            stopProgressPolling();
-            try {
-                fetch("/method/cancel", { method: "POST" });
-                console.log("Cancel request sent successfully.");
-                document.getElementById('message-block').innerText = "Process cancellation requested.";
-            } catch (error) {
-                console.error("Error sending cancel request:", error);
-                document.getElementById('message-block').innerText = "Error occurred while sending cancel request.";
-            } finally {
-                document.getElementById('cancel-button').style.display = 'none';
-                document.getElementById('back-button').style.display = 'inline-block';
-                const progressBar = document.getElementById('progress-bar');
-                progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped');
-                progressBar.classList.add('bg-warning');
-                progressBar.textContent = 'Cancelled';
-                progressBar.style.width = '100%';
-                progressBar.setAttribute('aria-valuenow', 100);
-            }
+            fetch("/method/cancel", { method: "POST" })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to cancel process: ${response.status} ${response.statusText}`);
+                    }
+                    console.log("Cancel request sent successfully.");
+                    document.querySelectorAll('#progress-bars-container .progress-bar-container').forEach(pbContainer => {
+                        const elements = {
+                            title: pbContainer.querySelector(`[data-role="title"]`),
+                            progressBar: pbContainer.querySelector(`[data-role="progressbar"]`),
+                            message: pbContainer.querySelector(`[data-role="message"]`),
+                        };
+                        if (elements.title) elements.title.innerText = (elements.title.innerText || "Process") + " - Cancelled";
+                        if (elements.progressBar) {
+                            elements.progressBar.classList.remove('progress-bar-animated', 'progress-bar-striped', 'bg-success');
+                            elements.progressBar.classList.add('bg-warning');
+                            elements.progressBar.textContent = 'Cancelled';
+                            elements.progressBar.style.width = '100%';
+                            elements.progressBar.setAttribute('aria-valuenow', 100);
+                        }
+                        if (elements.message) elements.message.innerText = "Process cancellation initiated.";
+                    });
+                })
+                .catch(error => {
+                    console.error("Error sending cancel request:", error);
+                    document.querySelectorAll('#progress-bars-container [data-role="message"]').forEach(msgElement => {
+                        msgElement.innerText = "Error during cancellation request.";
+                        msgElement.classList.remove('alert-light');
+                        msgElement.classList.add('alert-danger');
+                    });
+                })
+                .finally(() => {
+                    document.getElementById('cancel-button').style.display = 'none';
+                    document.getElementById('back-button').style.display = 'inline-block';
+                });
         }
 
         window.onload = startProcess;
@@ -164,26 +241,20 @@
 <body>
     <div class="container mt-4">
         <h1 th:text="${processName}"></h1>
-        <h2 id="progress-title" class="h4 text-muted">Initializing...</h2>
 
-        <div class="progress mt-3 mb-3" role="progressbar" aria-label="Process progress" aria-valuenow="0"
-            aria-valuemin="0" aria-valuemax="100" style="height: 30px;">
-            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"
-                aria-valuemin="0" aria-valuemax="100">0%
-            </div>
+        <p id="all-done-message"></p>
+        <!-- Container for multiple progress bars -->
+        <div id="progress-bars-container" class="mt-3 mb-3">
         </div>
 
-        <div id="message-block" class="alert alert-light" role="status">Waiting for process to start...</div>
-
-        <div id="elapsed-time-block" class="alert alert-light mt-2" role="status"></div>
-
+        <!-- Global controls -->
         <div class="mt-4">
             <button id="cancel-button" class="btn btn-danger" onclick="cancelProcess()">Cancel</button>
             <a id="back-button" class="btn btn-secondary" style="display: none;" th:href="@{${callback}}">Return</a>
         </div>
 
+        <!-- Log container -->
         <div id="log-container" class="mt-4"></div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
