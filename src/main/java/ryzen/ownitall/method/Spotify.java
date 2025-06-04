@@ -36,7 +36,6 @@ import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -269,10 +268,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Liked", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Liked Songs", -1)) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
                         .limit(limit)
                         .offset(offset)
@@ -285,7 +282,6 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (SavedTrack savedTrack : items) {
-                            interruptionHandler.checkInterruption();
                             Track track = savedTrack.getTrack();
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
@@ -347,9 +343,8 @@ public class Spotify implements Import, Export, Sync {
             if (songIds.isEmpty()) {
                 return;
             }
-            try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            try (IPIterator<?> pb = IPIterator.manual("Liked Songs", likedSongs.size())) {
                 while (hasMore) {
-                    interruptionHandler.checkInterruption();
                     String[] currentIds = songIds.subList(offset,
                             Math.min(offset + limit, songIds.size())).toArray(new String[0]);
                     RemoveUsersSavedTracksRequest removeUsersSavedTracksRequest = spotifyApi
@@ -358,6 +353,7 @@ public class Spotify implements Import, Export, Sync {
                     try {
                         removeUsersSavedTracksRequest.execute();
                         logger.debug("deleted liked songs (" + currentIds.length + "): " + currentIds.toString());
+                        pb.step(currentIds.length);
                         offset += limit;
                         if (offset >= currentIds.length) {
                             hasMore = false;
@@ -397,10 +393,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Liked Songs", songIds.size());
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Liked Songs", songIds.size())) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 String[] currentIds = songIds.subList(offset,
                         Math.min(offset + limit, songIds.size())).toArray(new String[0]);
                 SaveTracksForUserRequest saveTracksForUserRequest = spotifyApi
@@ -436,10 +430,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifyAlbumLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Albums", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Albums", -1)) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
                         .getCurrentUsersSavedAlbums()
                         .limit(limit)
@@ -453,12 +445,11 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (SavedAlbum savedAlbum : items) {
-                            interruptionHandler.checkInterruption();
-                            pb.step(savedAlbum.getAlbum().getId());
                             Album album = this.getAlbum(savedAlbum.getAlbum().getId(), savedAlbum.getAlbum().getName(),
                                     savedAlbum.getAlbum().getArtists()[0].getName());
                             if (album != null) {
                                 albums.add(album);
+                                pb.step(album.getName());
                             }
                         }
                         offset += limit;
@@ -520,13 +511,11 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         int offset = 0;
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler();
-                ProgressBar pb = new ProgressBar(albumId, -1)) {
+        try (IPIterator<?> pb = IPIterator.manual(albumId, -1)) {
             ArrayList<Song> songs = new ArrayList<>();
             int limit = Settings.spotifySongLimit;
             boolean hasMore = true;
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
                         .limit(limit)
                         .offset(offset)
@@ -538,7 +527,6 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (TrackSimplified track : items) {
-                            interruptionHandler.checkInterruption();
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
                                 if (!artist.getName().equals("Various Artists")) {
@@ -594,9 +582,8 @@ public class Spotify implements Import, Export, Sync {
             int limit = Settings.spotifyAlbumLimit;
             int offset = 0;
             boolean hasMore = true;
-            try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            try (IPIterator<?> pb = IPIterator.manual("Albums", albums.size())) {
                 while (hasMore) {
-                    interruptionHandler.checkInterruption();
                     String[] currentIds = albumIds.subList(offset,
                             Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
                     RemoveAlbumsForCurrentUserRequest removeAlbumsForCurrentUserRequest = spotifyApi
@@ -605,6 +592,7 @@ public class Spotify implements Import, Export, Sync {
                     try {
                         removeAlbumsForCurrentUserRequest.execute();
                         logger.debug("removed albums (" + currentIds.length + "): " + currentIds.toString());
+                        pb.step(currentIds.length);
                         offset += limit;
                         if (limit > currentIds.length) {
                             hasMore = false;
@@ -638,10 +626,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifyAlbumLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Albums", albumIds.size());
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Albums", albumIds.size());) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 String[] currentAlbumIds = albumIds.subList(offset,
                         Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
                 SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = spotifyApi
@@ -688,10 +674,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifyPlaylistLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar("Spotify Playlists", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Playlists", -1);) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
                         .getListOfCurrentUsersPlaylists()
                         .limit(limit)
@@ -707,7 +691,6 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (PlaylistSimplified spotifyPlaylist : items) {
-                            interruptionHandler.checkInterruption();
                             String coverImageUrl = null;
                             Image[] images = spotifyPlaylist.getImages();
                             if (images != null && images.length > 0) {
@@ -771,10 +754,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (ProgressBar pb = new ProgressBar(playlistId, -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual(playlistId, -1);) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
                         .limit(limit)
                         .offset(offset)
@@ -786,7 +767,6 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (PlaylistTrack playlistTrack : items) {
-                            interruptionHandler.checkInterruption();
                             Song song = null;
                             if (playlistTrack.getTrack() instanceof Track) {
                                 Track track = (Track) playlistTrack.getTrack();
@@ -902,9 +882,8 @@ public class Spotify implements Import, Export, Sync {
                 int limit = Settings.spotifySongLimit;
                 int offset = 0;
                 boolean hasMore = true;
-                try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+                try (IPIterator<?> pb = IPIterator.manual(playlist.getName(), playlist.size())) {
                     while (hasMore) {
-                        interruptionHandler.checkInterruption();
                         String[] currentIds = songIds.subList(offset,
                                 Math.min(offset + limit, songIds.size())).toArray(new String[0]);
                         JsonArray tracks = new JsonArray();
@@ -920,6 +899,7 @@ public class Spotify implements Import, Export, Sync {
                             removeItemsFromPlaylistRequest.execute();
                             logger.debug("removed playlist '" + playlist.getName() + "'' songs (" + currentIds.length
                                     + "): " + currentIds.toString());
+                            pb.step(currentIds.length);
                             offset += limit;
                             if (limit > currentIds.length) {
                                 hasMore = false;
@@ -979,9 +959,8 @@ public class Spotify implements Import, Export, Sync {
         int limit = Settings.spotifySongLimit;
         int offset = 0;
         boolean hasMore = true;
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual(playlist.getName(), playlist.size())) {
             while (hasMore) {
-                interruptionHandler.checkInterruption();
                 String[] currentSongUris = songUris.subList(offset,
                         Math.min(offset + limit, songUris.size())).toArray(new String[0]);
                 AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
@@ -990,6 +969,7 @@ public class Spotify implements Import, Export, Sync {
                 try {
                     addItemsToPlaylistRequest.execute();
                     offset += limit;
+                    pb.step(currentSongUris.length);
                     if (limit > currentSongUris.length) {
                         hasMore = false;
                     }

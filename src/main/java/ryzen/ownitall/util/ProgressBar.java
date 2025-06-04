@@ -17,7 +17,6 @@ import me.tongfei.progressbar.ProgressBarStyle;
  *
  * @author ryzen
  */
-// TODO: progressbar EVERYWHERE
 // TODO: make logs not affect progressbar
 public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
@@ -100,7 +99,9 @@ public class ProgressBar implements AutoCloseable {
     }
 
     /**
-     * <p>getElapsedTime.</p>
+     * <p>
+     * getElapsedTime.
+     * </p>
      *
      * @return a {@link java.time.Duration} object
      */

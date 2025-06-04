@@ -45,9 +45,8 @@ public class Download implements Sync, Export {
     // tidal
     private static final Logger logger = new Logger(Download.class);
     private ExecutorService executor;
-    // TODO: remove this
     // currently needed to prevent infinite looping of constructors
-    private static boolean initiated = false;
+    private static boolean initiation = false;
     private DownloadInterface downloadClass;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo"));
@@ -74,8 +73,7 @@ public class Download implements Sync, Export {
      * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
      */
     public Download() throws MissingSettingException, AuthenticationException {
-        if (initiated) {
-            initiated = false;
+        if (initiation) {
             return;
         }
         if (Settings.downloadMethod.isEmpty()) {
@@ -85,7 +83,7 @@ public class Download implements Sync, Export {
             Class<?> downloadClass = getMethod(Settings.downloadMethod);
             try {
                 logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
-                initiated = true;
+                initiation = true;
                 this.downloadClass = (DownloadInterface) downloadClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 Throwable cause = e.getCause();
@@ -101,6 +99,8 @@ public class Download implements Sync, Export {
         } catch (NoSuchMethodException e) {
             logger.error("Invalid or missing download class set in settings", e);
             throw new AuthenticationException(e);
+        } finally {
+            initiation = false;
         }
     }
 
@@ -140,7 +140,7 @@ public class Download implements Sync, Export {
                     interruptionHandler.checkInterruption();
                     // Attempt to execute the task
                     this.executor.execute(() -> {
-                        this.downloadSong(song, path);
+                        this.exportSong(song, path);
                     });
                     break;
                 } catch (RejectedExecutionException e) {
@@ -191,8 +191,13 @@ public class Download implements Sync, Export {
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @param path a {@link java.io.File} object
      */
-    public void downloadSong(Song song, File path) {
-        downloadClass.downloadSong(song, path);
+    public void exportSong(Song song, File path) {
+        try {
+            downloadClass.downloadSong(song, path);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while downloading song");
+            InterruptionHandler.forceInterruption();
+        }
     }
 
     /**
@@ -521,7 +526,7 @@ public class Download implements Sync, Export {
             this.writePlaylistData(playlist, playlistFolder);
         }
         try {
-            for (Song song : IPIterator.wrap(songs, "Playlist '" + playlist.getName() + "'", playlist.size())) {
+            for (Song song : IPIterator.wrap(songs, playlist.getName(), playlist.size())) {
                 this.threadDownload(song, playlistFolder);
             }
         } catch (InterruptedException e) {
@@ -543,7 +548,7 @@ public class Download implements Sync, Export {
         ArrayList<Album> albums = new Upload().getAlbums();
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
-            for (Album album : albums) {
+            for (Album album : IPIterator.wrap(albums.iterator(), "Albums", albums.size())) {
                 File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
@@ -584,7 +589,7 @@ public class Download implements Sync, Export {
                 album.getMainArtist().getName());
         if (localAlbum != null && !localAlbum.isEmpty()) {
             localAlbum.removeSongs(album.getSongs());
-            for (Song song : localAlbum.getSongs()) {
+            for (Song song : IPIterator.wrap(localAlbum.getSongs().iterator(), album.getName(), localAlbum.size())) {
                 File songFile = new File(albumFolder, Collection.getSongFileName(song));
                 if (songFile.exists()) {
                     if (songFile.delete()) {
@@ -616,7 +621,7 @@ public class Download implements Sync, Export {
         albumFolder.mkdirs();
         try {
             this.writeAlbumData(album, albumFolder);
-            for (Song song : IPIterator.wrap(album.getSongs(), "Album '" + album.getName() + "'", album.size())) {
+            for (Song song : IPIterator.wrap(album.getSongs(), album.getName(), album.size())) {
                 this.threadDownload(song, albumFolder);
             }
         } catch (InterruptedException e) {

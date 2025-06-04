@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Level;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
@@ -55,7 +54,7 @@ public class SoulSeek extends Download implements DownloadInterface {
      * download a specified song
      */
     @Override
-    public void downloadSong(Song song, File path) {
+    public void downloadSong(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
             return;
@@ -129,10 +128,7 @@ public class SoulSeek extends Download implements DownloadInterface {
             }
         } catch (IOException e) {
             logger.error("Exception preparing yt-dlp: ", e);
-            InterruptionHandler.forceInterruption();
-        } catch (InterruptedException e) {
-            logger.debug("Interruption caught while downloading soulseek song");
-            InterruptionHandler.forceInterruption();
+            throw new InterruptedException(e.getMessage());
         }
     }
 }

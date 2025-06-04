@@ -29,6 +29,8 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
+// TODO: youtube library?
+// then use in yt_dl
 abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -47,7 +46,7 @@ public class YT_dl extends Download implements DownloadInterface {
      * download a specified song
      */
     @Override
-    public void downloadSong(Song song, File path) {
+    public void downloadSong(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
             return;
@@ -161,9 +160,7 @@ public class YT_dl extends Download implements DownloadInterface {
             }
         } catch (IOException e) {
             logger.error("Exception preparing yt-dlp: ", e);
-        } catch (InterruptedException e) {
-            logger.debug("Interruption caught while downloading yt-dlp song");
-            InterruptionHandler.forceInterruption();
+            throw new InterruptedException(e.getMessage());
         }
     }
 }

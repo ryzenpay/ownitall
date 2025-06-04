@@ -20,9 +20,8 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.util.InterruptionHandler;
+import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -112,15 +111,10 @@ public class Youtube implements Import {
      */
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
-        if (youtubeApi == null) {
-            return null;
-        }
         LikedSongs likedSongs = new LikedSongs();
         String pageToken = null;
-        try (ProgressBar pb = new ProgressBar("Liked Song", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Liked Songs", -1)) {
             do {
-                interruptionHandler.checkInterruption();
                 YouTube.Videos.List request = youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
@@ -131,7 +125,6 @@ public class Youtube implements Import {
 
                 List<Video> items = response.getItems();
                 for (Video video : items) {
-                    interruptionHandler.checkInterruption();
                     VideoSnippet snippet = video.getSnippet();
                     VideoContentDetails contentDetails = video.getContentDetails();
                     if (snippet != null && contentDetails != null) {
@@ -175,14 +168,9 @@ public class Youtube implements Import {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         String pageToken = null;
-        if (youtubeApi == null) {
-            return null;
-        }
         ArrayList<Playlist> playlists = new ArrayList<>();
-        try (ProgressBar pb = new ProgressBar("Playlists", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual("Playlists", -1)) {
             do {
-                interruptionHandler.checkInterruption();
                 YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
@@ -190,9 +178,7 @@ public class Youtube implements Import {
                         .setPageToken(pageToken);
 
                 PlaylistListResponse playlistResponse = playlistRequest.execute();
-
                 for (com.google.api.services.youtube.model.Playlist currentPlaylist : playlistResponse.getItems()) {
-                    interruptionHandler.checkInterruption();
                     Playlist playlist = new Playlist(currentPlaylist.getSnippet().getTitle());
                     ArrayList<Song> songs = this.getPlaylistSongs(currentPlaylist.getId());
                     if (songs != null) {
@@ -224,10 +210,8 @@ public class Youtube implements Import {
         }
         ArrayList<Song> songs = new ArrayList<>();
         String pageToken = null;
-        try (ProgressBar pb = new ProgressBar("Liked Songs", -1);
-                InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+        try (IPIterator<?> pb = IPIterator.manual(playlistId, -1)) {
             do {
-                interruptionHandler.checkInterruption();
                 YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
@@ -235,7 +219,6 @@ public class Youtube implements Import {
                         .setPageToken(pageToken);
                 PlaylistItemListResponse itemResponse = itemRequest.execute();
                 for (PlaylistItem item : itemResponse.getItems()) {
-                    interruptionHandler.checkInterruption();
                     String videoId = item.getContentDetails().getVideoId();
                     if (isMusicVideo(videoId)) {
                         PlaylistItemSnippet snippet = item.getSnippet();

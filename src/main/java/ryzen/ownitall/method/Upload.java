@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import ryzen.ownitall.Collection;
@@ -95,7 +94,7 @@ public class Upload implements Import {
                 }
                 interruptionHandler.checkInterruption();
                 File[] files = Settings.localFolder.listFiles();
-                for (File folder : IPIterator.wrap(Arrays.stream(files), "Liked Songs", files.length)) {
+                for (File folder : IPIterator.wrap(files, "Liked Songs", files.length)) {
                     if (folder.isDirectory()) {
                         interruptionHandler.checkInterruption();
                         LikedSongs folderLikedSongs = getLikedSongs(folder);
@@ -125,8 +124,7 @@ public class Upload implements Import {
         }
         LikedSongs likedSongs = new LikedSongs();
         File[] files = folder.listFiles();
-        for (File file : IPIterator.wrap(Arrays.stream(files), "'" + folder.getName() + "' liked songs",
-                files.length)) {
+        for (File file : IPIterator.wrap(files, "Liked Songs", files.length)) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                 Song song = getSong(file);
                 if (song != null) {
@@ -153,7 +151,7 @@ public class Upload implements Import {
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
         File[] files = Settings.localFolder.listFiles();
-        for (File file : IPIterator.wrap(Arrays.stream(files), "Playlists", files.length)) {
+        for (File file : IPIterator.wrap(files, "Playlists", files.length)) {
             if (Settings.downloadHierachy) {
                 if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                     if (!isAlbum(file)) {
@@ -197,7 +195,8 @@ public class Upload implements Import {
             return null;
         }
         Playlist playlist = new Playlist(file.getName().substring(0, file.getName().lastIndexOf('.')));
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file));
+                IPIterator<?> pb = IPIterator.manual(file.getName(), -1)) {
             String line;
             String currSongLine = null;
             while ((line = reader.readLine()) != null) {
@@ -222,6 +221,7 @@ public class Upload implements Import {
                         Song song = getSong(songFile);
                         if (song != null) {
                             playlist.addSong(song);
+                            pb.step(song.getName());
                         }
                     } else {
                         logger.debug("Song referenced in m3u '" + file.getAbsoluteFile() + "' not found: "
@@ -271,7 +271,7 @@ public class Upload implements Import {
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
         File[] files = Settings.localFolder.listFiles();
-        for (File file : IPIterator.wrap(Arrays.stream(files), "Albums", files.length)) {
+        for (File file : IPIterator.wrap(files, "Albums", files.length)) {
             if (file.isDirectory() && !file.getName().equalsIgnoreCase(Settings.likedSongName)) {
                 if (isAlbum(file)) {
                     Album album = this.getAlbum(file.getAbsolutePath(), null, null);
@@ -303,16 +303,11 @@ public class Upload implements Import {
         ArrayList<Song> songs = getSongs(folder);
         if (songs != null && !songs.isEmpty()) {
             album.addSongs(songs);
-            Song song = songs.get(0);
-            // get albumName from first song in album
-            try {
-                LinkedHashMap<FieldKey, String> songData = MusicTools
-                        .readMetaData(new File(folder, Collection.getSongFileName(song)));
-                if (songData.get(FieldKey.ALBUM) != null) {
-                    album.setName(songData.get(FieldKey.ALBUM));
+            for (Song song : songs) {
+                if (song.getAlbumName() != null) {
+                    album.setName(song.getAlbumName());
+                    break;
                 }
-            } catch (Exception e) {
-                logger.error("Exception reading albumName from song: " + song.toString(), e);
             }
         }
         File albumCover = new File(folder, Collection.getCollectionCoverFileName(album));
@@ -383,8 +378,7 @@ public class Upload implements Import {
         }
         ArrayList<Song> songs = new ArrayList<>();
         File[] files = folder.listFiles();
-        for (File file : IPIterator.wrap(Arrays.stream(files), "'" + folder.getName() + "' songs",
-                files.length)) {
+        for (File file : IPIterator.wrap(files, folder.getName(), files.length)) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
                 Song song = getSong(file);
                 if (song != null) {

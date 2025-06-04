@@ -1,8 +1,8 @@
 package ryzen.ownitall.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 // source: https://github.com/ctongfei/progressbar/blob/main/src/main/java/me/tongfei/progressbar/wrapped/ProgressBarWrappedIterator.java
 /**
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  * @author ryzen
  */
 // TODO: implement while loops
-// define the iterator, append to the array in the iterator
+// an iterator with step which checks interruption & steps
 // TODO: task lists?
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
@@ -85,12 +85,36 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
      * @return a {@link ryzen.ownitall.util.IPIterator} object
      * @throws java.lang.InterruptedException if any.
      */
-    public static <T> IPIterator<T> wrap(Stream<T> iterated, String title, int maxStep) throws InterruptedException {
+    public static <T> IPIterator<T> wrap(T[] iterated, String title, int maxStep) throws InterruptedException {
         if (iterated == null) {
             logger.debug("null iterated provided in wrap");
             return null;
         }
-        return new IPIterator<>(iterated.iterator(), title, maxStep);
+        return new IPIterator<>(Arrays.stream(iterated).iterator(), title, maxStep);
+    }
+
+    public static IPIterator<?> manual(String title, int maxStep) throws InterruptedException {
+        return new IPIterator<>(null, title, maxStep);
+    }
+
+    public void step(String message) throws InterruptedException {
+        interruptionHandler.checkInterruption();
+        if (iterated != null) {
+            iterated.next();
+        } else {
+            this.pb.step(message);
+        }
+    }
+
+    public void step(int by) throws InterruptedException {
+        interruptionHandler.checkInterruption();
+        if (iterated != null) {
+            for (int i = 0; i < by; i++) {
+                iterated.next();
+            }
+        } else {
+            this.pb.step(by);
+        }
     }
 
     /** {@inheritDoc} */

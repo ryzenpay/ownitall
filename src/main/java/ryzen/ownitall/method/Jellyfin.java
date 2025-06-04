@@ -29,7 +29,6 @@ import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.IPIterator;
-import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
@@ -102,12 +101,13 @@ public class Jellyfin implements Import, Export, Sync {
                         }
                     }
                 }
+                if (!likedSongs.isEmpty()) {
+                    return likedSongs;
+                }
             }
-        } else {
-            logger.debug("Unable to get ids of favorite items");
-            return null;
         }
-        return likedSongs;
+        logger.debug("Unable to get ids of favorite items");
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -115,16 +115,13 @@ public class Jellyfin implements Import, Export, Sync {
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting jellyfin liked songs to remove mismatches");
         LikedSongs likedSongs = this.getLikedSongs();
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            if (likedSongs != null && !likedSongs.isEmpty()) {
-                likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
-                for (Song song : likedSongs.getSongs()) {
-                    interruptionHandler.checkInterruption();
-                    String songId = this.getSongId(song);
-                    if (songId != null) {
-                        this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
-                        logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
-                    }
+        if (likedSongs != null && !likedSongs.isEmpty()) {
+            likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
+            for (Song song : IPIterator.wrap(likedSongs.getSongs(), "Liked Songs", likedSongs.size())) {
+                String songId = this.getSongId(song);
+                if (songId != null) {
+                    this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                    logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
                 }
             }
         }
@@ -162,12 +159,13 @@ public class Jellyfin implements Import, Export, Sync {
                         playlists.add(playlist);
                     }
                 }
+                if (!playlists.isEmpty()) {
+                    return playlists;
+                }
             }
-        } else {
-            logger.debug("Unable to get ids of playlists");
-            return null;
         }
-        return playlists;
+        logger.debug("Unable to get ids of playlists");
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -181,8 +179,9 @@ public class Jellyfin implements Import, Export, Sync {
         ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
         if (songs != null) {
             playlist.addSongs(songs);
+            return playlist;
         }
-        return playlist;
+        return null;
     }
 
     // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist
@@ -205,14 +204,16 @@ public class Jellyfin implements Import, Export, Sync {
         if (response != null) {
             JsonNode itemIdsNode = response.get("ItemIds");
             if (itemIdsNode != null && itemIdsNode.isArray()) {
-                for (JsonNode itemIdNode : itemIdsNode) {
+                for (JsonNode itemIdNode : IPIterator.wrap(itemIdsNode.iterator(), playlistId, -1)) {
                     Song song = this.getSong(itemIdNode.asText());
                     if (song != null) {
                         songs.add(song);
                     }
                 }
             }
-            return songs;
+            if (!songs.isEmpty()) {
+                return songs;
+            }
         }
         logger.debug("Unable to find playlist songs '" + playlistId + "' in jellyfin");
         return null;
@@ -254,7 +255,7 @@ public class Jellyfin implements Import, Export, Sync {
         if (response != null) {
             JsonNode itemsNode = response.get("Items");
             if (itemsNode != null && itemsNode.isArray()) {
-                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Playlists", -1)) {
+                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Albums", -1)) {
                     String artistName = null;
                     JsonNode artistNode = response.get("Artists").get(0);
                     if (artistNode != null) {
@@ -266,12 +267,13 @@ public class Jellyfin implements Import, Export, Sync {
                         albums.add(album);
                     }
                 }
+                if (!albums.isEmpty()) {
+                    return albums;
+                }
             }
-        } else {
-            logger.debug("Unable to get ids of albums");
-            return null;
         }
-        return albums;
+        logger.debug("Unable to get ids of albums");
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -333,12 +335,13 @@ public class Jellyfin implements Import, Export, Sync {
                         }
                     }
                 }
+                if (!songs.isEmpty()) {
+                    return songs;
+                }
             }
-            return songs;
-        } else {
-            logger.debug("Unable to get ids of album songs: " + albumId);
-            return null;
         }
+        logger.debug("Unable to get ids of album songs: " + albumId);
+        return null;
     }
 
     /** {@inheritDoc} */
