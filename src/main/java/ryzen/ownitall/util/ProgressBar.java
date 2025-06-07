@@ -18,6 +18,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
  * @author ryzen
  */
 // TODO: make logs not affect progressbar
+// jcurses
 public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
     /** Constant <code>output=true</code> */

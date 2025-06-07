@@ -59,8 +59,8 @@ public class MethodMenu {
      * methodMenu.
      * </p>
      *
-     * @param model           a {@link org.springframework.ui.Model} object
-     * @param callback        a {@link java.lang.String} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method")
@@ -86,10 +86,12 @@ public class MethodMenu {
     }
 
     /**
-     * <p>Setter for the field <code>method</code>.</p>
+     * <p>
+     * Setter for the field <code>method</code>.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
-     * @param method a {@link java.lang.String} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param method   a {@link java.lang.String} object
      * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
@@ -124,8 +126,8 @@ public class MethodMenu {
      * loginForm.
      * </p>
      *
-     * @param model           a {@link org.springframework.ui.Model} object
-     * @param callback        a {@link java.lang.String} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      * @param method a {@link java.lang.String} object
      */
@@ -243,7 +245,6 @@ public class MethodMenu {
     }
 
     // TODO: import individual album
-    // browse with just albums, option to do all or individual albums?
     /**
      * <p>
      * optionImportAlbums.
@@ -281,17 +282,21 @@ public class MethodMenu {
     // TODO: use a form to get id, name and album artist name
     // also update for playlist
     /**
-     * <p>importAlbum.</p>
+     * <p>
+     * importAlbum.
+     * </p>
      *
      * @param id a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/album/{id}")
-    public ResponseEntity<Void> importAlbum(@PathVariable(value = "id") String id) {
+    @PostMapping("/method/import/album")
+    public ResponseEntity<Void> importAlbum(@RequestParam(value = "id", required = true) String id,
+            @RequestParam(value = "albumName", required = false) String albumName,
+            @RequestParam(value = "artistName", required = false) String artistName) {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        this.method.importAlbum(id, null, null);
+        this.method.importAlbum(id, albumName, artistName);
         return ResponseEntity.badRequest().build();
     }
 
@@ -315,7 +320,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>importPlaylists.</p>
+     * <p>
+     * importPlaylists.
+     * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -336,12 +343,13 @@ public class MethodMenu {
      * @param id a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/playlist/{id}")
-    public ResponseEntity<Void> importPlaylist(@PathVariable(value = "id") String id) {
+    @PostMapping("/method/import/playlist")
+    public ResponseEntity<Void> importPlaylist(@RequestParam(value = "id", required = true) String id,
+            @RequestParam(value = "name", required = false) String name) {
         if (this.method == null) {
             return ResponseEntity.badRequest().build();
         }
-        this.method.importPlaylist(id, null);
+        this.method.importPlaylist(id, name);
         return ResponseEntity.badRequest().build();
     }
 
@@ -467,7 +475,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>exportAlbums.</p>
+     * <p>
+     * exportAlbums.
+     * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -533,7 +543,9 @@ public class MethodMenu {
     }
 
     /**
-     * <p>exportPlaylists.</p>
+     * <p>
+     * exportPlaylists.
+     * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */

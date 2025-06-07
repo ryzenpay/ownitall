@@ -5,7 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -34,18 +41,10 @@ import org.jaudiotagger.tag.FieldKey;
  *
  * @author ryzen
  */
-// TODO: threading
-// especially when reading metadata
 public class Upload implements Import {
     private static final Logger logger = new Logger(Upload.class);
     private static final Library library = Library.load();
-    private static final ArrayList<String> extensions = new ArrayList<>() {
-        {
-            add("mp3");
-            add("flac");
-            add("wav");
-        }
-    };
+    private static final ArrayList<String> extensions = new ArrayList<>(Arrays.asList("mp3", "flac", "wav"));
 
     /**
      * <p>
@@ -373,19 +372,35 @@ public class Upload implements Import {
      */
     public static ArrayList<Song> getSongs(File folder) throws InterruptedException {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
-            logger.debug("null or non directory or non existant folder passed in getSongs");
+            logger.debug("null or non-directory or non-existent folder passed in getSongs");
             return null;
         }
+
         ArrayList<Song> songs = new ArrayList<>();
         File[] files = folder.listFiles();
+
+        // Create a fixed thread pool with a size based on available processors
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Future<Song>> futures = new ArrayList<>();
+
         for (File file : IPIterator.wrap(files, folder.getName(), files.length)) {
             if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
-                Song song = getSong(file);
+                Callable<Song> task = () -> getSong(file);
+                futures.add(executor.submit(task));
+            }
+        }
+
+        for (Future<Song> future : futures) {
+            try {
+                Song song = future.get();
                 if (song != null) {
                     songs.add(song);
                 }
+            } catch (ExecutionException e) {
+                logger.error("Exception processing song file", e);
             }
         }
+        executor.shutdown();
         return songs;
     }
 
