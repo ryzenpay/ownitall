@@ -7,6 +7,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.library.Library;
@@ -56,6 +57,7 @@ public class Main {
             }
             Settings.load();
             new Storage().importCollection();
+            ClassLoader.init("ryzen.ownitall");
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
                 logger.debug("non interactive parameter provided: " + trace);

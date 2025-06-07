@@ -18,6 +18,7 @@ import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
@@ -35,7 +36,6 @@ abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     /** Constant <code>libraries</code> */
-    private static final LinkedHashSet<Class<? extends Library>> libraries;
     private static long lastQueryTime = 0;
     protected long queryDiff;
     /**
@@ -45,13 +45,6 @@ abstract public class Library implements LibraryInterface {
     protected static LinkedHashMap<String, Album> albums;
     protected static LinkedHashMap<String, Song> songs;
     protected static LinkedHashMap<String, String> ids;
-
-    // TODO: make it detect these
-    static {
-        libraries = new LinkedHashSet<>();
-        libraries.add(LastFM.class);
-        libraries.add(MusicBrainz.class);
-    }
 
     /**
      * default Library constructor
@@ -81,28 +74,11 @@ abstract public class Library implements LibraryInterface {
      * @return a {@link java.util.LinkedHashSet} object
      */
     public static LinkedHashSet<Class<? extends Library>> getLibraries() {
-        return libraries;
+        return ClassLoader.load().getSubClasses(Library.class);
     }
 
-    /**
-     * <p>
-     * getLibrary.
-     * </p>
-     *
-     * @param name a {@link java.lang.String} object
-     * @return a {@link java.lang.Class} object
-     */
     public static Class<? extends Library> getLibrary(String name) {
-        if (name == null) {
-            logger.debug("null name provided in getLibrary");
-            return null;
-        }
-        for (Class<? extends Library> library : libraries) {
-            if (library.getSimpleName().equals(name)) {
-                return library;
-            }
-        }
-        return null;
+        return ClassLoader.load().getSubClass(Library.class, name);
     }
 
     /**
@@ -151,8 +127,7 @@ abstract public class Library implements LibraryInterface {
             return null;
         }
         try {
-            Class<? extends Library> libraryClass = getLibrary(Settings.libraryType);
-            return initLibrary(libraryClass);
+            return initLibrary(ClassLoader.load().getSubClass(Library.class, Settings.libraryType));
         } catch (MissingSettingException e) {
             logger.warn("Library '" + Settings.libraryType + "' is missing credentials: " + e.getMessage());
         } catch (AuthenticationException e) {

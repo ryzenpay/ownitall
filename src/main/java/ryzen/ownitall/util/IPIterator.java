@@ -10,9 +10,6 @@ import java.util.Iterator;
  *
  * @author ryzen
  */
-// TODO: implement while loops
-// an iterator with step which checks interruption & steps
-// TODO: task lists?
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
     private static IPIterator<?> rootInstance;
@@ -21,15 +18,14 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private ProgressBar pb;
     private InterruptionHandler interruptionHandler;
 
-    private IPIterator(Iterator<T> iterated, String title, int maxStep) throws InterruptedException {
+    private IPIterator(Iterator<T> iterated, String title, int maxStep) {
         this.iterated = iterated;
         this.pb = new ProgressBar(title, maxStep);
-        interruptionHandler = new InterruptionHandler(false);
         if (rootInstance == null) {
-            InterruptionHandler.resetInterruption();
+            interruptionHandler = new InterruptionHandler(true);
             rootInstance = this;
         } else {
-            interruptionHandler.checkInterruption();
+            interruptionHandler = new InterruptionHandler(false);
         }
     }
 

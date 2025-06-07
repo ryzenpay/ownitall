@@ -214,6 +214,13 @@
       <version>3.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Class loader -->
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.10.2</version>
+    </dependency>
   </dependencies>
 
   <build>

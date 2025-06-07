@@ -8,10 +8,10 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.download.Download;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -27,17 +27,6 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class Method {
     private static final Logger logger = new Logger(Method.class);
     /** Constant <code>methods</code> */
-    private static final LinkedHashSet<Class<?>> methods;
-    // TODO: make it detect these
-    static {
-        methods = new LinkedHashSet<>();
-        methods.add(Jellyfin.class);
-        methods.add(Spotify.class);
-        methods.add(Youtube.class);
-        methods.add(Upload.class);
-        methods.add(Download.class);
-    }
-
     private Object method;
 
     /**
@@ -80,7 +69,12 @@ public class Method {
      * @return a {@link java.util.LinkedHashSet} object
      */
     public static LinkedHashSet<Class<?>> getMethods() {
-        return methods;
+        LinkedHashSet<Class<?>> classes = new LinkedHashSet<>();
+        ClassLoader loader = ClassLoader.load();
+        classes.addAll(loader.getSubClasses(Import.class));
+        classes.addAll(loader.getSubClasses(Export.class));
+        classes.addAll(loader.getSubClasses(Sync.class));
+        return classes;
     }
 
     /**
@@ -92,16 +86,8 @@ public class Method {
      * @param <type> a type class
      * @return a {@link java.util.LinkedHashSet} object
      */
-    public static <type> LinkedHashSet<Class<?>> getMethods(type filter) {
-        LinkedHashSet<Class<?>> filteredMethods = new LinkedHashSet<>();
-        for (Class<?> method : methods) {
-            for (Class<?> currInterface : method.getInterfaces()) {
-                if (currInterface.equals(filter)) {
-                    filteredMethods.add(method);
-                }
-            }
-        }
-        return filteredMethods;
+    public static <T> LinkedHashSet<Class<? extends T>> getMethods(Class<T> type) {
+        return ClassLoader.load().getSubClasses(type);
     }
 
     /**
@@ -117,7 +103,7 @@ public class Method {
             logger.debug("null name provided in getMethod");
             return null;
         }
-        for (Class<?> method : methods) {
+        for (Class<?> method : getMethods()) {
             if (method.getSimpleName().equals(name)) {
                 return method;
             }

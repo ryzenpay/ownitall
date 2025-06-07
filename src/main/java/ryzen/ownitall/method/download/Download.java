@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -24,6 +23,7 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
@@ -54,13 +54,6 @@ public class Download implements Sync, Export {
         // so when user changes it doesnt delete their old
         whiteList.addAll(Arrays.asList(Settings.load().getOptions("downloadFormat")));
     }
-    private static final LinkedHashSet<Class<?>> methods;
-    // TODO: make it detect these
-    static {
-        methods = new LinkedHashSet<>();
-        methods.add(YT_dl.class);
-        methods.add(SoulSeek.class);
-    }
     /** Constant <code>downloadThreads=Settings.downloadThreads</code> */
     protected static int downloadThreads = Settings.downloadThreads;
 
@@ -80,7 +73,8 @@ public class Download implements Sync, Export {
             throw new MissingSettingException("Missing downloadMethod");
         }
         try {
-            Class<?> downloadClass = getMethod(Settings.downloadMethod);
+            Class<? extends Download> downloadClass = ClassLoader.load().getSubClass(Download.class,
+                    Settings.downloadMethod);
             try {
                 logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
                 initiation = true;
@@ -102,19 +96,6 @@ public class Download implements Sync, Export {
         } finally {
             initiation = false;
         }
-    }
-
-    public static Class<?> getMethod(String name) {
-        if (name == null) {
-            logger.debug("null name provided in getMethod");
-            return null;
-        }
-        for (Class<?> method : methods) {
-            if (method.getSimpleName().equals(name)) {
-                return method;
-            }
-        }
-        return null;
     }
 
     /**

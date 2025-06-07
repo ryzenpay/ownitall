@@ -23,5 +23,6 @@
         <Logger name="org.apache.hc.client5.http" level="ERROR" additivity="false" />
         <Logger name="org.apache.hc.client5.http.impl.classic.InternalHttpClient" level="ERROR"
             additivity="false" />
+        <Logger name=" org.reflections.Reflections" level="ERROR" additivity="false" />
     </Loggers>
 </Configuration>
