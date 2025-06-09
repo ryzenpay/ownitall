@@ -1,7 +1,9 @@
 package ryzen.ownitall.method.download;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -56,6 +58,7 @@ public class Download implements Sync, Export {
     }
     /** Constant <code>downloadThreads=Settings.downloadThreads</code> */
     protected static int downloadThreads = Settings.downloadThreads;
+    private static final int retries = 3;
 
     /**
      * <p>
@@ -174,10 +177,43 @@ public class Download implements Sync, Export {
      */
     public void exportSong(Song song, File path) {
         try {
-            downloadClass.downloadSong(song, path);
+            ArrayList<String> command = downloadClass.createCommand(song, path);
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true); // Merge stdout and stderr
+            File songFile = new File(path, Collection.getSongFileName(song));
+            StringBuilder completeLog = new StringBuilder();
+            for (int i = 0; i < retries; i++) {
+                if (songFile.exists()) {
+                    break;
+                }
+                Process process = processBuilder.start();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    // Capture output for logging
+                    while ((line = reader.readLine()) != null) {
+                        completeLog.append(line).append("\n");
+                    }
+                }
+                int exitCode = process.waitFor();
+                if (exitCode != 0) {
+                    logger.warn("Attempt: " + i);
+                    downloadClass.handleError(exitCode);
+                    logger.debug(
+                            "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
+                }
+            }
+            if (songFile.exists()) {
+                writeMetaData(song, songFile);
+            } else {
+                logger.warn("song '" + song.toString() + "' failed to download, check logs");
+            }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while downloading song");
             InterruptionHandler.forceInterruption();
+        } catch (IOException e) {
+            logger.error("Exception preparing " + downloadClass.getClass().getSimpleName() + ": ", e);
+        } catch (DownloadException e) {
+            logger.warn("Exception while downloading: " + e.getMessage());
         }
     }
 

@@ -1,9 +1,6 @@
 package ryzen.ownitall.method.download;
 
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import ryzen.ownitall.Collection;
@@ -40,16 +37,10 @@ public class YT_dl extends Download implements DownloadInterface {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * download a specified song
-     */
-    @Override
-    public void downloadSong(Song song, File path) throws InterruptedException {
+    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
-            return;
+            return null;
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
@@ -106,61 +97,18 @@ public class YT_dl extends Download implements DownloadInterface {
             searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         }
         command.add(searchQuery);
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.redirectErrorStream(true); // Merge stdout and stderr
-            int retries = 0;
-            File songFile = new File(path, Collection.getSongFileName(song));
-            StringBuilder completeLog = new StringBuilder();
-            while (!songFile.exists() && retries < 3) {
-                if (retries == 1) {
-                    // cookies for age restriction (do not default to them)
-                    if (Settings.yt_dlCookieFile != null && Settings.yt_dlCookieFile.exists()) {
-                        command.add(1, "--cookies");
-                        command.add(2, Settings.yt_dlCookieFile.getAbsolutePath());
-                    } else if (!Settings.yt_dlCookieBrowser.isEmpty()) {
-                        command.add(1, "--cookies-from-browser");
-                        command.add(2, Settings.yt_dlCookieBrowser);
-                    }
-                }
-                Process process = processBuilder.start();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                    String line;
-                    // Capture output for logging
-                    while ((line = reader.readLine()) != null) {
-                        completeLog.append(line).append("\n");
-                    }
-                }
+        return command;
+    }
 
-                int exitCode = process.waitFor();
-                // https://github.com/yt-dlp/yt-dlp/issues/4262
-                if (exitCode != 0) {
-                    logger.warn("Attempt: " + retries);
-                    if (exitCode == 2) {
-                        logger.warn("Error with user provided options: " + command.toString());
-                        break;
-                    } else if (exitCode == 100) {
-                        logger.warn("Your yt-dlp needs to update");
-                        break;
-                    } else if (exitCode == 101) {
-                        logger.warn("Download cancelled due to boundary criteria: '" + searchQuery + "'");
-                        break;
-                    } else {
-                        logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
-                        logger.debug(
-                                "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
-                    }
-                }
-                retries++;
-            }
-            if (songFile.exists()) {
-                writeMetaData(song, songFile);
-            } else {
-                logger.warn("song '" + song.toString() + "' failed to download, check logs");
-            }
-        } catch (IOException e) {
-            logger.error("Exception preparing yt-dlp: ", e);
-            throw new InterruptedException(e.getMessage());
+    public void handleError(int exitCode) throws DownloadException {
+        if (exitCode == 2) {
+            throw new DownloadException("Error with yt_dlp user provided options");
+        } else if (exitCode == 100) {
+            throw new DownloadException("Your yt-dlp needs to update");
+        } else if (exitCode == 101) {
+            throw new DownloadException("Download cancelled due to boundary criteria");
+        } else {
+            logger.warn("Unkown error while downloading yt_dlp song (" + exitCode + ")");
         }
     }
 }

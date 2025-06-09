@@ -1,6 +1,7 @@
 package ryzen.ownitall.method.download;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import ryzen.ownitall.classes.Song;
 
@@ -12,13 +13,8 @@ import ryzen.ownitall.classes.Song;
  * @author ryzen
  */
 public interface DownloadInterface {
-    /**
-     * <p>
-     * downloadSong.
-     * </p>
-     *
-     * @param song a {@link ryzen.ownitall.classes.Song} object
-     * @param path a {@link java.io.File} object
-     */
-    public void downloadSong(Song song, File path) throws InterruptedException;
+
+    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException;
+
+    public void handleError(int errorCode) throws DownloadException;
 }

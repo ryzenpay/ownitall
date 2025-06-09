@@ -1,9 +1,6 @@
 package ryzen.ownitall.method.download;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.Level;
@@ -48,16 +45,10 @@ public class SoulSeek extends Download implements DownloadInterface {
         downloadThreads = 1;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * download a specified song
-     */
-    @Override
-    public void downloadSong(Song song, File path) throws InterruptedException {
+    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException {
         if (song == null || path == null) {
             logger.debug("null song or Path provided in downloadSong");
-            return;
+            return null;
         }
         ArrayList<String> command = new ArrayList<>();
         command.add(Settings.soulSeekFile.getAbsolutePath());
@@ -98,37 +89,10 @@ public class SoulSeek extends Download implements DownloadInterface {
         }
         searchQuery = searchQuery.replaceAll("[\\\\/<>|:]", "");
         command.add(searchQuery);
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.redirectErrorStream(true); // Merge stdout and stderr
-            int retries = 0;
-            File songFile = new File(path, Collection.getSongFileName(song));
-            StringBuilder completeLog = new StringBuilder();
-            while (!songFile.exists() && retries < 3) {
-                Process process = processBuilder.start();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                    String line;
-                    // Capture output for logging
-                    while ((line = reader.readLine()) != null) {
-                        completeLog.append(line).append("\n");
-                    }
-                }
-                int exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    logger.warn("Attempt: " + retries);
-                    logger.warn("Unkown error while downloading song: '" + song + "' with code: " + exitCode);
-                    logger.debug(" Command: " + command.toString() + "\n Complete log: \n" + completeLog.toString());
-                }
-                retries++;
-            }
-            if (songFile.exists()) {
-                writeMetaData(song, songFile);
-            } else {
-                logger.warn("song '" + song.toString() + "' failed to download, check logs");
-            }
-        } catch (IOException e) {
-            logger.error("Exception preparing yt-dlp: ", e);
-            throw new InterruptedException(e.getMessage());
-        }
+        return command;
+    }
+
+    public void handleError(int exitCode) {
+        logger.warn("Unkown exit code while downloading SoulSeek song (" + exitCode + ")");
     }
 }
