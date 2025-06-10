@@ -78,10 +78,7 @@ public class MainMenu {
         options.put("Save", "/save");
         options.put("Tools", "/tools");
         options.put("Settings", "/settings");
-        model.addAttribute("menuName", "Main Menu");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/exit");
-        return "menu";
+        return Templates.menu(model, "Main Menu", options, "/exit");
     }
 
     /**

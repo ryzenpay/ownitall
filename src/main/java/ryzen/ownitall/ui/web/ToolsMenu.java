@@ -41,10 +41,7 @@ public class ToolsMenu {
         options.put("Unarchive", "/tools/unarchive");
         options.put("Library", "/library");
         options.put("Reset Credentials", "/tools/clearcredentials");
-        model.addAttribute("menuName", "Tools Menu");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/tools/return");
-        return "menu";
+        return Templates.menu(model, "Tools Menu", options, "/tools/return");
     }
 
     /**
@@ -63,7 +60,9 @@ public class ToolsMenu {
     }
 
     /**
-     * <p>unarchiveMenu.</p>
+     * <p>
+     * unarchiveMenu.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -79,10 +78,7 @@ public class ToolsMenu {
                 logger.error(model, "Exception converting file path", e);
             }
         }
-        model.addAttribute("menuName", "Choose Folder to Unarchive");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/tools");
-        return "menu";
+        return Templates.menu(model, "Choose Folder to Unarchive", options, "/tools");
     }
 
     /**
@@ -90,7 +86,7 @@ public class ToolsMenu {
      * optionUnArchive.
      * </p>
      *
-     * @param model      a {@link org.springframework.ui.Model} object
+     * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      * @param path a {@link java.lang.String} object
      */

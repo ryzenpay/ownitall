@@ -27,13 +27,6 @@ public class MethodMenu {
 
     private Method method;
 
-    private String getMethodName() {
-        if (method == null) {
-            return "";
-        }
-        return method.getClass().getSimpleName();
-    }
-
     /**
      * <p>
      * Constructor for MethodMenu.
@@ -107,7 +100,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT " + getMethodName());
+                        "IMPORT " + method.getMethodName());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -121,7 +114,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT ALBUM" + getMethodName().toUpperCase());
+                        "IMPORT ALBUM" + method.getMethodName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -129,23 +122,23 @@ public class MethodMenu {
     }
 
     private void optionImportAlbum() {
-        String albumId = null;
-        String albumName = null;
-        String albumArtistName = null;
+        String id = null;
+        String name = null;
+        String artistName = null;
         try {
-            while (albumId == null || albumId.isEmpty()) {
-                System.out.print("*Enter '" + getMethodName() + "' Album ID: ");
-                albumId = Input.request().getString();
+            while (id == null || id.isEmpty()) {
+                System.out.print("*Enter '" + method.getMethodName() + "' Album ID: ");
+                id = Input.request().getString();
             }
-            System.out.print("Enter '" + getMethodName() + "' Album name: ");
-            albumName = Input.request().getString();
-            System.out.print("Enter '" + getMethodName() + "' Album artist name: ");
-            albumArtistName = Input.request().getString();
+            System.out.print("Enter '" + method.getMethodName() + "' Album name: ");
+            name = Input.request().getString();
+            System.out.print("Enter '" + method.getMethodName() + "' Album artist name: ");
+            artistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting album details");
             return;
         }
-        this.method.importAlbum(albumId, albumName, albumArtistName);
+        this.method.importAlbum(id, name, artistName);
     }
 
     private void optionImportPlaylistsMenu() {
@@ -155,7 +148,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT PlAYLIST" + getMethodName().toUpperCase());
+                        "IMPORT PlAYLIST" + method.getMethodName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -163,20 +156,20 @@ public class MethodMenu {
     }
 
     private void optionImportPlaylist() {
-        String playlistId = null;
-        String playlistName = null;
+        String id = null;
+        String name = null;
         try {
-            while (playlistId == null || playlistId.isEmpty()) {
-                System.out.print("*Enter '" + getMethodName() + "' Playlist ID: ");
-                playlistId = Input.request().getString();
+            while (id == null || id.isEmpty()) {
+                System.out.print("*Enter '" + method.getMethodName() + "' Playlist ID: ");
+                id = Input.request().getString();
             }
-            System.out.print("Enter '" + getMethodName() + "' Playlist Name: ");
-            playlistName = Input.request().getString();
+            System.out.print("Enter '" + method.getMethodName() + "' Playlist Name: ");
+            name = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting playlist details");
             return;
         }
-        method.importPlaylist(playlistId, playlistName);
+        method.importPlaylist(id, name);
     }
 
     /**
@@ -193,7 +186,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "EXPORT " + getMethodName().toUpperCase());
+                        "EXPORT " + method.getMethodName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -248,7 +241,7 @@ public class MethodMenu {
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "SYNC " + getMethodName());
+                        "SYNC " + method.getMethodName());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {

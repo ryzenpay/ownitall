@@ -39,10 +39,7 @@ public class SettingsMenu {
         options.put("Save Settings", "/settings/save");
         options.put("Change Setting", "/settings/change?callback=/settings");
         options.put("Clear Cache", "/settings/reset");
-        model.addAttribute("menuName", "Settings Menu");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/settings/return");
-        return "menu";
+        return Templates.menu(model, "Settings Menu", options, "/settings/return");
     }
 
     /**
@@ -67,7 +64,7 @@ public class SettingsMenu {
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
-     * @param choices a {@link java.util.LinkedHashSet} object
+     * @param choices  a {@link java.util.LinkedHashSet} object
      * @param callback a {@link java.lang.String} object
      */
     @GetMapping("/settings/change")
@@ -95,11 +92,7 @@ public class SettingsMenu {
             field.setRequired(required);
             fields.add(field);
         }
-        model.addAttribute("formName", "Change Setting(s)");
-        model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/settings/change");
-        model.addAttribute("callback", callback);
-        return "form";
+        return Templates.form(model, "Change Setting(s)", fields, "/settings/change", callback);
     }
 
     /**
@@ -107,7 +100,7 @@ public class SettingsMenu {
      * login.
      * </p>
      *
-     * @param model    a {@link org.springframework.ui.Model} object
+     * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      * @param variables a {@link java.util.LinkedHashMap} object
      */

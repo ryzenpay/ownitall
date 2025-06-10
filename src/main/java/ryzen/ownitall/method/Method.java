@@ -61,6 +61,13 @@ public class Method {
         }
     }
 
+    public String getMethodName() {
+        if (this.method == null) {
+            return "";
+        }
+        return this.method.getClass().getSimpleName();
+    }
+
     /**
      * <p>
      * Getter for the field <code>methods</code>.

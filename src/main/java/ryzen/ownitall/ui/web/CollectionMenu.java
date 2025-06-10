@@ -49,10 +49,7 @@ public class CollectionMenu {
         options.put("Export", "/collection/export");
         options.put("Sync", "/collection/sync");
         options.put("Browse & Modify", "/collection/browse");
-        model.addAttribute("menuName", "Collection Menu");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/collection/return");
-        return "menu";
+        return Templates.menu(model, "Collection Menu", options, "/collection/return");
     }
 
     /**
@@ -110,7 +107,9 @@ public class CollectionMenu {
 
     // TODO: edit playlists / liked songs / playlist songs
     /**
-     * <p>addLikedSongForm.</p>
+     * <p>
+     * addLikedSongForm.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -129,17 +128,16 @@ public class CollectionMenu {
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        model.addAttribute("formName", "Get Liked Song");
-        model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/collection/create/likedsongs/song");
-        model.addAttribute("callback", "/collection/browse");
-        return "form";
+        return Templates.form(model, "Get Liked Song", fields, "/collection/create/likedsongs/song",
+                "/collection/browse");
     }
 
     /**
-     * <p>addLikedSong.</p>
+     * <p>
+     * addLikedSong.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model     a {@link org.springframework.ui.Model} object
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -181,7 +179,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>deleteLikedSong.</p>
+     * <p>
+     * deleteLikedSong.
+     * </p>
      *
      * @param songName a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
@@ -199,9 +199,11 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>addPlaylistSongForm.</p>
+     * <p>
+     * addPlaylistSongForm.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model        a {@link org.springframework.ui.Model} object
      * @param playlistName a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
@@ -233,17 +235,16 @@ public class CollectionMenu {
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        model.addAttribute("formName", "Get Playlist Song");
-        model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/collection/create/playlist/song");
-        model.addAttribute("callback", "/collection/browse");
-        return "form";
+        return Templates.form(model, "Get Playlist Song", fields, "/collection/create/playlist/song",
+                "/collection/browse");
     }
 
     /**
-     * <p>addPlaylistSong.</p>
+     * <p>
+     * addPlaylistSong.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model     a {@link org.springframework.ui.Model} object
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -296,7 +297,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>addPlaylistForm.</p>
+     * <p>
+     * addPlaylistForm.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -309,17 +312,15 @@ public class CollectionMenu {
         fields.add(playlistName);
         FormVariable playlistCoverImage = new FormVariable("coverImage");
         fields.add(playlistCoverImage);
-        model.addAttribute("formName", "Get Playlist");
-        model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/collection/create/playlist");
-        model.addAttribute("callback", "/collection/browse");
-        return "form";
+        return Templates.form(model, "Get Playlist", fields, "/collection/create/playlist", "/collection/browse");
     }
 
     /**
-     * <p>addPlaylist.</p>
+     * <p>
+     * addPlaylist.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model     a {@link org.springframework.ui.Model} object
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -342,7 +343,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>deletePlaylist.</p>
+     * <p>
+     * deletePlaylist.
+     * </p>
      *
      * @param playlistName a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
@@ -360,10 +363,12 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>deletePlaylistSong.</p>
+     * <p>
+     * deletePlaylistSong.
+     * </p>
      *
      * @param playlistName a {@link java.lang.String} object
-     * @param songName a {@link java.lang.String} object
+     * @param songName     a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @DeleteMapping("/collection/playlist/{playlist}/{song}")
@@ -388,7 +393,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>addAlbumForm.</p>
+     * <p>
+     * addAlbumForm.
+     * </p>
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
@@ -407,17 +414,15 @@ public class CollectionMenu {
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        model.addAttribute("formName", "Get Album");
-        model.addAttribute("values", fields);
-        model.addAttribute("postUrl", "/collection/create/album");
-        model.addAttribute("callback", "/collection/browse");
-        return "form";
+        return Templates.form(model, "Get Album", fields, "/collection/create/album", "/collection/browse");
     }
 
     /**
-     * <p>addAlbum.</p>
+     * <p>
+     * addAlbum.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model     a {@link org.springframework.ui.Model} object
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -459,7 +464,9 @@ public class CollectionMenu {
     }
 
     /**
-     * <p>deleteAlbum.</p>
+     * <p>
+     * deleteAlbum.
+     * </p>
      *
      * @param albumName a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object

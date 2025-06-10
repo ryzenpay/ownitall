@@ -39,10 +39,7 @@ public class LibraryMenu {
         options.put("Change Provider", "/library/change");
         options.put("Clear Cache", "/library/cache/clear");
         options.put("Cache Size", "/library/cache");
-        model.addAttribute("menuName", "Library Menu");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/library/return");
-        return "menu";
+        return Templates.menu(model, "Library Menu", options, "/library/return");
     }
 
     /**
@@ -59,10 +56,7 @@ public class LibraryMenu {
         for (Class<? extends Library> libraryClass : Library.getLibraries()) {
             options.put(libraryClass.getSimpleName(), "/library/change/" + libraryClass.getName());
         }
-        model.addAttribute("menuName", "Library Options");
-        model.addAttribute("menuOptions", options);
-        model.addAttribute("callback", "/library");
-        return "menu";
+        return Templates.menu(model, "Library Options", options, "/library");
     }
 
     /**
