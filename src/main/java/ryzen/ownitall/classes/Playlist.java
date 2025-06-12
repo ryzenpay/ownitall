@@ -225,6 +225,19 @@ public class Playlist {
         return null;
     }
 
+    public Song getSong(String songName) {
+        if (songName == null) {
+            logger.debug(this.toString() + ": null songName provided in getSong");
+            return null;
+        }
+        for (Song song : this.getSongs()) {
+            if (song.getName().equals(songName)) {
+                return song;
+            }
+        }
+        return null;
+    }
+
     /**
      * return size/numbers of songs in playlist
      *

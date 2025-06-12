@@ -1,6 +1,5 @@
 package ryzen.ownitall.ui.web;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -45,47 +44,11 @@ public class CollectionMenu {
     @GetMapping("/collection")
     public String collectionMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import", "/collection/import");
-        options.put("Export", "/collection/export");
-        options.put("Sync", "/collection/sync");
+        options.put("Import", "/method/import");
+        options.put("Export", "/method/export");
+        options.put("Sync", "/method/sync");
         options.put("Browse & Modify", "/collection/browse");
         return Templates.menu(model, "Collection Menu", options, "/collection/return");
-    }
-
-    /**
-     * <p>
-     * optionImport.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @GetMapping("/collection/import")
-    public String optionImport() {
-        return "redirect:/method/import";
-    }
-
-    /**
-     * <p>
-     * optionExport.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @GetMapping("/collection/export")
-    public String optionExport() {
-        return "redirect:/method/export";
-    }
-
-    /**
-     * <p>
-     * optionSync.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     */
-    @GetMapping("/collection/sync")
-    public String optionSync() {
-        return "redirect:/method/sync";
     }
 
     /**
@@ -105,7 +68,6 @@ public class CollectionMenu {
         return "browse";
     }
 
-    // TODO: edit playlists / liked songs / playlist songs
     /**
      * <p>
      * addLikedSongForm.
@@ -114,22 +76,22 @@ public class CollectionMenu {
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/collection/create/likedsongs/song")
-    public String addLikedSongForm(Model model) {
-        if (Library.load() == null) {
-            model.addAttribute("warn", "Library must be enabled for this feature");
-            return "redirect:/collection/browse";
+    @GetMapping("/collection/likedsongs/song")
+    public String addLikedSongForm(Model model,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
-        FormVariable songName = new FormVariable("songName");
-        songName.setName("Song Name");
-        songName.setRequired(true);
-        fields.add(songName);
+        FormVariable name = new FormVariable("songName");
+        name.setName("Song Name");
+        name.setRequired(true);
+        fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        return Templates.form(model, "Get Liked Song", fields, "/collection/create/likedsongs/song",
-                "/collection/browse");
+        return Templates.form(model, "Add Liked Song", fields, "/collection/likedsongs/song",
+                callback);
     }
 
     /**
@@ -141,7 +103,7 @@ public class CollectionMenu {
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/collection/create/likedsongs/song")
+    @PostMapping("/collection/likedsongs/song")
     @ResponseBody
     public ResponseEntity<String> addLikedSong(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         String songName = variables.get("songName");
@@ -178,6 +140,55 @@ public class CollectionMenu {
         }
     }
 
+    @GetMapping("/collection/likedsongs/song/{song}")
+    public String editLikedSongForm(Model model,
+            @RequestParam(value = "callback", required = false) String callback,
+            @PathVariable(value = "song") String songName) {
+        if (callback == null) {
+            callback = "/collection/browse";
+        }
+        Song song = Collection.getLikedSong(songName);
+        if (song == null) {
+            logger.warn(model, "Unable to find liked song '" + songName + "' in collection");
+            return "redirect:" + callback;
+        }
+        LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
+        FormVariable name = new FormVariable("songName");
+        name.setName("Song Name");
+        name.setRequired(true);
+        name.setValue(song.getName());
+        fields.add(name);
+        FormVariable mainArtist = new FormVariable("artistName");
+        mainArtist.setName("Main Artist");
+        mainArtist.setValue(song.getMainArtist().getName());
+        fields.add(mainArtist);
+        return Templates.form(model, "Edit Liked Song", fields, "/collection/likedsongs/song/" + song.getName(),
+                callback);
+    }
+
+    @PostMapping("/collection/likedsongs/song/{song}")
+    @ResponseBody
+    public ResponseEntity<String> editLikedSong(Model model,
+            @PathVariable(value = "song") String songName,
+            @RequestBody LinkedHashMap<String, String> variables) {
+        Song song = Collection.getLikedSong(songName);
+        if (song == null) {
+            logger.warn(model, "Unable to find song '" + songName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find song '" + songName + "' in collection");
+        }
+        String name = variables.get("songName");
+        if (name == null) {
+            logger.debug(model, "Missing songName");
+            return ResponseEntity.badRequest().body("missing songName");
+        }
+        song.setName(name);
+        String artistName = variables.get("artistName");
+        if (artistName != null) {
+            song.addArtist(new Artist(artistName));
+        }
+        return ResponseEntity.ok("Successfully modified liked song '" + song.getName() + "'");
+    }
+
     /**
      * <p>
      * deleteLikedSong.
@@ -200,6 +211,102 @@ public class CollectionMenu {
 
     /**
      * <p>
+     * addPlaylistForm.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
+    @GetMapping("/collection/playlist")
+    public String addPlaylistForm(Model model,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
+        }
+        LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
+        FormVariable playlistName = new FormVariable("playistName");
+        playlistName.setRequired(true);
+        FormVariable playlistCoverImage = new FormVariable("coverImage");
+        fields.add(playlistName);
+        fields.add(playlistCoverImage);
+        return Templates.form(model, "Add Playlist", fields, "/collection/playlist", callback);
+    }
+
+    /**
+     * <p>
+     * addPlaylist.
+     * </p>
+     *
+     * @param model     a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
+    @PostMapping("/collection/playlist")
+    @ResponseBody
+    public ResponseEntity<String> addPlaylist(Model model, @RequestBody LinkedHashMap<String, String> variables) {
+        String playlistName = variables.get("playlistName");
+        if (playlistName == null) {
+            logger.debug(model, "Missing playlistName");
+            return ResponseEntity.badRequest().body("missing playlistName");
+        }
+        String coverImage = variables.get("coverImage");
+        Playlist playlist = new Playlist(playlistName);
+        if (coverImage != null) {
+            playlist.setCoverImage(coverImage);
+        }
+        Collection.addPlaylist(playlist);
+        logger.debug(model, "Successfully added playlist '" + playlist.getName() + "'");
+        return ResponseEntity.ok("Successfully added playlist '" + playlist.getName() + "'");
+    }
+
+    @GetMapping("/collection/playlist/{playlist}")
+    public String editPlaylistForm(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
+        }
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist == null) {
+            logger.info(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return "redirect:" + callback;
+        }
+        LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
+        FormVariable name = new FormVariable("playistName");
+        name.setRequired(true);
+        name.setValue(playlist.getName());
+        fields.add(name);
+        FormVariable coverImage = new FormVariable("coverImage");
+        coverImage.setValue(playlist.getCoverImage().toString());
+        fields.add(coverImage);
+        return Templates.form(model, "Edit Playlist", fields, "/collection/playlist/" + playlist.getName(), callback);
+    }
+
+    @PostMapping("/collection/playlist/{playlist}")
+    @ResponseBody
+    public ResponseEntity<String> editPlaylist(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @RequestBody LinkedHashMap<String, String> variables) {
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist == null) {
+            return ResponseEntity.badRequest().body("Unable to find playlist in collection");
+        }
+        String name = variables.get("playlistName");
+        if (name != null) {
+            playlist.setName(name);
+        }
+        String coverImage = variables.get("coverImage");
+        if (coverImage != null) {
+            playlist.setCoverImage(coverImage);
+        }
+        // TODO: multiple choice with songs
+        // needs form to be updated
+        logger.info(model, "Successfully modified playlist '" + playlist.getName() + "'");
+        return ResponseEntity.ok("Successfully modified playlist '" + playlist.getName() + "'");
+    }
+
+    /**
+     * <p>
      * addPlaylistSongForm.
      * </p>
      *
@@ -207,27 +314,19 @@ public class CollectionMenu {
      * @param playlistName a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/collection/create/playlist/song")
+    @GetMapping("/collection/playlist/{playlist}/song")
     public String addPlaylistSongForm(Model model,
-            @RequestParam(value = "playlist", required = false) String playlistName) {
-        if (Library.load() == null) {
-            model.addAttribute("warn", "Library must be enabled for this feature");
-            return "redirect:/collection/browse";
+            @PathVariable(value = "playlist") String playlistName,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
+        }
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist == null) {
+            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
-        FormVariable collections = new FormVariable("playlistName");
-        collections.setName("Playlist");
-        collections.setDescription("Choose playlist to add song to");
-        ArrayList<String> collectionOptions = new ArrayList<>();
-        for (Playlist playlist : Collection.getPlaylists()) {
-            collectionOptions.add(playlist.getName());
-        }
-        collections.setOptions(collectionOptions.toArray(new String[0]));
-        collections.setRequired(true);
-        if (playlistName != null) {
-            collections.setValue(playlistName);
-        }
-        fields.add(collections);
         FormVariable songName = new FormVariable("songName");
         songName.setName("Song Name");
         songName.setRequired(true);
@@ -235,8 +334,9 @@ public class CollectionMenu {
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        return Templates.form(model, "Get Playlist Song", fields, "/collection/create/playlist/song",
-                "/collection/browse");
+        return Templates.form(model, "Add Playlist Song", fields,
+                "/collection/playlist/" + playlist.getName() + "/song",
+                callback);
     }
 
     /**
@@ -248,23 +348,20 @@ public class CollectionMenu {
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/collection/create/playlist/song")
+    @PostMapping("/collection/playlist/{playlist}/song")
     @ResponseBody
-    public ResponseEntity<String> addPlaylistSong(Model model, @RequestBody LinkedHashMap<String, String> variables) {
-        String playlistName = variables.get("playlistName");
-        if (playlistName == null) {
-            logger.debug(model, "Missing playlistName");
-            return ResponseEntity.badRequest().body("missing playlistName");
+    public ResponseEntity<String> addPlaylistSong(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @RequestBody LinkedHashMap<String, String> variables) {
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist == null) {
+            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
         String songName = variables.get("songName");
         if (songName == null) {
             logger.debug(model, "Missing songName");
             return ResponseEntity.badRequest().body("missing songName");
-        }
-        Playlist playlist = Collection.getPlaylist(playlistName);
-        if (playlist == null) {
-            logger.debug(model, "Unable to find playlist '" + playlistName + "' in collection");
-            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
         String artistName = variables.get("artistName");
         Song song = new Song(variables.get("songName"));
@@ -296,50 +393,67 @@ public class CollectionMenu {
         }
     }
 
-    /**
-     * <p>
-     * addPlaylistForm.
-     * </p>
-     *
-     * @param model a {@link org.springframework.ui.Model} object
-     * @return a {@link java.lang.String} object
-     */
-    @GetMapping("/collection/create/playlist")
-    public String addPlaylistForm(Model model) {
+    @GetMapping("/collection/playlist/{playlist}/{song}")
+    public String editPlaylistSongForm(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "song") String songName,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
+        }
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist == null) {
+            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return "redirect:" + callback;
+        }
+        Song song = playlist.getSong(songName);
+        if (song == null) {
+            logger.warn(model, "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            return "redirect:" + callback;
+        }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
-        FormVariable playlistName = new FormVariable("playistName");
-        playlistName.setRequired(true);
-        fields.add(playlistName);
-        FormVariable playlistCoverImage = new FormVariable("coverImage");
-        fields.add(playlistCoverImage);
-        return Templates.form(model, "Get Playlist", fields, "/collection/create/playlist", "/collection/browse");
+        FormVariable name = new FormVariable("songName");
+        name.setName("Song Name");
+        name.setRequired(true);
+        name.setValue(song.getName());
+        fields.add(name);
+        FormVariable mainArtist = new FormVariable("artistName");
+        mainArtist.setName("Main Artist");
+        mainArtist.setValue(song.getMainArtist().toString());
+        fields.add(mainArtist);
+        return Templates.form(model, "Edit Playlist Song", fields,
+                "/collection/playlist/" + playlist.getName() + "/" + song.getName(),
+                callback);
     }
 
-    /**
-     * <p>
-     * addPlaylist.
-     * </p>
-     *
-     * @param model     a {@link org.springframework.ui.Model} object
-     * @param variables a {@link java.util.LinkedHashMap} object
-     * @return a {@link org.springframework.http.ResponseEntity} object
-     */
-    @PostMapping("/collection/create/playlist")
+    @PostMapping("/collection/playlist/{playlist}/{song}")
     @ResponseBody
-    public ResponseEntity<String> addPlaylist(Model model, @RequestBody LinkedHashMap<String, String> variables) {
-        String playlistName = variables.get("playlistName");
-        if (playlistName == null) {
-            logger.debug(model, "Missing playlistName");
-            return ResponseEntity.badRequest().body("missing playlistName");
+    public ResponseEntity<String> editPlaylistSong(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "song") String songName,
+            @RequestBody LinkedHashMap<String, String> variables) {
+        Playlist playlist = Collection.getPlaylist(songName);
+        if (playlist == null) {
+            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
-        String coverImage = variables.get("coverImage");
-        Playlist playlist = new Playlist(playlistName);
-        if (coverImage != null) {
-            playlist.setCoverImage(coverImage);
+        Song song = playlist.getSong(songName);
+        if (song == null) {
+            logger.warn(model, "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            return ResponseEntity.badRequest().body(
+                    "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
         }
-        Collection.addPlaylist(playlist);
-        logger.debug(model, "Successfully added playlist '" + playlist.getName() + "'");
-        return ResponseEntity.ok("Successfully added playlist '" + playlist.getName() + "'");
+        String name = variables.get("songName");
+        if (name == null) {
+            logger.debug(model, "Missing songName");
+            return ResponseEntity.badRequest().body("missing songName");
+        }
+        song.setName(name);
+        String artistName = variables.get("artistName");
+        if (artistName != null) {
+            song.addArtist(new Artist(artistName));
+        }
+        return ResponseEntity.ok("Successfully modified song'" + song.getName() + "' in '" + playlist.getName() + "'");
     }
 
     /**
@@ -379,17 +493,17 @@ public class CollectionMenu {
         if (playlist == null) {
             return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
-        for (Song song : playlist.getSongs()) {
-            if (song.getName().equals(songName)) {
-                playlist.removeSong(song);
-                logger.debug("Successfully deleted song '" + song.getName() + "' from playlist '" + playlist.getName()
-                        + "'");
-                return ResponseEntity.ok("Successfully deleted song '" + song.getName() + "' from playlist '"
-                        + playlist.getName() + "'");
-            }
+        Song song = playlist.getSong(songName);
+        if (song == null) {
+            logger.warn("Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            return ResponseEntity.badRequest()
+                    .body("Unable to find song '" + songName + "' in  playlist '" + playlist.getName() + "'");
         }
-        return ResponseEntity.badRequest()
-                .body("Unable to find song '" + songName + "' in  playlist '" + playlist.getName() + "'");
+        playlist.removeSong(song);
+        logger.info("Successfully deleted song '" + song.getName() + "' from playlist '" + playlist.getName()
+                + "'");
+        return ResponseEntity.ok("Successfully deleted song '" + song.getName() + "' from playlist '"
+                + playlist.getName() + "'");
     }
 
     /**
@@ -400,11 +514,11 @@ public class CollectionMenu {
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/collection/create/album")
-    public String addAlbumForm(Model model) {
-        if (Library.load() == null) {
-            model.addAttribute("warn", "Library must be enabled for this feature");
-            return "redirect:/collection/browse";
+    @GetMapping("/collection/album")
+    public String addAlbumForm(Model model,
+            @RequestParam(value = "callback", required = false) String callback) {
+        if (callback == null) {
+            callback = "/collection/browse";
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable albumName = new FormVariable("albumName");
@@ -414,7 +528,7 @@ public class CollectionMenu {
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist");
         fields.add(mainArtist);
-        return Templates.form(model, "Get Album", fields, "/collection/create/album", "/collection/browse");
+        return Templates.form(model, "Get Album", fields, "/collection/album", callback);
     }
 
     /**
@@ -426,7 +540,7 @@ public class CollectionMenu {
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/collection/create/album")
+    @PostMapping("/collection/album")
     @ResponseBody
     public ResponseEntity<String> addAlbum(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         String albumName = variables.get("albumName");
