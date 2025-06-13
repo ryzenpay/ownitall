@@ -84,11 +84,11 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable name = new FormVariable("songName");
-        name.setName("Song Name");
+        name.setName("Name");
         name.setRequired(true);
         fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
-        mainArtist.setName("Main Artist");
+        mainArtist.setName("Main Artist Name");
         fields.add(mainArtist);
         return Templates.form(model, "Add Liked Song", fields, "/collection/likedsongs/song",
                 callback);
@@ -154,12 +154,12 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable name = new FormVariable("songName");
-        name.setName("Song Name");
+        name.setName("Name");
         name.setRequired(true);
         name.setValue(song.getName());
         fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
-        mainArtist.setName("Main Artist");
+        mainArtist.setName("Main Artist Name");
         mainArtist.setValue(song.getMainArtist().getName());
         fields.add(mainArtist);
         return Templates.form(model, "Edit Liked Song", fields, "/collection/likedsongs/song/" + song.getName(),
@@ -225,9 +225,11 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable playlistName = new FormVariable("playistName");
+        playlistName.setName("Name");
         playlistName.setRequired(true);
-        FormVariable playlistCoverImage = new FormVariable("coverImage");
         fields.add(playlistName);
+        FormVariable playlistCoverImage = new FormVariable("coverImage");
+        playlistCoverImage.setName("Cover Image URL");
         fields.add(playlistCoverImage);
         return Templates.form(model, "Add Playlist", fields, "/collection/playlist", callback);
     }
@@ -273,13 +275,22 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable name = new FormVariable("playistName");
+        name.setName("Name");
         name.setRequired(true);
         name.setValue(playlist.getName());
         fields.add(name);
         FormVariable coverImage = new FormVariable("coverImage");
+        coverImage.setName("Cover Image URL");
         coverImage.setValue(playlist.getCoverImage().toString());
         fields.add(coverImage);
-        return Templates.form(model, "Edit Playlist", fields, "/collection/playlist/" + playlist.getName(), callback);
+        FormVariable songs = new FormVariable("songs");
+        songs.setName("Songs to remove");
+        songs.setDescription("Cntrl + click to select multiple");
+        songs.setOptions(playlist.getSongs().stream().map(Song::getName).toArray(String[]::new));
+        songs.setMultipleChoice(true);
+        fields.add(songs);
+        return Templates.form(model, "Edit Playlist '" + playlist.getName(), fields,
+                "/collection/playlist/" + playlist.getName(), callback);
     }
 
     @PostMapping("/collection/playlist/{playlist}")
@@ -299,8 +310,19 @@ public class CollectionMenu {
         if (coverImage != null) {
             playlist.setCoverImage(coverImage);
         }
-        // TODO: multiple choice with songs
-        // needs form to be updated
+
+        String songs = variables.get("songs");
+        if (songs != null) {
+            for (String songName : songs.split(",")) {
+                Song song = playlist.getSong(songName);
+                if (song == null) {
+                    logger.debug("Unable to find song '" + songName + "' in playlist '" + playlist.toString() + "'");
+                    continue;
+                }
+                playlist.removeSong(song);
+                logger.debug(model, "Removed song '" + song.getName() + "' from playlist '" + playlist.getName() + "'");
+            }
+        }
         logger.info(model, "Successfully modified playlist '" + playlist.getName() + "'");
         return ResponseEntity.ok("Successfully modified playlist '" + playlist.getName() + "'");
     }
@@ -328,13 +350,13 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable songName = new FormVariable("songName");
-        songName.setName("Song Name");
+        songName.setName("Name");
         songName.setRequired(true);
         fields.add(songName);
         FormVariable mainArtist = new FormVariable("artistName");
-        mainArtist.setName("Main Artist");
+        mainArtist.setName("Main Artist Name");
         fields.add(mainArtist);
-        return Templates.form(model, "Add Playlist Song", fields,
+        return Templates.form(model, "Add playlist '" + playlist.getName() + "' song", fields,
                 "/collection/playlist/" + playlist.getName() + "/song",
                 callback);
     }
@@ -413,15 +435,16 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable name = new FormVariable("songName");
-        name.setName("Song Name");
+        name.setName("Name");
         name.setRequired(true);
         name.setValue(song.getName());
         fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
-        mainArtist.setName("Main Artist");
+        mainArtist.setName("Main Artist Name");
         mainArtist.setValue(song.getMainArtist().toString());
         fields.add(mainArtist);
-        return Templates.form(model, "Edit Playlist Song", fields,
+        return Templates.form(model, "Edit Playlist '" + playlist.getName() + "'' Song '" + song.getName() + "'",
+                fields,
                 "/collection/playlist/" + playlist.getName() + "/" + song.getName(),
                 callback);
     }
@@ -522,13 +545,13 @@ public class CollectionMenu {
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable albumName = new FormVariable("albumName");
-        albumName.setName("Album Name");
+        albumName.setName("Name");
         albumName.setRequired(true);
         fields.add(albumName);
         FormVariable mainArtist = new FormVariable("artistName");
-        mainArtist.setName("Main Artist");
+        mainArtist.setName("Main Artist Name");
         fields.add(mainArtist);
-        return Templates.form(model, "Get Album", fields, "/collection/album", callback);
+        return Templates.form(model, "Add Album", fields, "/collection/album", callback);
     }
 
     /**

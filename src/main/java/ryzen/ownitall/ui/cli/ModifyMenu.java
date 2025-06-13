@@ -26,7 +26,6 @@ import ryzen.ownitall.util.exceptions.MenuClosed;
  *
  * @author ryzen
  */
-// TODO: merge this into collectionMenu
 public class ModifyMenu {
     private static final Logger logger = new Logger(ModifyMenu.class);
 
