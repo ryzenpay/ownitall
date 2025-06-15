@@ -54,6 +54,8 @@ public class YT_dl implements DownloadInterface {
         command.add("ytsearch1");
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
+        command.add("--max-downloads");
+        command.add("1");
         if (!song.getDuration().isZero()) {
             command.add("--match-filters");
             long upperBound = song.getDuration().getSeconds() + 10L;
