@@ -20,7 +20,7 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  *
  * @author ryzen
  */
-public class SoulSeek extends Download implements DownloadInterface {
+public class SoulSeek implements DownloadInterface {
     private static final Logger logger = new Logger(SoulSeek.class);
 
     /**
@@ -42,7 +42,7 @@ public class SoulSeek extends Download implements DownloadInterface {
         // unable to thread due to ports
         // using multiple ports also doesnt work because soulseek doesnt allow multiple
         // usersessions with same account
-        downloadThreads = 1;
+        Download.downloadThreads = 1;
     }
 
     public ArrayList<String> createCommand(Song song, File path) throws InterruptedException {

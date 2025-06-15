@@ -76,12 +76,12 @@ public class Download implements Sync, Export {
             throw new MissingSettingException("Missing downloadMethod");
         }
         try {
-            Class<? extends Download> downloadClass = ClassLoader.load().getSubClass(Download.class,
+            Class<? extends DownloadInterface> downloadClass = ClassLoader.load().getSubClass(DownloadInterface.class,
                     Settings.downloadMethod);
             try {
                 logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
                 initiation = true;
-                this.downloadClass = (DownloadInterface) downloadClass.getDeclaredConstructor().newInstance();
+                this.downloadClass = downloadClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof MissingSettingException) {

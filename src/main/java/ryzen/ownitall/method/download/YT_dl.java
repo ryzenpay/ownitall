@@ -17,7 +17,7 @@ import ryzen.ownitall.util.exceptions.AuthenticationException;
  *
  * @author ryzen
  */
-public class YT_dl extends Download implements DownloadInterface {
+public class YT_dl implements DownloadInterface {
     private static final Logger logger = new Logger(YT_dl.class);
 
     /**
@@ -77,6 +77,13 @@ public class YT_dl extends Download implements DownloadInterface {
         // download location
         command.add("--paths");
         command.add(path.getAbsolutePath());
+        if (Settings.yt_dlCookieFile != null && Settings.yt_dlCookieFile.exists()) {
+            command.add(1, "--cookies");
+            command.add(2, Settings.yt_dlCookieFile.getAbsolutePath());
+        } else if (!Settings.yt_dlCookieBrowser.isEmpty()) {
+            command.add(1, "--cookies-from-browser");
+            command.add(2, Settings.yt_dlCookieBrowser);
+        }
         command.add("--output");
         command.add(Collection.getSongFileName(song));
         /**

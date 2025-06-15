@@ -361,8 +361,6 @@ public class MethodMenu {
         return ResponseEntity.ok().build();
     }
 
-    // TODO: for modify use this template
-    // same for albums
     @GetMapping("/method/import/playlist/form")
     public String importPlaylistForm(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
