@@ -313,10 +313,11 @@ public class CollectionMenu {
 
         String songs = variables.get("songs");
         if (songs != null) {
-            for (String songName : songs.split(",")) {
-                Song song = playlist.getSong(songName);
+            for (String songHashStr : songs.split(",")) {
+                int songHash = Integer.parseInt(songHashStr);
+                Song song = playlist.getSong(songHash);
                 if (song == null) {
-                    logger.debug("Unable to find song '" + songName + "' in playlist '" + playlist.toString() + "'");
+                    logger.debug("Unable to find song '" + songHash + "' in playlist '" + playlist.toString() + "'");
                     continue;
                 }
                 playlist.removeSong(song);
@@ -418,7 +419,7 @@ public class CollectionMenu {
     @GetMapping("/collection/playlist/{playlist}/{song}")
     public String editPlaylistSongForm(Model model,
             @PathVariable(value = "playlist") String playlistName,
-            @PathVariable(value = "song") String songName,
+            @PathVariable(value = "song") int songHash,
             @RequestParam(value = "callback", required = false) String callback) {
         if (callback == null) {
             callback = "/collection/browse";
@@ -428,9 +429,9 @@ public class CollectionMenu {
             logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
             return "redirect:" + callback;
         }
-        Song song = playlist.getSong(songName);
+        Song song = playlist.getSong(songHash);
         if (song == null) {
-            logger.warn(model, "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            logger.warn(model, "Unable to find song '" + songHash + "' in playlist '" + playlist.getName() + "'");
             return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
@@ -453,18 +454,18 @@ public class CollectionMenu {
     @ResponseBody
     public ResponseEntity<String> editPlaylistSong(Model model,
             @PathVariable(value = "playlist") String playlistName,
-            @PathVariable(value = "song") String songName,
+            @PathVariable(value = "song") int songHash,
             @RequestBody LinkedHashMap<String, String> variables) {
-        Playlist playlist = Collection.getPlaylist(songName);
+        Playlist playlist = Collection.getPlaylist(playlistName);
         if (playlist == null) {
             logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
             return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
-        Song song = playlist.getSong(songName);
+        Song song = playlist.getSong(songHash);
         if (song == null) {
-            logger.warn(model, "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            logger.warn(model, "Unable to find song '" + songHash + "' in playlist '" + playlist.getName() + "'");
             return ResponseEntity.badRequest().body(
-                    "Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+                    "Unable to find song '" + songHash + "' in playlist '" + playlist.getName() + "'");
         }
         String name = variables.get("songName");
         if (name == null) {
@@ -511,16 +512,16 @@ public class CollectionMenu {
     @DeleteMapping("/collection/playlist/{playlist}/{song}")
     @ResponseBody
     public ResponseEntity<String> deletePlaylistSong(@PathVariable(value = "playlist") String playlistName,
-            @PathVariable(value = "song") String songName) {
+            @PathVariable(value = "song") int songHash) {
         Playlist playlist = Collection.getPlaylist(playlistName);
         if (playlist == null) {
             return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
         }
-        Song song = playlist.getSong(songName);
+        Song song = playlist.getSong(songHash);
         if (song == null) {
-            logger.warn("Unable to find song '" + songName + "' in playlist '" + playlist.getName() + "'");
+            logger.warn("Unable to find song '" + songHash + "' in playlist '" + playlist.getName() + "'");
             return ResponseEntity.badRequest()
-                    .body("Unable to find song '" + songName + "' in  playlist '" + playlist.getName() + "'");
+                    .body("Unable to find song '" + songHash + "' in  playlist '" + playlist.getName() + "'");
         }
         playlist.removeSong(song);
         logger.info("Successfully deleted song '" + song.getName() + "' from playlist '" + playlist.getName()

@@ -49,10 +49,10 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <button class="btn btn-outline-info btn-sm me-2" th:data-item-name="${song.toString()}"
-                                th:data-url="'/collection/likedsongs/' + ${song.getName()}" th:inline="javascript"
+                                th:data-url="'/collection/likedsongs/' + ${song.hashCode()}" th:inline="javascript"
                                 onclick="redirect(this)"><i class="bi bi-exposure"></i> Edit</button>
                             <button class="btn btn-outline-danger btn-sm me-2" th:data-item-name="${song.toString()}"
-                                th:data-url="'/collection/likedsongs/' + ${song.getName()}" th:inline="javascript"
+                                th:data-url="'/collection/likedsongs/' + ${song.hashCode()}" th:inline="javascript"
                                 onclick="deleteItem(this)"><i class="bi bi-trash"></i> Delete</button>
                         </div>
                     </div>
@@ -197,12 +197,12 @@
                                     <div class="d-flex align-items-center">
                                         <button class="btn btn-outline-info btn-sm me-2"
                                             th:data-item-name="${song.toString()}"
-                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.getName()}"
+                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="redirect(this)"><i
                                                 class="bi bi-exposure"></i> Edit</button>
                                         <button class="btn btn-outline-danger btn-sm me-2"
                                             th:data-item-name="${song.toString()}"
-                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.getName()}"
+                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="deleteItem(this)"><i
                                                 class="bi bi-trash"></i> Delete</button>
                                     </div>

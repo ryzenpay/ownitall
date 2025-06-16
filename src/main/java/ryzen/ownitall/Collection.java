@@ -127,7 +127,9 @@ public class Collection {
     }
 
     /**
-     * <p>getLikedSong.</p>
+     * <p>
+     * getLikedSong.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Song} object
@@ -278,7 +280,9 @@ public class Collection {
     }
 
     /**
-     * <p>getAlbum.</p>
+     * <p>
+     * getAlbum.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Album} object
@@ -447,7 +451,9 @@ public class Collection {
     }
 
     /**
-     * <p>getPlaylist.</p>
+     * <p>
+     * getPlaylist.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Playlist} object

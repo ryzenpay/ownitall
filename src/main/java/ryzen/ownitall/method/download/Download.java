@@ -196,7 +196,7 @@ public class Download implements Sync, Export {
                 }
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
-                    logger.warn("Attempt: " + i);
+                    logger.debug("Attempt: " + i);
                     downloadClass.handleError(exitCode);
                     logger.debug(
                             "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());

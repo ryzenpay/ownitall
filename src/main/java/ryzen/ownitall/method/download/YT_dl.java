@@ -58,10 +58,11 @@ public class YT_dl implements DownloadInterface {
         command.add("1");
         if (!song.getDuration().isZero()) {
             command.add("--match-filters");
-            long upperBound = song.getDuration().getSeconds() + 10L;
-            long lowerBound = song.getDuration().getSeconds() - 10L;
+            int upperBound = (int) song.getDuration().getSeconds() + 10;
+            int lowerBound = upperBound - 20;
             command.add("duration<=" + upperBound + "&duration>=" + lowerBound);
         } else {
+            // anything here will break if it is false
             command.add("--break-match-filter");
             command.add("duration>=45"); // exclude shorts
         }
