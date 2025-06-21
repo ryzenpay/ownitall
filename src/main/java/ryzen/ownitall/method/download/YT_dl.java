@@ -54,18 +54,9 @@ public class YT_dl implements DownloadInterface {
         command.add("ytsearch1");
         // exclude any found playlists or shorts
         command.add("--no-playlist"); // Prevent downloading playlists
-        command.add("--max-downloads");
-        command.add("1");
-        if (!song.getDuration().isZero()) {
-            command.add("--match-filters");
-            int upperBound = (int) song.getDuration().getSeconds() + 10;
-            int lowerBound = upperBound - 20;
-            command.add("duration<=" + upperBound + "&duration>=" + lowerBound);
-        } else {
-            // anything here will break if it is false
-            command.add("--break-match-filter");
-            command.add("duration>=45"); // exclude shorts
-        }
+        // anything here will break if it is false
+        command.add("--break-match-filter");
+        command.add("duration>45&duration<600"); // exclude shorts and videos +30 min
         // metadata and formatting
         command.add("--extract-audio");
         // command.add("--embed-thumbnail");
@@ -112,11 +103,11 @@ public class YT_dl implements DownloadInterface {
 
     public void handleError(int exitCode) throws DownloadException {
         if (exitCode == 2) {
-            throw new DownloadException("Error with yt_dlp user provided options");
+            throw new DownloadException("Error with yt_dlp user provided options (2)");
         } else if (exitCode == 100) {
-            throw new DownloadException("Your yt-dlp needs to update");
+            throw new DownloadException("Your yt-dlp needs to update (100)");
         } else if (exitCode == 101) {
-            throw new DownloadException("Download cancelled due to boundary criteria");
+            throw new DownloadException("Download cancelled due to boundary criteria (101)");
         } else {
             logger.warn("Unkown error while downloading yt_dlp song (" + exitCode + ")");
         }

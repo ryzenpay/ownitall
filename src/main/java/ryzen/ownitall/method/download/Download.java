@@ -206,6 +206,7 @@ public class Download implements Sync, Export {
                 writeMetaData(song, songFile);
             } else {
                 logger.warn("song '" + song.toString() + "' failed to download, check logs");
+                logger.debug("Complete download log: " + completeLog.toString());
             }
         } catch (InterruptedException e) {
             logger.debug("Interrupted while downloading song");
