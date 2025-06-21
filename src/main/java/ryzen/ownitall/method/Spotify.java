@@ -303,10 +303,8 @@ public class Spotify implements Import, Export, Sync {
                                     song = foundSong;
                                 }
                             }
-                            if (song != null) {
-                                likedSongs.addSong(song);
-                                pb.step(song.getName());
-                            }
+                            likedSongs.addSong(song);
+                            pb.step(song.getName());
                         }
                         offset += limit;
                         if (limit > items.length) {
@@ -450,14 +448,15 @@ public class Spotify implements Import, Export, Sync {
                             String albumId = savedAlbum.getAlbum().getId();
                             String albumName = savedAlbum.getAlbum().getName();
                             String albumArtistName = null;
-                            if (!savedAlbum.getAlbum().getArtists()[0].getName().equals("Various Artists")) {
-                                albumArtistName = savedAlbum.getAlbum().getArtists()[0].getName();
+                            for (ArtistSimplified artistName : savedAlbum.getAlbum().getArtists()) {
+                                if (!artistName.getName().equals("Various Artists")) {
+                                    albumArtistName = artistName.getName();
+                                    break;
+                                }
                             }
                             Album album = this.getAlbum(albumId, albumName, albumArtistName);
-                            if (album != null) {
-                                albums.add(album);
-                                pb.step(album.getName());
-                            }
+                            albums.add(album);
+                            pb.step(album.getName());
                         }
                         offset += limit;
                         if (limit > items.length) {
@@ -494,12 +493,10 @@ public class Spotify implements Import, Export, Sync {
                 album = foundAlbum;
             }
         }
-        if (album != null) {
-            if (album.isEmpty()) {
-                ArrayList<Song> songs = this.getAlbumSongs(albumId);
-                if (songs != null && !songs.isEmpty()) {
-                    album.addSongs(songs);
-                }
+        if (album.isEmpty()) {
+            ArrayList<Song> songs = this.getAlbumSongs(albumId);
+            if (songs != null && !songs.isEmpty()) {
+                album.addSongs(songs);
             }
         }
         return album;
@@ -549,10 +546,8 @@ public class Spotify implements Import, Export, Sync {
                                     song = foundSong;
                                 }
                             }
-                            if (song != null) {
-                                songs.add(song);
-                                pb.step(song.getName());
-                            }
+                            songs.add(song);
+                            pb.step(song.getName());
                         }
                     }
                     offset += limit;
@@ -814,9 +809,7 @@ public class Spotify implements Import, Export, Sync {
                                     song = foundSong;
                                 }
                             }
-                            if (song != null) {
-                                songs.add(song);
-                            }
+                            songs.add(song);
                         }
                     }
                     offset += limit;
