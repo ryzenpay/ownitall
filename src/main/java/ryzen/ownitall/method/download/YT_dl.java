@@ -79,7 +79,7 @@ public class YT_dl implements DownloadInterface {
             command.add(2, Settings.yt_dlCookieBrowser);
         }
         command.add("--output");
-        command.add(Collection.getSongFileName(song));
+        command.add("\"" + Collection.getSongFileName(song) + "\""); // https://github.com/ytdl-org/youtube-dl/issues/23115
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags

@@ -118,7 +118,7 @@ public class Download implements Sync, Export {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler(false)) {
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (true) {
                 try {
                     interruptionHandler.checkInterruption();

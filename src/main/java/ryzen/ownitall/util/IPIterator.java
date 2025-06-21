@@ -21,12 +21,7 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private IPIterator(Iterator<T> iterated, String title, int maxStep) {
         this.iterated = iterated;
         this.pb = new ProgressBar(title, maxStep);
-        if (rootInstance == null) {
-            interruptionHandler = new InterruptionHandler(true);
-            rootInstance = this;
-        } else {
-            interruptionHandler = new InterruptionHandler(false);
-        }
+        interruptionHandler = new InterruptionHandler();
     }
 
     /**

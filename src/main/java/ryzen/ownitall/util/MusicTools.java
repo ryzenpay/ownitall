@@ -308,6 +308,8 @@ public class MusicTools {
      * @param fileName - String filename to sanitize
      * @return - sanitized String
      */
+    // TODO: cannot contain spaces for yt_dlp
+    // go to song hash?
     public static String sanitizeFileName(String fileName) {
         if (fileName == null) {
             logger.debug("null filename passed in SanitizeFileName");

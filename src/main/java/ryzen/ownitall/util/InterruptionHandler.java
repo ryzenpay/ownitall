@@ -22,22 +22,6 @@ public class InterruptionHandler implements AutoCloseable {
      * which is thread save
      */
     public InterruptionHandler() {
-        resetInterruption();
-        signalHandler = Signal.handle(new Signal("INT"), signal -> {
-            logger.debug("SIGINT received");
-            isInterrupted.set(true);
-        });
-    }
-
-    /**
-     * <p>Constructor for InterruptionHandler.</p>
-     *
-     * @param resetInterruption a boolean
-     */
-    public InterruptionHandler(boolean resetInterruption) {
-        if (resetInterruption) {
-            resetInterruption();
-        }
         signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
             isInterrupted.set(true);
@@ -59,7 +43,9 @@ public class InterruptionHandler implements AutoCloseable {
     }
 
     /**
-     * <p>isInterrupted.</p>
+     * <p>
+     * isInterrupted.
+     * </p>
      *
      * @return a boolean
      */
@@ -91,6 +77,7 @@ public class InterruptionHandler implements AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public void close() {
+        resetInterruption();
         Signal.handle(new Signal("INT"), signalHandler);
     }
 }
