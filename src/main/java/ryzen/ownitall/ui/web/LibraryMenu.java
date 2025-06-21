@@ -145,8 +145,9 @@ public class LibraryMenu {
      */
     @GetMapping("/library/cache")
     public String optionCache(Model model) {
-        int size = Library.getAlbumCacheSize() + Library.getArtistCacheSize() + Library.getIdCacheSize()
-                + Library.getSongCacheSize();
+        Library library = Library.load();
+        int size = library.getAlbumCacheSize() + library.getArtistCacheSize() + library.getIdCacheSize()
+                + library.getSongCacheSize();
         logger.info(model, "There currently are '" + size + "' cache entries");
         return libraryMenu(model);
     }

@@ -280,7 +280,7 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public static int getArtistCacheSize() {
+    public int getArtistCacheSize() {
         return artists.size();
     }
 
@@ -291,7 +291,7 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public static int getAlbumCacheSize() {
+    public int getAlbumCacheSize() {
         return albums.size();
     }
 
@@ -302,7 +302,7 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public static int getSongCacheSize() {
+    public int getSongCacheSize() {
         return songs.size();
     }
 
@@ -313,7 +313,7 @@ abstract public class Library implements LibraryInterface {
      *
      * @return a int
      */
-    public static int getIdCacheSize() {
+    public int getIdCacheSize() {
         return ids.size();
     }
 

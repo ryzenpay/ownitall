@@ -107,9 +107,10 @@ public class LibraryMenu {
 
     private void optionCacheSize() {
         System.out.println("The Library cache has: ");
-        System.out.println(Library.getAlbumCacheSize() + " albums");
-        System.out.println(Library.getArtistCacheSize() + " artists");
-        System.out.println(Library.getIdCacheSize() + " ids");
-        System.out.println(Library.getSongCacheSize() + " songs");
+        Library library = Library.load();
+        System.out.println(library.getAlbumCacheSize() + " albums");
+        System.out.println(library.getArtistCacheSize() + " artists");
+        System.out.println(library.getIdCacheSize() + " ids");
+        System.out.println(library.getSongCacheSize() + " songs");
     }
 }
