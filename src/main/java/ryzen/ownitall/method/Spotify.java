@@ -285,9 +285,11 @@ public class Spotify implements Import, Export, Sync {
                             Track track = savedTrack.getTrack();
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
-                                if (!artist.getName().equals("Various Artists")) {
-                                    song.addArtist(new Artist(artist.getName()));
+                                if (artist.getName().equals("Various Artists")) {
+                                    continue;
                                 }
+                                song.addArtist(new Artist(artist.getName()));
+
                             }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
@@ -445,8 +447,13 @@ public class Spotify implements Import, Export, Sync {
                         hasMore = false;
                     } else {
                         for (SavedAlbum savedAlbum : items) {
-                            Album album = this.getAlbum(savedAlbum.getAlbum().getId(), savedAlbum.getAlbum().getName(),
-                                    savedAlbum.getAlbum().getArtists()[0].getName());
+                            String albumId = savedAlbum.getAlbum().getId();
+                            String albumName = savedAlbum.getAlbum().getName();
+                            String albumArtistName = null;
+                            if (!savedAlbum.getAlbum().getArtists()[0].getName().equals("Various Artists")) {
+                                albumArtistName = savedAlbum.getAlbum().getArtists()[0].getName();
+                            }
+                            Album album = this.getAlbum(albumId, albumName, albumArtistName);
                             if (album != null) {
                                 albums.add(album);
                                 pb.step(album.getName());
@@ -529,9 +536,10 @@ public class Spotify implements Import, Export, Sync {
                         for (TrackSimplified track : items) {
                             Song song = new Song(track.getName());
                             for (ArtistSimplified artist : track.getArtists()) {
-                                if (!artist.getName().equals("Various Artists")) {
-                                    song.addArtist(new Artist(artist.getName()));
+                                if (artist.getName().equals("Various Artists")) {
+                                    continue;
                                 }
+                                song.addArtist(new Artist(artist.getName()));
                             }
                             song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                             song.addId("spotify", track.getId());
@@ -773,9 +781,10 @@ public class Spotify implements Import, Export, Sync {
                                 pb.step(track.getName());
                                 song = new Song(track.getName());
                                 for (ArtistSimplified artist : track.getArtists()) {
-                                    if (!artist.getName().equals("Various Artists")) {
-                                        song.addArtist(new Artist(artist.getName()));
+                                    if (artist.getName().equals("Various Artists")) {
+                                        continue;
                                     }
+                                    song.addArtist(new Artist(artist.getName()));
                                 }
                                 song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
                                 Image[] images = track.getAlbum().getImages();
