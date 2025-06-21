@@ -103,8 +103,6 @@ public class FormVariable {
      *
      * @return a {@link java.lang.Object} object
      */
-    // TODO: support array as value
-    // needed for multiple choice
     public Object getValue() {
         return value;
     }

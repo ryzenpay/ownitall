@@ -78,10 +78,7 @@ public class CollectionMenu {
      */
     @GetMapping("/collection/likedsongs/song")
     public String addLikedSongForm(Model model,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable name = new FormVariable("songName");
         name.setName("Name");
@@ -142,11 +139,8 @@ public class CollectionMenu {
 
     @GetMapping("/collection/likedsongs/song/{song}")
     public String editLikedSongForm(Model model,
-            @RequestParam(value = "callback", required = false) String callback,
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback,
             @PathVariable(value = "song") String songName) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
         Song song = Collection.getLikedSong(songName);
         if (song == null) {
             logger.warn(model, "Unable to find liked song '" + songName + "' in collection");
@@ -219,10 +213,7 @@ public class CollectionMenu {
      */
     @GetMapping("/collection/playlist")
     public String addPlaylistForm(Model model,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable playlistName = new FormVariable("playistName");
         playlistName.setName("Name");
@@ -264,10 +255,7 @@ public class CollectionMenu {
     @GetMapping("/collection/playlist/{playlist}")
     public String editPlaylistForm(Model model,
             @PathVariable(value = "playlist") String playlistName,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         Playlist playlist = Collection.getPlaylist(playlistName);
         if (playlist == null) {
             logger.info(model, "Unable to find playlist '" + playlistName + "' in collection");
@@ -283,12 +271,6 @@ public class CollectionMenu {
         coverImage.setName("Cover Image URL");
         coverImage.setValue(playlist.getCoverImage().toString());
         fields.add(coverImage);
-        FormVariable songs = new FormVariable("songs");
-        songs.setName("Songs to remove");
-        songs.setDescription("Cntrl + click to select multiple");
-        songs.setOptions(playlist.getSongs().stream().map(Song::getName).toArray(String[]::new));
-        songs.setMultipleChoice(true);
-        fields.add(songs);
         return Templates.form(model, "Edit Playlist '" + playlist.getName(), fields,
                 "/collection/playlist/" + playlist.getName(), callback);
     }
@@ -310,20 +292,6 @@ public class CollectionMenu {
         if (coverImage != null) {
             playlist.setCoverImage(coverImage);
         }
-
-        String songs = variables.get("songs");
-        if (songs != null) {
-            for (String songHashStr : songs.split(",")) {
-                int songHash = Integer.parseInt(songHashStr);
-                Song song = playlist.getSong(songHash);
-                if (song == null) {
-                    logger.debug("Unable to find song '" + songHash + "' in playlist '" + playlist.toString() + "'");
-                    continue;
-                }
-                playlist.removeSong(song);
-                logger.debug(model, "Removed song '" + song.getName() + "' from playlist '" + playlist.getName() + "'");
-            }
-        }
         logger.info(model, "Successfully modified playlist '" + playlist.getName() + "'");
         return ResponseEntity.ok("Successfully modified playlist '" + playlist.getName() + "'");
     }
@@ -340,10 +308,7 @@ public class CollectionMenu {
     @GetMapping("/collection/playlist/{playlist}/song")
     public String addPlaylistSongForm(Model model,
             @PathVariable(value = "playlist") String playlistName,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         Playlist playlist = Collection.getPlaylist(playlistName);
         if (playlist == null) {
             logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
@@ -420,10 +385,7 @@ public class CollectionMenu {
     public String editPlaylistSongForm(Model model,
             @PathVariable(value = "playlist") String playlistName,
             @PathVariable(value = "song") int songHash,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         Playlist playlist = Collection.getPlaylist(playlistName);
         if (playlist == null) {
             logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
@@ -540,10 +502,7 @@ public class CollectionMenu {
      */
     @GetMapping("/collection/album")
     public String addAlbumForm(Model model,
-            @RequestParam(value = "callback", required = false) String callback) {
-        if (callback == null) {
-            callback = "/collection/browse";
-        }
+            @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable albumName = new FormVariable("albumName");
         albumName.setName("Name");

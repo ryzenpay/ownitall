@@ -46,7 +46,11 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private Method method;
+    private static Method method;
+
+    public static Method getMethod() {
+        return method;
+    }
 
     /**
      * <p>
@@ -87,17 +91,17 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/{method}")
-    public String setMethod(Model model, @PathVariable(value = "method") String method,
+    public String setMethod(Model model, @PathVariable(value = "method") String methodName,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<?> methodClass = Method.getMethod(method);
+        Class<?> methodClass = Method.getMethod(methodName);
         if (methodClass != null) {
             try {
-                this.method = new Method(methodClass);
+                method = new Method(methodClass);
                 return "redirect:" + callback;
             } catch (MissingSettingException e) {
                 logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "': "
                         + e.getMessage());
-                return this.loginForm(model, method, "/method/" + method + "?callback=" + callback);
+                return this.loginForm(model, methodName, "/method/" + methodName + "?callback=" + callback);
             } catch (AuthenticationException e) {
                 logger.warn(model, "Failed to authenticate into method '" + method + "': " + e.getMessage());
                 return this.loginForm(model, methodClass
@@ -124,13 +128,11 @@ public class MethodMenu {
      */
     @GetMapping("/method/login/{method}")
     public String loginForm(Model model,
-            @PathVariable(value = "method") String method,
+            @PathVariable(value = "method") String methodName,
             @RequestParam(value = "callback", required = true) String callback) {
-        logger.debug(model, "method=" + method + ", callback=" + callback);
-
-        Class<?> methodClass = Method.getMethod(method);
+        Class<?> methodClass = Method.getMethod(methodName);
         if (methodClass == null) {
-            logger.warn(model, "Unsupported method '" + method + "'provided");
+            logger.warn(model, "Unsupported method '" + methodName + "'provided");
             return methodMenu(model, callback);
         }
         Settings settings = Settings.load();
@@ -151,17 +153,15 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/import")
-    public String importMenu(Model model) {
-        if (this.method == null) {
-            return methodMenu(model, "/method/import");
-        }
-        logger.info(model, "Current method: " + this.method.getMethodName());
+    public String importMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
+        logger.info(model, "Current method: " + method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Import Library", "/method/import/collection");
         options.put("Import Liked Songs", "/method/import/likedsongs");
         options.put("Import Album(s)", "/method/import/albums/menu");
         options.put("Import Playlist(s)", "/method/import/playlists/menu");
-        return Templates.menu(model, "Import Menu", options, "/method/return");
+        return Templates.menu(model, "Import Menu", options, callback);
     }
 
     /**
@@ -173,13 +173,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/import/collection")
-    public String optionImportCollection(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/collection");
-            return methodMenu(model, "/method/import/collection");
-        }
-        return Templates.process(model, "Importing '" + this.method.getMethodName() + "' collection",
-                "/method/import/collection", "/method/progress", "/method/logs", "/method/import");
+    public String optionImportCollection(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+        return Templates.process(model, "Importing '" + method.getMethodName() + "' collection",
+                "/method/import/collection", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -191,10 +188,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/import/collection")
     public ResponseEntity<Void> importCollection() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importCollection();
+        method.importCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -207,13 +201,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/import/likedsongs")
-    public String optionImportLikedSongs(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/likedsongs");
-            return methodMenu(model, "/method/import/likedsongs");
-        }
-        return Templates.process(model, "Importing '" + this.method.getMethodName() + "' liked songs",
-                "/method/import/likedsongs", "/method/progress", "/method/logs", "/method/import");
+    public String optionImportLikedSongs(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+        return Templates.process(model, "Importing '" + method.getMethodName() + "' liked songs",
+                "/method/import/likedsongs", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -225,20 +216,18 @@ public class MethodMenu {
      */
     @PostMapping("/method/import/likedsongs")
     public ResponseEntity<Void> importLikedSongs() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importLikedSongs();
+        method.importLikedSongs();
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/method/import/albums/menu")
-    public String importAlbumsMenu(Model model) {
+    public String importAlbumsMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All " + this.method.getMethodName() + " Albums", "/method/import/albums");
-        options.put("Single " + this.method.getMethodName() + " Album",
+        options.put("All " + method.getMethodName() + " Albums", "/method/import/albums");
+        options.put("Single " + method.getMethodName() + " Album",
                 "/method/import/album/form?callback=/method/import");
-        return Templates.menu(model, "Import Album(s) Menu", options, "/method/import");
+        return Templates.menu(model, "Import Album(s) Menu", options, callback);
     }
 
     /**
@@ -250,13 +239,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/import/albums")
-    public String optionImportAlbums(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/albums");
-            return methodMenu(model, "/method/import/albums");
-        }
-        return Templates.process(model, "Importing '" + this.method.getMethodName() + "' albums",
-                "/method/import/albums", "/method/progress", "/method/logs", "/method/import");
+    public String optionImportAlbums(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+        return Templates.process(model, "Importing '" + method.getMethodName() + "' albums",
+                "/method/import/albums", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -268,23 +254,16 @@ public class MethodMenu {
      */
     @PostMapping("/method/import/albums")
     public ResponseEntity<Void> importAlbums() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importAlbums();
+        method.importAlbums();
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/method/import/album/form")
     public String importAlbumForm(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/album");
-            return methodMenu(model, "/method/import/album");
-        }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable id = new FormVariable("id");
-        id.setName(this.method.getMethodName() + " Album ID");
+        id.setName(method.getMethodName() + " Album ID");
         id.setRequired(true);
         fields.add(id);
         FormVariable name = new FormVariable("name");
@@ -307,24 +286,23 @@ public class MethodMenu {
     @PostMapping("/method/import/album")
     public ResponseEntity<Void> importAlbum(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         if (variables.get("id") == null) {
+            logger.warn(model, "Missing album id in variables");
             return ResponseEntity.badRequest().build();
         }
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importAlbum(variables.get("id"), variables.get("name"), variables.get("artistName"));
+        method.importAlbum(variables.get("id"), variables.get("name"), variables.get("artistName"));
         logger.info(model,
-                "Successfully imported " + this.method.getMethodName() + " album '" + variables.get("id") + "'");
+                "Successfully imported " + method.getMethodName() + " album '" + variables.get("id") + "'");
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/method/import/playlists/menu")
-    public String importPlaylistsMenu(Model model) {
+    public String importPlaylistsMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All " + this.method.getMethodName() + " Playlists", "/method/import/playlists");
-        options.put("Single " + this.method.getMethodName() + " Playlist",
+        options.put("All " + method.getMethodName() + " Playlists", "/method/import/playlists");
+        options.put("Single " + method.getMethodName() + " Playlist",
                 "/method/import/playlist/form?callback=/method/import");
-        return Templates.menu(model, "Import Album(s) Menu", options, "/method/import");
+        return Templates.menu(model, "Import Album(s) Menu", options, callback);
     }
 
     /**
@@ -336,13 +314,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/import/playlists")
-    public String optionImportPlaylists(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/playlists");
-            return methodMenu(model, "/method/import/playlists");
-        }
-        return Templates.process(model, "Importing '" + this.method.getMethodName() + "' playlists",
-                "/method/import/playlists", "/method/progress", "/method/logs", "/method/import");
+    public String optionImportPlaylists(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+        return Templates.process(model, "Importing '" + method.getMethodName() + "' playlists",
+                "/method/import/playlists", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -354,23 +329,16 @@ public class MethodMenu {
      */
     @PostMapping("/method/import/playlists")
     public ResponseEntity<Void> importPlaylists() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importPlaylists();
+        method.importPlaylists();
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/method/import/playlist/form")
     public String importPlaylistForm(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in import/playlist");
-            return methodMenu(model, "/method/import/playlist");
-        }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable id = new FormVariable("id");
-        id.setName(this.method.getMethodName() + " Playlist ID");
+        id.setName(method.getMethodName() + " Playlist ID");
         id.setRequired(true);
         fields.add(id);
         FormVariable name = new FormVariable("name");
@@ -390,15 +358,13 @@ public class MethodMenu {
     @PostMapping("/method/import/playlist")
     public ResponseEntity<Void> importPlaylist(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         if (variables.get("id") == null) {
+            logger.warn(model, "missing playlist id in variables");
             return ResponseEntity.badRequest().build();
         }
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.importPlaylist(variables.get("id"), variables.get("name"));
+        method.importPlaylist(variables.get("id"), variables.get("name"));
         logger.info(model,
-                "Successfully imported " + this.method.getMethodName() + " playlist '" + variables.get("id") + "'");
-        return ResponseEntity.badRequest().build();
+                "Successfully imported " + method.getMethodName() + " playlist '" + variables.get("id") + "'");
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -410,17 +376,15 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/export")
-    public String exportMenu(Model model) {
-        if (this.method == null) {
-            return methodMenu(model, "/method/export");
-        }
-        logger.info(model, "Current method: " + this.method.getMethodName());
+    public String exportMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
+        logger.info(model, "Current method: " + method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Export Library", "/method/export/collection");
         options.put("Export Liked Songs", "/method/export/likedsongs");
         options.put("Export Album(s)", "/method/export/albums");
         options.put("Export Playlist(s)", "/method/export/playlists");
-        return Templates.menu(model, "Export Menu", options, "/method/return");
+        return Templates.menu(model, "Export Menu", options, callback);
     }
 
     /**
@@ -432,13 +396,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/export/collection")
-    public String optionExportCollection(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in export/collection");
-            return methodMenu(model, "/method/export/collection");
-        }
-        return Templates.process(model, "Exporting '" + this.method.getMethodName() + "' collection",
-                "/method/export/collection", "/method/progress", "/method/logs", "/method/export");
+    public String optionExportCollection(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
+        return Templates.process(model, "Exporting '" + method.getMethodName() + "' collection",
+                "/method/export/collection", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -450,10 +411,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/export/collection")
     public ResponseEntity<Void> exportCollection() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.exportCollection();
+        method.exportCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -466,13 +424,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/export/likedsongs")
-    public String optionExportLikedSongs(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in export/likedsongs");
-            return methodMenu(model, "/method/export/likedsongs");
-        }
-        return Templates.process(model, "Exporting '" + this.method.getMethodName() + "' liked songs",
-                "/method/export/likedsongs", "/method/progress", "/method/logs", "/method/export");
+    public String optionExportLikedSongs(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
+        return Templates.process(model, "Exporting '" + method.getMethodName() + "' liked songs",
+                "/method/export/likedsongs", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -484,10 +439,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/export/likedsongs")
     public ResponseEntity<Void> exportLikedSongs() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.exportLikedSongs();
+        method.exportLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -500,22 +452,19 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/export/albums")
-    public String optionExportAlbums(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in export/albums");
-            return methodMenu(model, "/method/export/albums");
-        }
+    public String optionExportAlbums(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("All", "/method/process?processName=Exporting all Albums from "
-                + this.method.getMethodName() + "&processFunction=/method/export/albums&callback=/method/export");
+                + method.getMethodName() + "&processFunction=/method/export/albums&callback=" + callback);
         for (Album album : Collection.getAlbums()) {
             options.put(album.toString(), "/method/process?processName=Exporting '" + album.getName() + "' from "
-                    + this.method
+                    + method
                             .getMethodName()
                     + "&processFunction=/method/export/album/" + album.getName()
-                    + "&callback=/method/export");
+                    + "&callback=" + callback);
         }
-        return Templates.menu(model, "Album Export Menu", options, "/method/export");
+        return Templates.menu(model, "Album Export Menu", options, callback);
     }
 
     /**
@@ -527,10 +476,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/export/albums")
     public ResponseEntity<Void> exportAlbums() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.exportAlbums();
+        method.exportAlbums();
         return ResponseEntity.ok().build();
     }
 
@@ -545,12 +491,9 @@ public class MethodMenu {
     @PostMapping("/method/export/album/{name}")
     public ResponseEntity<Void> exportAlbum(
             @PathVariable(value = "name") String name) {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
         Album album = Collection.getAlbum(name);
         if (album != null) {
-            this.method.exportAlbum(album);
+            method.exportAlbum(album);
         } else {
             logger.warn("Unable to find album '" + name + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -567,22 +510,19 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/export/playlists")
-    public String optionExportPlaylists(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in export/playlists");
-            return methodMenu(model, "/method/export/playlists");
-        }
+    public String optionExportPlaylists(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("All", "/method/process?processName=Exporting all playlists from "
-                + this.method.getMethodName() + "&processFunction=/method/export/playlists&callback=/method/export");
+                + method.getMethodName() + "&processFunction=/method/export/playlists&callback=" + callback);
         for (Playlist playlist : Collection.getPlaylists()) {
             options.put(playlist.toString(), "/method/process?processName=Exporting '" + playlist.getName() + "' from "
-                    + this.method
+                    + method
                             .getMethodName()
                     + "&processFunction=/method/export/playlist/" + playlist.getName()
-                    + "&callback=/method/export");
+                    + "&callback=" + callback);
         }
-        return Templates.menu(model, "Playlist Export Menu", options, "/method/export");
+        return Templates.menu(model, "Playlist Export Menu", options, callback);
     }
 
     /**
@@ -594,10 +534,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/export/playlists")
     public ResponseEntity<Void> exportPlaylists() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.exportPlaylists();
+        method.exportPlaylists();
         return ResponseEntity.ok().build();
     }
 
@@ -612,12 +549,9 @@ public class MethodMenu {
     @PostMapping("/method/export/playlist/{name}")
     public ResponseEntity<Void> exportPlaylist(
             @PathVariable(value = "name") String name) {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
         Playlist playlist = Collection.getPlaylist(name);
         if (playlist != null) {
-            this.method.exportPlaylist(playlist);
+            method.exportPlaylist(playlist);
         } else {
             logger.warn("Unable to find playlist '" + name + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -634,17 +568,15 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/sync")
-    public String syncMenu(Model model) {
-        if (this.method == null) {
-            return methodMenu(model, "/method/sync");
-        }
-        logger.info(model, "Current method: " + this.method.getMethodName());
+    public String syncMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
+        logger.info(model, "Current method: " + method.getMethodName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("Sync Library", "/method/sync/collection");
         options.put("Sync Liked Songs", "/method/sync/likedsongs");
         options.put("Sync Albums", "/method/sync/albums");
-        options.put("Sync Playlists", "/method/sync/playlists");
-        return Templates.menu(model, "Sync Menu", options, "/method/return");
+        options.put("Sync Playlists", "/method/sync/playlists/menu");
+        return Templates.menu(model, "Sync Menu", options, callback);
     }
 
     /**
@@ -656,13 +588,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/sync/collection")
-    public String optionSyncCollection(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in sync/collection");
-            return methodMenu(model, "/method/sync/collection");
-        }
-        return Templates.process(model, "Syncronizing '" + this.method.getMethodName() + "' collection",
-                "/method/sync/collection", "/method/progress", "/method/logs", "/method/sync");
+    public String optionSyncCollection(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' collection",
+                "/method/sync/collection", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -674,10 +603,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/sync/collection")
     public ResponseEntity<Void> syncCollection() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.syncCollection();
+        method.syncCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -690,13 +616,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/sync/likedsongs")
-    public String optionSyncLikedSongs(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in sync/likedsongs");
-            return methodMenu(model, "/method/sync/likedsongs");
-        }
-        return Templates.process(model, "Syncronizing '" + this.method.getMethodName() + "' liked songs",
-                "/method/sync/likedsongs", "/method/progress", "/method/logs", "/method/sync");
+    public String optionSyncLikedSongs(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' liked songs",
+                "/method/sync/likedsongs", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -708,10 +631,7 @@ public class MethodMenu {
      */
     @PostMapping("/method/sync/likedsongs")
     public ResponseEntity<Void> syncLikedSongs() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.syncLikedSongs();
+        method.syncLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -724,13 +644,10 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/sync/albums")
-    public String optionSyncAlbums(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in sync/albums");
-            return methodMenu(model, "/method/sync/albums");
-        }
-        return Templates.process(model, "Syncronizing '" + this.method.getMethodName() + "' albums",
-                "/method/sync/albums", "/method/progress", "/method/logs", "/method/sync");
+    public String optionSyncAlbums(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' albums",
+                "/method/sync/albums", "/method/progress", "/method/logs", callback);
     }
 
     /**
@@ -742,11 +659,19 @@ public class MethodMenu {
      */
     @PostMapping("/method/sync/albums")
     public ResponseEntity<Void> syncAlbums() {
-        if (this.method == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        this.method.syncAlbums();
+        method.syncAlbums();
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/method/sync/playlists/menu")
+    public String syncPlaylistsMenu(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        LinkedHashMap<String, String> options = new LinkedHashMap<>();
+        options.put("All", "/method/sync/playlists");
+        for (Playlist playlist : Collection.getPlaylists()) {
+            options.put(playlist.getName(), "/method/sync/playlist/" + playlist.getName());
+        }
+        return Templates.menu(model, "Sync Playlist(s)", options, callback);
     }
 
     /**
@@ -758,13 +683,25 @@ public class MethodMenu {
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/method/sync/playlists")
-    public String optionSyncPlaylists(Model model) {
-        if (this.method == null) {
-            logger.warn(model, "Method not initialized in sync/playlists");
-            return methodMenu(model, "/method/sync/playlists");
+    public String optionSyncPlaylists(Model model,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        return Templates.process(model, "Exporting '" + method.getMethodName() + "' playlists",
+                "/method/sync/playlists", "/method/progress", "/method/logs", callback);
+    }
+
+    @GetMapping("/method/sync/playlists/{playlist}")
+    public String optionSyncPlaylist(Model model,
+            @PathVariable(value = "playlist") String playlistName,
+            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist != null) {
+            return Templates.process(model,
+                    "Exporting '" + method.getMethodName() + "' playlist '" + playlist.getName() + "'",
+                    "/method/sync/playlist/" + playlist.getName(), "/method/progress", "/method/logs", callback);
+        } else {
+            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            return "redirect:" + callback;
         }
-        return Templates.process(model, "Exporting '" + this.method.getMethodName() + "' playlists",
-                "/method/sync/playlists", "/method/progress", "/method/logs", "/method/sync");
     }
 
     /**
@@ -777,10 +714,19 @@ public class MethodMenu {
     // TODO: sync individual playlists
     @PostMapping("/method/sync/playlists")
     public ResponseEntity<Void> syncPlaylists() {
-        if (this.method == null) {
+        method.syncPlaylists();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/method/sync/playlist/{playlist}")
+    public ResponseEntity<Void> syncPlaylist(@PathVariable(value = "playlist") String playlistName) {
+        Playlist playlist = Collection.getPlaylist(playlistName);
+        if (playlist != null) {
+            method.syncPlaylist(playlist);
+        } else {
+            logger.warn("Unable to find playlist '" + playlistName + "' in collection");
             return ResponseEntity.badRequest().build();
         }
-        this.method.syncPlaylists();
         return ResponseEntity.ok().build();
     }
 
@@ -861,7 +807,7 @@ public class MethodMenu {
      */
     @GetMapping("/method/return")
     public String optionReturn() {
-        this.method = null;
+        method = null;
         return "redirect:/collection";
     }
 }
