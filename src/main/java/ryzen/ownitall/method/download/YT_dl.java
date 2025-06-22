@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
@@ -19,6 +20,7 @@ import ryzen.ownitall.util.exceptions.AuthenticationException;
  */
 public class YT_dl implements DownloadInterface {
     private static final Logger logger = new Logger(YT_dl.class);
+    private Youtube youtube;
 
     /**
      * default download constructor
@@ -34,6 +36,9 @@ public class YT_dl implements DownloadInterface {
         }
         if (!Settings.yt_dlFile.exists()) {
             throw new AuthenticationException("YT_DL missing yt_dl binary");
+        }
+        if (Settings.ytdlUseYoutube) {
+            this.youtube = new Youtube();
         }
     }
 
@@ -85,10 +90,17 @@ public class YT_dl implements DownloadInterface {
          * ^ keep this at the end, incase of fucked up syntax making the other flags
          * drop
          */
-        String searchQuery;
+        String searchQuery = null;
         if (song.getId("youtube") != null) {
             searchQuery = "https://youtube.com/watch?v=" + song.getId("youtube");
-        } else {
+        } else if (youtube != null) {
+            String id = youtube.getSongId(song);
+            if (id != null) {
+                searchQuery = "https://youtube.com/watch?v=" + id;
+                song.addId("youtube", id);
+            }
+        }
+        if (searchQuery == null) {
             // search query filters
             searchQuery = song.toString() + " (official audio)"; // youtube search criteria
             if (song.getAlbumName() != null) {

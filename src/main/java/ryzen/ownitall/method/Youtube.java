@@ -320,4 +320,31 @@ public class Youtube implements Import {
         }
         return null;
     }
+
+    public String getSongId(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getSong");
+            return null;
+        }
+        try {
+            YouTube.Search.List search = this.youtubeApi.search()
+                    .list("snippet")
+                    .setQ(song.toString()) // search query
+                    .setType("video")
+                    .setVideoCategoryId("10"); // music video
+            if (!song.getDuration().isZero()) {
+                search.setVideoDuration("medium"); // between 4 and 20 min
+            }
+            SearchListResponse listResponse = search.execute();
+            if (listResponse.getItems() != null) {
+                // TODO: more filtering?
+                // TODO: quota limit
+                return listResponse.getItems().get(0).getId().getVideoId();
+            }
+        } catch (IOException e) {
+            logger.error("Exception searching for song '" + song.getName() + "'", e);
+        }
+        logger.debug("Unable to find song '" + song.getName() + "' on youtube");
+        return null;
+    }
 }

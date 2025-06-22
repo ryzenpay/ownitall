@@ -711,7 +711,6 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    // TODO: sync individual playlists
     @PostMapping("/method/sync/playlists")
     public ResponseEntity<Void> syncPlaylists() {
         method.syncPlaylists();

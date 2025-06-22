@@ -215,6 +215,10 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("Download Method")
     public static String downloadMethod = "YT_dl";
 
+    @Group(YT_dl.class)
+    @Name("Search Youtube")
+    public static boolean ytdlUseYoutube = false;
+
     /**
      * enable multithreading
      */

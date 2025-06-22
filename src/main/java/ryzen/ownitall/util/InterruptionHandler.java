@@ -42,6 +42,12 @@ public class InterruptionHandler implements AutoCloseable {
         }
     }
 
+    public static void checkGlobalInterruption() throws InterruptedException {
+        if (isInterrupted()) {
+            throw new InterruptedException("Global Interruption caught");
+        }
+    }
+
     /**
      * <p>
      * isInterrupted.

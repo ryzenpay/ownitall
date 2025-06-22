@@ -118,18 +118,16 @@ public class Download implements Sync, Export {
         if (this.executor == null || this.executor.isShutdown()) {
             this.threadInit();
         }
-        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            while (true) {
-                try {
-                    interruptionHandler.checkInterruption();
-                    // Attempt to execute the task
-                    this.executor.execute(() -> {
-                        this.exportSong(song, path);
-                    });
-                    break;
-                } catch (RejectedExecutionException e) {
-                    Thread.sleep(1000);
-                }
+        while (true) {
+            try {
+                InterruptionHandler.checkGlobalInterruption();
+                // Attempt to execute the task
+                this.executor.execute(() -> {
+                    this.exportSong(song, path);
+                });
+                break;
+            } catch (RejectedExecutionException e) {
+                Thread.sleep(1000);
             }
         }
     }
