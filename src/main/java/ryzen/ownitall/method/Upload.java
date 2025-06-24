@@ -298,16 +298,17 @@ public class Upload implements Import {
         if (name == null) {
             name = folder.getName();
         }
-        Album album = new Album(folder.getName());
+        Album album = new Album(name);
         ArrayList<Song> songs = getSongs(folder);
         if (songs != null && !songs.isEmpty()) {
-            album.addSongs(songs);
             for (Song song : songs) {
                 if (song.getAlbumName() != null) {
                     album.setName(song.getAlbumName());
                     break;
                 }
             }
+            // needs to be under checking loop, as this also sets the album name
+            album.addSongs(songs);
         }
         File albumCover = new File(folder, Collection.getCollectionCoverFileName(album));
         if (albumCover.exists()) {
