@@ -14,7 +14,7 @@ import ryzen.ownitall.classes.Song;
  */
 public interface DownloadInterface {
 
-    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException;
+    public ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException;
 
     public void handleError(int errorCode) throws DownloadException;
 }

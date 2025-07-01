@@ -3,7 +3,6 @@ package ryzen.ownitall.method.download;
 import java.io.File;
 import java.util.ArrayList;
 
-import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Youtube;
@@ -42,9 +41,9 @@ public class YT_dl implements DownloadInterface {
         }
     }
 
-    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException {
-        if (song == null || path == null) {
-            logger.debug("null song or Path provided in downloadSong");
+    public ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException {
+        if (song == null || downloadFile == null) {
+            logger.debug("null song or downloadFile provided in downloadSong");
             return null;
         }
         ArrayList<String> command = new ArrayList<>();
@@ -75,7 +74,7 @@ public class YT_dl implements DownloadInterface {
         // command.add("--no-write-comments");
         // download location
         command.add("--paths");
-        command.add(path.getAbsolutePath());
+        command.add(downloadFile.getParent());
         if (Settings.yt_dlCookieFile != null && Settings.yt_dlCookieFile.exists()) {
             command.add(1, "--cookies");
             command.add(2, Settings.yt_dlCookieFile.getAbsolutePath());
@@ -84,7 +83,7 @@ public class YT_dl implements DownloadInterface {
             command.add(2, Settings.yt_dlCookieBrowser);
         }
         command.add("--output");
-        command.add("\"" + Collection.getSongFileName(song) + "\""); // https://github.com/ytdl-org/youtube-dl/issues/23115
+        command.add("\"" + downloadFile.getName() + "\""); // https://github.com/ytdl-org/youtube-dl/issues/23115
         /**
          * search for video using the query / use url
          * ^ keep this at the end, incase of fucked up syntax making the other flags

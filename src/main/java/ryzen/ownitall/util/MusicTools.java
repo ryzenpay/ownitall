@@ -315,7 +315,7 @@ public class MusicTools {
         }
 
         // Sanitize the name by replacing invalid characters with '#'
-        String sanitized = fileName.replaceAll("[^a-zA-Z0-9\\s\\(\\)\\$\\-]", "#");
+        String sanitized = fileName.replaceAll("[^a-zA-Z0-9\\._]+", "");
         // Remove any trailing spaces
         sanitized = sanitized.trim();
         // Limit length to 255 characters
@@ -324,7 +324,7 @@ public class MusicTools {
         }
         // Check if the sanitized name contains at least one alphabet character or
         // number
-        if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
+        if (sanitized.isEmpty()) {
             return String.valueOf(fileName.hashCode());
         }
         return sanitized;

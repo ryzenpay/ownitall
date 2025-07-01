@@ -175,7 +175,8 @@ public class Download implements Sync, Export {
      */
     public void exportSong(Song song, File path) {
         try {
-            ArrayList<String> command = downloadClass.createCommand(song, path);
+            File downloadFile = new File(path, String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
+            ArrayList<String> command = downloadClass.createCommand(song, downloadFile);
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             File songFile = new File(path, Collection.getSongFileName(song));
@@ -198,6 +199,13 @@ public class Download implements Sync, Export {
                     downloadClass.handleError(exitCode);
                     logger.debug(
                             "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
+                }
+                if (downloadFile.exists()) {
+                    if (!downloadFile.renameTo(songFile)) {
+                        logger.warn("Unable to move downloaded song '" + song.getName() + "' from '"
+                                + downloadFile.getAbsolutePath() + "'");
+                    }
+                    break;
                 }
             }
             if (songFile.exists()) {

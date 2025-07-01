@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.Level;
 
-import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
@@ -45,9 +44,9 @@ public class SoulSeek implements DownloadInterface {
         Download.downloadThreads = 1;
     }
 
-    public ArrayList<String> createCommand(Song song, File path) throws InterruptedException {
-        if (song == null || path == null) {
-            logger.debug("null song or Path provided in downloadSong");
+    public ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException {
+        if (song == null || downloadFile == null) {
+            logger.debug("null song or downloadFile provided in downloadSong");
             return null;
         }
         ArrayList<String> command = new ArrayList<>();
@@ -57,7 +56,7 @@ public class SoulSeek implements DownloadInterface {
         command.add("--pass");
         command.add(Settings.soulSeekPassword);
         command.add("--path");
-        command.add(path.getAbsolutePath());
+        command.add(downloadFile.getParent());
         command.add("--input-type");
         command.add("string");
         command.add("--number");
@@ -66,7 +65,7 @@ public class SoulSeek implements DownloadInterface {
         command.add("--min-bitrate");
         command.add(String.valueOf(Settings.soulSeekBitRate));
         command.add("--name-format");
-        command.add(Collection.getSongFileName(song));
+        command.add(downloadFile.getName());
         command.add("--fast-search");
         command.add(String.valueOf(Settings.downloadThreads));
         if (Logger.is(Level.DEBUG)) {
@@ -93,6 +92,6 @@ public class SoulSeek implements DownloadInterface {
     }
 
     public void handleError(int exitCode) {
-        logger.warn("Unkown exit code while downloading SoulSeek song (" + exitCode + ")");
+        logger.warn("Unknown exit code while downloading SoulSeek song (" + exitCode + ")");
     }
 }
