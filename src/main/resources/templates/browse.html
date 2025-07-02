@@ -231,7 +231,7 @@
                     .then(response => response.text())
                     .then(data => {
                         console.info(data)
-                        location.reload();
+                        document.location.reload(); //maintains position
                     })
                     .catch(error => {
                         alert('Error deleting: ' + error);

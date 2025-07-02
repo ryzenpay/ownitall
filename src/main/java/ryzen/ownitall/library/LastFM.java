@@ -302,13 +302,7 @@ public class LastFM extends Library {
                         album.addArtist(artist);
                         album = this.getAlbum(album);
                         if (album != null) {
-                            // filter out singles / empty albums
-                            if (album.size() > 2) {
-                                albums.add(album);
-                            } else {
-                                logger.debug("skipping album '" + album.getName() + "' as it is a single / empty ("
-                                        + album.size() + ")");
-                            }
+                            albums.add(album);
                         }
                     }
                 } else {
