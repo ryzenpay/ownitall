@@ -80,7 +80,7 @@ public class MusicBrainz extends Library {
                 ids.put(params.toString(), id);
                 return id;
             } else {
-                logger.debug("missing data in album search result " + response.toString());
+                logger.debug("missing data in album '" + album.toString() + "' search result");
             }
         }
         if (!album.getName().equals(removeBrackets(album.getName()))) {
@@ -128,7 +128,7 @@ public class MusicBrainz extends Library {
                     }
                 }
             } else {
-                logger.debug("Album missing coverart: '" + response.toString());
+                logger.debug("Album '" + album.getName() + "' missing coverart");
             }
             JsonNode artistNodes = response.path("artist-credit");
             if (artistNodes.isArray()) {
@@ -140,7 +140,7 @@ public class MusicBrainz extends Library {
                     }
                 }
             } else {
-                logger.debug("album missing artists: " + response.toString());
+                logger.debug("album '" + album.getName() + "' missing artists");
             }
             JsonNode discNodes = response.path("media");
             if (discNodes.isArray()) {
@@ -154,11 +154,11 @@ public class MusicBrainz extends Library {
                             }
                         }
                     } else {
-                        logger.debug("Album disc missing songs: " + discNode.toString());
+                        logger.debug("Album '" + album.getName() + "' disc missing songs");
                     }
                 }
             } else {
-                logger.debug("Album missing songs: " + response.toString());
+                logger.debug("Album '" + album.getName() + "' missing songs");
             }
             albums.put(id, album);
             return album;
@@ -213,7 +213,7 @@ public class MusicBrainz extends Library {
                 ids.put(params.toString(), id);
                 return id;
             } else {
-                logger.warn("Missing data while getting Song: " + response.toString());
+                logger.warn("Missing data while getting Song '" + song.getName() + "'");
             }
         }
         if (!song.getName().equals(removeBrackets(song.getName()))) {
@@ -260,7 +260,7 @@ public class MusicBrainz extends Library {
                     song.addArtist(artist);
                 }
             } else {
-                logger.debug("Song missing artists: " + response.toString());
+                logger.debug("Song '" + song.getName() + "' missing artists");
             }
             JsonNode releaseNode = response.path("releases").get(0);
             if (releaseNode != null) {

@@ -209,15 +209,6 @@ public class ModifyMenu {
             }
             ArrayList<Album> albums = library.getArtistAlbums(artist);
             if (albums != null) {
-                for (Album album : albums) {
-                    if (album.size() < 3) { // support 2 versions of same EP
-                        for (Song song : album.getSongs()) {
-                            Collection.addLikedSong(song);
-                        }
-                        logger.info("Added single/EP '" + album.getName() + "' to liked songs");
-                        albums.remove(album);
-                    }
-                }
                 Collection.addAlbums(albums);
                 logger.info("Successfully added " + albums.size() + " albums from '" + artist.toString()
                         + "' to collection");

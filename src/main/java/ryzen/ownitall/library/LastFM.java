@@ -102,7 +102,7 @@ public class LastFM extends Library {
                         }
                     }
                 } else {
-                    logger.debug(album.toString() + ": album missing images: " + albumNode.toString());
+                    logger.debug(album.toString() + ": album missing images");
                 }
                 JsonNode trackNodes = albumNode.path("tracks").path("track");
                 if (trackNodes != null && trackNodes.isArray() && !trackNodes.isEmpty()) {
@@ -113,7 +113,7 @@ public class LastFM extends Library {
                         if (!artistNode.isMissingNode()) {
                             songArtist = this.getArtist(new Artist(artistNode.path("name").asText()));
                         } else {
-                            logger.debug(album.toString() + " track missing artist: " + trackNode.toString());
+                            logger.debug(album.toString() + " track missing artist");
                         }
                         if (songArtist != null) {
                             song.addArtist(artist);
@@ -124,14 +124,14 @@ public class LastFM extends Library {
                         }
                     }
                 } else {
-                    logger.debug(album.toString() + ": album missing tracks: " + albumNode.toString());
+                    logger.debug(album.toString() + ": album missing tracks");
                 }
                 if (!album.isEmpty()) {
                     albums.put(params.toString(), album);
                     return album;
                 }
             } else {
-                logger.debug(album.toString() + ": album.getInfo missing album: " + response.toString());
+                logger.debug(album.toString() + ": album.getInfo missing album");
             }
         }
         if (!album.getName().equals(removeBrackets(album.getName()))) {
@@ -187,7 +187,7 @@ public class LastFM extends Library {
                         song.addArtist(artist);
                     }
                 } else {
-                    logger.debug(song.toString() + ": track missing artist: " + trackNode.toString());
+                    logger.debug(song.toString() + ": track missing artist");
                 }
                 JsonNode albumNode = trackNode.path("album");
                 if (!albumNode.isMissingNode()) {
@@ -201,17 +201,15 @@ public class LastFM extends Library {
                             }
                         }
                     } else {
-                        logger.debug(song.toString() + ": song missing images: " + albumNode.toString());
+                        logger.debug(song.toString() + ": song missing images");
                     }
                 } else {
-                    // this is printed a lot and just for cover image
-                    // logger.debug(song.toString() + ": track missing album: " +
-                    // trackNode.toString());
+                    logger.debug(song.toString() + ": track missing album");
                 }
                 songs.put(params.toString(), song);
                 return song;
             } else {
-                logger.debug(song.toString() + ": track.getInfo missing track: " + response.toString());
+                logger.debug(song.toString() + ": track.getInfo missing track");
             }
         }
         if (!song.getName().equals(removeBrackets(song.getName()))) {
@@ -261,7 +259,7 @@ public class LastFM extends Library {
                         }
                     }
                 } else {
-                    logger.debug(artist.toString() + ": artist missing images: " + artistNode.toString());
+                    logger.debug(artist.toString() + ": artist missing images");
                 }
                 artists.put(params.toString(), artist);
                 return artist;
@@ -306,10 +304,10 @@ public class LastFM extends Library {
                         }
                     }
                 } else {
-                    logger.debug(artist.toString() + ": missing data in artist albums: " + topAlbumsNode.toString());
+                    logger.debug(artist.toString() + ": missing data in artist albums");
                 }
             } else {
-                logger.debug(artist.toString() + ": missing data getting top albums: " + response.toString());
+                logger.debug(artist.toString() + ": missing data getting top albums");
             }
         }
         if (albums.isEmpty()) {
