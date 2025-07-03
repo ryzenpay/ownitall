@@ -27,7 +27,8 @@
                         data-url="/collection/likedsongs/song" onclick="redirect(this)"><i
                             class="bi bi-plus-circle"></i> Add</button>
                     <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent">
+                        data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent"
+                        onclick="toggleCollapse('likedSongsContent')">
                         <i class="bi bi-chevron-expand"></i> Expand/Collapse
                     </button>
                 </div>
@@ -70,7 +71,8 @@
                         data-url="/collection/album" onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                         Add</button>
                     <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent">
+                        data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent"
+                        onclick="toggleCollapse('albumsContent')">
                         <i class="bi bi-chevron-expand"></i> Expand/Collapse
                     </button>
                 </div>
@@ -93,11 +95,12 @@
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-outline-secondary btn-sm me-2" type="button"
                                     data-bs-toggle="collapse" th:data-bs-target="'#albumCollapse' + ${album.hashCode()}"
-                                    aria-expanded="false" th:aria-controls="'albumCollapse' + ${album.hashCode()}">
+                                    aria-expanded="false" th:aria-controls="'albumCollapse' + ${album.hashCode()}"
+                                    onclick="toggleCollapse('albumCollapse' + album.hashCode())">
                                     <i class="bi bi-chevron-expand"></i> Expand/Collapse
                                 </button>
                                 <button class="btn btn-outline-danger btn-sm" th:data-item-name="${album.getName()}"
-                                    th:data-url="'/collection/album/' + ${album.getName()}" th:inline="javascript"
+                                    th:data-url="'/collection/album/' + ${album.hashCode()}" th:inline="javascript"
                                     onclick="deleteItem(this)"><i class="bi bi-trash"></i> Delete</button>
                             </div>
                         </div>
@@ -136,7 +139,8 @@
                         data-url="/collection/playlist" onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                         Add</button>
                     <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent">
+                        data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent"
+                        onclick="toggleCollapse('playlistsContent')">
                         <i class="bi bi-chevron-expand"></i> Expand/Collapse
                     </button>
                 </div>
@@ -159,22 +163,23 @@
                                 <button class="btn btn-outline-secondary btn-sm me-2" type="button"
                                     data-bs-toggle="collapse"
                                     th:data-bs-target="'#playlistCollapse' + ${playlist.hashCode()}"
-                                    aria-expanded="false"
-                                    th:aria-controls="'playlistCollapse' + ${playlist.hashCode()}">
+                                    aria-expanded="false" th:aria-controls="'playlistCollapse' + ${playlist.hashCode()}"
+                                    onclick="toggleCollapse('playlistCollapse' + playlist.hashCode())">
                                     <i class="bi bi-chevron-expand"></i> Expand/Collapse
                                 </button>
                                 <button class="btn btn-outline-success btn-sm me-2" type="button" th:inline="javascript"
-                                    th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/song'"
+                                    th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/song'"
                                     onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                                     Add</button>
                                 <button class="btn btn-outline-info btn-sm me-2"
                                     th:data-item-name="${playlist.toString()}"
-                                    th:data-url="'/collection/playlist/' + ${playlist.getName()}" th:inline="javascript"
-                                    onclick="redirect(this)"><i class="bi bi-exposure"></i>
+                                    th:data-url="'/collection/playlist/' + ${playlist.hashCode()}"
+                                    th:inline="javascript" onclick="redirect(this)"><i class="bi bi-exposure"></i>
                                     Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" th:data-item-name="${playlist.toString()}"
-                                    th:data-url="'/collection/playlist/' + ${playlist.getName()}" th:inline="javascript"
-                                    onclick="deleteItem(this)"><i class="bi bi-trash"></i> Delete</button>
+                                    th:data-url="'/collection/playlist/' + ${playlist.hashCode()}"
+                                    th:inline="javascript" onclick="deleteItem(this)"><i class="bi bi-trash"></i>
+                                    Delete</button>
                             </div>
                         </div>
                         <div class="collapse mt-2" th:id="'playlistCollapse' + ${playlist.hashCode()}">
@@ -197,12 +202,12 @@
                                     <div class="d-flex align-items-center">
                                         <button class="btn btn-outline-info btn-sm me-2"
                                             th:data-item-name="${song.toString()}"
-                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.hashCode()}"
+                                            th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="redirect(this)"><i
                                                 class="bi bi-exposure"></i> Edit</button>
                                         <button class="btn btn-outline-danger btn-sm me-2"
                                             th:data-item-name="${song.toString()}"
-                                            th:data-url="'/collection/playlist/' + ${playlist.getName()} + '/' + ${song.hashCode()}"
+                                            th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="deleteItem(this)"><i
                                                 class="bi bi-trash"></i> Delete</button>
                                     </div>
@@ -222,17 +227,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        function toggleCollapse(id) {
+            const element = document.getElementById(id);
+            const isCollapsed = element.classList.contains('show');
+            localStorage.setItem(id, isCollapsed ? 'collapsed' : 'expanded');
+        }
+
+        function loadCollapseState(id) {
+            const state = localStorage.getItem(id);
+            const element = document.getElementById(id);
+            if (state === 'expanded') {
+                element.classList.add('show');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            ['likedSongsContent', 'albumsContent', 'playlistsContent'].forEach(id => loadCollapseState(id));
+            document.querySelectorAll('[id^="albumCollapse"]').forEach(el => loadCollapseState(el.id));
+            document.querySelectorAll('[id^="playlistCollapse"]').forEach(el => loadCollapseState(el.id));
+        });
+
         function deleteItem(buttonElement) {
             const url = buttonElement.dataset.url;
             const itemName = buttonElement.dataset.itemName;
 
             if (confirm(`Are you sure you want to delete ${itemName}?`)) {
                 fetch(url, { method: 'DELETE' })
-                    .then(response => response.text())
-                    .then(data => {
-                        console.info(data)
-                        document.location.reload(); //maintains position
-                    })
+                    .then(response => response.text().then(data => {
+                        console.info(data);
+                        if (!response.ok) {
+                            alert("Exception deleting, check log");
+                        } else {
+                            document.location.reload();
+                        }
+                    }))
                     .catch(error => {
                         alert('Error deleting: ' + error);
                     });

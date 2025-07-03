@@ -137,13 +137,13 @@ public class CollectionMenu {
         }
     }
 
-    @GetMapping("/collection/likedsongs/song/{song}")
+    @GetMapping("/collection/likedsongs/{song}")
     public String editLikedSongForm(Model model,
             @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback,
-            @PathVariable(value = "song") String songName) {
-        Song song = Collection.getLikedSong(songName);
+            @PathVariable(value = "song") int hashCode) {
+        Song song = Collection.getLikedSong(hashCode);
         if (song == null) {
-            logger.warn(model, "Unable to find liked song '" + songName + "' in collection");
+            logger.warn(model, "Unable to find liked song '" + hashCode + "' in collection");
             return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
@@ -156,19 +156,19 @@ public class CollectionMenu {
         mainArtist.setName("Main Artist Name");
         mainArtist.setValue(song.getMainArtist().getName());
         fields.add(mainArtist);
-        return Templates.form(model, "Edit Liked Song", fields, "/collection/likedsongs/song/" + song.getName(),
+        return Templates.form(model, "Edit Liked Song", fields, "/collection/likedsongs/" + song.hashCode(),
                 callback);
     }
 
-    @PostMapping("/collection/likedsongs/song/{song}")
+    @PostMapping("/collection/likedsongs/{song}")
     @ResponseBody
     public ResponseEntity<String> editLikedSong(Model model,
-            @PathVariable(value = "song") String songName,
+            @PathVariable(value = "song") int hashCode,
             @RequestBody LinkedHashMap<String, String> variables) {
-        Song song = Collection.getLikedSong(songName);
+        Song song = Collection.getLikedSong(hashCode);
         if (song == null) {
-            logger.warn(model, "Unable to find song '" + songName + "' in collection");
-            return ResponseEntity.badRequest().body("Unable to find song '" + songName + "' in collection");
+            logger.warn(model, "Unable to find song '" + hashCode + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find song '" + hashCode + "' in collection");
         }
         String name = variables.get("songName");
         if (name == null) {
@@ -193,10 +193,10 @@ public class CollectionMenu {
      */
     @DeleteMapping("/collection/likedsongs/{song}")
     @ResponseBody
-    public ResponseEntity<String> deleteLikedSong(@PathVariable(value = "song") String songName) {
-        Song song = Collection.getLikedSong(songName);
+    public ResponseEntity<String> deleteLikedSong(@PathVariable(value = "song") int hashCode) {
+        Song song = Collection.getLikedSong(hashCode);
         if (song == null) {
-            return ResponseEntity.badRequest().body("Unable to find song '" + songName + "' in collection likedsongs");
+            return ResponseEntity.badRequest().body("Unable to find song '" + hashCode + "' in collection likedsongs");
         }
         Collection.removeLikedSong(song);
         logger.debug("Successfully removed likedsong '" + song.getName() + "'");
@@ -254,11 +254,11 @@ public class CollectionMenu {
 
     @GetMapping("/collection/playlist/{playlist}")
     public String editPlaylistForm(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int hashCode,
             @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            logger.info(model, "Unable to find playlist '" + playlistName + "' in collection");
+            logger.info(model, "Unable to find playlist '" + hashCode + "' in collection");
             return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
@@ -278,11 +278,11 @@ public class CollectionMenu {
     @PostMapping("/collection/playlist/{playlist}")
     @ResponseBody
     public ResponseEntity<String> editPlaylist(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int hashCode,
             @RequestBody LinkedHashMap<String, String> variables) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            return ResponseEntity.badRequest().body("Unable to find playlist in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + hashCode + "' in collection");
         }
         String name = variables.get("playlistName");
         if (name != null) {
@@ -307,11 +307,11 @@ public class CollectionMenu {
      */
     @GetMapping("/collection/playlist/{playlist}/song")
     public String addPlaylistSongForm(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int hashCode,
             @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn(model, "Unable to find playlist '" + hashCode + "' in collection");
             return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
@@ -323,7 +323,7 @@ public class CollectionMenu {
         mainArtist.setName("Main Artist Name");
         fields.add(mainArtist);
         return Templates.form(model, "Add playlist '" + playlist.getName() + "' song", fields,
-                "/collection/playlist/" + playlist.getName() + "/song",
+                "/collection/playlist/" + playlist.hashCode() + "/song",
                 callback);
     }
 
@@ -339,12 +339,12 @@ public class CollectionMenu {
     @PostMapping("/collection/playlist/{playlist}/song")
     @ResponseBody
     public ResponseEntity<String> addPlaylistSong(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int hashCode,
             @RequestBody LinkedHashMap<String, String> variables) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
-            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn(model, "Unable to find playlist '" + hashCode + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + hashCode + "' in collection");
         }
         String songName = variables.get("songName");
         if (songName == null) {
@@ -383,12 +383,12 @@ public class CollectionMenu {
 
     @GetMapping("/collection/playlist/{playlist}/{song}")
     public String editPlaylistSongForm(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int playlistHash,
             @PathVariable(value = "song") int songHash,
             @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(playlistHash);
         if (playlist == null) {
-            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn(model, "Unable to find playlist '" + playlistHash + "' in collection");
             return "redirect:" + callback;
         }
         Song song = playlist.getSong(songHash);
@@ -408,20 +408,20 @@ public class CollectionMenu {
         fields.add(mainArtist);
         return Templates.form(model, "Edit Playlist '" + playlist.getName() + "'' Song '" + song.getName() + "'",
                 fields,
-                "/collection/playlist/" + playlist.getName() + "/" + song.getName(),
+                "/collection/playlist/" + playlist.hashCode() + "/" + song.hashCode(),
                 callback);
     }
 
     @PostMapping("/collection/playlist/{playlist}/{song}")
     @ResponseBody
     public ResponseEntity<String> editPlaylistSong(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int playlistHash,
             @PathVariable(value = "song") int songHash,
             @RequestBody LinkedHashMap<String, String> variables) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(playlistHash);
         if (playlist == null) {
-            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
-            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn(model, "Unable to find playlist '" + playlistHash + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistHash + "' in collection");
         }
         Song song = playlist.getSong(songHash);
         if (song == null) {
@@ -452,10 +452,10 @@ public class CollectionMenu {
      */
     @DeleteMapping("/collection/playlist/{playlist}")
     @ResponseBody
-    public ResponseEntity<String> deletePlaylist(@PathVariable(value = "playlist") String playlistName) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+    public ResponseEntity<String> deletePlaylist(@PathVariable(value = "playlist") int hashCode) {
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + hashCode + "' in collection");
         }
         Collection.removePlaylist(playlist);
         logger.debug("Successfully deleted playlist '" + playlist.getName() + "'");
@@ -473,11 +473,11 @@ public class CollectionMenu {
      */
     @DeleteMapping("/collection/playlist/{playlist}/{song}")
     @ResponseBody
-    public ResponseEntity<String> deletePlaylistSong(@PathVariable(value = "playlist") String playlistName,
+    public ResponseEntity<String> deletePlaylistSong(@PathVariable(value = "playlist") int hashCode,
             @PathVariable(value = "song") int songHash) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist == null) {
-            return ResponseEntity.badRequest().body("Unable to find playlist '" + playlistName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find playlist '" + hashCode + "' in collection");
         }
         Song song = playlist.getSong(songHash);
         if (song == null) {
@@ -570,10 +570,10 @@ public class CollectionMenu {
      */
     @DeleteMapping("/collection/album/{album}")
     @ResponseBody
-    public ResponseEntity<String> deleteAlbum(@PathVariable(value = "album") String albumName) {
-        Album album = Collection.getAlbum(albumName);
+    public ResponseEntity<String> deleteAlbum(@PathVariable(value = "album") int hashCode) {
+        Album album = Collection.getAlbum(hashCode);
         if (album == null) {
-            return ResponseEntity.badRequest().body("Unable to find album '" + albumName + "' in collection");
+            return ResponseEntity.badRequest().body("Unable to find album '" + hashCode + "' in collection");
         }
         Collection.removeAlbum(album);
         logger.debug("Successfully deleted album '" + album.getName() + "'");

@@ -134,13 +134,9 @@ public class Collection {
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Song} object
      */
-    public static Song getLikedSong(String name) {
-        if (name == null) {
-            logger.debug("null name provided in getLikedSong");
-            return null;
-        }
+    public static Song getLikedSong(int hashCode) {
         for (Song song : likedSongs.getSongs()) {
-            if (song.getName().equals(name)) {
+            if (song.hashCode() == hashCode) {
                 return song;
             }
         }
@@ -232,25 +228,6 @@ public class Collection {
     }
 
     /**
-     * get the album a song is part of
-     *
-     * @param song - song to check
-     * @return - constructed album
-     */
-    public static Album getSongAlbum(Song song) {
-        if (song == null) {
-            logger.debug("null song provided in getSongAlbum");
-            return null;
-        }
-        for (Album album : getAlbums()) {
-            if (album.contains(song)) {
-                return album;
-            }
-        }
-        return null;
-    }
-
-    /**
      * get this collections albums
      *
      * @return - linkedhashset of albums
@@ -275,7 +252,6 @@ public class Collection {
                 return thisAlbum;
             }
         }
-
         return null;
     }
 
@@ -287,13 +263,9 @@ public class Collection {
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Album} object
      */
-    public static Album getAlbum(String name) {
-        if (name == null) {
-            logger.debug("null name provided in getAlbum");
-            return null;
-        }
+    public static Album getAlbum(int hashCode) {
         for (Album album : albums) {
-            if (album.getName().equals(name)) {
+            if (album.hashCode() == hashCode) {
                 return album;
             }
         }
@@ -458,13 +430,9 @@ public class Collection {
      * @param name a {@link java.lang.String} object
      * @return a {@link ryzen.ownitall.classes.Playlist} object
      */
-    public static Playlist getPlaylist(String name) {
-        if (name == null) {
-            logger.debug("null name provided in getPlaylist");
-            return null;
-        }
+    public static Playlist getPlaylist(int hashCode) {
         for (Playlist playlist : playlists) {
-            if (playlist.getName().equals(name)) {
+            if (playlist.hashCode() == hashCode) {
                 return playlist;
             }
         }
@@ -493,16 +461,9 @@ public class Collection {
             output.append("#EXTIMG:").append(getCollectionCoverFileName(playlist)).append("\n");
         }
         for (Song song : playlist.getSongs()) {
-            File songFile = new File(getSongFileName(song));
-            if (!Settings.downloadHierachy) {
-                Album foundAlbum = getSongAlbum(song);
-                if (foundAlbum != null) {
-                    songFile = new File(getCollectionFolderName(foundAlbum), getSongFileName(song));
-                }
-            }
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
-            output.append(songFile.getPath()).append("\n");
+            output.append(getRelativeSongPath(song)).append("\n");
         }
         return output.toString();
     }
@@ -616,36 +577,18 @@ public class Collection {
         return likedSongs.size();
     }
 
-    /**
-     * <p>
-     * getSongFileName.
-     * </p>
-     *
-     * @param song a {@link ryzen.ownitall.classes.Song} object
-     * @return a {@link java.lang.String} object
-     */
-    public static String getSongFileName(Song song) {
+    public static File getRelativeSongPath(Song song) {
         if (song == null) {
-            logger.debug("null song provided in getSongFileName");
+            logger.debug("null song provided in getRelativeSongPath");
             return null;
         }
-        return MusicTools.sanitizeFileName(song.getName()) + "." + Settings.downloadFormat;
-    }
-
-    /**
-     * <p>
-     * getCollectionFolderName.
-     * </p>
-     *
-     * @param collection a {@link ryzen.ownitall.classes.Playlist} object
-     * @return a {@link java.lang.String} object
-     */
-    public static String getCollectionFolderName(Playlist collection) {
-        if (collection == null) {
-            logger.debug("null collection provided in getCollectionFoldername");
-            return null;
+        String extension = "." + Settings.downloadFormat;
+        if (song.getAlbumName() != null) {
+            return new File(MusicTools.sanitizeFileName(song.getAlbumName()),
+                    MusicTools.sanitizeFileName(song.getName()) + extension);
+        } else {
+            return new File(MusicTools.sanitizeFileName(song.getName()) + extension);
         }
-        return MusicTools.sanitizeFileName(collection.getName());
     }
 
     /**

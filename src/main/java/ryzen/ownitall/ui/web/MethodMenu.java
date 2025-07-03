@@ -461,7 +461,7 @@ public class MethodMenu {
             options.put(album.toString(), "/method/process?processName=Exporting '" + album.getName() + "' from "
                     + method
                             .getMethodName()
-                    + "&processFunction=/method/export/album/" + album.getName()
+                    + "&processFunction=/method/export/album/" + album.hashCode()
                     + "&callback=" + callback);
         }
         return Templates.menu(model, "Album Export Menu", options, callback);
@@ -488,14 +488,14 @@ public class MethodMenu {
      * @param name a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/album/{name}")
+    @PostMapping("/method/export/album/{album}")
     public ResponseEntity<Void> exportAlbum(
-            @PathVariable(value = "name") String name) {
-        Album album = Collection.getAlbum(name);
+            @PathVariable(value = "album") int hashCode) {
+        Album album = Collection.getAlbum(hashCode);
         if (album != null) {
             method.exportAlbum(album);
         } else {
-            logger.warn("Unable to find album '" + name + "' in collection");
+            logger.warn("Unable to find album '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();
@@ -519,7 +519,7 @@ public class MethodMenu {
             options.put(playlist.toString(), "/method/process?processName=Exporting '" + playlist.getName() + "' from "
                     + method
                             .getMethodName()
-                    + "&processFunction=/method/export/playlist/" + playlist.getName()
+                    + "&processFunction=/method/export/playlist/" + playlist.hashCode()
                     + "&callback=" + callback);
         }
         return Templates.menu(model, "Playlist Export Menu", options, callback);
@@ -546,14 +546,14 @@ public class MethodMenu {
      * @param name a {@link java.lang.String} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/playlist/{name}")
+    @PostMapping("/method/export/playlist/{playlist}")
     public ResponseEntity<Void> exportPlaylist(
-            @PathVariable(value = "name") String name) {
-        Playlist playlist = Collection.getPlaylist(name);
+            @PathVariable(value = "playlist") int hashCode) {
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
             method.exportPlaylist(playlist);
         } else {
-            logger.warn("Unable to find playlist '" + name + "' in collection");
+            logger.warn("Unable to find playlist '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();
@@ -669,7 +669,7 @@ public class MethodMenu {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         options.put("All", "/method/sync/playlists");
         for (Playlist playlist : Collection.getPlaylists()) {
-            options.put(playlist.getName(), "/method/sync/playlist/" + playlist.getName());
+            options.put(playlist.getName(), "/method/sync/playlist/" + playlist.hashCode());
         }
         return Templates.menu(model, "Sync Playlist(s)", options, callback);
     }
@@ -691,15 +691,15 @@ public class MethodMenu {
 
     @GetMapping("/method/sync/playlists/{playlist}")
     public String optionSyncPlaylist(Model model,
-            @PathVariable(value = "playlist") String playlistName,
+            @PathVariable(value = "playlist") int hashCode,
             @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
             return Templates.process(model,
                     "Exporting '" + method.getMethodName() + "' playlist '" + playlist.getName() + "'",
-                    "/method/sync/playlist/" + playlist.getName(), "/method/progress", "/method/logs", callback);
+                    "/method/sync/playlist/" + playlist.hashCode(), "/method/progress", "/method/logs", callback);
         } else {
-            logger.warn(model, "Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn(model, "Unable to find playlist '" + hashCode + "' in collection");
             return "redirect:" + callback;
         }
     }
@@ -718,12 +718,12 @@ public class MethodMenu {
     }
 
     @PostMapping("/method/sync/playlist/{playlist}")
-    public ResponseEntity<Void> syncPlaylist(@PathVariable(value = "playlist") String playlistName) {
-        Playlist playlist = Collection.getPlaylist(playlistName);
+    public ResponseEntity<Void> syncPlaylist(@PathVariable(value = "playlist") int hashCode) {
+        Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
             method.syncPlaylist(playlist);
         } else {
-            logger.warn("Unable to find playlist '" + playlistName + "' in collection");
+            logger.warn("Unable to find playlist '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();

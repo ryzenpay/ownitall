@@ -110,8 +110,8 @@ public class Download implements Sync, Export {
      * @param path a {@link java.io.File} object
      * @throws java.lang.InterruptedException if any.
      */
-    public void threadDownload(Song song, File path) throws InterruptedException {
-        if (song == null || path == null) {
+    public void threadDownload(Song song) throws InterruptedException {
+        if (song == null) {
             logger.debug("null song or path provided in threadDownload");
             return;
         }
@@ -123,7 +123,7 @@ public class Download implements Sync, Export {
                 InterruptionHandler.checkGlobalInterruption();
                 // Attempt to execute the task
                 this.executor.execute(() -> {
-                    this.exportSong(song, path);
+                    this.exportSong(song);
                 });
                 break;
             } catch (RejectedExecutionException e) {
@@ -173,13 +173,14 @@ public class Download implements Sync, Export {
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @param path a {@link java.io.File} object
      */
-    public void exportSong(Song song, File path) {
+    public void exportSong(Song song) {
         try {
-            File downloadFile = new File(path, String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
+            File downloadFile = new File(Settings.localFolder,
+                    String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
             ArrayList<String> command = downloadClass.createCommand(song, downloadFile);
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
-            File songFile = new File(path, Collection.getSongFileName(song));
+            File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
             StringBuilder completeLog = new StringBuilder();
             for (int i = 0; i < retries; i++) {
                 if (songFile.exists()) {
@@ -201,6 +202,7 @@ public class Download implements Sync, Export {
                             "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
                 }
                 if (downloadFile.exists()) {
+                    songFile.getParentFile().mkdirs();
                     if (!downloadFile.renameTo(songFile)) {
                         logger.warn("Unable to move downloaded song '" + song.getName() + "' from '"
                                 + downloadFile.getAbsolutePath() + "'");
@@ -275,17 +277,13 @@ public class Download implements Sync, Export {
      * @param playlist - playlist to get data from
      * @param folder   - folder to place m3u file in
      */
-    public void writePlaylistData(Playlist playlist, File folder) {
+    public void writePlaylistData(Playlist playlist) {
         if (playlist == null) {
             logger.debug("null playlist provided in writePlaylistData");
             return;
         }
-        if (folder == null || !folder.exists()) {
-            logger.debug("null or non existant folder provided in writePlaylistData");
-            return;
-        }
         try {
-            File m3uFile = new File(folder, Collection.getCollectionFolderName(playlist) + ".m3u");
+            File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
             MusicTools.writeData(m3uFile, Collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' m3u", e);
@@ -293,7 +291,7 @@ public class Download implements Sync, Export {
         try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(folder, Collection.getCollectionCoverFileName(playlist)));
+                        new File(Settings.localFolder, Collection.getCollectionCoverFileName(playlist)));
             }
         } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
@@ -306,11 +304,12 @@ public class Download implements Sync, Export {
      * @param album  - album to get data from
      * @param folder - folder to place nfo file in
      */
-    public void writeAlbumData(Album album, File folder) {
+    public void writeAlbumData(Album album) {
         if (album == null) {
             logger.debug("null Album provided in writeAlbumData");
             return;
         }
+        File folder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
         if (folder == null || !folder.exists()) {
             logger.debug("null or non existant folder provided in writeAlbumData");
             return;
@@ -340,12 +339,8 @@ public class Download implements Sync, Export {
      *
      * @param folder - folder to clean up files from
      */
-    public void cleanFolder(File folder) {
-        if (folder == null || !folder.exists() || !folder.isDirectory()) {
-            logger.debug("Folder is null, does not exist or is not a directorty in cleanFolder");
-            return;
-        }
-        for (File file : folder.listFiles()) {
+    public void cleanFolder() {
+        for (File file : Settings.localFolder.listFiles()) {
             if (file.isFile()) {
                 String extension = MusicTools.getExtension(file);
                 if (!whiteList.contains(extension)) {
@@ -368,20 +363,14 @@ public class Download implements Sync, Export {
     public void syncLikedSongs() throws InterruptedException, AuthenticationException, MissingSettingException {
         logger.debug("Getting local liked songs to remove mismatches");
         LikedSongs likedSongs = new Upload().getLikedSongs();
-        File songFolder = Settings.localFolder;
-        if (Settings.downloadHierachy) {
-            songFolder = new File(Settings.localFolder, Settings.likedSongName);
-        }
         if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
             for (Song song : IPIterator.wrap(likedSongs.getSongs(), "Liked Songs", likedSongs.size())) {
-                if (!Settings.downloadHierachy) {
-                    // skip if in a playlist
-                    if (Collection.getSongPlaylist(song) != null) {
-                        continue;
-                    }
+                // skip if in a playlist
+                if (Collection.getSongPlaylist(song) != null) {
+                    continue;
                 }
-                File songFile = new File(songFolder, Collection.getSongFileName(song));
+                File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
                 if (songFile.exists()) {
                     if (songFile.delete()) {
                         logger.info("Deleted liked song '" + songFile.getAbsolutePath());
@@ -400,31 +389,20 @@ public class Download implements Sync, Export {
      */
     @Override
     public void uploadLikedSongs() throws InterruptedException {
-        ArrayList<Song> songs;
-        File likedSongsFolder;
-        if (Settings.downloadHierachy) {
-            songs = Collection.getLikedSongs().getSongs();
-            likedSongsFolder = new File(Settings.localFolder, Settings.likedSongName);
-            likedSongsFolder.mkdirs();
-        } else {
-            songs = Collection.getStandaloneLikedSongs();
-            likedSongsFolder = Settings.localFolder;
-            if (Settings.downloadLikedsongPlaylist) {
-                Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
-                likedSongsPlaylist.addSongs(Collection.getLikedSongs().getSongs());
-                this.writePlaylistData(likedSongsPlaylist, Settings.localFolder);
-            }
-        }
+        ArrayList<Song> songs = Collection.getStandaloneLikedSongs();
+        Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
+        likedSongsPlaylist.addSongs(Collection.getLikedSongs().getSongs());
+        this.writePlaylistData(likedSongsPlaylist);
         try {
             for (Song song : IPIterator.wrap(songs, "Liked Songs", songs.size())) {
-                this.threadDownload(song, likedSongsFolder);
+                this.threadDownload(song);
             }
         } catch (InterruptedException e) {
             this.executor.shutdownNow();
             throw e;
         }
         this.threadShutdown();
-        this.cleanFolder(likedSongsFolder);
+        this.cleanFolder();
     }
 
     /**
@@ -439,29 +417,16 @@ public class Download implements Sync, Export {
         if (playlists != null && !playlists.isEmpty()) {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : IPIterator.wrap(playlists, "Playlists", playlists.size())) {
-                if (Settings.downloadHierachy) {
-                    File playlistFolder = new File(Settings.localFolder,
-                            Collection.getCollectionFolderName(playlist));
-                    if (MusicTools.deleteFolder(playlistFolder)) {
-                        logger.info("Deleted playlist '" + playlist.getName() + "' folder: "
-                                + playlistFolder.getAbsolutePath());
-                    } else {
-                        logger.warn("Could not delete playlist '" + playlist.getName() + "' folder:"
-                                + playlistFolder.getAbsolutePath());
-                    }
+                // deletes all playlists songs
+                this.syncPlaylist(new Playlist(playlist.getName()));
+                File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
+                if (m3uFile.delete()) {
+                    logger.info(
+                            "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
+                                    + m3uFile.getAbsolutePath());
                 } else {
-                    // deletes all playlists songs
-                    this.syncPlaylist(new Playlist(playlist.getName()));
-                    File m3uFile = new File(Settings.localFolder,
-                            Collection.getCollectionFolderName(playlist) + ".m3u");
-                    if (m3uFile.delete()) {
-                        logger.info(
-                                "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
-                                        + m3uFile.getAbsolutePath());
-                    } else {
-                        logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
-                                + m3uFile.getAbsolutePath());
-                    }
+                    logger.warn("Could not delete playlist '" + playlist.getName() + "' m3u file: "
+                            + m3uFile.getAbsolutePath());
                 }
             }
         }
@@ -493,28 +458,20 @@ public class Download implements Sync, Export {
             return;
         }
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
-        File playlistFolder = Settings.localFolder;
         Playlist localPlaylist = null;
-        if (Settings.downloadHierachy) {
-            playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
-            localPlaylist = new Upload().getPlaylist(playlistFolder.getAbsolutePath(), playlist.getName());
-        } else {
-            File m3uFile = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist) + ".m3u");
-            if (m3uFile.exists()) {
-                localPlaylist = Upload.getM3UPlaylist(m3uFile);
-            }
+        File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
+        if (m3uFile.exists()) {
+            localPlaylist = Upload.getM3UPlaylist(m3uFile);
         }
         if (localPlaylist != null && !localPlaylist.isEmpty()) {
             localPlaylist.removeSongs(playlist.getSongs());
             for (Song song : IPIterator.wrap(localPlaylist.getSongs(), localPlaylist.getName(),
                     localPlaylist.size())) {
-                File songFile = new File(playlistFolder, Collection.getSongFileName(song));
+                if (Collection.isLiked(song)) {
+                    continue;
+                }
+                File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
                 if (songFile.exists()) {
-                    if (!Settings.downloadHierachy) {
-                        if (Collection.isLiked(song)) {
-                            continue;
-                        }
-                    }
                     if (songFile.delete()) {
                         logger.info("Deleted playlist '" + playlist.getName() + "' song: "
                                 + songFile.getAbsolutePath());
@@ -538,27 +495,18 @@ public class Download implements Sync, Export {
             logger.debug("null playlist provided in downloadPlaylist");
             return;
         }
-        ArrayList<Song> songs;
-        File playlistFolder;
-        if (Settings.downloadHierachy) {
-            songs = playlist.getSongs();
-            playlistFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(playlist));
-            playlistFolder.mkdirs();
-        } else {
-            songs = Collection.getStandalonePlaylistSongs(playlist);
-            playlistFolder = Settings.localFolder;
-            this.writePlaylistData(playlist, playlistFolder);
-        }
+        ArrayList<Song> songs = Collection.getStandalonePlaylistSongs(playlist);
+        this.writePlaylistData(playlist);
         try {
             for (Song song : IPIterator.wrap(songs, playlist.getName(), playlist.size())) {
-                this.threadDownload(song, playlistFolder);
+                this.threadDownload(song);
             }
         } catch (InterruptedException e) {
             this.executor.shutdownNow();
             throw e;
         }
         this.threadShutdown();
-        this.cleanFolder(playlistFolder);
+        this.cleanFolder();
     }
 
     /**
@@ -573,7 +521,7 @@ public class Download implements Sync, Export {
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : IPIterator.wrap(albums.iterator(), "Albums", albums.size())) {
-                File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
+                File albumFolder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
                 if (albumFolder.exists()) {
                     if (MusicTools.deleteFolder(albumFolder)) {
                         logger.info(
@@ -608,13 +556,13 @@ public class Download implements Sync, Export {
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
+        File albumFolder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
         Album localAlbum = new Upload().getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
         if (localAlbum != null && !localAlbum.isEmpty()) {
             localAlbum.removeSongs(album.getSongs());
             for (Song song : IPIterator.wrap(localAlbum.getSongs().iterator(), album.getName(), localAlbum.size())) {
-                File songFile = new File(albumFolder, Collection.getSongFileName(song));
+                File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
                 if (songFile.exists()) {
                     if (songFile.delete()) {
                         logger.info("Deleted album '" + album.getName() + "' song: "
@@ -641,18 +589,16 @@ public class Download implements Sync, Export {
             return;
         }
         // albums are always in a folder
-        File albumFolder = new File(Settings.localFolder, Collection.getCollectionFolderName(album));
-        albumFolder.mkdirs();
         try {
-            this.writeAlbumData(album, albumFolder);
+            this.writeAlbumData(album);
             for (Song song : IPIterator.wrap(album.getSongs(), album.getName(), album.size())) {
-                this.threadDownload(song, albumFolder);
+                this.threadDownload(song);
             }
         } catch (InterruptedException e) {
             this.executor.shutdownNow();
             throw e;
         }
         this.threadShutdown();
-        this.cleanFolder(albumFolder);
+        this.cleanFolder();
     }
 }
