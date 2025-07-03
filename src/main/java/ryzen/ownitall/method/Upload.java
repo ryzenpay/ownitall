@@ -258,7 +258,7 @@ public class Upload implements Import {
         ArrayList<Album> albums = new ArrayList<>();
         File[] files = Settings.localFolder.listFiles();
         for (File file : IPIterator.wrap(files, "Albums", files.length)) {
-            if (file.isDirectory() && new File(file, file.getName() + ".nfo").exists()) {
+            if (file.isDirectory() && new File(file, "album.nfo").exists()) {
                 Album album = this.getAlbum(file.getAbsolutePath(), null, null);
                 if (album != null) {
                     albums.add(album);
