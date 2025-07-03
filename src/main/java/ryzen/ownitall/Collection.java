@@ -361,6 +361,7 @@ public class Collection {
     }
 
     // filter out remixes?
+    // TODO: transform feat. into artist addition?
     public static void cleanAlbums() {
         for (Song song : getAllSongs()) {
             Album album = getSongAlbum(song);

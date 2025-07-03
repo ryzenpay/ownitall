@@ -324,7 +324,7 @@ public class MusicTools {
         }
         // Check if the sanitized name contains at least one alphabet character or
         // number
-        if (sanitized.matches(".*[a-zA-Z0-9].*")) {
+        if (!sanitized.matches(".*[a-zA-Z0-9].*")) {
             return String.valueOf(fileName.hashCode());
         }
         return sanitized;
