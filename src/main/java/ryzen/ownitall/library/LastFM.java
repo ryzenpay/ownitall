@@ -14,6 +14,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -134,9 +135,9 @@ public class LastFM extends Library {
                 logger.debug(album.toString() + ": album.getInfo missing album");
             }
         }
-        if (!album.getName().equals(removeBrackets(album.getName()))) {
+        if (!album.getName().equals(MusicTools.removeBrackets(album.getName()))) {
             logger.debug("Trying album '" + album.getName() + "' again with trimmed brackets");
-            album.setName(removeBrackets(album.getName()));
+            album.setName(MusicTools.removeBrackets(album.getName()));
             return getAlbum(album);
         }
         logger.info("Unable to find album '" + album.toString() + "' in library");
@@ -212,9 +213,9 @@ public class LastFM extends Library {
                 logger.debug(song.toString() + ": track.getInfo missing track");
             }
         }
-        if (!song.getName().equals(removeBrackets(song.getName()))) {
+        if (!song.getName().equals(MusicTools.removeBrackets(song.getName()))) {
             logger.debug("Trying song '" + song.getName() + "' again with trimmed brackets");
-            song.setName(removeBrackets(song.getName()));
+            song.setName(MusicTools.removeBrackets(song.getName()));
             return getSong(song);
         }
         logger.info("Unable to find song '" + song.toString() + "' in library");

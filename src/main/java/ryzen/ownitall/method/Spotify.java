@@ -446,9 +446,7 @@ public class Spotify implements Import, Export, Sync {
                     } else {
                         for (SavedAlbum savedAlbum : items) {
                             String albumId = savedAlbum.getAlbum().getId();
-                            // needed to filter out as spotify likes to qualify its own albums
-                            // :middle_finger:
-                            String albumName = savedAlbum.getAlbum().getName().replace("spotify", "").trim();
+                            String albumName = savedAlbum.getAlbum().getName();
                             String albumArtistName = null;
                             for (ArtistSimplified artistName : savedAlbum.getAlbum().getArtists()) {
                                 if (!artistName.getName().equals("Various Artists")) {

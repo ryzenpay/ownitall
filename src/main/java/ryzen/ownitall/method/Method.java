@@ -305,7 +305,7 @@ public class Method {
      * </p>
      */
     public void exportCollection() {
-        logger.info("Exporting '" + this + "' (" + Collection.getTotalTrackCount() + ") collection...");
+        logger.info("Exporting '" + this + "' (" + Collection.getTotalSongCount() + ") collection...");
         try (ProgressBar pb = new ProgressBar(this + " Export", 3)) {
             pb.step("Liked Songs");
             this.getExport().uploadLikedSongs();

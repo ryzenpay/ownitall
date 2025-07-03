@@ -48,6 +48,9 @@ public class CollectionMenu {
     private void optionImport() {
         try {
             new MethodMenu(Import.class).importMenu();
+            logger.debug("Cleaning albums");
+            Collection.cleanAlbums();
+            logger.debug("Done cleaning albums");
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while setting up import menu");
         }
@@ -118,7 +121,7 @@ public class CollectionMenu {
                 "Total albums: " + Collection.getAlbumCount() + "  (" + Collection.getAlbumsTrackCount()
                         + " songs)");
         System.out.println("Total liked songs: " + Collection.getLikedSongCount());
-        System.out.println("With a total of " + Collection.getTotalTrackCount() + " songs");
+        System.out.println("With a total of " + Collection.getTotalSongCount() + " songs");
     }
 
     /**
@@ -127,7 +130,7 @@ public class CollectionMenu {
      * </p>
      */
     public void printInventoryR2() {
-        System.out.println("Liked Songs (" + Collection.getTotalTrackCount() + ")");
+        System.out.println("Liked Songs (" + Collection.getTotalSongCount() + ")");
         System.out.println(
                 "Playlists (" + Collection.getPlaylistCount() + "): (" + Collection.getPlaylistsTrackCount()
                         + " songs)");
@@ -161,11 +164,11 @@ public class CollectionMenu {
      * </p>
      */
     public void printInventoryR3() {
-        System.out.println("Liked Songs (" + Collection.getTotalTrackCount() + "): ");
+        System.out.println("Liked Songs (" + Collection.getTotalSongCount() + "): ");
         int i = 1;
         for (Song likedSong : Collection.getStandaloneLikedSongs()) {
             System.out
-                    .println("    " + i + "/" + Collection.getTotalTrackCount() + " = " + likedSong.getName() + " | "
+                    .println("    " + i + "/" + Collection.getTotalSongCount() + " = " + likedSong.getName() + " | "
                             + MusicTools.musicTime(likedSong.getDuration()));
             if (likedSong.getMainArtist() != null) {
                 System.out.println("        - Artist: " + likedSong.getMainArtist().toString());

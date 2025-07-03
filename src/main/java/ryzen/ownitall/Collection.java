@@ -272,6 +272,19 @@ public class Collection {
         return null;
     }
 
+    public static Album getAlbum(String name) {
+        if (name == null) {
+            logger.debug("null albumname provided in getAlbum");
+            return null;
+        }
+        for (Album album : albums) {
+            if (album.getName().equalsIgnoreCase(name)) {
+                return album;
+            }
+        }
+        return null;
+    }
+
     /**
      * get an albums nfo String to write to a file
      *
@@ -345,6 +358,51 @@ public class Collection {
             logger.error("exception generating NFO content", e);
             return null;
         }
+    }
+
+    // filter out remixes?
+    public static void cleanAlbums() {
+        for (Song song : getAllSongs()) {
+            Album album = getSongAlbum(song);
+            if (album != null) {
+                album.addSong(song);
+            }
+        }
+        ArrayList<Album> removeAlbums = new ArrayList<>();
+        for (Album album : albums) {
+            // filter out deluxes / exclusives
+            if (album.getName().toLowerCase().contains("deluxe")
+                    || album.getName().toLowerCase().contains("extended")) {
+                Album originalAlbum = getAlbum(MusicTools.removeBrackets(album.getName()));
+                if (originalAlbum != null) {
+                    album.merge(originalAlbum);
+                    removeAlbums.add(originalAlbum);
+                    logger.info("Combined album '" + album.toString() + "' into '" + originalAlbum.toString() + "'");
+                }
+            }
+        }
+        for (Album album : removeAlbums) {
+            removeAlbum(album);
+        }
+    }
+
+    public static Album getSongAlbum(Song song) {
+        if (song == null) {
+            logger.debug("null song provided in getSongAlbum");
+            return null;
+        }
+        if (song.getAlbumName() != null) {
+            Album album = getAlbum(song.getAlbumName());
+            if (album != null) {
+                return album;
+            }
+        }
+        for (Album album : albums) {
+            if (album.contains(song)) {
+                return album;
+            }
+        }
+        return null;
     }
 
     /**
@@ -537,7 +595,7 @@ public class Collection {
      *
      * @return - int of total track count
      */
-    public static int getTotalTrackCount() {
+    public static int getTotalSongCount() {
         int trackCount = 0;
         trackCount += getStandaloneLikedSongs().size();
         for (Playlist playlist : playlists) {
@@ -546,6 +604,18 @@ public class Collection {
         }
         trackCount += getAlbumsTrackCount();
         return trackCount;
+    }
+
+    public static ArrayList<Song> getAllSongs() {
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.addAll(getStandaloneLikedSongs());
+        for (Playlist playlist : playlists) {
+            songs.addAll(getStandalonePlaylistSongs(playlist));
+        }
+        for (Album album : albums) {
+            songs.addAll(album.getSongs());
+        }
+        return songs;
     }
 
     /**

@@ -324,10 +324,26 @@ public class MusicTools {
         }
         // Check if the sanitized name contains at least one alphabet character or
         // number
-        if (sanitized.isEmpty()) {
+        if (sanitized.matches(".*[a-zA-Z0-9].*")) {
             return String.valueOf(fileName.hashCode());
         }
         return sanitized;
+    }
+
+    public static String removeBrackets(String string) {
+        if (string == null) {
+            logger.debug("null string provided in removeBrackets");
+            return null;
+        }
+        if (!string.contains("(")) {
+            return string;
+        }
+        // ()
+        string = string.replaceAll("\\(.*?\\)", "");
+        // []
+        string = string.replaceAll("\\[.*?\\]", "");
+        // remove spaces in middle of string
+        return string.trim().replaceAll("  ", " ");
     }
 
     /**

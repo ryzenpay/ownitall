@@ -15,6 +15,7 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.MusicTools;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -83,9 +84,9 @@ public class MusicBrainz extends Library {
                 logger.debug("missing data in album '" + album.toString() + "' search result");
             }
         }
-        if (!album.getName().equals(removeBrackets(album.getName()))) {
+        if (!album.getName().equals(MusicTools.removeBrackets(album.getName()))) {
             logger.debug("Trying album '" + album.getName() + "' again with trimmed brackets");
-            album.setName(removeBrackets(album.getName()));
+            album.setName(MusicTools.removeBrackets(album.getName()));
             return searchAlbum(album);
         } else {
             logger.info("Unable to find album '" + album.toString() + "' in library");
@@ -216,9 +217,9 @@ public class MusicBrainz extends Library {
                 logger.warn("Missing data while getting Song '" + song.getName() + "'");
             }
         }
-        if (!song.getName().equals(removeBrackets(song.getName()))) {
+        if (!song.getName().equals(MusicTools.removeBrackets(song.getName()))) {
             logger.debug("Trying song '" + song.getName() + "' again with trimmed brackets");
-            song.setName(removeBrackets(song.getName()));
+            song.setName(MusicTools.removeBrackets(song.getName()));
             return searchSong(song);
         } else {
             logger.info("Unable to find song '" + song.toString() + "' in library");
