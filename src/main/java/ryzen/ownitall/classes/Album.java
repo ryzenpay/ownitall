@@ -203,14 +203,18 @@ public class Album extends Playlist {
                     return true;
                 }
             }
-            if (this.size() == album.size()) {
-                return true;
-            }
+        }
+        if (album.getSongs().containsAll(this.getSongs()) || this.getSongs().containsAll(album.getSongs())) {
+            return true;
         }
         // merges extended versions of albums
-        if (this.getName().toLowerCase().contains(album.getName().toLowerCase())
-                || album.getName().toLowerCase().contains(this.getName().toLowerCase())) {
-            if (album.getSongs().containsAll(this.getSongs()) || this.getSongs().containsAll(album.getSongs())) {
+        if (this.getName().toLowerCase().contains(album.getName().toLowerCase())) {
+            for (Song song : this.getSongs()) {
+                if (album.contains(song)) {
+                    return true;
+                }
+            }
+            if (this.getCoverImage() != null && this.getCoverImage().equals(album.getCoverImage())) {
                 return true;
             }
         }

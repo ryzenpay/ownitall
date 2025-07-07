@@ -152,15 +152,13 @@ public class Collection {
         if (likedSongs.isEmpty()) {
             return new ArrayList<>();
         }
-        LikedSongs tmplikedSongs = new LikedSongs();
-        tmplikedSongs.addSongs(likedSongs.getSongs());
-        for (Playlist playlist : playlists) {
-            tmplikedSongs.removeSongs(playlist.getSongs());
+        ArrayList<Song> songs = new ArrayList<>();
+        for (Song song : likedSongs.getSongs()) {
+            if (getSongAlbum(song) == null && getSongPlaylist(song) == null) {
+                songs.add(song);
+            }
         }
-        for (Album album : albums) {
-            tmplikedSongs.removeSongs(album.getSongs());
-        }
-        return tmplikedSongs.getSongs();
+        return songs;
     }
 
     /**
@@ -339,7 +337,7 @@ public class Collection {
             // Cover image
             if (album.getCoverImage() != null) {
                 Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(getCollectionCoverFileName(album)));
+                thumb.appendChild(doc.createTextNode(getCoverFileName(album)));
                 rootElement.appendChild(thumb);
             }
 
@@ -361,29 +359,18 @@ public class Collection {
     }
 
     // filter out remixes?
-    // TODO: transform feat. into artist addition?
+    // TODO: enforce for liked songs and playlists
     public static void cleanAlbums() {
-        for (Song song : getAllSongs()) {
+        ArrayList<Song> standaloneSongs = new ArrayList<>();
+        standaloneSongs.addAll(getStandaloneLikedSongs());
+        for (Playlist playlist : playlists) {
+            standaloneSongs.addAll(getStandalonePlaylistSongs(playlist));
+        }
+        for (Song song : standaloneSongs) {
             Album album = getSongAlbum(song);
             if (album != null) {
                 album.addSong(song);
             }
-        }
-        ArrayList<Album> removeAlbums = new ArrayList<>();
-        for (Album album : albums) {
-            // filter out deluxes / exclusives
-            if (album.getName().toLowerCase().contains("deluxe")
-                    || album.getName().toLowerCase().contains("extended")) {
-                Album originalAlbum = getAlbum(MusicTools.removeBrackets(album.getName()));
-                if (originalAlbum != null) {
-                    album.merge(originalAlbum);
-                    removeAlbums.add(originalAlbum);
-                    logger.info("Combined album '" + album.toString() + "' into '" + originalAlbum.toString() + "'");
-                }
-            }
-        }
-        for (Album album : removeAlbums) {
-            removeAlbum(album);
         }
     }
 
@@ -517,7 +504,7 @@ public class Collection {
         output.append("#PLAYLIST:").append(playlist.toString()).append("\n");
         // m3u playlist cover
         if (playlist.getCoverImage() != null) {
-            output.append("#EXTIMG:").append(getCollectionCoverFileName(playlist)).append("\n");
+            output.append("#EXTIMG:").append(getCoverFileName(playlist)).append("\n");
         }
         for (Song song : playlist.getSongs()) {
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
@@ -538,12 +525,13 @@ public class Collection {
             logger.debug("null playlist passed in getStandalonePlaylistSongs");
             return null;
         }
-        Playlist tmpPlaylist = new Playlist("");
-        tmpPlaylist.addSongs(playlist.getSongs());
-        for (Album album : albums) {
-            tmpPlaylist.removeSongs(album.getSongs());
+        ArrayList<Song> songs = new ArrayList<>();
+        for (Song song : playlist.getSongs()) {
+            if (getSongAlbum(song) == null) {
+                songs.add(song);
+            }
         }
-        return tmpPlaylist.getSongs();
+        return songs;
     }
 
     /**
@@ -664,15 +652,15 @@ public class Collection {
 
     /**
      * <p>
-     * getCollectionCoverFileName.
+     * getCoverFileName.
      * </p>
      *
      * @param collection a {@link ryzen.ownitall.classes.Playlist} object
      * @return a {@link java.lang.String} object
      */
-    public static String getCollectionCoverFileName(Playlist collection) {
+    public static String getCoverFileName(Playlist collection) {
         if (collection == null) {
-            logger.debug("null collection provided in getCollectionCoverFileName");
+            logger.debug("null collection provided in getCoverFileName");
             return null;
         }
         return MusicTools.sanitizeFileName(collection.getName()) + ".png";

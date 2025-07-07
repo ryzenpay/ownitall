@@ -184,6 +184,7 @@ public class Download implements Sync, Export {
             StringBuilder completeLog = new StringBuilder();
             for (int i = 0; i < retries; i++) {
                 if (songFile.exists()) {
+                    logger.debug("Skipping song '" + song.getName() + "', already exists");
                     break;
                 }
                 Process process = processBuilder.start();
@@ -291,7 +292,7 @@ public class Download implements Sync, Export {
         try {
             if (playlist.getCoverImage() != null) {
                 MusicTools.downloadImage(playlist.getCoverImage(),
-                        new File(Settings.localFolder, Collection.getCollectionCoverFileName(playlist)));
+                        new File(Settings.localFolder, Collection.getCoverFileName(playlist)));
             }
         } catch (IOException e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' coverimage", e);
@@ -323,7 +324,7 @@ public class Download implements Sync, Export {
         try {
             if (album.getCoverImage() != null) {
                 MusicTools.downloadImage(album.getCoverImage(),
-                        new File(folder, Collection.getCollectionCoverFileName(album)));
+                        new File(folder, Collection.getCoverFileName(album)));
             }
         } catch (IOException e) {
             logger.error("Exception writing album '" + album.toString() + "' coverimage", e);

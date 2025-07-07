@@ -34,6 +34,7 @@ public class Song {
      *
      * @param name - String song name
      */
+    // TODO: transform feat. into artist addition?
     public Song(String name) {
         this.name = name;
         this.ids = new LinkedHashMap<>();
@@ -381,17 +382,14 @@ public class Song {
         if (this.toString().equalsIgnoreCase(song.toString())) {
             return true;
         }
-        // individual combinations
-        if (this.getName().equals(song.getName())) {
-            if (this.getAlbumName() != null) {
-                if (this.getAlbumName().equalsIgnoreCase(song.getAlbumName())) {
+        if (song.getName().toLowerCase().contains(this.getName().toLowerCase())) {
+            if (this.getMainArtist().equals(song.getMainArtist())) {
+                if (this.getAlbumName() != null && this.getAlbumName().equalsIgnoreCase(song.getAlbumName())) {
                     return true;
                 }
             }
-            if (!this.duration.isZero()) {
-                if (this.duration.equals(song.getDuration())) {
-                    return true;
-                }
+            if (this.getCoverImage() != null && this.getCoverImage().equals(song.getCoverImage())) {
+                return true;
             }
         }
         return false;

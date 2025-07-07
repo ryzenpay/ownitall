@@ -245,7 +245,7 @@ public class Upload implements Import {
             return null;
         }
         playlist.addSongs(songs);
-        File coverFile = new File(folder, Collection.getCollectionCoverFileName(playlist));
+        File coverFile = new File(folder, Collection.getCoverFileName(playlist));
         if (coverFile.exists()) {
             playlist.setCoverImage(coverFile.toURI());
         }
@@ -298,7 +298,7 @@ public class Upload implements Import {
             // needs to be under checking loop, as this also sets the album name
             album.addSongs(songs);
         }
-        File albumCover = new File(folder, Collection.getCollectionCoverFileName(album));
+        File albumCover = new File(folder, Collection.getCoverFileName(album));
         if (albumCover.exists()) {
             album.setCoverImage(albumCover.toURI());
         }
