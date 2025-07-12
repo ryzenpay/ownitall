@@ -23,20 +23,19 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Liked songs (' + ${likedsongs.size()} + ')'"></h2>
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-success btn-sm me-2" type="button" th:inline="javascript"
+                    <button class="btn btn-outline-success btn-sm m-2" type="button" th:inline="javascript"
                         data-url="/collection/likedsongs/song" onclick="redirect(this)"><i
                             class="bi bi-plus-circle"></i> Add</button>
-                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent"
-                        onclick="toggleCollapse('likedSongsContent')">
-                        <i class="bi bi-chevron-expand"></i> Expand/Collapse
-                    </button>
+                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                        data-bs-target="#likedSongsContent" aria-expanded="false" aria-controls="likedSongsContent"><i
+                            class="bi bi-chevron-expand"></i>
+                        Expand/Collapse</a>
                 </div>
             </div>
             <div class="collapse" id="likedSongsContent">
                 <div class="list-group list-group-flush">
                     <div class="list-group-item d-flex align-items-center justify-content-between"
-                        th:each="song : ${likedsongs.getSongs()}">
+                        th:each="song : ${likedsongs.getSongs()}" th:id="'song' + ${song.hashCode()}">
                         <div class="d-flex align-items-center">
                             <img class="me-3" th:src="${song.getCoverImage()}" th:alt="${song.toString()}" width="64"
                                 height="64" loading="lazy">
@@ -49,10 +48,11 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <button class="btn btn-outline-info btn-sm me-2" th:data-item-name="${song.toString()}"
+                            <button class="btn btn-outline-info btn-sm m-2" th:data-name="${song.toString()}"
                                 th:data-url="'/collection/likedsongs/' + ${song.hashCode()}" th:inline="javascript"
                                 onclick="redirect(this)"><i class="bi bi-exposure"></i> Edit</button>
-                            <button class="btn btn-outline-danger btn-sm me-2" th:data-item-name="${song.toString()}"
+                            <button class="btn btn-outline-danger btn-sm m-2" th:data-id="'song' + ${song.hashCode()}"
+                                th:data-name="${song.toString()}"
                                 th:data-url="'/collection/likedsongs/' + ${song.hashCode()}" th:inline="javascript"
                                 onclick="deleteItem(this)"><i class="bi bi-trash"></i> Delete</button>
                         </div>
@@ -67,19 +67,18 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Albums (' + ${albums.size()} + ')'"></h2>
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-success btn-sm me-2" type="button" th:inline="javascript"
+                    <button class="btn btn-outline-success btn-sm m-2" type="button" th:inline="javascript"
                         data-url="/collection/album" onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                         Add</button>
-                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent"
-                        onclick="toggleCollapse('albumsContent')">
-                        <i class="bi bi-chevron-expand"></i> Expand/Collapse
-                    </button>
+                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                        data-bs-target="#albumsContent" aria-expanded="false" aria-controls="albumsContent"><i
+                            class="bi bi-chevron-expand"></i>
+                        Expand/Collapse</a>
                 </div>
             </div>
             <div class="collapse" id="albumsContent">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item" th:each="album : ${albums}">
+                    <div class="list-group-item" th:each="album : ${albums}" th:id="'album' + ${album.hashCode()}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <img class="me-3" th:src="${album.getCoverImage()}" th:alt="${album.toString()}"
@@ -93,21 +92,22 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-outline-secondary btn-sm me-2" type="button"
-                                    data-bs-toggle="collapse" th:data-bs-target="'#albumCollapse' + ${album.hashCode()}"
-                                    aria-expanded="false" th:aria-controls="'albumCollapse' + ${album.hashCode()}"
-                                    onclick="toggleCollapse('albumCollapse' + album.hashCode())">
-                                    <i class="bi bi-chevron-expand"></i> Expand/Collapse
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm" th:data-item-name="${album.getName()}"
+                                <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                                    th:data-bs-target="'#albumcontent' + ${album.hashCode()}" aria-expanded="false"
+                                    th:aria-controls="'albumcontent' + ${album.hashCode()}"><i
+                                        class="bi bi-chevron-expand"></i>
+                                    Expand/Collapse</a>
+                                <button class="btn btn-outline-danger btn-sm m-2"
+                                    th:data-id="'album' + ${album.hashCode()}" th:data-name="${album.getName()}"
                                     th:data-url="'/collection/album/' + ${album.hashCode()}" th:inline="javascript"
                                     onclick="deleteItem(this)"><i class="bi bi-trash"></i> Delete</button>
                             </div>
                         </div>
-                        <div class="collapse mt-2" th:id="'albumCollapse' + ${album.hashCode()}">
+                        <div class="collapse" th:id="'albumcontent' + ${album.hashCode()}">
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex align-items-center justify-content-between"
-                                    th:each="song : ${album.getSongs()}">
+                                    th:each="song : ${album.getSongs()}"
+                                    th:id="'album' + ${album.hashCode()} + 'song' +  ${song.hashCode()}">
                                     <div class="d-flex align-items-center">
                                         <img class="me-3" th:src="${song.getCoverImage()}" th:alt="${song.toString()}"
                                             width="64" height="64" loading="lazy">
@@ -135,19 +135,19 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0" th:text="'Playlists (' + ${playlists.size()} + ')'"></h2>
                 <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-success btn-sm me-2" type="button" th:inline="javascript"
+                    <button class="btn btn-outline-success btn-sm m-2" type="button" th:inline="javascript"
                         data-url="/collection/playlist" onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                         Add</button>
-                    <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent"
-                        onclick="toggleCollapse('playlistsContent')">
-                        <i class="bi bi-chevron-expand"></i> Expand/Collapse
-                    </button>
+                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                        data-bs-target="#playlistsContent" aria-expanded="false" aria-controls="playlistsContent"><i
+                            class="bi bi-chevron-expand"></i>
+                        Expand/Collapse</a>
                 </div>
             </div>
             <div class="collapse" id="playlistsContent">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item" th:each="playlist : ${playlists}">
+                    <div class="list-group-item" th:each="playlist : ${playlists}"
+                        th:id="'playlist' + ${playlist.hashCode()}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <img class="me-3" th:src="${playlist.getCoverImage()}" th:alt="${playlist.toString()}"
@@ -160,33 +160,34 @@
                                 </div>
                             </div>
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-outline-secondary btn-sm me-2" type="button"
-                                    data-bs-toggle="collapse"
-                                    th:data-bs-target="'#playlistCollapse' + ${playlist.hashCode()}"
-                                    aria-expanded="false" th:aria-controls="'playlistCollapse' + ${playlist.hashCode()}"
-                                    onclick="toggleCollapse('playlistCollapse' + playlist.hashCode())">
-                                    <i class="bi bi-chevron-expand"></i> Expand/Collapse
-                                </button>
-                                <button class="btn btn-outline-success btn-sm me-2" type="button" th:inline="javascript"
+                                <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse"
+                                    th:data-bs-target="'#playlistcontent' + ${playlist.hashCode()}"
+                                    aria-expanded="false"
+                                    th:aria-controls="'playlistcontent' + ${playlist.hashCode()}"><i
+                                        class="bi bi-chevron-expand"></i>
+                                    Expand/Collapse</a>
+                                <button class="btn btn-outline-success btn-sm m-2" type="button" th:inline="javascript"
                                     th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/song'"
                                     onclick="redirect(this)"><i class="bi bi-plus-circle"></i>
                                     Add</button>
-                                <button class="btn btn-outline-info btn-sm me-2"
-                                    th:data-item-name="${playlist.toString()}"
+                                <button class="btn btn-outline-info btn-sm m-2" th:data-name="${playlist.toString()}"
                                     th:data-url="'/collection/playlist/' + ${playlist.hashCode()}"
                                     th:inline="javascript" onclick="redirect(this)"><i class="bi bi-exposure"></i>
                                     Edit</button>
-                                <button class="btn btn-outline-danger btn-sm" th:data-item-name="${playlist.toString()}"
+                                <button class="btn btn-outline-danger btn-sm m-2"
+                                    th:data-id="'playlist' + ${playlist.hashCode()}"
+                                    th:data-name="${playlist.toString()}"
                                     th:data-url="'/collection/playlist/' + ${playlist.hashCode()}"
                                     th:inline="javascript" onclick="deleteItem(this)"><i class="bi bi-trash"></i>
                                     Delete</button>
                             </div>
                         </div>
-                        <div class="collapse mt-2" th:id="'playlistCollapse' + ${playlist.hashCode()}">
+                        <div class="collapse" th:id="'playlistcontent' + ${playlist.hashCode()}">
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex align-items-center justify-content-between"
-                                    th:each="song : ${playlist.getSongs()}">
-                                    <div class="d-flex align-items-center">
+                                    th:each="song : ${playlist.getSongs()}"
+                                    th:id="'playlist' + ${playlist.hashCode()} + ${song.hashCode()}">
+                                    <div class="d-flex align-items-center" th:id="'song' + ${song.hashCode()}">
                                         <img class="me-3" th:src="${song.getCoverImage()}" th:alt="${song.toString()}"
                                             width="64" height="64" loading="lazy">
                                         <div>
@@ -200,13 +201,14 @@
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <button class="btn btn-outline-info btn-sm me-2"
-                                            th:data-item-name="${song.toString()}"
+                                        <button class="btn btn-outline-info btn-sm m-2"
+                                            th:data-name="${song.toString()}"
                                             th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="redirect(this)"><i
                                                 class="bi bi-exposure"></i> Edit</button>
-                                        <button class="btn btn-outline-danger btn-sm me-2"
-                                            th:data-item-name="${song.toString()}"
+                                        <button class="btn btn-outline-danger btn-sm m-2"
+                                            th:data-id="'playlist' + ${playlist.hashCode()} + 'song' +  ${song.hashCode()}"
+                                            th:data-name="${song.toString()}"
                                             th:data-url="'/collection/playlist/' + ${playlist.hashCode()} + '/' + ${song.hashCode()}"
                                             th:inline="javascript" onclick="deleteItem(this)"><i
                                                 class="bi bi-trash"></i> Delete</button>
@@ -227,38 +229,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        function toggleCollapse(id) {
-            const element = document.getElementById(id);
-            const isCollapsed = element.classList.contains('show');
-            localStorage.setItem(id, isCollapsed ? 'collapsed' : 'expanded');
-        }
-
-        function loadCollapseState(id) {
-            const state = localStorage.getItem(id);
-            const element = document.getElementById(id);
-            if (state === 'expanded') {
-                element.classList.add('show');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            ['likedSongsContent', 'albumsContent', 'playlistsContent'].forEach(id => loadCollapseState(id));
-            document.querySelectorAll('[id^="albumCollapse"]').forEach(el => loadCollapseState(el.id));
-            document.querySelectorAll('[id^="playlistCollapse"]').forEach(el => loadCollapseState(el.id));
-        });
-
         function deleteItem(buttonElement) {
+            const id = buttonElement.dataset.id;
             const url = buttonElement.dataset.url;
-            const itemName = buttonElement.dataset.itemName;
+            const name = buttonElement.dataset.name;
 
-            if (confirm(`Are you sure you want to delete ${itemName}?`)) {
+            if (confirm(`Are you sure you want to delete ${name}?`)) {
                 fetch(url, { method: 'DELETE' })
                     .then(response => response.text().then(data => {
                         console.info(data);
                         if (!response.ok) {
                             alert("Exception deleting, check log");
                         } else {
-                            document.location.reload();
+                            const element = document.getElementById(id);
+                            element.remove();
+                            //document.location.reload();
                         }
                     }))
                     .catch(error => {
@@ -273,5 +258,15 @@
     </script>
 
 </body>
+<style>
+    /* needed to prevent collapse in collapse from dissapearing when collapsing */
+    .collapse {
+        visibility: visible;
+    }
+
+    .btn-outline-secondary {
+        min-width: 138px;
+    }
+</style>
 
 </html>

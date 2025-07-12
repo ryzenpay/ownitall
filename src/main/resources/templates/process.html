@@ -56,20 +56,15 @@
 
         function updateProgressUI(progressBarsData) {
             const container = document.getElementById('progress-bars-container');
-            if (progressBarsData.length != 0) {
-                const incomingPbIds = new Set(progressBarsData.map(pb => String(pb.id)));
-                Array.from(container.children).forEach(childElement => {
-                    if (!incomingPbIds.has(childElement.dataset.pbId)) {
-                        container.removeChild(childElement);
-                    }
-                });
-            }
+            const completedContainer = document.getElementById('completed-bars-container');
+            const completedBarIds = new Set();
 
             progressBarsData.forEach((pbData) => {
                 const pbId = String(pbData.id);
                 let pbContainer = container.querySelector(`[data-pb-id="${pbId}"]`);
+                let pbCompleteContainer = completedContainer.querySelector(`[data-pb-id="${pbId}"]`);
 
-                if (!pbContainer) {
+                if (!pbContainer && !pbCompleteContainer) {
                     pbContainer = document.createElement('div');
                     pbContainer.className = 'progress-bar-container';
                     pbContainer.dataset.pbId = pbId;
@@ -85,12 +80,24 @@
                 }
 
                 const elements = {
-                    title: pbContainer.querySelector(`[data-role="title"]`),
-                    progressBar: pbContainer.querySelector(`[data-role="progressbar"]`),
-                    message: pbContainer.querySelector(`[data-role="message"]`),
-                    elapsedTime: pbContainer.querySelector(`[data-role="time"]`)
+                    title: pbContainer ? pbContainer.querySelector(`[data-role="title"]`) : pbCompleteContainer.querySelector(`[data-role="title"]`),
+                    progressBar: pbContainer ? pbContainer.querySelector(`[data-role="progressbar"]`) : pbCompleteContainer.querySelector(`[data-role="progressbar"]`),
+                    message: pbContainer ? pbContainer.querySelector(`[data-role="message"]`) : pbCompleteContainer.querySelector(`[data-role="message"]`),
+                    elapsedTime: pbContainer ? pbContainer.querySelector(`[data-role="time"]`) : pbCompleteContainer.querySelector(`[data-role="time"]`)
                 }
-                updateIndividualProgressBar(pbData, elements)
+
+                updateIndividualProgressBar(pbData, elements);
+
+                if (pbData.step >= pbData.maxstep && pbData.maxstep > 0) {
+                    completedBarIds.add(pbId);
+                }
+            });
+
+            completedBarIds.forEach(pbId => {
+                const element = container.querySelector(`[data-pb-id="${pbId}"]`);
+                if (element) {
+                    completedContainer.appendChild(element);
+                }
             });
 
             const backButton = document.getElementById('back-button');
@@ -105,9 +112,6 @@
                     msg.className = 'text-success mt-2';
                     msg.textContent = 'All processes have completed.';
                     container.appendChild(msg);
-                    container.children.forEach(childElement => {
-                        childElement.remove();
-                    });
                 }
             } else {
                 cancelButton.style.display = 'inline-block';
@@ -251,7 +255,17 @@
 
         <p id="all-done-message"></p>
         <!-- Container for multiple progress bars -->
-        <div id="progress-bars-container" class="mt-3 mb-3">
+        <div id="progress-bars-container" class="mt-3 mb-3"></div>
+
+        <!-- Collapsible for completed progress bars -->
+        <div>
+            <button class="btn btn-link mb-3" type="button" data-bs-toggle="collapse"
+                data-bs-target="#completed-collapse" aria-expanded="false" aria-controls="completed-collapse">
+                Show Completed Processes
+            </button>
+            <div class="collapse mt-3 mb-3" id="completed-collapse">
+                <div id="completed-bars-container"></div>
+            </div>
         </div>
 
         <!-- Global controls -->
