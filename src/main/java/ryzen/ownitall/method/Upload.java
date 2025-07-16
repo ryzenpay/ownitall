@@ -202,7 +202,7 @@ public class Upload implements Import {
                 } else if (line.startsWith("#EXTINF:")) {
                     currSongLine = line.substring(8).trim();
                 } else if (!line.isEmpty() && !line.startsWith("#") && currSongLine != null) {
-                    File songFile = new File(file.getParent(), line);
+                    File songFile = new File(file.getParent(), line.replace("/", File.separator));
                     if (songFile.exists()) {
                         Song song = getSong(songFile);
                         if (song != null) {

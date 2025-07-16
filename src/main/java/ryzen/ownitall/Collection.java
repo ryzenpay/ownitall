@@ -509,7 +509,7 @@ public class Collection {
         for (Song song : playlist.getSongs()) {
             output.append("#EXTINF:").append(String.valueOf(song.getDuration().toSeconds())).append(",")
                     .append(song.toString()).append("\n");
-            output.append(getRelativeSongPath(song)).append("\n");
+            output.append(getRelativeSongPath(song).toString().replace(File.separator, "/")).append("\n");
         }
         return output.toString();
     }
