@@ -196,6 +196,7 @@ public class MethodMenu {
     private void optionExportPlaylists() {
         LinkedHashMap<String, Playlist> options = new LinkedHashMap<>();
         options.put("All", null);
+        options.put("Liked Songs", Collection.getLikedSongs());
         for (Playlist playlist : Collection.getPlaylists()) {
             options.put(playlist.toString(), playlist);
         }

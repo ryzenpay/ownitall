@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class MusicBrainz extends Library {
     private static final Logger logger = new Logger(MusicBrainz.class);
-    private final String baseUrl = "https://musicbrainz.org/ws/2/";
-    private final String coverArtUrl = "https://coverartarchive.org/";
+    private static final String baseUrl = "https://musicbrainz.org/ws/2/";
+    private static final String coverArtUrl = "https://coverartarchive.org/";
 
     /**
      * default MusicBrainz constructor

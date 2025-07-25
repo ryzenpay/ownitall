@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class LastFM extends Library {
     private static final Logger logger = new Logger(LastFM.class);
-    private final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
-    private final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+    private static final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
+    private static final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
 
     /**
      * default LastFM constructor
@@ -356,7 +356,7 @@ public class LastFM extends Library {
             return null;
         }
         try {
-            StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
+            StringBuilder urlBuilder = new StringBuilder(baseUrl);
             urlBuilder.append("?method=").append(type);
             urlBuilder.append("&api_key=").append(Settings.lastFMApiKey);
             urlBuilder.append("&format=json");

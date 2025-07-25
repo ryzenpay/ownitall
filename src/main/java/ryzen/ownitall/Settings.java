@@ -6,6 +6,7 @@ import java.io.IOException;
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.method.Jellyfin;
 import ryzen.ownitall.method.Spotify;
+import ryzen.ownitall.method.Tidal;
 import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.method.download.Download;
@@ -156,6 +157,20 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /** Constant <code>youtubeClientSecret=""</code> */
     public static String youtubeClientSecret = "";
 
+    ///
+    ///
+    /// TIDAL
+    ///
+    ///
+    @Group(Tidal.class)
+    @Secret
+    @Name("Tidal Client ID")
+    public static String tidalClientID = "";
+
+    @Group(Tidal.class)
+    @Secret
+    @Name("Tidal Client Secret")
+    public static String tidalClientSecret = "";
     ///
     ///
     /// LIBRARY
