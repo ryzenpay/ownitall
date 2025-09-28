@@ -1,8 +1,6 @@
 package ryzen.ownitall.method;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -30,8 +28,10 @@ import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.exceptions.QueryException;
 
 /**
  * <p>
@@ -496,23 +496,11 @@ public class Jellyfin implements Import, Export, Sync {
                     "10.10.6",
                     this.accessToken);
             connection.setRequestProperty("Authorization", authHeader);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-            if (connection.getResponseCode() != 200) {
-                logger.debug("Query error: " + rootNode.toString());
-                return null;
-            }
-            return rootNode;
+            return WebTools.query(connection);
         } catch (URISyntaxException e) {
             logger.error("Exception while constructing jellyfin paramQuery", e);
             return null;
-        } catch (IOException e) {
+        } catch (QueryException | IOException e) {
             logger.error("Exception while paramQuery jellyfin", e);
             return null;
         }
@@ -551,23 +539,11 @@ public class Jellyfin implements Import, Export, Sync {
                 byte[] input = payload.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-            if (connection.getResponseCode() != 200) {
-                logger.debug("Query error: " + rootNode.toString());
-                return null;
-            }
-            return rootNode;
+            return WebTools.query(connection);
         } catch (URISyntaxException e) {
             logger.error("Exception while constructing jellyfin payloadQuery", e);
             return null;
-        } catch (IOException e) {
+        } catch (QueryException | IOException e) {
             logger.warn("Exception while payloadQuery jellyfin: " + e);
             return null;
         }

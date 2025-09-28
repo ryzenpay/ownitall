@@ -2,10 +2,8 @@ package ryzen.ownitall.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -160,7 +158,7 @@ public class MusicTools {
                 File tempFile = File.createTempFile(String.valueOf(songFile.getAbsolutePath().hashCode()),
                         ".png");
                 tempFile.delete(); // to prevent throwing off the downloadimage function
-                downloadImage(coverImage, tempFile);
+                WebTools.downloadImage(coverImage, tempFile);
                 if (tempFile.exists()) {
                     byte[] imageData = Files.readAllBytes(tempFile.toPath());
                     // Create artwork from the downloaded file
@@ -277,29 +275,6 @@ public class MusicTools {
         AudioFile audioFile = AudioFileIO.read(songFile);
         AudioHeader audioHeader = audioFile.getAudioHeader();
         return Duration.ofSeconds(audioHeader.getTrackLength());
-    }
-
-    /**
-     * download an image from the web
-     *
-     * @param url  - URI to fetch image from
-     * @param file - file to download the image to (will make a new one)
-     * @throws java.io.IOException - java.io.IOException while downloading
-     */
-    public static void downloadImage(URI url, File file) throws IOException {
-        if (url == null || file == null) {
-            logger.debug("null url or file passed in downloadImage");
-            return;
-        }
-        if (file.exists()) {
-            logger.debug("coverimage already found: '" + file.getAbsolutePath() + "'");
-            return;
-        }
-        try (InputStream in = url.toURL().openStream()) {
-            Files.copy(in, file.toPath());
-        } catch (FileNotFoundException e) {
-            logger.debug("Image at url '" + url + "' not found");
-        }
     }
 
     /**

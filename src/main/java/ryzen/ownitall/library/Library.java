@@ -1,9 +1,8 @@
 package ryzen.ownitall.library;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Storage;
@@ -20,8 +18,10 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.exceptions.QueryException;
 
 /**
  * <p>
@@ -32,7 +32,6 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
  */
 abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     /** Constant <code>libraries</code> */
     private static long lastQueryTime = 0;
     protected long queryDiff;
@@ -232,29 +231,11 @@ abstract public class Library implements LibraryInterface {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-
-            if (rootNode.has("error") || rootNode.has("failed")) {
-                logger.debug("Query error: " + rootNode.toString());
-                int errorCode = rootNode.path("error").asInt();
-                // to prevent it triggering on songs named "error" or "failed"
-                if (errorCode != 0) {
-                    String errorMessage = rootNode.path("message").asText();
-                    logger.debug("Received error code on query: " + url.toString());
-                    this.queryErrorHandle(errorCode, errorMessage);
-                    return null;
-                }
-            }
-            return rootNode;
-        } catch (IOException e) {
-            logger.error("Exception querying API", e);
+            return WebTools.query(connection);
+        } catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (IOException | QueryException e) {
+            logger.warn("Received error code while querying: " + e.getMessage());
             return null;
         }
     }

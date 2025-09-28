@@ -359,7 +359,7 @@ public class MusicBrainz extends Library {
             logger.debug("null or empty id provided in getCoverArt");
             return null;
         }
-        StringBuilder urlBuilder = new StringBuilder(this.coverArtUrl);
+        StringBuilder urlBuilder = new StringBuilder(coverArtUrl);
         urlBuilder.append("release").append('/');
         urlBuilder.append(id).append('/');
         urlBuilder.append("front");
@@ -423,7 +423,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         try {
-            StringBuilder urlBuilder = new StringBuilder(this.baseUrl);
+            StringBuilder urlBuilder = new StringBuilder(baseUrl);
             urlBuilder.append(type);
             urlBuilder.append(query);
             URI url = new URI(urlBuilder.toString());

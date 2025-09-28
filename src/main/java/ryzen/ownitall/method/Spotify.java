@@ -60,9 +60,8 @@ public class Spotify implements Import, Export, Sync {
     private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
-    private final int TIMEOUT = 20;
+    private final int timeout = 20; // in seconds
     private SpotifyApi spotifyApi;
-    private String code;
 
     /**
      * Default spotify constructor asking for user input
@@ -88,8 +87,7 @@ public class Spotify implements Import, Export, Sync {
             throw new AuthenticationException(e);
         }
         try {
-            this.getCode();
-            this.setToken();
+            this.authenticate();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while authenticating with Spotify");
             throw new AuthenticationException(e);
@@ -101,7 +99,7 @@ public class Spotify implements Import, Export, Sync {
      *
      * @throws java.lang.InterruptedException - if an error occurs
      */
-    public void getCode() throws InterruptedException {
+    public String getCode() throws InterruptedException {
         AtomicReference<String> codeRef = new AtomicReference<>();
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
@@ -155,9 +153,9 @@ public class Spotify implements Import, Export, Sync {
             logger.info("Unable to get code automatically, please provide it manually");
             System.out.println("Please open this url: " + authUri);
             System.out.print("Please provide the code found in response url: ");
-            this.code = Input.request().getString();
+            return Input.request().getString();
         } else {
-            this.code = codeRef.get();
+            return codeRef.get();
         }
     }
 
@@ -169,8 +167,8 @@ public class Spotify implements Import, Export, Sync {
                 logger.error("Exception opening web browser", e);
             }
         }
-        logger.info("Waiting " + TIMEOUT + " seconds for code or interrupt to manually provide");
-        for (int i = 0; i < TIMEOUT; i++) {
+        logger.info("Waiting " + timeout + " seconds for code or interrupt to manually provide");
+        for (int i = 0; i < timeout; i++) {
             if (codeRef.get() != null) {
                 break;
             }
@@ -180,7 +178,7 @@ public class Spotify implements Import, Export, Sync {
 
     private void nonInteractiveSetCode(URI url, AtomicReference<String> codeRef) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.toURL().openConnection();
-        con.setConnectTimeout(TIMEOUT * 1000);
+        con.setConnectTimeout(timeout * 1000);
         con.connect(); // TODO: requires login cookies
         logger.debug("Web request made to: '" + url + "'");
         int responseCode = con.getResponseCode();
@@ -215,8 +213,8 @@ public class Spotify implements Import, Export, Sync {
      * 
      * @param code - the authentication code provided in the oauth
      */
-    private void setToken() throws AuthenticationException {
-        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.code).build();
+    private void authenticate() throws AuthenticationException, InterruptedException {
+        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.getCode()).build();
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
             this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());

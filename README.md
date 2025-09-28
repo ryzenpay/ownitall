@@ -48,10 +48,9 @@ when attempting to import or export to spotify, you will need to provide the 3 f
     - client id  
     - client secret  
     - redirect url (set this to: `http://localhost:8081/method/spotify`)
-spotify will provide you with the client id and secret, and the redirect url will be your or the website you decide to use  
-to get the clienit id and secret:  
+spotify will provide you with the client id and secret, to get the client id and secret:  
     1. log in to spotify develper portal: https://developer.spotify.com/dashboard  
-    2. create an app (setting the redirect url to your desired)  
+    2. create an app (with redirect url http://localhost:8081/method/spotify)
     3. go to dashboard -> click on your app  
     4. settings (top right)  
     5. save the client id and client secret  
@@ -102,6 +101,18 @@ will need:
     - soulseek username  
     - soulseek password  
 Due to the soulseek binary and soulseek limits, it is hard encoded to 1 thread and can therefore take a long time to download an entire library  
+
+## Tidal
+will need:
+    - client id 
+    - client secret
+Tidal will provide you with the client id and secret, to get the client id and secret:  
+    1. log in to tidal develper portal: https://developer.tidal.com/dashboard
+    2. create an app
+    3. go to dashboard -> click on your app  
+    4. settings (top right)  
+    5. add a redirect url to http://localhost:8081/method/tidal
+    6. save the client id and client secret  
 
 # Maven and compiling
 ## generate javadoc documentation

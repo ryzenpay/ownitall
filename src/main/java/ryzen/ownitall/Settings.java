@@ -171,6 +171,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Secret
     @Name("Tidal Client Secret")
     public static String tidalClientSecret = "";
+
     ///
     ///
     /// LIBRARY

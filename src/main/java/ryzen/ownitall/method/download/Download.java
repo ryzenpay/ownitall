@@ -30,6 +30,7 @@ import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
@@ -291,7 +292,7 @@ public class Download implements Sync, Export {
         }
         try {
             if (playlist.getCoverImage() != null) {
-                MusicTools.downloadImage(playlist.getCoverImage(),
+                WebTools.downloadImage(playlist.getCoverImage(),
                         new File(Settings.localFolder, Collection.getCoverFileName(playlist)));
             }
         } catch (IOException e) {
@@ -323,7 +324,7 @@ public class Download implements Sync, Export {
         }
         try {
             if (album.getCoverImage() != null) {
-                MusicTools.downloadImage(album.getCoverImage(),
+                WebTools.downloadImage(album.getCoverImage(),
                         new File(folder, Collection.getCoverFileName(album)));
             }
         } catch (IOException e) {
