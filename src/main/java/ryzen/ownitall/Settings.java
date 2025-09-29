@@ -122,10 +122,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("Spotify Client Secret")
     /** Constant <code>spotifyClientSecret=""</code> */
     public static String spotifyClientSecret = "";
-    @Group(Spotify.class)
-    @Name("Spotify Redirect URL")
-    /** Constant <code>spotifyRedirectURL=""</code> */
-    public static String spotifyRedirectURL = "";
 
     ///
     ///

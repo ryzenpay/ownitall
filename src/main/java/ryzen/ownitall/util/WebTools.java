@@ -2,21 +2,28 @@ package ryzen.ownitall.util;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
 
+import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.QueryException;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -25,6 +32,7 @@ public class WebTools {
     // TODO: logging
     private static final Logger logger = new Logger(WebTools.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static long timeout = 20; // timeout in seconds
     private static long lastQueryTime = 0;
 
     public static String generateCodeVerifier() {
@@ -114,6 +122,128 @@ public class WebTools {
             Files.copy(in, file.toPath());
         } catch (FileNotFoundException e) {
             logger.debug("Image at url '" + url + "' not found");
+        }
+    }
+
+    /**
+     * Start an HTTP server to intercept the oauth code
+     *
+     * @throws java.lang.InterruptedException - if an error occurs
+     */
+    public static String getOauthCode(String authUrl, String clientID, ArrayList<String> scope,
+            String codeChallenge) throws InterruptedException {
+        String url = authUrl;
+        if (url.contains("?")) {
+            url += "&client_id=" + clientID;
+        } else {
+            url += "?client_id=" + clientID;
+        }
+        url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
+        url += "&scope=" + String.join("%20", scope);
+        url += "&code_challenge_method=S256&code_challenge=" + codeChallenge;
+        URI authUri = URI.create(url);
+        return getOauthCode(authUri);
+    }
+
+    public static String getOauthCode(URI authUri) throws InterruptedException {
+        AtomicReference<String> codeRef = new AtomicReference<>();
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
+            server.createContext("/oauth", exchange -> {
+                logger.debug("request received on /oauth");
+                URI requestURI = exchange.getRequestURI();
+                String query = requestURI.getQuery();
+                String code = null;
+                if (query != null && query.contains("code=")) {
+                    String[] queryParams = query.split("&");
+                    for (String param : queryParams) {
+                        String[] keyValue = param.split("=");
+                        if (keyValue.length == 2 && "code".equals(keyValue[0])) {
+                            code = keyValue[1];
+                        }
+                    }
+                }
+
+                String responseText;
+                if (code != null) {
+                    codeRef.set(code);
+                    logger.info("Authorization code received: " + code);
+                    responseText = "Code received, you can now close this tab";
+                    exchange.sendResponseHeaders(200, responseText.getBytes().length);
+                } else {
+                    logger.warn("Failed to retrieve authorization code. Query: " + query);
+                    responseText = "an error occurred, check logs for more";
+                    exchange.sendResponseHeaders(404, responseText.getBytes().length);
+                }
+
+                OutputStream responseBody = exchange.getResponseBody();
+                responseBody.write(responseText.getBytes());
+                responseBody.close();
+            });
+            server.start();
+            logger.info("Awaiting response at http://localhost/oauth");
+            try {
+                interactiveSetCode(authUri, codeRef);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while interactively getting code");
+            }
+            server.stop(0);
+        } catch (IOException e) {
+            logger.error("Failed to start local server", e);
+        }
+        if (codeRef.get() == null) {
+            logger.info("Unable to get code automatically, please provide it manually");
+            System.out.println("Please open this url: " + authUri);
+            System.out.print("Please provide the code found in response url: ");
+            return Input.request().getString();
+        } else {
+            return codeRef.get();
+        }
+    }
+
+    private static void interactiveSetCode(URI url, AtomicReference<String> codeRef) throws InterruptedException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(url);
+            } catch (IOException e) {
+                logger.error("Exception opening web browser", e);
+            }
+        }
+        logger.info("Waiting " + timeout + " seconds for code or interrupt to manually provide");
+        for (int i = 0; i < timeout; i++) {
+            if (codeRef.get() != null) {
+                break;
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+    public static String getOauthToken(String authUrl, String clientID,
+            ArrayList<String> scope) throws AuthenticationException {
+        String codeVerifier = WebTools.generateCodeVerifier();
+        String codeChallenge = WebTools.generateCodeChallenge(codeVerifier);
+        try {
+            String code = getOauthCode(authUrl, clientID, scope, codeChallenge);
+            String url = authUrl;
+            if (url.contains("?")) {
+                url += "&client_id=" + clientID;
+            } else {
+                url += "?client_id=" + clientID;
+            }
+            url += "&code=" + code;
+            url += "&code_verifier=" + codeVerifier;
+            URI uri = URI.create(url);
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            JsonNode response = WebTools.query(connection);
+            if (response.has("access_token")) {
+                return response.path("access_token").asText();
+            } else {
+                throw new AuthenticationException("no access token in response: " + response.toString());
+            }
+        } catch (IOException | QueryException | InterruptedException e) {
+            throw new AuthenticationException(e);
         }
     }
 }

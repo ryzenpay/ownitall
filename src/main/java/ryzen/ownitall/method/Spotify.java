@@ -14,7 +14,6 @@ import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCrede
 import se.michaelthelin.spotify.model_objects.specification.*;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 import java.time.temporal.ChronoUnit;
 import org.apache.hc.core5.http.ParseException;
 
@@ -33,20 +32,15 @@ import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.IPIterator;
-import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.awt.Desktop;
-import com.sun.net.httpserver.HttpServer;
 
 /**
  * <p>
@@ -60,7 +54,6 @@ public class Spotify implements Import, Export, Sync {
     private static final Library library = Library.load();
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
-    private final int timeout = 20; // in seconds
     private SpotifyApi spotifyApi;
 
     /**
@@ -81,7 +74,7 @@ public class Spotify implements Import, Export, Sync {
                     .setClientSecret(
                             Settings.spotifyClientSecret)
                     .setRedirectUri(new URI(
-                            Settings.spotifyRedirectURL))
+                            "http://localhost:8081/oauth"))
                     .build();
         } catch (URISyntaxException e) {
             throw new AuthenticationException(e);
@@ -101,112 +94,12 @@ public class Spotify implements Import, Export, Sync {
      * @throws java.lang.InterruptedException - if an error occurs
      */
     public String getCode() throws InterruptedException {
-        AtomicReference<String> codeRef = new AtomicReference<>();
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
                 .scope(scope)
                 .show_dialog(Settings.interactive)
                 .build();
         URI authUri = authorizationCodeUriRequest.execute();
-        try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
-            server.createContext("/method/spotify", exchange -> {
-                logger.debug("request received on /method/spotify");
-                URI requestURI = exchange.getRequestURI();
-                String query = requestURI.getQuery();
-                String code = extractCodeFromQuery(query);
-                String responseText;
-
-                if (code != null) {
-                    codeRef.set(code);
-                    logger.info("Authorization code received: " + code);
-                    responseText = "Code received, you can now close this tab";
-                    exchange.sendResponseHeaders(200, responseText.getBytes().length);
-                } else {
-                    logger.warn("Failed to retrieve authorization code. Query: " + query);
-                    responseText = "an error occurred, check logs for more";
-                    exchange.sendResponseHeaders(404, responseText.getBytes().length);
-                }
-
-                OutputStream responseBody = exchange.getResponseBody();
-                responseBody.write(responseText.getBytes());
-                responseBody.close();
-            });
-            server.start();
-            logger.info("Awaiting response at http://localhost/method/spotify");
-            if (Settings.interactive) {
-                try {
-                    interactiveSetCode(authUri, codeRef);
-                } catch (InterruptedException e) {
-                    logger.debug("Interrupted while interactively getting code");
-                }
-            } else {
-                try {
-                    nonInteractiveSetCode(authUri, codeRef);
-                } catch (IOException e) {
-                    logger.error("Unable to non-interactively login/get code", e);
-                }
-            }
-            server.stop(0);
-        } catch (IOException e) {
-            logger.error("Failed to start local server", e);
-        }
-        if (codeRef.get() == null) {
-            logger.info("Unable to get code automatically, please provide it manually");
-            System.out.println("Please open this url: " + authUri);
-            System.out.print("Please provide the code found in response url: ");
-            return Input.request().getString();
-        } else {
-            return codeRef.get();
-        }
-    }
-
-    private void interactiveSetCode(URI url, AtomicReference<String> codeRef) throws InterruptedException {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(url);
-            } catch (IOException e) {
-                logger.error("Exception opening web browser", e);
-            }
-        }
-        logger.info("Waiting " + timeout + " seconds for code or interrupt to manually provide");
-        for (int i = 0; i < timeout; i++) {
-            if (codeRef.get() != null) {
-                break;
-            }
-            Thread.sleep(1000);
-        }
-    }
-
-    private void nonInteractiveSetCode(URI url, AtomicReference<String> codeRef) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) url.toURL().openConnection();
-        con.setConnectTimeout(timeout * 1000);
-        con.connect(); // TODO: requires login cookies
-        logger.debug("Web request made to: '" + url + "'");
-        int responseCode = con.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            con.disconnect();
-            throw new IOException("Exception (" + responseCode + ") response code from web request");
-        }
-        con.disconnect();
-    }
-
-    /**
-     * Extracts the 'code' query parameter from the request URI
-     *
-     * @param query - full query string from the request URI
-     * @return String - extracted code if present
-     */
-    private String extractCodeFromQuery(String query) {
-        if (query != null && query.contains("code=")) {
-            String[] queryParams = query.split("&");
-            for (String param : queryParams) {
-                String[] keyValue = param.split("=");
-                if (keyValue.length == 2 && "code".equals(keyValue[0])) {
-                    return keyValue[1];
-                }
-            }
-        }
-        return null;
+        return WebTools.getOauthCode(authUri);
     }
 
     /**
