@@ -218,18 +218,19 @@ public class WebTools {
         }
     }
 
-    public static String getOauthToken(String authUrl, String clientID,
+    public static String getOauthToken(String tokenUrl, String codeUrl, String clientID,
             ArrayList<String> scope) throws AuthenticationException {
         String codeVerifier = WebTools.generateCodeVerifier();
         String codeChallenge = WebTools.generateCodeChallenge(codeVerifier);
         try {
-            String code = getOauthCode(authUrl, clientID, scope, codeChallenge);
-            String url = authUrl;
+            String code = getOauthCode(codeUrl, clientID, scope, codeChallenge);
+            String url = tokenUrl;
             if (url.contains("?")) {
                 url += "&client_id=" + clientID;
             } else {
                 url += "?client_id=" + clientID;
             }
+            url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
             url += "&code=" + code;
             url += "&code_verifier=" + codeVerifier;
             URI uri = URI.create(url);

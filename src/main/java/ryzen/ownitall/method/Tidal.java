@@ -40,7 +40,8 @@ public class Tidal implements Import {
             logger.debug("Empty tidal credentials");
             throw new MissingSettingException(Tidal.class);
         }
-        this.token = WebTools.getOauthToken("https://login.tidal.com/authorize?response_type=code",
+        this.token = WebTools.getOauthToken("https://auth.tidal.com/v1/oauth2/token?grant_type=authorization_code",
+                "https://login.tidal.com/authorize?response_type=code",
                 Settings.tidalClientID, scope);
         this.userID = this.getUserID();
         logger.debug("Successfully authenticated into tidal as " + this.userID);
