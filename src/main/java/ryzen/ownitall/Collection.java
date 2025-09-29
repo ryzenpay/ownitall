@@ -19,6 +19,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 
@@ -643,10 +644,10 @@ public class Collection {
         }
         String extension = "." + Settings.downloadFormat;
         if (song.getAlbumName() != null) {
-            return new File(MusicTools.sanitizeFileName(song.getAlbumName()),
-                    MusicTools.sanitizeFileName(song.getName()) + extension);
+            return new File(FileTools.sanitizeFileName(song.getAlbumName()),
+                    FileTools.sanitizeFileName(song.getName()) + extension);
         } else {
-            return new File(MusicTools.sanitizeFileName(song.getName()) + extension);
+            return new File(FileTools.sanitizeFileName(song.getName()) + extension);
         }
     }
 
@@ -663,6 +664,6 @@ public class Collection {
             logger.debug("null collection provided in getCoverFileName");
             return null;
         }
-        return MusicTools.sanitizeFileName(collection.getName()) + ".png";
+        return FileTools.sanitizeFileName(collection.getName()) + ".png";
     }
 }

@@ -62,7 +62,7 @@ public class Tidal implements Import {
      *
      * @throws java.lang.InterruptedException - if an error occurs
      */
-    // TODO: make spotify and tidal share this code
+    // TODO: centralize in webtools + share with spotify
     private String getCode(String codeChallenge) throws InterruptedException {
         AtomicReference<String> codeRef = new AtomicReference<>();
         String authUrl = "https://login.tidal.com/authorize?response_type=code&client_id=" + Settings.tidalClientID
@@ -214,8 +214,6 @@ public class Tidal implements Import {
         }
     }
 
-    // TODO: api rate limit handling
-    // http code 429
     private JsonNode query(String path, String pageCursor, String include) {
         String flags = "?countryCode=US&locale=en-US";
         if (pageCursor != null) {
@@ -230,12 +228,13 @@ public class Tidal implements Import {
             connection.setRequestProperty("Accept", "application/vnd.api+json");
             connection.setRequestProperty("Authorization", "Bearer " + this.token);
 
+            WebTools.queryPacer(500);
             return WebTools.query(connection);
         } catch (URISyntaxException e) {
             logger.error("Exception while constructing tidal query", e);
             return null;
-        } catch (QueryException | IOException e) {
-            logger.warn("Exception while query tidal: " + e);
+        } catch (QueryException | IOException | InterruptedException e) {
+            logger.warn("Exception while querying tidal: " + e);
             return null;
         }
     }

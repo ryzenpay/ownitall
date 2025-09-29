@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -32,8 +31,7 @@ import ryzen.ownitall.util.exceptions.QueryException;
  */
 abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
-    /** Constant <code>libraries</code> */
-    private static long lastQueryTime = 0;
+
     protected long queryDiff;
     /**
      * arrays to cache api queries
@@ -201,20 +199,6 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * ensure querys are only executed at an interval to prevent api limits
-     * 
-     * @throws InterruptedException - when the user interrupts
-     */
-    private void timeoutManager() throws InterruptedException {
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastQueryTime;
-        if (elapsedTime < queryDiff) {
-            TimeUnit.MILLISECONDS.sleep(queryDiff - elapsedTime);
-        }
-        lastQueryTime = System.currentTimeMillis();
-    }
-
-    /**
      * query the specified url, catch errors or return response
      *
      * @param url - url to query
@@ -226,7 +210,7 @@ abstract public class Library implements LibraryInterface {
             logger.debug("null url provided to query");
             return null;
         }
-        timeoutManager();
+        WebTools.queryPacer(queryDiff);
         try {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");

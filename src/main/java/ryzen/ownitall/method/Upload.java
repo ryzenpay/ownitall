@@ -23,6 +23,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.method.interfaces.Import;
+import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
@@ -68,7 +69,7 @@ public class Upload implements Import {
         if (file == null) {
             return false;
         }
-        if (file.isFile() && extensions.contains(MusicTools.getExtension(file).toLowerCase())) {
+        if (file.isFile() && extensions.contains(FileTools.getExtension(file).toLowerCase())) {
             return true;
         }
         return false;
@@ -148,7 +149,7 @@ public class Upload implements Import {
         File[] files = Settings.localFolder.listFiles();
         for (File file : IPIterator.wrap(files, "Playlists", files.length)) {
             if (file.isFile()) {
-                if (MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+                if (FileTools.getExtension(file).equalsIgnoreCase("m3u")) {
                     if (file.getName().equalsIgnoreCase(Settings.likedSongName + ".m3u")) {
                         continue;
                     }
@@ -176,7 +177,7 @@ public class Upload implements Import {
             logger.debug("folder is null or non file in processM3u");
             return null;
         }
-        if (!MusicTools.getExtension(file).equalsIgnoreCase("m3u")) {
+        if (!FileTools.getExtension(file).equalsIgnoreCase("m3u")) {
             logger.debug("provided file '" + file.getAbsolutePath() + "' does not end with .m3u in processM3u");
             return null;
         }

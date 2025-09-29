@@ -26,6 +26,7 @@ import ryzen.ownitall.method.Upload;
 import ryzen.ownitall.method.interfaces.Export;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.ClassLoader;
+import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
@@ -285,8 +286,8 @@ public class Download implements Sync, Export {
             return;
         }
         try {
-            File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
-            MusicTools.writeData(m3uFile, Collection.getPlaylistM3U(playlist));
+            File m3uFile = new File(Settings.localFolder, FileTools.sanitizeFileName(playlist.getName()) + ".m3u");
+            FileTools.writeData(m3uFile, Collection.getPlaylistM3U(playlist));
         } catch (Exception e) {
             logger.error("Exception writing playlist '" + playlist.toString() + "' m3u", e);
         }
@@ -311,14 +312,14 @@ public class Download implements Sync, Export {
             logger.debug("null Album provided in writeAlbumData");
             return;
         }
-        File folder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
+        File folder = new File(Settings.localFolder, FileTools.sanitizeFileName(album.getName()));
         if (folder == null || !folder.exists()) {
             logger.debug("null or non existant folder provided in writeAlbumData");
             return;
         }
         try {
             File nfoFile = new File(folder, "album.nfo");
-            MusicTools.writeData(nfoFile, Collection.getAlbumNFO(album));
+            FileTools.writeData(nfoFile, Collection.getAlbumNFO(album));
         } catch (Exception e) {
             logger.error("Exception writing album '" + album.toString() + "' nfo", e);
         }
@@ -344,7 +345,7 @@ public class Download implements Sync, Export {
     public void cleanFolder() {
         for (File file : Settings.localFolder.listFiles()) {
             if (file.isFile()) {
-                String extension = MusicTools.getExtension(file);
+                String extension = FileTools.getExtension(file);
                 if (!whiteList.contains(extension)) {
                     if (file.delete()) {
                         logger.debug("Cleaned up file: '" + file.getAbsolutePath() + "'");
@@ -421,7 +422,7 @@ public class Download implements Sync, Export {
             for (Playlist playlist : IPIterator.wrap(playlists, "Playlists", playlists.size())) {
                 // deletes all playlists songs
                 this.syncPlaylist(new Playlist(playlist.getName()));
-                File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
+                File m3uFile = new File(Settings.localFolder, FileTools.sanitizeFileName(playlist.getName()) + ".m3u");
                 if (m3uFile.delete()) {
                     logger.info(
                             "Cleaned up playlist '" + playlist.getName() + "' m3u file: "
@@ -461,7 +462,7 @@ public class Download implements Sync, Export {
         }
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
         Playlist localPlaylist = null;
-        File m3uFile = new File(Settings.localFolder, MusicTools.sanitizeFileName(playlist.getName()) + ".m3u");
+        File m3uFile = new File(Settings.localFolder, FileTools.sanitizeFileName(playlist.getName()) + ".m3u");
         if (m3uFile.exists()) {
             localPlaylist = Upload.getM3UPlaylist(m3uFile);
         }
@@ -523,9 +524,9 @@ public class Download implements Sync, Export {
         if (albums != null && !albums.isEmpty()) {
             albums.removeAll(Collection.getAlbums());
             for (Album album : IPIterator.wrap(albums.iterator(), "Albums", albums.size())) {
-                File albumFolder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
+                File albumFolder = new File(Settings.localFolder, FileTools.sanitizeFileName(album.getName()));
                 if (albumFolder.exists()) {
-                    if (MusicTools.deleteFolder(albumFolder)) {
+                    if (FileTools.deleteFolder(albumFolder)) {
                         logger.info(
                                 "Deleted album '" + album.getName() + "'' folder: " + albumFolder.getAbsolutePath());
                     } else {
@@ -558,7 +559,7 @@ public class Download implements Sync, Export {
             return;
         }
         logger.debug("Getting local album '" + album.getName() + "' to remove mismatches");
-        File albumFolder = new File(Settings.localFolder, MusicTools.sanitizeFileName(album.getName()));
+        File albumFolder = new File(Settings.localFolder, FileTools.sanitizeFileName(album.getName()));
         Album localAlbum = new Upload().getAlbum(albumFolder.getAbsolutePath(), album.getName(),
                 album.getMainArtist().getName());
         if (localAlbum != null && !localAlbum.isEmpty()) {

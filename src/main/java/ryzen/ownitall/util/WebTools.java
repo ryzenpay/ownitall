@@ -3,6 +3,7 @@ package ryzen.ownitall.util;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,9 +22,10 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 
 public class WebTools {
-    // TODO: error and input handling
+    // TODO: logging
     private static final Logger logger = new Logger(WebTools.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static long lastQueryTime = 0;
 
     public static String generateCodeVerifier() {
         SecureRandom sr = new SecureRandom();
@@ -44,6 +46,20 @@ public class WebTools {
         }
     }
 
+    /**
+     * ensure requests are not sent faster than the query
+     * 
+     * @param queryDiff - milliseconds of timeout between requests
+     * @throws InterruptedException
+     */
+    public static void queryPacer(long queryDiff) throws InterruptedException {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastQueryTime;
+        if (elapsedTime < queryDiff) {
+            TimeUnit.MILLISECONDS.sleep(queryDiff - elapsedTime);
+        }
+    }
+
     public static JsonNode query(HttpURLConnection connection) throws QueryException {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -57,10 +73,24 @@ public class WebTools {
             if (rootNode.has("error") || rootNode.has("failed")) {
                 throw new QueryException(rootNode.toString());
             }
+            lastQueryTime = System.currentTimeMillis();
             return rootNode;
         } catch (IOException e) {
-            logger.error("Query exception processing " + connection.getURL().toString(), e);
-            throw new QueryException(e);
+            try {
+                switch (connection.getResponseCode()) {
+                    case 429: // too many requests
+                        logger.debug("Too many requests, trying again in 30 seconds...");
+                        TimeUnit.SECONDS.sleep(30);
+                        // TODO: limit to 5 retries
+                        return query(connection);
+                    default:
+                        logger.error("Unkown exception processing: " + connection.getURL().toString(), e);
+                        throw new QueryException(e);
+                }
+            } catch (IOException | InterruptedException f) {
+                logger.error("Exception retreiving response code from request", e);
+                throw new QueryException(e);
+            }
         }
     }
 
