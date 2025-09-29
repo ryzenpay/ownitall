@@ -88,6 +88,7 @@ public class Spotify implements Import, Export, Sync {
         }
         try {
             this.authenticate();
+            logger.debug("Succesfully authenticated into spotify");
         } catch (InterruptedException e) {
             logger.debug("Interrupted while authenticating with Spotify");
             throw new AuthenticationException(e);

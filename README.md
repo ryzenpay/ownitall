@@ -112,6 +112,7 @@ Tidal will provide you with the client id and secret, to get the client id and s
     3. go to dashboard -> click on your app  
     4. settings (top right)  
     5. add a redirect url to http://localhost:8081/method/tidal
+        - add the scopes: collection.read%20collection.write%20playlists.read%20playlists.read
     6. save the client id and client secret  
 
 # Maven and compiling

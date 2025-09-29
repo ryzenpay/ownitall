@@ -59,6 +59,7 @@ public class Youtube implements Import {
             throw new MissingSettingException("empty youtube credentials");
         }
         this.youtubeApi = this.getService();
+        logger.debug("Successfully authenticated into youtube");
     }
 
     /**

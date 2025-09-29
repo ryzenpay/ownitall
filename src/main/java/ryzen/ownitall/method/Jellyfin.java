@@ -62,6 +62,7 @@ public class Jellyfin implements Import, Export, Sync {
             throw new MissingSettingException(Jellyfin.class);
         }
         this.authenticate();
+        logger.debug("Successfully authenticated into jellyfin as " + Settings.jellyfinUsername);
     }
 
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
@@ -544,7 +545,7 @@ public class Jellyfin implements Import, Export, Sync {
             logger.error("Exception while constructing jellyfin payloadQuery", e);
             return null;
         } catch (QueryException | IOException e) {
-            logger.warn("Exception while payloadQuery jellyfin: " + e);
+            logger.error("Exception while querying jellyfin", e);
             return null;
         }
     }
