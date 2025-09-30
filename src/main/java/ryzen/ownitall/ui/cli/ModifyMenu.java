@@ -253,6 +253,7 @@ public class ModifyMenu {
                 }
                 logger.info("Successfully removed playlist: '" + choice + "'");
             } catch (MenuClosed e) {
+                break;
             }
         }
     }

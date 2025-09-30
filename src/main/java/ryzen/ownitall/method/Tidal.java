@@ -262,7 +262,8 @@ public class Tidal implements Import {
             logger.debug("null playlistId provided in getPlaylist");
             return null;
         }
-        JsonNode response = this.query("/playlists/" + playlistId, null,
+        String pageCursor = null;
+        JsonNode response = this.query("/playlists/" + playlistId, pageCursor,
                 new ArrayList<>(Arrays.asList("coverArt", "items")));
         if (response == null) {
             logger.debug("null response received in getPlaylist");
@@ -271,24 +272,34 @@ public class Tidal implements Import {
         JsonNode playlistData = response.path("data");
         String id = playlistData.path("id").asText();
         JsonNode attributes = playlistData.path("attributes");
-        String title = attributes.path("title").asText();
-        Playlist playlist = new Playlist(title);
+        String name = attributes.path("name").asText();
+        Playlist playlist = new Playlist(name);
         playlist.addId("tidal", id);
 
-        JsonNode playlistItems = response.path("included");
-        if (playlistItems != null && playlistItems.isArray()) {
-            for (JsonNode playlistItem : playlistItems) {
-                String itemType = playlistItem.path("type").asText();
-                if (itemType.equals("artworks")) { // cover art
-                    String coverArtUrl = playlistItem.path("attributes").path("files").path("href").asText();
-                    playlist.setCoverImage(coverArtUrl);
-                } else { // tracks
-                    playlist.addSong(this.getSong(playlistItem));
+        while (true) {
+            JsonNode playlistItems = response.path("included");
+            if (playlistItems != null && playlistItems.isArray()) {
+                for (JsonNode playlistItem : playlistItems) {
+                    String itemType = playlistItem.path("type").asText();
+                    if (itemType.equals("artworks")) { // cover art
+                        String coverArtUrl = playlistItem.path("attributes").path("files").path("href").asText();
+                        playlist.setCoverImage(coverArtUrl);
+                    } else { // tracks
+                        playlist.addSong(this.getSong(playlistItem));
+                    }
                 }
+            } else {
+                logger.debug("getAlbum response is missing data");
+                return null;
             }
-        } else {
-            logger.debug("getAlbum response is missing data");
-            return null;
+            JsonNode links = response.path("links");
+            if (links.has("next")) {
+                pageCursor = links.path("meta").path("nextCursor").asText();
+                response = this.query("/playlists/" + playlistId, pageCursor,
+                        new ArrayList<>(Arrays.asList("coverArt", "items")));
+            } else {
+                break;
+            }
         }
         return playlist;
     }
