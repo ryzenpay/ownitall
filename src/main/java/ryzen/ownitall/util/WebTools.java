@@ -91,8 +91,11 @@ public class WebTools {
                         TimeUnit.SECONDS.sleep(30);
                         // TODO: limit to 5 retries
                         return query(connection);
+                    case 404:
+                        logger.debug("Requested page '" + connection.getURL().toString() + "'does not exist");
+                        return null;
                     default:
-                        logger.error("Unkown exception processing: " + connection.getURL().toString(), e);
+                        logger.error("Unknown exception processing: " + connection.getURL().toString(), e);
                         throw new QueryException(e);
                 }
             } catch (IOException | InterruptedException f) {

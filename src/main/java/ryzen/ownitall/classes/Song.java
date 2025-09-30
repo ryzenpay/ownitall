@@ -383,7 +383,8 @@ public class Song {
             return true;
         }
         if (song.getName().toLowerCase().contains(this.getName().toLowerCase())) {
-            if (this.getMainArtist().equals(song.getMainArtist())) {
+            if (this.getMainArtist() != null && song.getMainArtist() != null
+                    && this.getMainArtist().equals(song.getMainArtist())) {
                 if (this.getAlbumName() != null && this.getAlbumName().equalsIgnoreCase(song.getAlbumName())) {
                     return true;
                 }
