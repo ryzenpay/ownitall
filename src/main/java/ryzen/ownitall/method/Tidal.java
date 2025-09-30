@@ -138,6 +138,42 @@ public class Tidal implements Import {
         return song;
     }
 
+    private ArrayList<Song> getSongs(String path) {
+        if (path == null) {
+            logger.debug("null path provided in getSongs");
+            return null;
+        }
+        ArrayList<Song> songs = new ArrayList<>();
+        String pageCursor = null;
+        try (IPIterator<?> pb = IPIterator.manual(path, -1)) {
+            while (true) {
+                JsonNode response = this.query(path, pageCursor,
+                        new ArrayList<>(Arrays.asList("items")));
+                if (response == null) {
+                    logger.debug("null response received in getSongs");
+                    break;
+                }
+                JsonNode songItems = response.path("included");
+                for (JsonNode songItem : songItems) {
+                    Song song = this.getSong(songItem);
+                    if (song != null) {
+                        songs.add(song);
+                    }
+                }
+                JsonNode links = response.path("links");
+                if (links.has("next")) {
+                    pageCursor = links.path("meta").path("nextCursor").asText();
+                } else {
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting songs from " + path);
+            return null;
+        }
+        return songs;
+    }
+
     public LikedSongs getLikedSongs() {
         LikedSongs likedSongs = new LikedSongs();
         String pageCursor = null;
@@ -181,7 +217,7 @@ public class Tidal implements Import {
             return null;
         }
         JsonNode response = this.query("/albums/" + albumId, null,
-                new ArrayList<>(Arrays.asList("artists", "coverArt", "items")));
+                new ArrayList<>(Arrays.asList("artists", "coverArt")));
         if (response == null) {
             logger.debug("null response received in getAlbum");
             return null;
@@ -206,9 +242,11 @@ public class Tidal implements Import {
                     Artist artist = new Artist(artistName);
                     artist.addId("tidal", artistID);
                     album.addArtist(artist);
-                } else { // tracks
-                    album.addSong(this.getSong(albumItem));
                 }
+            }
+            ArrayList<Song> songs = this.getSongs("/albums/" + id + "/relationships/items");
+            if (songs != null) {
+                album.addSongs(songs);
             }
         } else {
             logger.debug("getAlbum response is missing data");
@@ -257,6 +295,7 @@ public class Tidal implements Import {
         }
     }
 
+    // TODO: broken, just keeps going for some reason
     public Playlist getPlaylist(String playlistId, String playlistName) {
         if (playlistId == null) {
             logger.debug("null playlistId provided in getPlaylist");
@@ -264,7 +303,7 @@ public class Tidal implements Import {
         }
         String pageCursor = null;
         JsonNode response = this.query("/playlists/" + playlistId, pageCursor,
-                new ArrayList<>(Arrays.asList("coverArt", "items")));
+                new ArrayList<>(Arrays.asList("coverArt")));
         if (response == null) {
             logger.debug("null response received in getPlaylist");
             return null;
@@ -276,30 +315,19 @@ public class Tidal implements Import {
         Playlist playlist = new Playlist(name);
         playlist.addId("tidal", id);
 
-        while (true) {
-            JsonNode playlistItems = response.path("included");
-            if (playlistItems != null && playlistItems.isArray()) {
-                for (JsonNode playlistItem : playlistItems) {
-                    String itemType = playlistItem.path("type").asText();
-                    if (itemType.equals("artworks")) { // cover art
-                        String coverArtUrl = playlistItem.path("attributes").path("files").path("href").asText();
-                        playlist.setCoverImage(coverArtUrl);
-                    } else { // tracks
-                        playlist.addSong(this.getSong(playlistItem));
-                    }
-                }
-            } else {
-                logger.debug("getAlbum response is missing data");
-                return null;
+        JsonNode playlistItems = response.path("included");
+        if (playlistItems != null && playlistItems.isArray()) {
+            JsonNode playlistItem = playlistItems.get(0);
+            String coverArtUrl = playlistItem.path("attributes").path("files").path("href").asText();
+            playlist.setCoverImage(coverArtUrl);
+
+            ArrayList<Song> songs = this.getSongs("/playlists/" + id + "/relationships/items");
+            if (songs != null) {
+                playlist.addSongs(songs);
             }
-            JsonNode links = response.path("links");
-            if (links.has("next")) {
-                pageCursor = links.path("meta").path("nextCursor").asText();
-                response = this.query("/playlists/" + playlistId, pageCursor,
-                        new ArrayList<>(Arrays.asList("coverArt", "items")));
-            } else {
-                break;
-            }
+        } else {
+            logger.debug("getPlaylist response is missing data");
+            return null;
         }
         return playlist;
     }
