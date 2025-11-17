@@ -1,19 +1,19 @@
 # Disclaimer:  
-This is still in the works and no where near close to finished.  
-Use of this program is at your own risk and can be against the TOS of certain platforms, use at your own caution.  
+This project is in the works, some corners are unfinished.  
+Usage of this program is at your own risk and can be against the TOS of certain services, use at your own caution.
+
 
 # ownitall  
-own your music library no matter the platform (whichever is currently supported)  
-OwnItAll hopes to ease the movement of your music library between playforms including local
+Own your music no matter the platform (whichever is supported)  
+OwnItAll hopes to ease the movement of your music library between playforms, including local
 
 # Current goals  
 -[x] non-interactive mode (for automation)  
 -[x] syncronization between libraries (put them all into ownitall and then have the same library elsewhere)  
 -[ ]  Web GUI  
--[x] automation (cronjob, ...)
 
 # documentation  
-all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
+all there currently is, the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
 
 ## Flags
 - -h : help command, and will display all current flags (this list might be out of date)  
@@ -25,29 +25,29 @@ all there currently is, is the automated javadoc documentation: https://ryzenpay
 - -w : web gui (rather than default cli gui)  
 
 ## Library  
-A library can be used to get the best metadata and coverart for your tracks, there are several options and they each have their benefits and drawbacks
+A library can be used to get the best metadata and coverart for your tracks, there are several options
 ### MusicBrainz
 MusicBrainz is the most popular database for music tracks, but from personal experience has a lot of drawbacks
 - low api limits (can take up to 4s per song)
 - lot of "garbage" data which can really mess up ur library
-    - example of this: songs have many different versions (instrumental, remix,..) and musicbrainz its difficult to differenciate
+    - example of this: songs have many different versions (instrumental, remix,..) which can be difficult to differentiate
 ### LastFM
-to get a last FM api key follow their documentation: https://www.last.fm/api/authentication  
 - Great with popular songs, easy and precise searches
 - doesnt have all data
+will need:
+    - api key (https://www.last.fm/api/authentication)
 
 
 ## YoutubeDL  
-download yt-dl.exe from the official repository: https://github.com/yt-dlp/yt-dlp  
-save the absolute executable path and provide it when needed  
-### requirements  
-- ffmpeg: https://www.ffmpeg.org/   
+will need:
+    - binary (https://github.com/yt-dlp/yt-dlp)
+    - ffmpeg (https://www.ffmpeg.org/  )
 
 ## Spotify
-when attempting to import or export to spotify, you will need to provide the 3 following things:  
-    - client id  
-    - client secret  
-spotify will provide you with the client id and secret, to get the client id and secret:  
+will need (read below):  
+    - client id
+    - client secret
+to get the client id and secret:  
     1. log in to spotify develper portal: https://developer.spotify.com/dashboard  
     2. create an app (with redirect url http://localhost:8081/oauth)
     3. go to dashboard -> click on your app  
@@ -57,7 +57,7 @@ spotify will provide you with the client id and secret, to get the client id and
 When doing this, read every TOS as you are using them at the risk of your own spotify account  
 
 ## Youtube
-when attempting to import or export to youtube, you will need the following things:  
+will need (read below):  
     - application name  
     - API key  
     - oauth client id  
@@ -81,9 +81,9 @@ When doing this, read every TOS as you are using them at the risk of your own yo
 
 ## Local
 the current format to importing your local music library is currently strict  
-    - if you have a "liked songs" folder, name it "liked songs"  (can be changed in settings)  
+    - if you have a "liked songs" folder, update the liked songs folder name in settings to correspond 
     - if all songs in folder have the same "album" metadata, that folder becomes an album  
-        - default is playlist  
+        - else its a playlist  
     - cover image of a playlist and an album need to be a file called "`<playlist/album name>`.<extension>" in the folder  
 
 ## Jellyfin
@@ -91,18 +91,19 @@ will need:
     - jellyfin url  
     - jellyfin username  
     - jellyfin password  
-To support multiple artists, you will need to set a custom delimiter which can be done in the following:  
+To support multiple artists, set a custom delimiter:  
     - `dashboard -> libraries -> <select library> -> scroll to bottom -> custom delimiter`  
     - set it to `;`  
 
 ## SoulSeek
-will need:  
+will need: 
+    - binary (https://github.com/fiso64/slsk-batchdl)
     - soulseek username  
     - soulseek password  
 Due to the soulseek binary and soulseek limits, it is hard encoded to 1 thread and can therefore take a long time to download an entire library  
 
 ## Tidal
-will need:
+will need (read below):
     - client id 
     - client secret
 Tidal will provide you with the client id and secret, to get the client id and secret:  

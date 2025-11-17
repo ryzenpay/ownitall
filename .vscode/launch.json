@@ -56,6 +56,16 @@
                 "-l",
                 "debug"
             ]
+        },
+        {
+            "type": "java",
+            "name": "help",
+            "request": "launch",
+            "mainClass": "ryzen.ownitall.Main",
+            "projectName": "ownitall",
+            "args": [
+                "-h",
+            ]
         }
     ]
 }
