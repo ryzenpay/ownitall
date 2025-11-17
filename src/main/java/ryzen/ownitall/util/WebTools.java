@@ -29,9 +29,9 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 
 public class WebTools {
-    // TODO: logging
     private static final Logger logger = new Logger(WebTools.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static long retries = 5;
     public static long timeout = 20; // timeout in seconds
     private static long lastQueryTime = 0;
 
@@ -69,6 +69,10 @@ public class WebTools {
     }
 
     public static JsonNode query(HttpURLConnection connection) throws QueryException {
+        return query(connection, 0);
+    }
+
+    public static JsonNode query(HttpURLConnection connection, int i) throws QueryException {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -87,10 +91,12 @@ public class WebTools {
             try {
                 switch (connection.getResponseCode()) {
                     case 429: // too many requests
+                        if (i > retries) {
+                            throw new QueryException("Reached 5 retries");
+                        }
                         logger.debug("Too many requests, trying again in 30 seconds...");
-                        TimeUnit.SECONDS.sleep(30);
-                        // TODO: limit to 5 retries
-                        return query(connection);
+                        TimeUnit.SECONDS.sleep(timeout);
+                        return query(connection, i++);
                     case 404:
                         logger.debug("Requested page '" + connection.getURL().toString() + "'does not exist");
                         return null;

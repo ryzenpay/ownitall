@@ -166,11 +166,10 @@ abstract public class Library implements LibraryInterface {
      * dump all data into cache
      */
     public static void cache() {
-        Storage storage = new Storage();
-        artists = storage.cacheArtists(artists);
-        albums = storage.cacheAlbums(albums);
-        songs = storage.cacheSongs(songs);
-        ids = storage.cacheIds(ids);
+        artists = Storage.cacheArtists(artists);
+        albums = Storage.cacheAlbums(albums);
+        songs = Storage.cacheSongs(songs);
+        ids = Storage.cacheIds(ids);
     }
 
     /**
@@ -181,7 +180,7 @@ abstract public class Library implements LibraryInterface {
         albums.clear();
         songs.clear();
         ids.clear();
-        new Storage().clearCacheFiles();
+        Storage.clearCacheFiles();
     }
 
     /**

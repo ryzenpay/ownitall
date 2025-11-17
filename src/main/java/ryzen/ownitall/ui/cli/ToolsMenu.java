@@ -3,6 +3,7 @@ package ryzen.ownitall.ui.cli;
 import java.io.File;
 import java.util.LinkedHashMap;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
@@ -30,6 +31,7 @@ public class ToolsMenu {
         options.put("Archive", this::optionArchive);
         options.put("UnArchive", this::optionUnArchive);
         options.put("Library", this::optionLibrary);
+        options.put("Clean Albums", this::optionCleanAlbums);
         options.put("Clear Saved Logins", this::optionClearCredentials);
         try {
             while (true) {
@@ -41,25 +43,30 @@ public class ToolsMenu {
     }
 
     private void optionArchive() {
-        new Storage().archive();
+        Storage.archive();
         logger.info("Successfully archived");
     }
 
     private void optionUnArchive() {
         LinkedHashMap<String, File> options = new LinkedHashMap<>();
-        Storage storage = new Storage();
-        for (File file : storage.getArchiveFolders()) {
+        for (File file : Storage.getArchiveFolders()) {
             options.put(file.getName(), file);
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "UNARCHIVING");
-            storage.unArchive(options.get(choice));
+            Storage.unArchive(options.get(choice));
         } catch (MenuClosed e) {
         }
     }
 
     private void optionLibrary() {
         new LibraryMenu();
+    }
+
+    private void optionCleanAlbums() {
+        logger.info("Cleaning albums...");
+        Collection.cleanAlbums();
+        logger.info("Done cleaning albums");
     }
 
     private void optionClearCredentials() {

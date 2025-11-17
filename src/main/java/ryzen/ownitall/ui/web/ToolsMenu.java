@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import ryzen.ownitall.Collection;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.method.Method;
 
@@ -40,6 +41,7 @@ public class ToolsMenu {
         options.put("Archive", "/tools/archive");
         options.put("Unarchive", "/tools/unarchive");
         options.put("Library", "/library");
+        options.put("Clean Albums", "/tools/cleanalbums");
         options.put("Reset Credentials", "/tools/clearcredentials");
         return Templates.menu(model, "Tools Menu", options, "/tools/return");
     }
@@ -54,7 +56,7 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/archive")
     public String optionArchive(Model model) {
-        new Storage().archive();
+        Storage.archive();
         logger.info(model, "Successfully archived");
         return toolsMenu(model);
     }
@@ -70,7 +72,7 @@ public class ToolsMenu {
     @GetMapping("/tools/unarchive")
     public String unarchiveMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        for (File file : new Storage().getArchiveFolders()) {
+        for (File file : Storage.getArchiveFolders()) {
             try {
                 String path = URLEncoder.encode(file.getAbsolutePath(), StandardCharsets.UTF_8.toString());
                 options.put(file.getName(), "/tools/unarchive/" + URLEncoder.encode(path, StandardCharsets.UTF_8));
@@ -94,8 +96,24 @@ public class ToolsMenu {
     public String unarchive(Model model,
             @PathVariable(value = "path") String path) {
         path = URLDecoder.decode(path, StandardCharsets.UTF_8);
-        new Storage().unArchive(new File(path));
+        Storage.unArchive(new File(path));
         logger.info(model, "Successfully unarchived '" + path + "'");
+        return toolsMenu(model);
+    }
+
+    /**
+     * <p>
+     * optionArchive.
+     * </p>
+     *
+     * @param model a {@link org.springframework.ui.Model} object
+     * @return a {@link java.lang.String} object
+     */
+    @GetMapping("/tools/cleanalbums")
+    public String optionCleanAlbums(Model model) {
+        logger.info("Cleaning albums...");
+        Collection.cleanAlbums();
+        logger.info("Successfully cleaned albums");
         return toolsMenu(model);
     }
 

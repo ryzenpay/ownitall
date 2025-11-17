@@ -807,8 +807,6 @@ public class MethodMenu {
     @GetMapping("/method/return")
     public String optionReturn() {
         method = null;
-        logger.debug("Cleaning albums");
-        Collection.cleanAlbums();
         logger.debug("Done cleaning albums");
         return "redirect:/collection";
     }

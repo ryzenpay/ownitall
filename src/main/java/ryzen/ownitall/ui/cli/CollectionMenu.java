@@ -48,8 +48,6 @@ public class CollectionMenu {
     private void optionImport() {
         try {
             new MethodMenu(Import.class).importMenu();
-            logger.debug("Cleaning albums");
-            Collection.cleanAlbums();
             logger.debug("Done cleaning albums");
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while setting up import menu");

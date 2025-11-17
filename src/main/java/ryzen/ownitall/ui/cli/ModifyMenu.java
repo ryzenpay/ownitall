@@ -313,7 +313,7 @@ public class ModifyMenu {
             if (Input.request().getAgreement()) {
                 logger.info("Clearing inventory...");
                 Collection.clear();
-                new Storage().clearInventoryFiles();
+                Storage.clearInventoryFiles();
                 logger.info("Successfully cleared inventory");
             }
         } catch (InterruptedException e) {

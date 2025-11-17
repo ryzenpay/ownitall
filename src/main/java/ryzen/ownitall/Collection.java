@@ -39,7 +39,7 @@ public class Collection {
      * save all data from collection
      */
     public static void save() {
-        new Storage().exportCollection();
+        Storage.exportCollection();
     }
 
     /**
@@ -359,7 +359,6 @@ public class Collection {
     }
 
     // filter out remixes?
-    // TODO: enforce for liked songs and playlists
     public static void cleanAlbums() {
         ArrayList<Song> standaloneSongs = new ArrayList<>();
         standaloneSongs.addAll(getStandaloneLikedSongs());

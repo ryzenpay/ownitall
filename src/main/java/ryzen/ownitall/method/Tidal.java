@@ -27,7 +27,6 @@ import ryzen.ownitall.util.exceptions.QueryException;
 // https://developer.tidal.com/documentation
 // https://developer.tidal.com/apiref
 //TODO: export and sync
-//TODO: progress bars
 public class Tidal implements Import {
     private static final Logger logger = new Logger(Tidal.class);
     private String token;

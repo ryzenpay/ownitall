@@ -55,8 +55,7 @@ public class Main {
                 logger.debug("log level provided: " + level);
                 Logger.setLogLevel(level);
             }
-            Settings.load();
-            new Storage().importCollection();
+            init();
             ClassLoader.init("ryzen.ownitall");
             if (cmd.hasOption("i")) {
                 String trace = cmd.getOptionValue("i");
@@ -77,6 +76,12 @@ public class Main {
         } catch (ParseException e) {
             logger.error("Exception parsing input flags", e);
         }
+    }
+
+    private static void init() {
+        Settings.load();
+        Storage.init();
+        Storage.importCollection();
     }
 
     /**

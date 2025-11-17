@@ -36,7 +36,7 @@ public class Storage {
      * Constructor for Storage.
      * </p>
      */
-    public Storage() {
+    public static void init() {
         if (!Settings.dataFolder.exists()) { // create folder if it does not exist
             Settings.dataFolder.mkdirs();
             logger.debug("Created datafolder '" + Settings.dataFolder.getAbsolutePath() + "'");
@@ -51,7 +51,7 @@ public class Storage {
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
      */
-    public void archive() {
+    public static void archive() {
         LocalDate currentDate = LocalDate.now();
         String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         File archiveFolder = new File(Settings.dataFolder, folderName);
@@ -73,7 +73,7 @@ public class Storage {
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
-    public LinkedHashSet<File> getArchiveFolders() {
+    public static LinkedHashSet<File> getArchiveFolders() {
         LinkedHashSet<File> archiveFolders = new LinkedHashSet<>();
         for (File file : Settings.dataFolder.listFiles()) {
             if (file.isDirectory()) {
@@ -90,7 +90,7 @@ public class Storage {
      *
      * @param unarchiveFolder a {@link java.io.File} object
      */
-    public void unArchive(File unarchiveFolder) {
+    public static void unArchive(File unarchiveFolder) {
         if (unarchiveFolder == null || !unarchiveFolder.exists()) {
             logger.debug("null or non existant unarchive folder provided in unarchive");
             return;
@@ -127,7 +127,7 @@ public class Storage {
     /**
      * clear cache files
      */
-    public void clearCacheFiles() {
+    public static void clearCacheFiles() {
         for (File file : Settings.cacheFolder.listFiles()) {
             file.delete();
             logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
@@ -139,7 +139,7 @@ public class Storage {
      * clearInventoryFiles.
      * </p>
      */
-    public void clearInventoryFiles() {
+    public static void clearInventoryFiles() {
         for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
@@ -152,7 +152,7 @@ public class Storage {
      * import collection from files
      * orchestrates import albums, playlists and liked songs
      */
-    public void importCollection() {
+    public static void importCollection() {
         logger.debug("importing collection... ");
         try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
             pb.step("Albums");
@@ -169,7 +169,7 @@ public class Storage {
      * save collection to local files
      * orchestrates export albums, playlists and liked songs
      */
-    public void exportCollection() {
+    public static void exportCollection() {
         logger.debug("Exporting music collection...");
         try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
             pb.step("Albums");
@@ -187,7 +187,7 @@ public class Storage {
      *
      * @param albums - linkedhashset of constructed Album
      */
-    public void exportAlbums(ArrayList<Album> albums) {
+    public static void exportAlbums(ArrayList<Album> albums) {
         if (albums == null || albums.isEmpty()) {
             return;
         }
@@ -205,7 +205,7 @@ public class Storage {
      *
      * @return - linkedhashset of constructed Album
      */
-    public ArrayList<Album> importAlbums() {
+    public static ArrayList<Album> importAlbums() {
         File albumFile = new File(Settings.dataFolder, Settings.albumFile + ".json");
         if (!albumFile.exists()) {
             return null;
@@ -226,7 +226,7 @@ public class Storage {
      *
      * @param playlists - linkedhashset of constructed Playlist
      */
-    public void exportPlaylists(ArrayList<Playlist> playlists) {
+    public static void exportPlaylists(ArrayList<Playlist> playlists) {
         if (playlists == null || playlists.isEmpty()) {
             return;
         }
@@ -244,7 +244,7 @@ public class Storage {
      *
      * @return - linkedhashset of constructed Playlist
      */
-    public ArrayList<Playlist> importPlaylists() {
+    public static ArrayList<Playlist> importPlaylists() {
         File playlistFile = new File(Settings.dataFolder, Settings.playlistFile + ".json");
         if (!playlistFile.exists()) {
             return null;
@@ -266,7 +266,7 @@ public class Storage {
      *
      * @param likedSongs - constructed LikedSongs
      */
-    public void exportLikedSongs(LikedSongs likedSongs) {
+    public static void exportLikedSongs(LikedSongs likedSongs) {
         if (likedSongs == null || likedSongs.isEmpty()) {
             return;
         }
@@ -284,7 +284,7 @@ public class Storage {
      *
      * @return - constructed LikedSongs
      */
-    public LikedSongs importLikedSongs() {
+    public static LikedSongs importLikedSongs() {
         File likedSongFile = new File(Settings.dataFolder, Settings.likedSongFile + ".json");
         if (!likedSongFile.exists()) {
             return null;
@@ -307,7 +307,7 @@ public class Storage {
      * @param albums a {@link java.util.LinkedHashMap} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
+    public static LinkedHashMap<String, Album> cacheAlbums(LinkedHashMap<String, Album> albums) {
         File albumFile = new File(Settings.cacheFolder, Settings.albumFile + ".json");
         LinkedHashMap<String, Album> cachedAlbums = new LinkedHashMap<>();
         if (albumFile.exists()) {
@@ -339,7 +339,7 @@ public class Storage {
      * @param artists a {@link java.util.LinkedHashMap} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
+    public static LinkedHashMap<String, Artist> cacheArtists(LinkedHashMap<String, Artist> artists) {
         File artistFile = new File(Settings.cacheFolder, Settings.artistFile + ".json");
         LinkedHashMap<String, Artist> cachedArtists = new LinkedHashMap<>();
         if (artistFile.exists()) {
@@ -371,7 +371,7 @@ public class Storage {
      * @param songs a {@link java.util.LinkedHashMap} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
+    public static LinkedHashMap<String, Song> cacheSongs(LinkedHashMap<String, Song> songs) {
         File songFile = new File(Settings.cacheFolder, Settings.songFile + ".json");
         LinkedHashMap<String, Song> cachedSongs = new LinkedHashMap<>();
         if (songFile.exists()) {
@@ -403,7 +403,7 @@ public class Storage {
      * @param ids a {@link java.util.LinkedHashMap} object
      * @return a {@link java.util.LinkedHashMap} object
      */
-    public LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
+    public static LinkedHashMap<String, String> cacheIds(LinkedHashMap<String, String> ids) {
         File idFile = new File(Settings.cacheFolder, "ids.json");
         LinkedHashMap<String, String> cachedIds = new LinkedHashMap<>();
         if (idFile.exists()) {

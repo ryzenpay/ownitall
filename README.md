@@ -10,7 +10,7 @@ OwnItAll hopes to ease the movement of your music library between playforms incl
 -[x] non-interactive mode (for automation)  
 -[x] syncronization between libraries (put them all into ownitall and then have the same library elsewhere)  
 -[ ]  Web GUI  
--[ ] automation (cronjob, ...)
+-[x] automation (cronjob, ...)
 
 # documentation  
 all there currently is, is the automated javadoc documentation: https://ryzenpay.github.io/ownitall/  
