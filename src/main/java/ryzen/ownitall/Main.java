@@ -80,7 +80,6 @@ public class Main {
 
     private static void init() {
         Settings.load();
-        Storage.init();
         Storage.importCollection();
     }
 

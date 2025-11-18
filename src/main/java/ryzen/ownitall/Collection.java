@@ -122,7 +122,7 @@ public class Collection {
      *
      * @return - constructed LikedSongs
      */
-    public static LikedSongs getLikedSongs() {
+    public static Playlist getLikedSongs() {
         return likedSongs;
     }
 

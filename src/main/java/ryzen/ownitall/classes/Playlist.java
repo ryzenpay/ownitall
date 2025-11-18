@@ -4,12 +4,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -19,12 +18,17 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
+@Entity
+@Table(name = "Playlist")
 public class Playlist {
     private static final Logger logger = new Logger(Playlist.class);
     private String name;
     private URI coverImage;
+
+    @OneToMany
     private ArrayList<Song> songs;
-    private LinkedHashMap<String, String> ids;
+    @OneToMany
+    private LinkedHashSet<Id> ids;
 
     /**
      * Default playlist constructor
@@ -34,33 +38,7 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new ArrayList<>();
-        this.ids = new LinkedHashMap<>();
-    }
-
-    /**
-     * full playlist contructor
-     *
-     * @param name       - playlist name
-     * @param songs      - linkedhashset of song
-     * @param ids        - linkedhashmap of id's
-     * @param coverImage - string playlist coverImage
-     */
-    @JsonCreator
-    public Playlist(@JsonProperty("name") String name,
-            @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
-        this.name = name;
-        this.songs = new ArrayList<>();
-        this.ids = new LinkedHashMap<>();
-        if (songs != null) {
-            this.addSongs(songs);
-        }
-        if (ids != null) {
-            this.addIds(ids);
-        }
-        if (coverImage != null) {
-            this.setCoverImage(coverImage);
-        }
+        this.ids = new LinkedHashSet<>();
     }
 
     /**
@@ -239,7 +217,6 @@ public class Playlist {
      *
      * @return - integer of size of playlist
      */
-    @JsonIgnore
     public int size() {
         return this.songs.size();
     }
@@ -249,7 +226,6 @@ public class Playlist {
      *
      * @return - true if empty
      */
-    @JsonIgnore
     public boolean isEmpty() {
         return this.songs.isEmpty();
     }
@@ -260,7 +236,6 @@ public class Playlist {
      * @param song - song to check
      * @return - true if song is contained
      */
-    @JsonIgnore
     public boolean contains(Song song) {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in contains");
@@ -283,7 +258,6 @@ public class Playlist {
      *
      * @return - total Duration
      */
-    @JsonIgnore
     public Duration getTotalDuration() {
         Duration totalDuration = Duration.ZERO;
         for (Song song : this.songs) {
@@ -297,14 +271,16 @@ public class Playlist {
      *
      * @param ids - linkedhashmap of id's to add
      */
-    public void addIds(LinkedHashMap<String, String> ids) {
+    public void addIds(LinkedHashSet<Id> ids) {
         if (ids == null) {
             logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
-        for (String id : ids.keySet()) {
-            this.addId(id, ids.get(id));
-        }
+        this.ids.addAll(ids);
+    }
+
+    public void addId(String key, String value) {
+        this.addId(new Id(key, value));
     }
 
     /**
@@ -313,16 +289,12 @@ public class Playlist {
      * @param key - key to add (spotify, youtube, ...)
      * @param id  - id to add
      */
-    public void addId(String key, String id) {
-        if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key in addId");
-            return;
-        }
+    public void addId(Id id) {
         if (id == null || id.isEmpty()) {
-            logger.debug(this.toString() + " empty id for key '" + key + "' in addId");
+            logger.debug(this.toString() + ": empty id in addId");
             return;
         }
-        this.ids.put(key, id);
+        this.ids.add(id);
     }
 
     /**
@@ -331,13 +303,17 @@ public class Playlist {
      * @param key - key of id to return
      * @return - string id
      */
-    @JsonIgnore
-    public String getId(String key) {
+    public Id getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key provided in getId");
             return null;
         }
-        return this.ids.get(key);
+        for (Id id : this.ids) {
+            if (id.getKey().equals(key)) {
+                return id;
+            }
+        }
+        return null;
     }
 
     /**
@@ -345,20 +321,18 @@ public class Playlist {
      *
      * @return - linkedhashmap of id's
      */
-    public LinkedHashMap<String, String> getIds() {
+    public LinkedHashSet<Id> getIds() {
         return this.ids;
     }
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public String toString() {
         return this.name.toString().trim();
     }
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;

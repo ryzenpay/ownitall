@@ -1,12 +1,10 @@
 package ryzen.ownitall.classes;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -16,8 +14,12 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
+@Entity
+@Table(name = "Album")
 public class Album extends Playlist {
     private static final Logger logger = new Logger(Album.class);
+
+    @OneToMany
     private ArrayList<Artist> artists;
 
     /**
@@ -28,27 +30,6 @@ public class Album extends Playlist {
     public Album(String name) {
         super(name);
         this.artists = new ArrayList<>();
-    }
-
-    /**
-     * full album constructor
-     *
-     * @param name       - album name
-     * @param songs      - linkedhashset of songs
-     * @param coverImage - cover art
-     * @param artists    - linkedhashset of artists
-     * @param links      - linkedhasmap of links
-     */
-    @JsonCreator
-    public Album(@JsonProperty("name") String name,
-            @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links, @JsonProperty("coverImage") String coverImage,
-            @JsonProperty("artists") ArrayList<Artist> artists) {
-        super(name, songs, links, coverImage);
-        this.artists = new ArrayList<>();
-        if (artists != null) {
-            this.addArtists(artists);
-        }
     }
 
     /**
@@ -159,7 +140,6 @@ public class Album extends Playlist {
      *
      * @return - first artist in album
      */
-    @JsonIgnore
     public Artist getMainArtist() {
         if (this.artists.isEmpty()) {
             return null;
@@ -169,7 +149,6 @@ public class Album extends Playlist {
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public String toString() {
         String output = super.toString();
         if (this.artists != null && !this.artists.isEmpty()) {
@@ -180,7 +159,6 @@ public class Album extends Playlist {
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -188,10 +166,8 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        for (String id : this.getIds().keySet()) {
-            if (this.getId(id).equals(album.getId(id))) {
-                return true;
-            }
+        if (Id.hasMatching(this.getIds(), album.getIds())) {
+            return true;
         }
         if (this.toString().equalsIgnoreCase(album.toString())) {
             return true;

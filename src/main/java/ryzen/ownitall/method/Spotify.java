@@ -24,6 +24,7 @@ import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.Id;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -892,7 +893,7 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         if (song.getId("spotify") != null) {
-            return song.getId("spotify");
+            return song.getId("spotify").getValue();
         }
         SearchTracksRequest searchTracksRequest = this.spotifyApi.searchTracks(song.toString())
                 .limit(1)
@@ -989,7 +990,7 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         if (album.getId("spotify") != null) {
-            return album.getId("spotify");
+            return album.getId("spotify").getValue();
         }
         SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums(album.toString())
                 .limit(1)

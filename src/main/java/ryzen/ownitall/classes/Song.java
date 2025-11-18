@@ -5,12 +5,11 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -20,14 +19,19 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
+@Entity
+@Table(name = "Song")
 public class Song {
     private static final Logger logger = new Logger(Song.class);
     private String name;
+
+    @OneToMany
     private ArrayList<Artist> artists;
     private Duration duration;
     private String albumName;
     private URI coverImage;
-    private LinkedHashMap<String, String> ids;
+    private LinkedHashSet<Id> ids;
+    private boolean liked = false;
 
     /**
      * default song constructor
@@ -37,43 +41,8 @@ public class Song {
     // TODO: transform feat. into artist addition?
     public Song(String name) {
         this.name = name;
-        this.ids = new LinkedHashMap<>();
+        this.ids = new LinkedHashSet<>();
         this.artists = new ArrayList<>();
-
-    }
-
-    @JsonCreator
-    /**
-     * Full song constructor
-     * also used for json importing
-     *
-     * @param name       - song name
-     * @param artists    - arraylist of song artists
-     * @param ids        - arraylist of external ids associated to the song
-     * @param duration   - song duration in seconds
-     * @param albumName  - name of album song is part of
-     * @param coverImage - song coverimage
-     */
-    public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
-            @JsonProperty("ids") LinkedHashMap<String, String> ids,
-            @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
-            @JsonProperty("coverImage") String coverImage) {
-        this.name = name;
-        this.artists = new ArrayList<>();
-        if (artists != null) {
-            this.addArtists(artists);
-        }
-        this.ids = new LinkedHashMap<>();
-        if (ids != null) {
-            this.addIds(ids);
-        }
-        this.setDuration((long) duration, ChronoUnit.SECONDS);
-        if (albumName != null) {
-            this.setAlbumName(albumName);
-        }
-        if (coverImage != null) {
-            this.setCoverImage(coverImage);
-        }
     }
 
     /**
@@ -172,7 +141,6 @@ public class Song {
      * @return - constructed artist
      * @param artist a {@link ryzen.ownitall.classes.Artist} object
      */
-    @JsonIgnore
     public Artist getArtist(Artist artist) {
         if (artist == null) {
             logger.debug(this.toString() + ": null artist provided in getArtist");
@@ -193,7 +161,6 @@ public class Song {
      *
      * @return a {@link ryzen.ownitall.classes.Artist} object
      */
-    @JsonIgnore
     public Artist getMainArtist() {
         if (this.artists.isEmpty()) {
             return null;
@@ -201,17 +168,29 @@ public class Song {
         return this.artists.get(0);
     }
 
+    public boolean isLiked() {
+        return this.liked;
+    }
+
+    public void setLiked(boolean state) {
+        this.liked = state;
+    }
+
     /**
      * add multiple ids to song
      *
      * @param ids - linkedhashmap of id's
      */
-    public void addIds(LinkedHashMap<String, String> ids) {
+    public void addIds(LinkedHashSet<Id> ids) {
         if (ids == null) {
             logger.debug(this.toString() + ": null links provided in addId");
             return;
         }
-        this.ids.putAll(ids);
+        this.ids.addAll(ids);
+    }
+
+    public void addId(String key, String value) {
+        this.addId(new Id(key, value));
     }
 
     /**
@@ -220,12 +199,12 @@ public class Song {
      * @param key - id key
      * @param id  - id
      */
-    public void addId(String key, String id) {
-        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
+    public void addId(Id id) {
+        if (id == null || id.isEmpty()) {
             logger.debug(this.toString() + ": empty key or id in addId");
             return;
         }
-        this.ids.put(key, id);
+        this.ids.add(id);
     }
 
     /**
@@ -234,13 +213,17 @@ public class Song {
      * @param key - key of id
      * @return - string id
      */
-    @JsonIgnore
-    public String getId(String key) {
+    public Id getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
-        return this.ids.get(key);
+        for (Id id : ids) {
+            if (id.getKey().equals(key)) {
+                return id;
+            }
+        }
+        return null;
     }
 
     /**
@@ -248,7 +231,7 @@ public class Song {
      *
      * @return - linkedhashmap of ids
      */
-    public LinkedHashMap<String, String> getIds() {
+    public LinkedHashSet<Id> getIds() {
         return this.ids;
     }
 
@@ -354,7 +337,6 @@ public class Song {
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public String toString() {
         String output = this.getName().trim();
         if (this.getMainArtist() != null) {
@@ -365,7 +347,6 @@ public class Song {
 
     /** {@inheritDoc} */
     @Override
-    @JsonIgnore
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -374,10 +355,8 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        for (String id : this.getIds().keySet()) {
-            if (this.getId(id).equals(song.getId(id))) {
-                return true;
-            }
+        if (Id.hasMatching(this.getIds(), song.getIds())) {
+            return true;
         }
         if (this.toString().equalsIgnoreCase(song.toString())) {
             return true;

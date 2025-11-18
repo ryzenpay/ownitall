@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.Id;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
@@ -56,7 +57,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (album.getId("mbid") != null) {
-            return album.getId("mbid");
+            return album.getId("mbid").getValue();
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("release", album.getName());
@@ -184,7 +185,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (song.getId("mbid") != null) {
-            return song.getId("mbid");
+            return song.getId("mbid").getValue();
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
@@ -302,7 +303,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (artist.getId("mbid") != null) {
-            return artist.getId("mbid");
+            return artist.getId("mbid").getValue();
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());

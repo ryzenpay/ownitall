@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
+import ryzen.ownitall.classes.Id;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
