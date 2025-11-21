@@ -263,7 +263,7 @@ public class Download implements Sync, Export {
         if (albumName != null) {
             id3Data.put(FieldKey.ALBUM, albumName);
         }
-        String mbid = song.getId("mbid");
+        String mbid = song.getId("mbid").getValue();
         if (mbid != null) {
             id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
         }
@@ -319,7 +319,19 @@ public class Download implements Sync, Export {
         }
         try {
             File nfoFile = new File(folder, "album.nfo");
-            FileTools.writeData(nfoFile, Collection.getAlbumNFO(album));
+            ArrayList<String> artistNames = new ArrayList<>();
+            for (Artist artist : album.getArtists()) {
+                artistNames.add(artist.getName());
+            }
+            ArrayList<String> songNames = new ArrayList<>();
+            for (Song song : album.getSongs()) {
+                songNames.add(song.getName());
+            }
+            String albumNFO = MusicTools.getAlbumNFO(album.getName(), artistNames, songNames,
+                    Collection.getCoverFileName(album));
+            if (albumNFO != null) {
+                FileTools.writeData(nfoFile, albumNFO);
+            }
         } catch (Exception e) {
             logger.error("Exception writing album '" + album.toString() + "' nfo", e);
         }

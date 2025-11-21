@@ -6,9 +6,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -18,16 +19,12 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
-@Entity
-@Table(name = "Playlist")
 public class Playlist {
     private static final Logger logger = new Logger(Playlist.class);
     private String name;
     private URI coverImage;
 
-    @OneToMany
     private ArrayList<Song> songs;
-    @OneToMany
     private LinkedHashSet<Id> ids;
 
     /**
@@ -39,6 +36,32 @@ public class Playlist {
         this.name = name;
         this.songs = new ArrayList<>();
         this.ids = new LinkedHashSet<>();
+    }
+
+    /**
+     * full playlist contructor
+     *
+     * @param name       - playlist name
+     * @param songs      - linkedhashset of song
+     * @param ids        - linkedhashmap of id's
+     * @param coverImage - string playlist coverImage
+     */
+    @JsonCreator
+    public Playlist(@JsonProperty("name") String name,
+            @JsonProperty("songs") ArrayList<Song> songs,
+            @JsonProperty("ids") LinkedHashSet<Id> ids, @JsonProperty("coverImage") String coverImage) {
+        this.name = name;
+        this.songs = new ArrayList<>();
+        this.ids = new LinkedHashSet<>();
+        if (songs != null) {
+            this.addSongs(songs);
+        }
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
@@ -213,10 +236,20 @@ public class Playlist {
     }
 
     /**
+     * get all playlist songs
+     *
+     * @return - arraylist of constructed Song
+     */
+    public ArrayList<Song> getSongs() {
+        return this.songs;
+    }
+
+    /**
      * return size/numbers of songs in playlist
      *
      * @return - integer of size of playlist
      */
+    @JsonIgnore
     public int size() {
         return this.songs.size();
     }
@@ -226,6 +259,7 @@ public class Playlist {
      *
      * @return - true if empty
      */
+    @JsonIgnore
     public boolean isEmpty() {
         return this.songs.isEmpty();
     }
@@ -236,6 +270,7 @@ public class Playlist {
      * @param song - song to check
      * @return - true if song is contained
      */
+    @JsonIgnore
     public boolean contains(Song song) {
         if (song == null) {
             logger.debug(this.toString() + ": null song provided in contains");
@@ -245,19 +280,11 @@ public class Playlist {
     }
 
     /**
-     * get all playlist songs
-     *
-     * @return - arraylist of constructed Song
-     */
-    public ArrayList<Song> getSongs() {
-        return this.songs;
-    }
-
-    /**
      * get total playlist duration
      *
      * @return - total Duration
      */
+    @JsonIgnore
     public Duration getTotalDuration() {
         Duration totalDuration = Duration.ZERO;
         for (Song song : this.songs) {
@@ -303,6 +330,7 @@ public class Playlist {
      * @param key - key of id to return
      * @return - string id
      */
+    @JsonIgnore
     public Id getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key provided in getId");
@@ -326,12 +354,14 @@ public class Playlist {
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public String toString() {
         return this.name.toString().trim();
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public boolean equals(Object object) {
         if (this == object)

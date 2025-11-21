@@ -7,9 +7,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -19,19 +20,15 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
-@Entity
-@Table(name = "Song")
 public class Song {
     private static final Logger logger = new Logger(Song.class);
     private String name;
 
-    @OneToMany
     private ArrayList<Artist> artists;
     private Duration duration;
     private String albumName;
     private URI coverImage;
     private LinkedHashSet<Id> ids;
-    private boolean liked = false;
 
     /**
      * default song constructor
@@ -43,6 +40,40 @@ public class Song {
         this.name = name;
         this.ids = new LinkedHashSet<>();
         this.artists = new ArrayList<>();
+    }
+
+    /**
+     * Full song constructor
+     * also used for json importing
+     *
+     * @param name       - song name
+     * @param artists    - arraylist of song artists
+     * @param ids        - arraylist of external ids associated to the song
+     * @param duration   - song duration in seconds
+     * @param albumName  - name of album song is part of
+     * @param coverImage - song coverimage
+     */
+    @JsonCreator
+    public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
+            @JsonProperty("ids") LinkedHashSet<Id> ids,
+            @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
+            @JsonProperty("coverImage") String coverImage) {
+        this.name = name;
+        this.artists = new ArrayList<>();
+        if (artists != null) {
+            this.addArtists(artists);
+        }
+        this.ids = new LinkedHashSet<>();
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        this.setDuration((long) duration, ChronoUnit.SECONDS);
+        if (albumName != null) {
+            this.setAlbumName(albumName);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
@@ -141,6 +172,7 @@ public class Song {
      * @return - constructed artist
      * @param artist a {@link ryzen.ownitall.classes.Artist} object
      */
+    @JsonIgnore
     public Artist getArtist(Artist artist) {
         if (artist == null) {
             logger.debug(this.toString() + ": null artist provided in getArtist");
@@ -161,19 +193,12 @@ public class Song {
      *
      * @return a {@link ryzen.ownitall.classes.Artist} object
      */
+    @JsonIgnore
     public Artist getMainArtist() {
         if (this.artists.isEmpty()) {
             return null;
         }
         return this.artists.get(0);
-    }
-
-    public boolean isLiked() {
-        return this.liked;
-    }
-
-    public void setLiked(boolean state) {
-        this.liked = state;
     }
 
     /**
@@ -213,6 +238,7 @@ public class Song {
      * @param key - key of id
      * @return - string id
      */
+    @JsonIgnore
     public Id getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key passed in getId");
@@ -336,6 +362,7 @@ public class Song {
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public String toString() {
         String output = this.getName().trim();
@@ -346,6 +373,7 @@ public class Song {
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public boolean equals(Object object) {
         if (this == object)

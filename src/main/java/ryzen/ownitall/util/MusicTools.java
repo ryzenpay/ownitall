@@ -1,10 +1,20 @@
 package ryzen.ownitall.util;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.net.URI;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -18,6 +28,8 @@ import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 import org.jaudiotagger.tag.reference.PictureTypes;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -247,5 +259,71 @@ public class MusicTools {
         string = string.replaceAll("\\[.*?\\]", "");
         // remove spaces in middle of string
         return string.trim().replaceAll("  ", " ");
+    }
+
+    public static String getAlbumNFO(String albumName, ArrayList<String> artistNames, ArrayList<String> songNames,
+            String coverImage) {
+        if (albumName == null) {
+            logger.debug("null albumName provided in getAlbumNFO");
+            return null;
+        }
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root element
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("album");
+            doc.appendChild(rootElement);
+
+            // Title
+            Element title = doc.createElement("title");
+            title.appendChild(doc.createTextNode(albumName));
+            rootElement.appendChild(title);
+
+            // Artists
+            Element artistsElement = doc.createElement("artists");
+            rootElement.appendChild(artistsElement);
+            for (String artistName : artistNames) {
+                Element artistElement = doc.createElement("artist");
+                artistElement.appendChild(doc.createTextNode(artistName));
+                artistsElement.appendChild(artistElement);
+            }
+
+            // Songs
+            Element tracksElement = doc.createElement("tracks");
+            rootElement.appendChild(tracksElement);
+            for (String songName : songNames) {
+                Element trackElement = doc.createElement("track");
+
+                Element trackTitle = doc.createElement("title");
+                trackTitle.appendChild(doc.createTextNode(songName));
+                trackElement.appendChild(trackTitle);
+
+                tracksElement.appendChild(trackElement);
+            }
+
+            // Cover image
+            if (coverImage != null) {
+                Element thumb = doc.createElement("thumb");
+                thumb.appendChild(doc.createTextNode(coverImage));
+                rootElement.appendChild(thumb);
+            }
+
+            // Transform the DOM to XML string
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(source, result);
+
+            return writer.toString();
+
+        } catch (Exception e) {
+            logger.error("exception generating NFO content", e);
+            return null;
+        }
     }
 }

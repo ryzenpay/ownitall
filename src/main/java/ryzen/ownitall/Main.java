@@ -80,7 +80,8 @@ public class Main {
 
     private static void init() {
         Settings.load();
-        Storage.importCollection();
+        Storage.init();
+        Collection.load();
     }
 
     /**

@@ -2,20 +2,20 @@ package ryzen.ownitall.classes;
 
 import java.util.LinkedHashSet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import ryzen.ownitall.util.Logger;
 
-@Entity
-@Table(name = "Id")
 public class Id {
     private static final Logger logger = new Logger(Id.class);
 
-    @jakarta.persistence.Id
     private String key;
     private String value;
 
-    public Id(String key, String value) {
+    @JsonCreator
+    public Id(@JsonProperty("key") String key, @JsonProperty("value") String value) {
         this.key = key;
         this.value = value;
     }
@@ -44,10 +44,12 @@ public class Id {
         this.value = value;
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return value.isEmpty();
     }
 
+    @JsonIgnore
     public static boolean hasMatching(LinkedHashSet<Id> ids1, LinkedHashSet<Id> ids2) {
         for (Id id1 : ids1) {
             if (ids2.contains(id1)) {
@@ -57,6 +59,7 @@ public class Id {
         return false;
     }
 
+    @JsonIgnore
     @Override
     public int hashCode() {
         return this.key.hashCode();

@@ -4,9 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -16,13 +16,10 @@ import ryzen.ownitall.util.Logger;
  *
  * @author ryzen
  */
-@Entity
-@Table(name = "Artist")
 public class Artist {
     private static final Logger logger = new Logger(Artist.class);
     private String name;
     private URI coverImage;
-    @OneToMany
     private LinkedHashSet<Id> ids;
 
     /**
@@ -33,6 +30,28 @@ public class Artist {
     public Artist(String name) {
         this.name = name;
         this.ids = new LinkedHashSet<>();
+    }
+
+    /**
+     * <p>
+     * Constructor for Artist.
+     * </p>
+     *
+     * @param name       a {@link java.lang.String} object
+     * @param ids        a {@link java.util.LinkedHashMap} object
+     * @param coverImage a {@link java.lang.String} object
+     */
+    @JsonCreator
+    public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashSet<Id> ids,
+            @JsonProperty("coverImage") String coverImage) {
+        this.name = name;
+        this.ids = new LinkedHashSet<>();
+        if (ids != null) {
+            this.addIds(ids);
+        }
+        if (coverImage != null) {
+            this.setCoverImage(coverImage);
+        }
     }
 
     /**
