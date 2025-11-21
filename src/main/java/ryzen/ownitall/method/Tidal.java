@@ -26,14 +26,14 @@ import ryzen.ownitall.util.exceptions.QueryException;
 
 // https://developer.tidal.com/documentation
 // https://developer.tidal.com/apiref
-//TODO: export and sync
+// doesnt support import / sync due to id requirement
 public class Tidal implements Import {
     private static final Logger logger = new Logger(Tidal.class);
     private String token;
     private String userID;
-    private static final String baseUrl = "https://openapi.tidal.com/v2";
     private static final ArrayList<String> scope = new ArrayList<>(
             Arrays.asList("collection.read", "collection.write", "playlists.read", "playlists.write"));
+    private static final String baseUrl = "https://openapi.tidal.com/v2";
 
     public Tidal() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Tidal.class)) {
@@ -42,7 +42,7 @@ public class Tidal implements Import {
         }
         this.token = WebTools.getOauthToken("https://auth.tidal.com/v1/oauth2/token?grant_type=authorization_code",
                 "https://login.tidal.com/authorize?response_type=code",
-                Settings.tidalClientID, scope);
+                Settings.tidalClientID, null, scope);
         this.userID = this.getUserID();
         logger.debug("Successfully authenticated into tidal as " + this.userID);
     }
