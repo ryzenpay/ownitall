@@ -115,6 +115,12 @@ Tidal will provide you with the client id and secret, to get the client id and s
         - add the scopes: collection.read%20collection.write%20playlists.read%20playlists.read
     6. save the client id and client secret  
 
+## Apple Music
+currently not supported as its paid (didnt know till halfway done)
+will need:
+    - client id
+    - client secret
+
 # Maven and compiling
 ## generate javadoc documentation
 to update the javadoc documentation, run the command `mvn doc` in the root of the repository  
