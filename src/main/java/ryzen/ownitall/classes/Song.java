@@ -23,6 +23,7 @@ import ryzen.ownitall.util.Logger;
 public class Song {
     private static final Logger logger = new Logger(Song.class);
     private String name;
+
     private ArrayList<Artist> artists;
     private Duration duration;
     private String albumName;
@@ -39,10 +40,8 @@ public class Song {
         this.name = name;
         this.ids = new LinkedHashMap<>();
         this.artists = new ArrayList<>();
-
     }
 
-    @JsonCreator
     /**
      * Full song constructor
      * also used for json importing
@@ -54,6 +53,7 @@ public class Song {
      * @param albumName  - name of album song is part of
      * @param coverImage - song coverimage
      */
+    @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
             @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
@@ -208,24 +208,22 @@ public class Song {
      */
     public void addIds(LinkedHashMap<String, String> ids) {
         if (ids == null) {
-            logger.debug(this.toString() + ": null links provided in addId");
+            logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
         this.ids.putAll(ids);
     }
 
-    /**
-     * add id to song
-     *
-     * @param key - id key
-     * @param id  - id
-     */
-    public void addId(String key, String id) {
-        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or id in addId");
+    public void addId(String key, String value) {
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        this.ids.put(key, id);
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
+            return;
+        }
+        this.ids.put(key, value);
     }
 
     /**
@@ -353,8 +351,8 @@ public class Song {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public String toString() {
         String output = this.getName().trim();
         if (this.getMainArtist() != null) {
@@ -364,8 +362,8 @@ public class Song {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -374,8 +372,8 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        for (String id : this.getIds().keySet()) {
-            if (this.getId(id).equals(song.getId(id))) {
+        for (String key : song.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
                 return true;
             }
         }

@@ -1,26 +1,15 @@
 package ryzen.ownitall;
 
 import java.io.File;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import ryzen.ownitall.classes.Album;
-import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.Logger;
+import ryzen.ownitall.util.ProgressBar;
 
 /**
  * <p>
@@ -35,11 +24,31 @@ public class Collection {
     private static ArrayList<Playlist> playlists = new ArrayList<>();
     private static ArrayList<Album> albums = new ArrayList<>();
 
+    public static void load() {
+        try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
+            pb.step("Albums");
+            loadAlbums();
+            pb.step("Playlists");
+            loadPlaylists();
+            pb.step("Liked Songs");
+            loadLikedSongs();
+            logger.debug("Successfully loaded collection");
+        }
+    }
+
     /**
      * save all data from collection
      */
     public static void save() {
-        Storage.exportCollection();
+        try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
+            pb.step("Albums");
+            saveAlbums();
+            pb.step("Playlists");
+            savePlaylists();
+            pb.step("Liked Songs");
+            saveLikedSongs();
+            logger.debug("Successfully saved collection");
+        }
     }
 
     /**
@@ -51,6 +60,14 @@ public class Collection {
         clearAlbums();
     }
 
+    public static void loadLikedSongs() {
+        addLikedSongs(Storage.importLikedSongs());
+    }
+
+    public static void saveLikedSongs() {
+        Storage.exportLikedSongs(likedSongs);
+    }
+
     /**
      * <p>
      * clearLikedSongs.
@@ -60,6 +77,14 @@ public class Collection {
         likedSongs.getSongs().clear();
     }
 
+    public static void loadPlaylists() {
+        addPlaylists(Storage.importPlaylists());
+    }
+
+    public static void savePlaylists() {
+        Storage.exportPlaylists(playlists);
+    }
+
     /**
      * <p>
      * clearPlaylists.
@@ -67,6 +92,14 @@ public class Collection {
      */
     public static void clearPlaylists() {
         playlists.clear();
+    }
+
+    public static void loadAlbums() {
+        addAlbums(Storage.importAlbums());
+    }
+
+    public static void saveAlbums() {
+        Storage.exportAlbums(albums);
     }
 
     /**
@@ -281,81 +314,6 @@ public class Collection {
             }
         }
         return null;
-    }
-
-    /**
-     * get an albums nfo String to write to a file
-     *
-     * @param album - album to get songs from
-     * @return - string of an xml nfo file to write to a file
-     */
-    public static String getAlbumNFO(Album album) {
-        if (album == null) {
-            logger.debug("null album provided in getAlbumNFO");
-            return null;
-        }
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-            // Root element
-            Document doc = docBuilder.newDocument();
-            Element rootElement = doc.createElement("album");
-            doc.appendChild(rootElement);
-
-            // Title
-            Element title = doc.createElement("title");
-            title.appendChild(doc.createTextNode(album.getName()));
-            rootElement.appendChild(title);
-
-            // Artists
-            Element artistsElement = doc.createElement("artists");
-            rootElement.appendChild(artistsElement);
-            for (Artist artist : album.getArtists()) {
-                Element artistElement = doc.createElement("artist");
-                artistElement.appendChild(doc.createTextNode(artist.getName()));
-                artistsElement.appendChild(artistElement);
-            }
-
-            // Songs
-            Element tracksElement = doc.createElement("tracks");
-            rootElement.appendChild(tracksElement);
-            for (Song song : album.getSongs()) {
-                Element trackElement = doc.createElement("track");
-
-                Element trackTitle = doc.createElement("title");
-                trackTitle.appendChild(doc.createTextNode(song.getName()));
-                trackElement.appendChild(trackTitle);
-
-                Element trackDuration = doc.createElement("duration");
-                trackDuration.appendChild(doc.createTextNode(String.valueOf(song.getDuration())));
-                trackElement.appendChild(trackDuration);
-
-                tracksElement.appendChild(trackElement);
-            }
-
-            // Cover image
-            if (album.getCoverImage() != null) {
-                Element thumb = doc.createElement("thumb");
-                thumb.appendChild(doc.createTextNode(getCoverFileName(album)));
-                rootElement.appendChild(thumb);
-            }
-
-            // Transform the DOM to XML string
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-            transformer.transform(source, result);
-
-            return writer.toString();
-
-        } catch (Exception e) {
-            logger.error("exception generating NFO content", e);
-            return null;
-        }
     }
 
     // filter out remixes?

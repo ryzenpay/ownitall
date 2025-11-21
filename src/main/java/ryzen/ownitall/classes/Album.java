@@ -18,6 +18,7 @@ import ryzen.ownitall.util.Logger;
  */
 public class Album extends Playlist {
     private static final Logger logger = new Logger(Album.class);
+
     private ArrayList<Artist> artists;
 
     /**
@@ -39,12 +40,13 @@ public class Album extends Playlist {
      * @param artists    - linkedhashset of artists
      * @param links      - linkedhasmap of links
      */
+
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("links") LinkedHashMap<String, String> links, @JsonProperty("coverImage") String coverImage,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") ArrayList<Artist> artists) {
-        super(name, songs, links, coverImage);
+        super(name, songs, ids, coverImage);
         this.artists = new ArrayList<>();
         if (artists != null) {
             this.addArtists(artists);
@@ -168,8 +170,8 @@ public class Album extends Playlist {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public String toString() {
         String output = super.toString();
         if (this.artists != null && !this.artists.isEmpty()) {
@@ -179,8 +181,8 @@ public class Album extends Playlist {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -188,13 +190,13 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        for (String id : this.getIds().keySet()) {
-            if (this.getId(id).equals(album.getId(id))) {
+        if (super.equals(object)) {
+            return true;
+        }
+        for (String key : album.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
                 return true;
             }
-        }
-        if (this.toString().equalsIgnoreCase(album.toString())) {
-            return true;
         }
         if (this.getName().equalsIgnoreCase(album.getName())) {
             // album with matching name and atleast one artist

@@ -33,7 +33,6 @@ public class Artist {
         this.ids = new LinkedHashMap<>();
     }
 
-    @JsonCreator
     /**
      * <p>
      * Constructor for Artist.
@@ -43,6 +42,7 @@ public class Artist {
      * @param ids        a {@link java.util.LinkedHashMap} object
      * @param coverImage a {@link java.lang.String} object
      */
+    @JsonCreator
     public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("coverImage") String coverImage) {
         this.name = name;
@@ -103,23 +103,19 @@ public class Artist {
             logger.debug(this.toString() + ": null links provided in addId");
             return;
         }
-        for (String id : ids.keySet()) {
-            this.addId(id, ids.get(id));
-        }
+        this.ids.putAll(ids);
     }
 
-    /**
-     * add id to song
-     *
-     * @param key - id key
-     * @param id  - id
-     */
-    public void addId(String key, String id) {
-        if (key == null || id == null || key.isEmpty() || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or id in addId");
+    public void addId(String key, String value) {
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        this.ids.put(key, id);
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
+            return;
+        }
+        this.ids.put(key, value);
     }
 
     /**
@@ -186,15 +182,15 @@ public class Artist {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public String toString() {
         return this.name.toString().trim();
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
@@ -203,8 +199,8 @@ public class Artist {
         }
         Artist artist = (Artist) object;
         // only valid if library used
-        for (String id : this.getIds().keySet()) {
-            if (this.getId(id).equals(artist.getId(id))) {
+        for (String key : artist.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
                 return true;
             }
         }

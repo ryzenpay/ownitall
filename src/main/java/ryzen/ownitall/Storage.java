@@ -18,7 +18,6 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.ProgressBar;
 
 /**
  * <p>
@@ -120,7 +119,7 @@ public class Storage {
         unarchiveFolder.delete();
         logger.debug("Deleted old archive folder: '" + unarchiveFolder.getAbsolutePath() + "'");
         Collection.clear();
-        importCollection();
+        Collection.load();
         logger.debug("Successfully unarchived music library");
     }
 
@@ -136,49 +135,15 @@ public class Storage {
 
     /**
      * <p>
-     * clearInventoryFiles.
+     * clear collection files.
      * </p>
      */
-    public static void clearInventoryFiles() {
+    public static void clearCollectionFiles() {
         for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
                 logger.debug("Deleted file: '" + file.getAbsolutePath() + "'");
             }
-        }
-    }
-
-    /**
-     * import collection from files
-     * orchestrates import albums, playlists and liked songs
-     */
-    public static void importCollection() {
-        logger.debug("importing collection... ");
-        try (ProgressBar pb = new ProgressBar("Loading data", 3)) {
-            pb.step("Albums");
-            Collection.addAlbums(importAlbums());
-            pb.step("Playlists");
-            Collection.addPlaylists(importPlaylists());
-            pb.step("Liked Songs");
-            Collection.addLikedSongs(importLikedSongs());
-            logger.debug("Successfully imported collection");
-        }
-    }
-
-    /**
-     * save collection to local files
-     * orchestrates export albums, playlists and liked songs
-     */
-    public static void exportCollection() {
-        logger.debug("Exporting music collection...");
-        try (ProgressBar pb = new ProgressBar("Saving data", 3)) {
-            pb.step("Albums");
-            exportAlbums(Collection.getAlbums());
-            pb.step("Playlists");
-            exportPlaylists(Collection.getPlaylists());
-            pb.step("Liked Songs");
-            exportLikedSongs(Collection.getLikedSongs());
-            logger.debug("Successfully exported music collection");
         }
     }
 
@@ -424,6 +389,6 @@ public class Storage {
         } catch (IOException e) {
             logger.error("exception exporting cached ids", e);
         }
-        return ids;
+        return cachedIds;
     }
 }

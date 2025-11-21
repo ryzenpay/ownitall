@@ -35,10 +35,10 @@ public class CollectionMenu {
         options.put("Export", this::optionExport);
         options.put("Sync", this::optionSync);
         options.put("Modify", this::optionModify);
-        options.put("Browse", this::printInventory);
+        options.put("Browse", this::printCollection);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "INVENTORY MENU");
+                String choice = Menu.optionMenu(options.keySet(), "COLLECTION MENU");
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -78,26 +78,26 @@ public class CollectionMenu {
     }
 
     /**
-     * print the inventory depending on its "depth"
+     * print the collection depending on its "depth"
      */
-    public void printInventory() {
+    public void printCollection() {
         int recursion;
         try {
             System.out.print("Select recursion (1-3): ");
             recursion = Input.request().getInt(1, 3);
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting inventory recursion");
+            logger.debug("Interrupted while getting collection recursion");
             return;
         }
         switch (recursion) {
             case 1:
-                this.printInventoryR1();
+                this.printCollectionR1();
                 break;
             case 2:
-                this.printInventoryR2();
+                this.printCollectionR2();
                 break;
             case 3:
-                this.printInventoryR3();
+                this.printCollectionR3();
                 break;
             default:
                 System.err.println("Invalid recursion option.");
@@ -107,10 +107,10 @@ public class CollectionMenu {
 
     /**
      * <p>
-     * printInventoryR1.
+     * printCollectionR1.
      * </p>
      */
-    public void printInventoryR1() {
+    public void printCollectionR1() {
         System.out
                 .println("Total playlists: " + Collection.getPlaylistCount() + "  ("
                         + Collection.getPlaylistsTrackCount()
@@ -124,10 +124,10 @@ public class CollectionMenu {
 
     /**
      * <p>
-     * printInventoryR2.
+     * printCollectionR2.
      * </p>
      */
-    public void printInventoryR2() {
+    public void printCollectionR2() {
         System.out.println("Liked Songs (" + Collection.getTotalSongCount() + ")");
         System.out.println(
                 "Playlists (" + Collection.getPlaylistCount() + "): (" + Collection.getPlaylistsTrackCount()
@@ -158,10 +158,10 @@ public class CollectionMenu {
 
     /**
      * <p>
-     * printInventoryR3.
+     * printCollectionR3.
      * </p>
      */
-    public void printInventoryR3() {
+    public void printCollectionR3() {
         System.out.println("Liked Songs (" + Collection.getTotalSongCount() + "): ");
         int i = 1;
         for (Song likedSong : Collection.getStandaloneLikedSongs()) {

@@ -23,6 +23,7 @@ public class Playlist {
     private static final Logger logger = new Logger(Playlist.class);
     private String name;
     private URI coverImage;
+
     private ArrayList<Song> songs;
     private LinkedHashMap<String, String> ids;
 
@@ -235,6 +236,15 @@ public class Playlist {
     }
 
     /**
+     * get all playlist songs
+     *
+     * @return - arraylist of constructed Song
+     */
+    public ArrayList<Song> getSongs() {
+        return this.songs;
+    }
+
+    /**
      * return size/numbers of songs in playlist
      *
      * @return - integer of size of playlist
@@ -270,15 +280,6 @@ public class Playlist {
     }
 
     /**
-     * get all playlist songs
-     *
-     * @return - arraylist of constructed Song
-     */
-    public ArrayList<Song> getSongs() {
-        return this.songs;
-    }
-
-    /**
      * get total playlist duration
      *
      * @return - total Duration
@@ -302,27 +303,19 @@ public class Playlist {
             logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
-        for (String id : ids.keySet()) {
-            this.addId(id, ids.get(id));
-        }
+        this.ids.putAll(ids);
     }
 
-    /**
-     * add id to playlist id's
-     *
-     * @param key - key to add (spotify, youtube, ...)
-     * @param id  - id to add
-     */
-    public void addId(String key, String id) {
+    public void addId(String key, String value) {
         if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key in addId");
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        if (id == null || id.isEmpty()) {
-            logger.debug(this.toString() + " empty id for key '" + key + "' in addId");
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
             return;
         }
-        this.ids.put(key, id);
+        this.ids.put(key, value);
     }
 
     /**
@@ -334,7 +327,7 @@ public class Playlist {
     @JsonIgnore
     public String getId(String key) {
         if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key provided in getId");
+            logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
         return this.ids.get(key);
@@ -350,15 +343,15 @@ public class Playlist {
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public String toString() {
         return this.name.toString().trim();
     }
 
     /** {@inheritDoc} */
-    @Override
     @JsonIgnore
+    @Override
     public boolean equals(Object object) {
         if (this == object)
             return true;
