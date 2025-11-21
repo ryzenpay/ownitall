@@ -148,7 +148,9 @@ public class WebTools {
             url += "?client_id=" + clientID;
         }
         url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
-        url += "&scope=" + String.join("%20", scope);
+        if (scope != null) {
+            url += "&scope=" + String.join("%20", scope);
+        }
         url += "&code_challenge_method=S256&code_challenge=" + codeChallenge;
         URI authUri = URI.create(url);
         return getOauthCode(authUri);
@@ -227,7 +229,7 @@ public class WebTools {
         }
     }
 
-    public static String getOauthToken(String tokenUrl, String codeUrl, String clientID,
+    public static String getOauthToken(String tokenUrl, String codeUrl, String clientID, String clientSecret,
             ArrayList<String> scope) throws AuthenticationException {
         String codeVerifier = WebTools.generateCodeVerifier();
         String codeChallenge = WebTools.generateCodeChallenge(codeVerifier);
@@ -238,6 +240,9 @@ public class WebTools {
                 url += "&client_id=" + clientID;
             } else {
                 url += "?client_id=" + clientID;
+            }
+            if (clientSecret != null) {
+                url += "&client_secret=" + clientSecret;
             }
             url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
             url += "&code=" + code;
