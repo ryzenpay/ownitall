@@ -56,7 +56,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (album.getId("mbid") != null) {
-            return album.getId("mbid").getValue();
+            return album.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("release", album.getName());
@@ -184,7 +184,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (song.getId("mbid") != null) {
-            return song.getId("mbid").getValue();
+            return song.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("recording", song.getName());
@@ -302,7 +302,7 @@ public class MusicBrainz extends Library {
             return null;
         }
         if (artist.getId("mbid") != null) {
-            return artist.getId("mbid").getValue();
+            return artist.getId("mbid");
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());

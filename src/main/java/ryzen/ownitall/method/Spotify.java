@@ -892,7 +892,7 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         if (song.getId("spotify") != null) {
-            return song.getId("spotify").getValue();
+            return song.getId("spotify");
         }
         SearchTracksRequest searchTracksRequest = this.spotifyApi.searchTracks(song.toString())
                 .limit(1)
@@ -989,7 +989,7 @@ public class Spotify implements Import, Export, Sync {
             return null;
         }
         if (album.getId("spotify") != null) {
-            return album.getId("spotify").getValue();
+            return album.getId("spotify");
         }
         SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums(album.toString())
                 .limit(1)

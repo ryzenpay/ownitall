@@ -1,7 +1,7 @@
 package ryzen.ownitall.classes;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,7 +44,7 @@ public class Album extends Playlist {
     @JsonCreator
     public Album(@JsonProperty("name") String name,
             @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("ids") LinkedHashSet<Id> ids, @JsonProperty("coverImage") String coverImage,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") ArrayList<Artist> artists) {
         super(name, songs, ids, coverImage);
         this.artists = new ArrayList<>();
@@ -190,11 +190,13 @@ public class Album extends Playlist {
             return false;
         }
         Album album = (Album) object;
-        if (Id.hasMatching(this.getIds(), album.getIds())) {
+        if (super.equals(object)) {
             return true;
         }
-        if (this.toString().equalsIgnoreCase(album.toString())) {
-            return true;
+        for (String key : album.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
+                return true;
+            }
         }
         if (this.getName().equalsIgnoreCase(album.getName())) {
             // album with matching name and atleast one artist

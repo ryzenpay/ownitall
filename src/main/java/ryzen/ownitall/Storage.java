@@ -135,10 +135,10 @@ public class Storage {
 
     /**
      * <p>
-     * clearInventoryFiles.
+     * clear collection files.
      * </p>
      */
-    public static void clearInventoryFiles() {
+    public static void clearCollectionFiles() {
         for (File file : Settings.dataFolder.listFiles()) {
             if (file.isFile()) {
                 file.delete();
@@ -389,6 +389,6 @@ public class Storage {
         } catch (IOException e) {
             logger.error("exception exporting cached ids", e);
         }
-        return ids;
+        return cachedIds;
     }
 }

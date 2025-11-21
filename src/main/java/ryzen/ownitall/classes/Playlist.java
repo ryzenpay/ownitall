@@ -4,7 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +25,7 @@ public class Playlist {
     private URI coverImage;
 
     private ArrayList<Song> songs;
-    private LinkedHashSet<Id> ids;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * Default playlist constructor
@@ -35,7 +35,7 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songs = new ArrayList<>();
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
     }
 
     /**
@@ -49,10 +49,10 @@ public class Playlist {
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("ids") LinkedHashSet<Id> ids, @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
         this.name = name;
         this.songs = new ArrayList<>();
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
         if (songs != null) {
             this.addSongs(songs);
         }
@@ -298,30 +298,24 @@ public class Playlist {
      *
      * @param ids - linkedhashmap of id's to add
      */
-    public void addIds(LinkedHashSet<Id> ids) {
+    public void addIds(LinkedHashMap<String, String> ids) {
         if (ids == null) {
             logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
-        this.ids.addAll(ids);
+        this.ids.putAll(ids);
     }
 
     public void addId(String key, String value) {
-        this.addId(new Id(key, value));
-    }
-
-    /**
-     * add id to playlist id's
-     *
-     * @param key - key to add (spotify, youtube, ...)
-     * @param id  - id to add
-     */
-    public void addId(Id id) {
-        if (id == null || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty id in addId");
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        this.ids.add(id);
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
+            return;
+        }
+        this.ids.put(key, value);
     }
 
     /**
@@ -331,17 +325,12 @@ public class Playlist {
      * @return - string id
      */
     @JsonIgnore
-    public Id getId(String key) {
+    public String getId(String key) {
         if (key == null || key.isEmpty()) {
-            logger.debug(this.toString() + ": empty key provided in getId");
+            logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
-        for (Id id : this.ids) {
-            if (id.getKey().equals(key)) {
-                return id;
-            }
-        }
-        return null;
+        return this.ids.get(key);
     }
 
     /**
@@ -349,7 +338,7 @@ public class Playlist {
      *
      * @return - linkedhashmap of id's
      */
-    public LinkedHashSet<Id> getIds() {
+    public LinkedHashMap<String, String> getIds() {
         return this.ids;
     }
 

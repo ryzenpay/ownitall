@@ -263,7 +263,7 @@ public class Download implements Sync, Export {
         if (albumName != null) {
             id3Data.put(FieldKey.ALBUM, albumName);
         }
-        String mbid = song.getId("mbid").getValue();
+        String mbid = song.getId("mbid");
         if (mbid != null) {
             id3Data.put(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID, mbid);
         }

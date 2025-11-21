@@ -2,9 +2,10 @@ package ryzen.ownitall.classes;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ryzen.ownitall.util.Logger;
@@ -20,7 +21,7 @@ public class Artist {
     private static final Logger logger = new Logger(Artist.class);
     private String name;
     private URI coverImage;
-    private LinkedHashSet<Id> ids;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * default artist constructor
@@ -29,7 +30,7 @@ public class Artist {
      */
     public Artist(String name) {
         this.name = name;
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
     }
 
     /**
@@ -42,10 +43,10 @@ public class Artist {
      * @param coverImage a {@link java.lang.String} object
      */
     @JsonCreator
-    public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashSet<Id> ids,
+    public Artist(@JsonProperty("name") String name, @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("coverImage") String coverImage) {
         this.name = name;
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
         if (ids != null) {
             this.addIds(ids);
         }
@@ -97,30 +98,24 @@ public class Artist {
      *
      * @param ids - linkedhashmap of id's
      */
-    public void addIds(LinkedHashSet<Id> ids) {
+    public void addIds(LinkedHashMap<String, String> ids) {
         if (ids == null) {
             logger.debug(this.toString() + ": null links provided in addId");
             return;
         }
-        this.ids.addAll(ids);
+        this.ids.putAll(ids);
     }
 
     public void addId(String key, String value) {
-        this.addId(new Id(key, value));
-    }
-
-    /**
-     * add id to song
-     *
-     * @param key - id key
-     * @param id  - id
-     */
-    public void addId(Id id) {
-        if (id == null || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty id in addId");
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        this.ids.add(id);
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
+            return;
+        }
+        this.ids.put(key, value);
     }
 
     /**
@@ -129,17 +124,13 @@ public class Artist {
      * @param key - key of id
      * @return - string id
      */
-    public Id getId(String key) {
+    @JsonIgnore
+    public String getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
-        for (Id id : this.ids) {
-            if (id.getKey().equals(key)) {
-                return id;
-            }
-        }
-        return null;
+        return this.ids.get(key);
     }
 
     /**
@@ -147,7 +138,7 @@ public class Artist {
      *
      * @return - linkedhashmap of ids
      */
-    public LinkedHashSet<Id> getIds() {
+    public LinkedHashMap<String, String> getIds() {
         return this.ids;
     }
 
@@ -191,12 +182,14 @@ public class Artist {
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public String toString() {
         return this.name.toString().trim();
     }
 
     /** {@inheritDoc} */
+    @JsonIgnore
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -206,11 +199,8 @@ public class Artist {
         }
         Artist artist = (Artist) object;
         // only valid if library used
-        for (Id id : this.ids) {
-            if (artist.getId(id.getKey()) == null) {
-                continue;
-            }
-            if (id.getValue().equals(artist.getId(id.getKey()).getValue())) {
+        for (String key : artist.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
                 return true;
             }
         }

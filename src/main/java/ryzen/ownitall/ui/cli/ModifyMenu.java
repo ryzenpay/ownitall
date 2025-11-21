@@ -38,7 +38,7 @@ public class ModifyMenu {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
         options.put("Add", this::addMenu);
         options.put("Merge", this::mergeMenu);
-        options.put("Update", this::optionUpdateInventory);
+        options.put("Update", this::optionUpdateCollection);
         options.put("Delete", this::deleteMenu);
         try {
             while (true) {
@@ -223,10 +223,10 @@ public class ModifyMenu {
         options.put("Delete Playlist(s)", this::optionDeletePlaylist);
         options.put("Delete Album(s)", this::optionDeleteAlbum);
         options.put("Delete Liked Song(s)", this::optionDeleteLikedSong);
-        options.put("Clear Collection", this::optionClearInventory);
+        options.put("Clear Collection", this::optionClearCollection);
         try {
             while (true) {
-                String choice = Menu.optionMenu(options.keySet(), "EDIT INVENTORY MENU");
+                String choice = Menu.optionMenu(options.keySet(), "EDIT COLLECTION MENU");
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -307,17 +307,17 @@ public class ModifyMenu {
     /**
      * option to clear current collection
      */
-    private void optionClearInventory() {
+    private void optionClearCollection() {
         try {
-            System.out.print("Are you sure you want to clear the current inventory (y/N): ");
+            System.out.print("Are you sure you want to clear the current collection (y/N): ");
             if (Input.request().getAgreement()) {
-                logger.info("Clearing inventory...");
+                logger.info("Clearing collection...");
                 Collection.clear();
-                Storage.clearInventoryFiles();
-                logger.info("Successfully cleared inventory");
+                Storage.clearCollectionFiles();
+                logger.info("Successfully cleared collection");
             }
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while getting clear inventory agreement");
+            logger.debug("Interrupted while getting clear collection agreement");
         }
     }
 
@@ -354,9 +354,9 @@ public class ModifyMenu {
     }
 
     /**
-     * library verify all of inventory
+     * library verify all of collection
      */
-    private void optionUpdateInventory() {
+    private void optionUpdateCollection() {
         Library library = Library.load();
         if (library == null) {
             logger.warn("This requires library to be enabled");
@@ -388,7 +388,7 @@ public class ModifyMenu {
                 pb.step(album.getName(), album.size());
             }
         } catch (InterruptedException e) {
-            logger.debug("Interruption caught while verifying inventory");
+            logger.debug("Interruption caught while verifying collection");
             return;
         }
         logger.info("done updating collection content");

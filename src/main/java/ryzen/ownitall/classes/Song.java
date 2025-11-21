@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +28,7 @@ public class Song {
     private Duration duration;
     private String albumName;
     private URI coverImage;
-    private LinkedHashSet<Id> ids;
+    private LinkedHashMap<String, String> ids;
 
     /**
      * default song constructor
@@ -38,7 +38,7 @@ public class Song {
     // TODO: transform feat. into artist addition?
     public Song(String name) {
         this.name = name;
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
         this.artists = new ArrayList<>();
     }
 
@@ -55,7 +55,7 @@ public class Song {
      */
     @JsonCreator
     public Song(@JsonProperty("name") String name, @JsonProperty("artists") ArrayList<Artist> artists,
-            @JsonProperty("ids") LinkedHashSet<Id> ids,
+            @JsonProperty("ids") LinkedHashMap<String, String> ids,
             @JsonProperty("duration") double duration, @JsonProperty("albumName") String albumName,
             @JsonProperty("coverImage") String coverImage) {
         this.name = name;
@@ -63,7 +63,7 @@ public class Song {
         if (artists != null) {
             this.addArtists(artists);
         }
-        this.ids = new LinkedHashSet<>();
+        this.ids = new LinkedHashMap<>();
         if (ids != null) {
             this.addIds(ids);
         }
@@ -206,30 +206,24 @@ public class Song {
      *
      * @param ids - linkedhashmap of id's
      */
-    public void addIds(LinkedHashSet<Id> ids) {
+    public void addIds(LinkedHashMap<String, String> ids) {
         if (ids == null) {
-            logger.debug(this.toString() + ": null links provided in addId");
+            logger.debug(this.toString() + ": null ids array provided in addIds");
             return;
         }
-        this.ids.addAll(ids);
+        this.ids.putAll(ids);
     }
 
     public void addId(String key, String value) {
-        this.addId(new Id(key, value));
-    }
-
-    /**
-     * add id to song
-     *
-     * @param key - id key
-     * @param id  - id
-     */
-    public void addId(Id id) {
-        if (id == null || id.isEmpty()) {
-            logger.debug(this.toString() + ": empty key or id in addId");
+        if (key == null || key.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty key provided in addId");
             return;
         }
-        this.ids.add(id);
+        if (value == null || value.isEmpty()) {
+            logger.debug(this.toString() + ": null or empty value provided in addId");
+            return;
+        }
+        this.ids.put(key, value);
     }
 
     /**
@@ -239,17 +233,12 @@ public class Song {
      * @return - string id
      */
     @JsonIgnore
-    public Id getId(String key) {
+    public String getId(String key) {
         if (key == null || key.isEmpty()) {
             logger.debug(this.toString() + ": empty key passed in getId");
             return null;
         }
-        for (Id id : ids) {
-            if (id.getKey().equals(key)) {
-                return id;
-            }
-        }
-        return null;
+        return this.ids.get(key);
     }
 
     /**
@@ -257,7 +246,7 @@ public class Song {
      *
      * @return - linkedhashmap of ids
      */
-    public LinkedHashSet<Id> getIds() {
+    public LinkedHashMap<String, String> getIds() {
         return this.ids;
     }
 
@@ -383,8 +372,10 @@ public class Song {
         }
         Song song = (Song) object;
         // only valid if library used
-        if (Id.hasMatching(this.getIds(), song.getIds())) {
-            return true;
+        for (String key : song.getIds().keySet()) {
+            if (this.getIds().containsValue(key)) {
+                return true;
+            }
         }
         if (this.toString().equalsIgnoreCase(song.toString())) {
             return true;
