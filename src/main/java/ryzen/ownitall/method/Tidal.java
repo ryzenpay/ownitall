@@ -26,7 +26,7 @@ import ryzen.ownitall.util.exceptions.QueryException;
 
 // https://developer.tidal.com/documentation
 // https://developer.tidal.com/apiref
-//TODO: export and sync
+// doesnt support export as it depends on ids
 public class Tidal implements Import {
     private static final Logger logger = new Logger(Tidal.class);
     private String token;
@@ -71,7 +71,7 @@ public class Tidal implements Import {
     private JsonNode query(String path, String pageCursor, ArrayList<String> include) {
         String flags = "?countryCode=US";
         if (pageCursor != null) {
-            flags += "&page[cursor]=" + pageCursor;
+            flags += "&page%5Bcursor%5B=" + pageCursor;
         }
         if (include != null) {
             for (String includeEntry : include) {
@@ -137,7 +137,7 @@ public class Tidal implements Import {
         return song;
     }
 
-    private ArrayList<Song> getSongs(String path) {
+    private ArrayList<Song> getSongs(String path, int amount) {
         if (path == null) {
             logger.debug("null path provided in getSongs");
             return null;
@@ -156,11 +156,17 @@ public class Tidal implements Import {
                 for (JsonNode songItem : songItems) {
                     Song song = this.getSong(songItem);
                     if (song != null) {
+                        pb.step(song.getName());
                         songs.add(song);
                     }
                 }
                 JsonNode links = response.path("links");
                 if (links.has("next")) {
+                    // this is needed because tidal likes to loop playlists, YAY
+                    if (amount != -1 && songs.size() >= amount) {
+                        logger.debug("songs capita reached");
+                        break;
+                    }
                     pageCursor = links.path("meta").path("nextCursor").asText();
                 } else {
                     break;
@@ -243,7 +249,7 @@ public class Tidal implements Import {
                     album.addArtist(artist);
                 }
             }
-            ArrayList<Song> songs = this.getSongs("/albums/" + id + "/relationships/items");
+            ArrayList<Song> songs = this.getSongs("/albums/" + id + "/relationships/items", -1);
             if (songs != null) {
                 album.addSongs(songs);
             }
@@ -294,7 +300,6 @@ public class Tidal implements Import {
         }
     }
 
-    // TODO: broken, just keeps going for some reason
     public Playlist getPlaylist(String playlistId, String playlistName) {
         if (playlistId == null) {
             logger.debug("null playlistId provided in getPlaylist");
@@ -321,7 +326,9 @@ public class Tidal implements Import {
         } else {
             logger.debug("getPlaylist response is missing data");
         }
-        ArrayList<Song> songs = this.getSongs("/playlists/" + id + "/relationships/items");
+        // needed because tidal doesnt know how to write code
+        int size = attributes.path("numberOfItems").asInt();
+        ArrayList<Song> songs = this.getSongs("/playlists/" + id + "/relationships/items", size);
         if (songs != null) {
             playlist.addSongs(songs);
         }

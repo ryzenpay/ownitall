@@ -258,7 +258,7 @@ public class MusicTools {
         // []
         string = string.replaceAll("\\[.*?\\]", "");
         // remove spaces in middle of string
-        return string.trim().replaceAll("  ", " ");
+        return string.replaceAll("  ", " ").trim();
     }
 
     public static String getAlbumNFO(String albumName, ArrayList<String> artistNames, ArrayList<String> songNames,

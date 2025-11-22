@@ -35,7 +35,6 @@ public class Song {
      *
      * @param name - String song name
      */
-    // TODO: transform feat. into artist addition?
     public Song(String name) {
         this.name = name;
         this.ids = new LinkedHashMap<>();
