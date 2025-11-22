@@ -26,14 +26,14 @@ import ryzen.ownitall.util.exceptions.QueryException;
 
 // https://developer.tidal.com/documentation
 // https://developer.tidal.com/apiref
-// doesnt support import / sync due to id requirement
+//TODO: export and sync
 public class Tidal implements Import {
     private static final Logger logger = new Logger(Tidal.class);
     private String token;
     private String userID;
+    private static final String baseUrl = "https://openapi.tidal.com/v2";
     private static final ArrayList<String> scope = new ArrayList<>(
             Arrays.asList("collection.read", "collection.write", "playlists.read", "playlists.write"));
-    private static final String baseUrl = "https://openapi.tidal.com/v2";
 
     public Tidal() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Tidal.class)) {
@@ -300,8 +300,7 @@ public class Tidal implements Import {
             logger.debug("null playlistId provided in getPlaylist");
             return null;
         }
-        String pageCursor = null;
-        JsonNode response = this.query("/playlists/" + playlistId, pageCursor,
+        JsonNode response = this.query("/playlists/" + playlistId, null,
                 new ArrayList<>(Arrays.asList("coverArt")));
         if (response == null) {
             logger.debug("null response received in getPlaylist");
@@ -319,13 +318,15 @@ public class Tidal implements Import {
             JsonNode playlistItem = playlistItems.get(0);
             String coverArtUrl = playlistItem.path("attributes").path("files").path("href").asText();
             playlist.setCoverImage(coverArtUrl);
-
-            ArrayList<Song> songs = this.getSongs("/playlists/" + id + "/relationships/items");
-            if (songs != null) {
-                playlist.addSongs(songs);
-            }
         } else {
             logger.debug("getPlaylist response is missing data");
+        }
+        ArrayList<Song> songs = this.getSongs("/playlists/" + id + "/relationships/items");
+        if (songs != null) {
+            playlist.addSongs(songs);
+        }
+        if (playlist.isEmpty()) {
+            logger.debug("getPlaylist " + playlistId + " playlist is empty");
             return null;
         }
         return playlist;

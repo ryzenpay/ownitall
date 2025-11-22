@@ -180,9 +180,12 @@ public class Jellyfin implements Import, Export, Sync {
         ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
         if (songs != null) {
             playlist.addSongs(songs);
-            return playlist;
         }
-        return null;
+        if (playlist.isEmpty()) {
+            logger.debug("getPlaylist " + playlistId + " playlist is empty");
+            return null;
+        }
+        return playlist;
     }
 
     // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist

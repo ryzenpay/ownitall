@@ -625,12 +625,15 @@ public class Spotify implements Import, Export, Sync {
         }
         Playlist playlist = new Playlist(playlistName);
         ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
-        if (songs != null && !songs.isEmpty()) {
+        if (songs != null) {
             playlist.addSongs(songs);
-            playlist.addId("spotify", playlistId);
-            return playlist;
         }
-        return null;
+        playlist.addId("spotify", playlistId);
+        if (playlist.isEmpty()) {
+            logger.debug("getPlaylist " + playlistId + "playlist is empty");
+            return null;
+        }
+        return playlist;
     }
 
     /**
