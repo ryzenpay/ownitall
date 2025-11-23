@@ -36,7 +36,9 @@ public class Logger {
     }
 
     /**
-     * <p>setLogLevel.</p>
+     * <p>
+     * setLogLevel.
+     * </p>
      *
      * @param level a {@link java.lang.String} object
      */
@@ -64,7 +66,9 @@ public class Logger {
     }
 
     /**
-     * <p>is.</p>
+     * <p>
+     * is.
+     * </p>
      *
      * @param level a {@link org.apache.logging.log4j.Level} object
      * @return a boolean
@@ -154,7 +158,9 @@ public class Logger {
     }
 
     /**
-     * <p>getGlobalLogs.</p>
+     * <p>
+     * getGlobalLogs.
+     * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
@@ -170,7 +176,9 @@ public class Logger {
     }
 
     /**
-     * <p>printLogs.</p>
+     * <p>
+     * printLogs.
+     * </p>
      *
      * @param level a {@link org.apache.logging.log4j.Level} object
      */
@@ -210,7 +218,9 @@ public class Logger {
     }
 
     /**
-     * <p>clearLogs.</p>
+     * <p>
+     * clearLogs.
+     * </p>
      */
     public static void clearLogs() {
         globalHistory.clear();

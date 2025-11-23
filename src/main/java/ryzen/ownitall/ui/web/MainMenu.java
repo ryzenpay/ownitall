@@ -54,7 +54,7 @@ public class MainMenu {
                 logger.error("Exception opening web browser", e);
             }
         } else {
-            logger.info("Unable to open web browser automatically. Please navigate to " + url);
+            logger.info("Unable to open web browser automatically. Navigate to " + url);
         }
     }
 

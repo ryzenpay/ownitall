@@ -19,7 +19,7 @@ public class Menu {
     private static final Logger logger = new Logger(Menu.class);
     /**
      * Constant
-     * <code>asciiLogo="                        _  _          _"{trunked}</code>
+     * <code>asciiLogo=""{trunked}</code>
      */
     private static String asciiLogo = "";
 
@@ -35,10 +35,11 @@ public class Menu {
     }
 
     /**
-     * clears screen contents when not in debug mode
+     * clears screen contents
      */
     public static void clearScreen() {
         if (!Logger.is(Level.DEBUG)) {
+            // leaves empty space when debugging, not to lose logs
             System.out.print("\033[H\033[2J");
         }
         System.out.flush();

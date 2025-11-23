@@ -1,0 +1,1 @@
+cmd.exe /X /D /C ""C:\Program Files\OpenJDK\jdk-23.0.1\bin\javadoc.exe" -J-Duser.language= -J-Duser.country= @options @packages"

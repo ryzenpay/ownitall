@@ -123,8 +123,11 @@ will need:
 
 # Maven and compiling
 ## generate javadoc documentation
-to update the javadoc documentation, run the command `mvn doc` in the root of the repository  
+to update the javadoc documentation, run the command `mvn javadoc:javadoc` in the root of the repository  
 please fix any of the errors it throws as they show incomplete documentation  
+
+### Website
+`mvn site`
 
 ## Compile new jar file
 run the command `mvn clean compile assembly:single`  

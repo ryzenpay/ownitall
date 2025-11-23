@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 public class WebTools {
     private static final Logger logger = new Logger(WebTools.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String redirectUri = "http%3A%2F%2Flocalhost%3A8081%2Foauth";
     public static long retries = 5;
     public static long timeout = 20; // timeout in seconds
     private static long lastQueryTime = 0;
@@ -72,7 +73,7 @@ public class WebTools {
         return query(connection, 0);
     }
 
-    public static JsonNode query(HttpURLConnection connection, int i) throws QueryException {
+    public static JsonNode query(HttpURLConnection connection, int attempt) throws QueryException {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -91,12 +92,12 @@ public class WebTools {
             try {
                 switch (connection.getResponseCode()) {
                     case 429: // too many requests
-                        if (i > retries) {
+                        if (attempt > retries) {
                             throw new QueryException("Reached 5 retries");
                         }
                         logger.debug("Too many requests, trying again in 30 seconds...");
                         TimeUnit.SECONDS.sleep(timeout);
-                        return query(connection, i++);
+                        return query(connection, attempt++);
                     case 404:
                         logger.debug("Requested page '" + connection.getURL().toString() + "'does not exist");
                         return null;
@@ -147,7 +148,7 @@ public class WebTools {
         } else {
             url += "?client_id=" + clientID;
         }
-        url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
+        url += "&redirect_uri=" + redirectUri;
         if (scope != null) {
             url += "&scope=" + String.join("%20", scope);
         }
@@ -178,7 +179,7 @@ public class WebTools {
                 String responseText;
                 if (code != null) {
                     codeRef.set(code);
-                    logger.info("Authorization code received: " + code);
+                    logger.debug("Authorization code received: " + code);
                     responseText = "Code received, you can now close this tab";
                     exchange.sendResponseHeaders(200, responseText.getBytes().length);
                 } else {
@@ -192,7 +193,7 @@ public class WebTools {
                 responseBody.close();
             });
             server.start();
-            logger.info("Awaiting response at http://localhost/oauth");
+            logger.debug("Awaiting response at " + redirectUri);
             try {
                 interactiveSetCode(authUri, codeRef);
             } catch (InterruptedException e) {
@@ -203,9 +204,9 @@ public class WebTools {
             logger.error("Failed to start local server", e);
         }
         if (codeRef.get() == null) {
-            logger.info("Unable to get code automatically, please provide it manually");
-            System.out.println("Please open this url: " + authUri);
-            System.out.print("Please provide the code found in response url: ");
+            logger.info("Unable to get code automatically, provide it manually");
+            System.out.println("Open this url: " + authUri);
+            System.out.print("Provide the code found in response url: ");
             return Input.request().getString();
         } else {
             return codeRef.get();
@@ -220,7 +221,7 @@ public class WebTools {
                 logger.error("Exception opening web browser", e);
             }
         }
-        logger.info("Waiting " + timeout + " seconds for code or interrupt to manually provide");
+        logger.debug("Waiting " + timeout + " seconds for code or interrupt to manually provide");
         for (int i = 0; i < timeout; i++) {
             if (codeRef.get() != null) {
                 break;
@@ -244,7 +245,7 @@ public class WebTools {
             if (clientSecret != null) {
                 url += "&client_secret=" + clientSecret;
             }
-            url += "&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Foauth";
+            url += "&redirect_uri=" + redirectUri;
             url += "&code=" + code;
             url += "&code_verifier=" + codeVerifier;
             URI uri = URI.create(url);
@@ -260,5 +261,33 @@ public class WebTools {
         } catch (IOException | QueryException | InterruptedException e) {
             throw new AuthenticationException(e);
         }
+    }
+
+    // /**
+    // * <p>
+    // * getExtension.
+    // * </p>
+    // *
+    // * @param uri a {@link java.net.URI} object
+    // * @return a {@link java.lang.String} object
+    // */
+    public static String getExtension(URI uri) {
+        if (uri == null) {
+            logger.debug("null uri provided in getExtension");
+            return null;
+        }
+        String path = uri.getPath();
+        if (path == null || path.isEmpty()) {
+            logger.debug("empty path provided for url: '" + uri + "'");
+            return null;
+        }
+        int lastSlashIndex = path.lastIndexOf('/');
+        String lastSegment = path.substring(lastSlashIndex + 1);
+        int extensionIndex = lastSegment.lastIndexOf('.');
+        if (extensionIndex == -1 || extensionIndex == lastSegment.length() - 1) {
+            // logger.debug("url has no extension: '" + uri + "'");
+            return null;
+        }
+        return lastSegment.substring(extensionIndex + 1).toLowerCase();
     }
 }

@@ -22,13 +22,13 @@
                 } else {
                     console.error('Shutdown request failed.', response.status, response.statusText);
                     messageDiv.className = 'alert alert-danger mt-3';
-                    messageDiv.textContent = 'Shutdown request failed. Please close the tab manually or check server logs.';
+                    messageDiv.textContent = 'Shutdown request failed. Close the tab manually or check server logs.';
                     messageDiv.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error during shutdown:', error);
                 messageDiv.className = 'alert alert-danger mt-3';
-                messageDiv.textContent = 'Error occurred during shutdown. Please close the tab manually.';
+                messageDiv.textContent = 'Error occurred during shutdown. Close the tab manually.';
                 messageDiv.style.display = 'block';
             }
         }
