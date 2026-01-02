@@ -11,13 +11,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * <p>

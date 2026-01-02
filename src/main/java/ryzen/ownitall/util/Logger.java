@@ -2,8 +2,8 @@ package ryzen.ownitall.util;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Map.Entry;
+import java.util.Stack;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

@@ -6,7 +6,9 @@ import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
- * <p>Sync interface.</p>
+ * <p>
+ * Sync interface.
+ * </p>
  *
  * @author ryzen
  */

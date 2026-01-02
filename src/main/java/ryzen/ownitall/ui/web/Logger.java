@@ -4,13 +4,17 @@ import org.apache.logging.log4j.Level;
 import org.springframework.ui.Model;
 
 /**
- * <p>Logger class.</p>
+ * <p>
+ * Logger class.
+ * </p>
  *
  * @author ryzen
  */
 public class Logger extends ryzen.ownitall.util.Logger {
     /**
-     * <p>Constructor for Logger.</p>
+     * <p>
+     * Constructor for Logger.
+     * </p>
      *
      * @param clazz a {@link java.lang.Class} object
      */
@@ -19,9 +23,11 @@ public class Logger extends ryzen.ownitall.util.Logger {
     }
 
     /**
-     * <p>debug.</p>
+     * <p>
+     * debug.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model   a {@link org.springframework.ui.Model} object
      * @param message a {@link java.lang.String} object
      */
     public void debug(Model model, String message) {
@@ -32,9 +38,11 @@ public class Logger extends ryzen.ownitall.util.Logger {
     }
 
     /**
-     * <p>info.</p>
+     * <p>
+     * info.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model   a {@link org.springframework.ui.Model} object
      * @param message a {@link java.lang.String} object
      */
     public void info(Model model, String message) {
@@ -45,9 +53,11 @@ public class Logger extends ryzen.ownitall.util.Logger {
     }
 
     /**
-     * <p>warn.</p>
+     * <p>
+     * warn.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model   a {@link org.springframework.ui.Model} object
      * @param message a {@link java.lang.String} object
      */
     public void warn(Model model, String message) {
@@ -58,11 +68,13 @@ public class Logger extends ryzen.ownitall.util.Logger {
     }
 
     /**
-     * <p>error.</p>
+     * <p>
+     * error.
+     * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model   a {@link org.springframework.ui.Model} object
      * @param message a {@link java.lang.String} object
-     * @param error a {@link java.lang.Throwable} object
+     * @param error   a {@link java.lang.Throwable} object
      */
     public void error(Model model, String message, Throwable error) {
         if (is(Level.ERROR)) {

@@ -20,7 +20,9 @@ public class AuthenticationException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationException.</p>
+     * <p>
+     * Constructor for AuthenticationException.
+     * </p>
      *
      * @param e a {@link java.lang.Throwable} object
      */
@@ -29,10 +31,12 @@ public class AuthenticationException extends Exception {
     }
 
     /**
-     * <p>Constructor for AuthenticationException.</p>
+     * <p>
+     * Constructor for AuthenticationException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
-     * @param e a {@link java.lang.Throwable} object
+     * @param e       a {@link java.lang.Throwable} object
      */
     public AuthenticationException(String message, Throwable e) {
         super(message, e);

@@ -199,7 +199,9 @@ public class Settings {
     }
 
     /**
-     * <p>exists.</p>
+     * <p>
+     * exists.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a boolean
@@ -313,7 +315,9 @@ public class Settings {
     }
 
     /**
-     * <p>getName.</p>
+     * <p>
+     * getName.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
@@ -338,7 +342,9 @@ public class Settings {
     }
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
@@ -418,7 +424,9 @@ public class Settings {
     }
 
     /**
-     * <p>isSecret.</p>
+     * <p>
+     * isSecret.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a boolean
@@ -442,7 +450,9 @@ public class Settings {
     }
 
     /**
-     * <p>getHashedValue.</p>
+     * <p>
+     * getHashedValue.
+     * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.String} object

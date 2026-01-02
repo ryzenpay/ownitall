@@ -4,7 +4,9 @@ import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 
 /**
- * <p>Export interface.</p>
+ * <p>
+ * Export interface.
+ * </p>
  *
  * @author ryzen
  */

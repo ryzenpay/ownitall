@@ -7,8 +7,8 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
+import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -13,6 +14,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.jaudiotagger.tag.FieldKey;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -30,10 +33,6 @@ import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;
-
-import java.time.Duration;
-
-import org.jaudiotagger.tag.FieldKey;
 
 /**
  * <p>

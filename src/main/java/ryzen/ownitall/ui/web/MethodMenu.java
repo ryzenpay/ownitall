@@ -2,9 +2,10 @@ package ryzen.ownitall.ui.web;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Stack;
 import java.util.Map.Entry;
+import java.util.Stack;
 
+import org.apache.logging.log4j.Level;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,8 +30,6 @@ import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
-
-import org.apache.logging.log4j.Level;
 import ryzen.ownitall.util.ProgressBar;
 import ryzen.ownitall.util.exceptions.AuthenticationException;
 import ryzen.ownitall.util.exceptions.MissingSettingException;

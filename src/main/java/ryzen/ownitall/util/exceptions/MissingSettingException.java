@@ -31,7 +31,9 @@ public class MissingSettingException extends Exception {
     }
 
     /**
-     * <p>Constructor for MissingSettingException.</p>
+     * <p>
+     * Constructor for MissingSettingException.
+     * </p>
      *
      * @param e a {@link java.lang.Throwable} object
      */
@@ -40,10 +42,12 @@ public class MissingSettingException extends Exception {
     }
 
     /**
-     * <p>Constructor for MissingSettingException.</p>
+     * <p>
+     * Constructor for MissingSettingException.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
-     * @param e a {@link java.lang.Throwable} object
+     * @param e       a {@link java.lang.Throwable} object
      */
     public MissingSettingException(String message, Throwable e) {
         super(message, e);
