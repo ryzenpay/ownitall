@@ -19,6 +19,7 @@ import org.jaudiotagger.tag.FieldKey;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
@@ -31,8 +32,7 @@ import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>

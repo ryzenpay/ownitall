@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>

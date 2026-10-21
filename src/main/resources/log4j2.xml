@@ -2,13 +2,11 @@
 <Configuration>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %enc{%msg}{CRLF}%n" />
         </Console>
         <File name="File" fileName="logs/app.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-            <Filters>
-                <ThresholdFilter level="DEBUG" onMatch="DENY" onMismatch="ACCEPT" />
-            </Filters>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %enc{%msg}{CRLF}%n" />
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
         </File>
     </Appenders>
     <Loggers>
@@ -23,6 +21,6 @@
         <Logger name="org.apache.hc.client5.http" level="ERROR" additivity="false" />
         <Logger name="org.apache.hc.client5.http.impl.classic.InternalHttpClient" level="ERROR"
             additivity="false" />
-        <Logger name=" org.reflections.Reflections" level="ERROR" additivity="false" />
+        <Logger name="org.reflections.Reflections" level="ERROR" additivity="false" />
     </Loggers>
 </Configuration>

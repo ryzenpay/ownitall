@@ -21,7 +21,9 @@ public class ProgressBar implements AutoCloseable {
     Logger logger = new Logger(ProgressBar.class);
     /** Constant <code>output=true</code> */
     public static boolean output = true;
-    private static Stack<ProgressBar> instances;
+    // eagerly created: /method/progress polled before the first bar existed and
+    // getInstances() handed back null
+    private static final Stack<ProgressBar> instances = new Stack<>();
 
     private me.tongfei.progressbar.ProgressBar pb;
 
@@ -43,10 +45,9 @@ public class ProgressBar implements AutoCloseable {
             pbInit.setConsumer(new DelegatingProgressBarConsumer(null));
         }
         this.pb = pbInit.build();
-        if (instances == null) {
-            instances = new Stack<>();
+        synchronized (instances) {
+            instances.add(this);
         }
-        instances.add(this);
     }
 
     /**
@@ -159,13 +160,21 @@ public class ProgressBar implements AutoCloseable {
      * @return a {@link ryzen.ownitall.util.ProgressBar} object
      */
     public static Stack<ProgressBar> getInstances() {
-        return instances;
+        // snapshot: /method/progress iterates this while worker threads open and close
+        // their own bars
+        synchronized (instances) {
+            Stack<ProgressBar> snapshot = new Stack<>();
+            snapshot.addAll(instances);
+            return snapshot;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void close() {
         this.pb.close();
-        instances.remove(this);
+        synchronized (instances) {
+            instances.remove(this);
+        }
     }
 }

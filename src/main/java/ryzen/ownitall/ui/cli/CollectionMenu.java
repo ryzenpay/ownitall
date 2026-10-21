@@ -3,6 +3,7 @@ package ryzen.ownitall.ui.cli;
 import java.util.LinkedHashMap;
 
 import ryzen.ownitall.Collection;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
@@ -12,9 +13,8 @@ import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.Menu.MenuClosed;
 import ryzen.ownitall.util.MusicTools;
-import ryzen.ownitall.util.exceptions.MenuClosed;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
 
 /**
  * <p>

@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
@@ -14,8 +15,7 @@ import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>

@@ -50,7 +50,7 @@ public class Storage {
      * create archive folder (current date) in dataPath and move all current files
      * to it with no user input
      */
-    public static void archive() {
+    public static boolean archive() {
         LocalDate currentDate = LocalDate.now();
         String folderName = currentDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         File archiveFolder = new File(Settings.dataFolder, folderName);
@@ -63,6 +63,7 @@ public class Storage {
         }
         Collection.clear();
         logger.debug("Successfully archived music library to: '" + archiveFolder.getAbsolutePath() + "'");
+        return true;
     }
 
     /**
@@ -92,6 +93,10 @@ public class Storage {
     public static void unArchive(File unarchiveFolder) {
         if (unarchiveFolder == null || !unarchiveFolder.exists()) {
             logger.debug("null or non existant unarchive folder provided in unarchive");
+            return;
+        }
+        if (!unarchiveFolder.getParentFile().equals(Settings.dataFolder)) {
+            logger.debug(unarchiveFolder.toString() + " is outside of " + Settings.dataFolder.toString());
             return;
         }
         archive();

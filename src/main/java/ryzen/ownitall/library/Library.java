@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.Storage;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -18,9 +19,8 @@ import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
-import ryzen.ownitall.util.exceptions.QueryException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
+import ryzen.ownitall.util.WebTools.QueryException;
 
 /**
  * <p>

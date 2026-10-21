@@ -74,6 +74,21 @@ public class Logger extends ryzen.ownitall.util.Logger {
      *
      * @param model   a {@link org.springframework.ui.Model} object
      * @param message a {@link java.lang.String} object
+     */
+    public void error(Model model, String message) {
+        if (is(Level.ERROR)) {
+            model.addAttribute("error", message);
+        }
+        super.log(Level.ERROR, message, null);
+    }
+
+    /**
+     * <p>
+     * error.
+     * </p>
+     *
+     * @param model   a {@link org.springframework.ui.Model} object
+     * @param message a {@link java.lang.String} object
      * @param error   a {@link java.lang.Throwable} object
      */
     public void error(Model model, String message, Throwable error) {

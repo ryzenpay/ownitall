@@ -154,7 +154,9 @@ public class CollectionMenu {
         fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist Name");
-        mainArtist.setValue(song.getMainArtist().getName());
+        if (song.getMainArtist() != null) {
+            mainArtist.setValue(song.getMainArtist().getName());
+        }
         fields.add(mainArtist);
         return Templates.form(model, "Edit Liked Song", fields, "/collection/likedsongs/" + song.hashCode(),
                 callback);
@@ -215,7 +217,7 @@ public class CollectionMenu {
     public String addPlaylistForm(Model model,
             @RequestParam(value = "callback", defaultValue = "/collection/browse") String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
-        FormVariable playlistName = new FormVariable("playistName");
+        FormVariable playlistName = new FormVariable("playlistName");
         playlistName.setName("Name");
         playlistName.setRequired(true);
         fields.add(playlistName);
@@ -262,17 +264,20 @@ public class CollectionMenu {
             return "redirect:" + callback;
         }
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
-        FormVariable name = new FormVariable("playistName");
+        FormVariable name = new FormVariable("playlistName");
         name.setName("Name");
         name.setRequired(true);
         name.setValue(playlist.getName());
         fields.add(name);
         FormVariable coverImage = new FormVariable("coverImage");
         coverImage.setName("Cover Image URL");
-        coverImage.setValue(playlist.getCoverImage().toString());
+        if (playlist.getCoverImage() != null) {
+            coverImage.setValue(playlist.getCoverImage().toString());
+        }
         fields.add(coverImage);
-        return Templates.form(model, "Edit Playlist '" + playlist.getName(), fields,
-                "/collection/playlist/" + playlist.getName(), callback);
+        // the handler binds {playlist} as an int hashCode, the name never resolved
+        return Templates.form(model, "Edit Playlist '" + playlist.getName() + "'", fields,
+                "/collection/playlist/" + playlist.hashCode(), callback);
     }
 
     @PostMapping("/collection/playlist/{playlist}")
@@ -404,7 +409,9 @@ public class CollectionMenu {
         fields.add(name);
         FormVariable mainArtist = new FormVariable("artistName");
         mainArtist.setName("Main Artist Name");
-        mainArtist.setValue(song.getMainArtist().toString());
+        if (song.getMainArtist() != null) {
+            mainArtist.setValue(song.getMainArtist().toString());
+        }
         fields.add(mainArtist);
         return Templates.form(model, "Edit Playlist '" + playlist.getName() + "'' Song '" + song.getName() + "'",
                 fields,

@@ -17,11 +17,14 @@ import org.apache.logging.log4j.core.config.Configurator;
  * @author ryzen
  */
 public class Logger {
-    /** Constant <code>globalLevel</code> */
-    public static Level globalLevel;
+    /** defaults to the log4j2 Root level so logging works before -l overrides it */
+    public static Level globalLevel = Level.INFO;
     private static Stack<Map.Entry<Level, String>> globalHistory = new Stack<>();
     private Stack<Map.Entry<Level, String>> history = new Stack<>();
     private static final int historySize = 5;
+    // the web UI is long lived and every log line lands in globalHistory, so it needs
+    // a cap of its own or the process retains every message forever
+    private static final int globalHistorySize = 250;
     private org.apache.logging.log4j.Logger logger;
 
     /**
@@ -151,6 +154,17 @@ public class Logger {
      * </p>
      *
      * @param message a {@link java.lang.String} object
+     */
+    public void error(String message) {
+        this.log(Level.ERROR, message, null);
+    }
+
+    /**
+     * <p>
+     * error.
+     * </p>
+     *
+     * @param message a {@link java.lang.String} object
      * @param error   a {@link java.lang.Throwable} object
      */
     public void error(String message, Throwable error) {
@@ -165,14 +179,7 @@ public class Logger {
      * @return a {@link java.util.LinkedHashSet} object
      */
     public static LinkedHashSet<Entry<Level, String>> getGlobalLogs() {
-        LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
-        for (Entry<Level, String> entry : globalHistory) {
-            // log level or higher
-            if (entry.getKey().intLevel() <= globalLevel.intLevel()) {
-                logs.add(entry);
-            }
-        }
-        return logs;
+        return filterHistory(globalHistory, globalLevel);
     }
 
     /**
@@ -183,12 +190,35 @@ public class Logger {
      * @param level a {@link org.apache.logging.log4j.Level} object
      */
     public static void printLogs(Level level) {
-        for (Entry<Level, String> entry : globalHistory) {
-            // log level or higher
-            if (entry.getKey().intLevel() <= level.intLevel()) {
-                System.out.println("[" + entry.getKey().toString().toUpperCase() + "] " + entry.getValue());
+        for (Entry<Level, String> entry : filterHistory(globalHistory, level)) {
+            System.out.println("[" + entry.getKey().toString().toUpperCase() + "] " + entry.getValue());
+        }
+    }
+
+    /**
+     * copy out the entries logged at level or higher
+     *
+     * @param source a {@link java.util.Stack} object
+     * @param level  a {@link org.apache.logging.log4j.Level} object
+     * @return a {@link java.util.LinkedHashSet} object
+     */
+    private static LinkedHashSet<Entry<Level, String>> filterHistory(Stack<Entry<Level, String>> source,
+            Level level) {
+        LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
+        if (level == null) {
+            System.err.println("Log level not set");
+            return logs;
+        }
+        // the web UI polls the history while worker threads are still logging into it
+        synchronized (source) {
+            for (Entry<Level, String> entry : source) {
+                // log level or higher
+                if (entry.getKey().intLevel() <= level.intLevel()) {
+                    logs.add(entry);
+                }
             }
         }
+        return logs;
     }
 
     /**
@@ -199,22 +229,22 @@ public class Logger {
      * @return a {@link java.util.LinkedHashSet} object
      */
     public LinkedHashSet<Entry<Level, String>> getLogs() {
-        LinkedHashSet<Entry<Level, String>> logs = new LinkedHashSet<>();
-        for (Entry<Level, String> entry : history) {
-            // log level or higher
-            if (entry.getKey().intLevel() <= globalLevel.intLevel()) {
-                logs.add(entry);
-            }
-        }
-        return logs;
+        return filterHistory(history, globalLevel);
     }
 
     private void addLog(Entry<Level, String> entry) {
-        if (history.size() >= historySize) {
-            history.remove(0);
+        synchronized (history) {
+            if (history.size() >= historySize) {
+                history.remove(0);
+            }
+            history.add(entry);
         }
-        history.add(entry);
-        globalHistory.add(entry);
+        synchronized (globalHistory) {
+            if (globalHistory.size() >= globalHistorySize) {
+                globalHistory.remove(0);
+            }
+            globalHistory.add(entry);
+        }
     }
 
     /**
@@ -223,6 +253,8 @@ public class Logger {
      * </p>
      */
     public static void clearLogs() {
-        globalHistory.clear();
+        synchronized (globalHistory) {
+            globalHistory.clear();
+        }
     }
 }

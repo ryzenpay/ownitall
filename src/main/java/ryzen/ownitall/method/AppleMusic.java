@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
-import ryzen.ownitall.util.exceptions.QueryException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
+import ryzen.ownitall.util.WebTools.QueryException;;
 
 // its paid LOL
 public class AppleMusic implements Import {

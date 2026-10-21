@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
@@ -31,8 +32,7 @@ import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>
@@ -45,7 +45,8 @@ import ryzen.ownitall.util.exceptions.MissingSettingException;
 public class MethodMenu {
     private static final Logger logger = new Logger(MethodMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static Method method;
+    // read by the interceptor and the progress poll from other request threads
+    private static volatile Method method;
 
     public static Method getMethod() {
         return method;

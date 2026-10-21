@@ -259,7 +259,8 @@ public class Input {
      * @throws java.lang.InterruptedException - when user interrupts
      */
     public void getEnter() throws InterruptedException {
-        if (!nonInteractive.isEmpty()) {
+        // nonInteractive stays null in interactive mode, where there is nothing queued
+        if (nonInteractive != null && !nonInteractive.isEmpty()) {
             return;
         }
         this.getString();

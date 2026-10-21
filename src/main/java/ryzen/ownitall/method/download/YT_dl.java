@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.method.Youtube;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>

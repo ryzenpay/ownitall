@@ -56,8 +56,11 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/archive")
     public String optionArchive(Model model) {
-        Storage.archive();
-        logger.info(model, "Successfully archived");
+        if (Storage.archive()) {
+            logger.info(model, "Successfully archived");
+        } else {
+            logger.error(model, "Archiving failed, the current collection was kept intact");
+        }
         return toolsMenu(model);
     }
 

@@ -5,11 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.MenuClosed;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.Menu.MenuClosed;
 
 /**
  * <p>

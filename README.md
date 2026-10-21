@@ -131,9 +131,14 @@ please fix any of the errors it throws as they show incomplete documentation
 `mvn site`
 
 ## Compile new jar file
-run the command `mvn clean compile assembly:single`  
-look for the compiled `.jar` file in `target` directory  
-run the compiled with `java -jar target/ownitall-<VERSION>-jar-with-dependencies.jar`
+run the command `mvn clean package` in the root of the repository
+this produces two jars in `target`:
+- `ownitall-<VERSION>.jar`, the plain classes jar
+- `ownitall-<VERSION>-app.jar`, the runnable fat jar (Spring Boot repackaged, all dependencies nested inside)
+
+run the compiled jar with `java -jar target/ownitall-<VERSION>-app.jar`
+
+`mvn verify` additionally runs the build-integrity checks (enforcer).
 
 ## JRE Requirements
 current java version is 17, this can be installed from the official website: https://www.java.com/download/ie_manual.jsp  

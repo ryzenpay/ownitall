@@ -9,7 +9,7 @@ import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.MenuClosed;
+import ryzen.ownitall.util.Menu.MenuClosed;
 
 /**
  * <p>
@@ -43,8 +43,11 @@ public class ToolsMenu {
     }
 
     private void optionArchive() {
-        Storage.archive();
-        logger.info("Successfully archived");
+        if (Storage.archive()) {
+            logger.info("Successfully archived");
+        } else {
+            logger.error("Archiving failed, the current collection was kept intact");
+        }
     }
 
     private void optionUnArchive() {

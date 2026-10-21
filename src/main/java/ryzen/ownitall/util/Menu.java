@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 
-import ryzen.ownitall.util.exceptions.MenuClosed;
-
 /**
  * <p>
  * Menu class.
@@ -76,22 +74,19 @@ public class Menu {
             return null;
         }
         ArrayList<String> options = new ArrayList<>(setOptions);
-        int i = 1;
+        options.add(0, "Exit");
         int choice;
         while (true) {
             clearScreen();
             System.out.println("[" + menuName + "] Choose an option from the following: ");
-            i = 1;
-            for (String option : options) {
-                System.out.println("[" + i + "] " + option);
-                i++;
+            for (int i = 1; i < options.size(); i++) {
+                System.out.println("[" + i + "] " + options.get(i));
             }
-            options.add(0, "Exit");
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
             try {
                 choice = Input.request().getInt();
-                if (choice < 0 || choice > options.size()) {
+                if (choice < 0 || choice >= options.size()) {
                     System.err.println("Incorrect option, try again");
                     System.out.print("Enter your choice: ");
                 } else {
@@ -122,26 +117,24 @@ public class Menu {
             return null;
         }
         ArrayList<String> options = new ArrayList<>(setOptions.keySet());
-        int i = 1;
+        options.add(0, "Exit");
         int choice;
         while (true) {
             clearScreen();
             System.out.println("[" + menuName + "] Choose an option from the following: ");
-            i = 1;
-            for (String option : options) {
+            for (int i = 1; i < options.size(); i++) {
+                String option = options.get(i);
                 Object object = setOptions.get(option);
                 if (object == null) {
                     object = "";
                 }
                 System.out.println("[" + i + "] " + option + ": " + object.toString());
-                i++;
             }
-            options.add(0, "Exit");
             System.out.println("[0] Exit");
             System.out.print("Enter your choice: ");
             try {
                 choice = Input.request().getInt();
-                if (choice < 0 || choice > options.size()) {
+                if (choice < 0 || choice >= options.size()) {
                     System.err.println("Incorrect option, try again");
                     System.out.print("Enter your choice: ");
                 } else {
@@ -154,6 +147,27 @@ public class Menu {
                 logger.debug("Interrupted while getting menu '" + menuName + "' option");
                 throw new MenuClosed(e);
             }
+        }
+    }
+
+    public static class MenuClosed extends Exception {
+        /**
+         * <p>
+         * Constructor for MenuClosed.
+         * </p>
+         */
+        public MenuClosed() {
+        }
+
+        /**
+         * <p>
+         * Constructor for MenuClosed.
+         * </p>
+         *
+         * @param e a {@link java.lang.Throwable} object
+         */
+        public MenuClosed(Throwable e) {
+            super(e);
         }
     }
 }

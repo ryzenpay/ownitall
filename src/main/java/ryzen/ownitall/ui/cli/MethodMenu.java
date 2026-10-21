@@ -5,15 +5,15 @@ import java.util.LinkedHashSet;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
+import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.method.Method;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.MenuClosed;
-import ryzen.ownitall.util.exceptions.MissingSettingException;
+import ryzen.ownitall.util.Menu.MenuClosed;
+import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>

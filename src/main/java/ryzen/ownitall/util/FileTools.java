@@ -46,6 +46,10 @@ public class FileTools {
         }
         String fileName = file.getName();
         int extensionIndex = fileName.lastIndexOf('.');
+        if (extensionIndex == -1 || extensionIndex == fileName.length() - 1) {
+            logger.debug("file '" + fileName + "' has no extension");
+            return null;
+        }
         return fileName.substring(extensionIndex + 1).toLowerCase();
     }
 

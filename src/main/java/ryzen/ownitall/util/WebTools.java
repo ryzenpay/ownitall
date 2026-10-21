@@ -24,16 +24,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 
-import ryzen.ownitall.util.exceptions.AuthenticationException;
-import ryzen.ownitall.util.exceptions.QueryException;
-
 public class WebTools {
     private static final Logger logger = new Logger(WebTools.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final String redirectUri = "http%3A%2F%2Flocalhost%3A8081%2Foauth";
     public static long retries = 5;
     public static long timeout = 20; // timeout in seconds
-    private static long lastQueryTime = 0;
+    // read by queryPacer on every request thread, written by whichever thread last
+    // completed a query
+    private static volatile long lastQueryTime = 0;
 
     public static String generateCodeVerifier() {
         SecureRandom sr = new SecureRandom();
@@ -91,12 +90,12 @@ public class WebTools {
             try {
                 switch (connection.getResponseCode()) {
                     case 429: // too many requests
-                        if (attempt > retries) {
-                            throw new QueryException("Reached 5 retries");
+                        if (attempt >= retries) {
+                            throw new QueryException("Reached " + retries + " retries");
                         }
-                        logger.debug("Too many requests, trying again in 30 seconds...");
+                        logger.debug("Too many requests, trying again in " + timeout + " seconds...");
                         TimeUnit.SECONDS.sleep(timeout);
-                        return query(connection, attempt++);
+                        return query(connection, attempt + 1);
                     case 404:
                         logger.debug("Requested page '" + connection.getURL().toString() + "'does not exist");
                         return null;
@@ -288,5 +287,61 @@ public class WebTools {
             return null;
         }
         return lastSegment.substring(extensionIndex + 1).toLowerCase();
+    }
+
+    // exceptions
+    public static class AuthenticationException extends Exception {
+        /**
+         * <p>
+         * Constructor for AuthenticationException.
+         * </p>
+         *
+         * @param message a {@link java.lang.String} object
+         */
+        public AuthenticationException(String message) {
+            super(message);
+        }
+
+        /**
+         * <p>
+         * Constructor for AuthenticationException.
+         * </p>
+         *
+         * @param e a {@link java.lang.Throwable} object
+         */
+        public AuthenticationException(Throwable e) {
+            super(e);
+        }
+
+        /**
+         * <p>
+         * Constructor for AuthenticationException.
+         * </p>
+         *
+         * @param message a {@link java.lang.String} object
+         * @param e       a {@link java.lang.Throwable} object
+         */
+        public AuthenticationException(String message, Throwable e) {
+            super(message, e);
+        }
+    }
+
+    public static class QueryException extends Exception {
+
+        public QueryException(String message) {
+            super(message);
+        }
+
+        public QueryException(Throwable e) {
+            super(e);
+        }
+
+        public QueryException(String message, Throwable e) {
+            super(message, e);
+        }
+
+        public QueryException(String code, String message) {
+            super("(" + code + ") " + message);
+        }
     }
 }

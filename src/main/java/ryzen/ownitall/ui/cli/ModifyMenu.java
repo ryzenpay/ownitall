@@ -16,8 +16,8 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
+import ryzen.ownitall.util.Menu.MenuClosed;
 import ryzen.ownitall.util.ProgressBar;
-import ryzen.ownitall.util.exceptions.MenuClosed;
 
 /**
  * <p>

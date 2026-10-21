@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import ryzen.ownitall.Main;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
-import ryzen.ownitall.util.exceptions.MenuClosed;
+import ryzen.ownitall.util.Menu.MenuClosed;
 
 /**
  * <p>
