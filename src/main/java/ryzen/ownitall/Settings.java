@@ -11,7 +11,7 @@ import ryzen.ownitall.integrations.Upload;
 import ryzen.ownitall.integrations.Youtube;
 import ryzen.ownitall.integrations.download.Download;
 import ryzen.ownitall.integrations.download.SoulSeek;
-import ryzen.ownitall.integrations.download.YT_dl;
+import ryzen.ownitall.integrations.download.YTdlp;
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.util.Logger;
 
@@ -218,29 +218,18 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * local library path
      */
-    @Group({ Download.class, Upload.class, YT_dl.class, SoulSeek.class })
+    @Group({ Download.class, Upload.class, YTdlp.class, SoulSeek.class })
     @Name("Local Library")
     public static File localFolder = null;
+
     /**
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    @Group({ Download.class, YT_dl.class, SoulSeek.class })
+    @Group({ Download.class, YTdlp.class, SoulSeek.class })
     @Options(options = { "mp3", "flac", "wav" })
     @Name("Format (ex: mp3)")
     public static String downloadFormat = "mp3";
-    /**
-     * class representative of which download class to use
-     * default is YT_dl.class
-     */
-    @Group(Download.class)
-    @Options(options = { "YT_dl", "SoulSeek" })
-    @Name("Download Integration")
-    public static String downloadIntegration = "YT_dl";
-
-    @Group(YT_dl.class)
-    @Name("Search Youtube")
-    public static boolean ytdlUseYoutube = false;
 
     /**
      * enable multithreading
@@ -249,27 +238,31 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     ///
     ///
-    /// YT_DL
+    /// YTdlp
     ///
     ///
+    @Group(YTdlp.class)
+    @Name("Search Youtube")
+    public static boolean ytdlpUseYoutube = false;
+
     /**
      * option to hardcode cookies file
      */
-    @Name("YT_DL cookie file")
-    public static File yt_dlCookieFile = null;
+    @Name("YTdlp cookie file")
+    public static File ytdlpCookieFile = null;
 
     /**
      * option to hardcode browser to get cookies from
      * options: chrome, firefox, check yt-dlp docs,...
      */
-    @Name("YT_DL cookie browser")
-    public static String yt_dlCookieBrowser = "";
+    @Name("YTdlp cookie browser")
+    public static String ytdlpCookieBrowser = "";
 
     /**
      * ffmpeg path (required for youtubedl)
      * 
      */
-    @Group(YT_dl.class)
+    @Group(YTdlp.class)
     @Name("FFMPEG file/folder")
     public static File ffmpegFile = null;
 
@@ -277,16 +270,16 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * youtube dl installation path
      * 
      */
-    @Group(YT_dl.class)
-    @Name("YT_DL binary")
-    public static File yt_dlFile = null;
+    @Group(YTdlp.class)
+    @Name("YTdlp binary")
+    public static File ytdlpFile = null;
 
     /**
      * download quality of music
      * 0 - best, 10 - worst
      * also respectfully increases file size
      */
-    public static int yt_dlQuality = 5;
+    public static int ytdlpQuality = 5;
 
     ///
     ///

@@ -24,9 +24,6 @@ import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.integrations.Upload;
-import ryzen.ownitall.integrations.interfaces.Export;
-import ryzen.ownitall.integrations.interfaces.Sync;
-import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
@@ -36,22 +33,26 @@ import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
+ * Base of every download integration, a download integration only has to provide
+ * the binary command to download a single song and how to read its exit codes,
+ * everything else (threading, metadata, cleanup, sync) is shared here.
+ * <p>
+ * Implementations are their own method (ex: YTdlp, SoulSeek), so this class
+ * deliberately implements no interface to keep it out of the method menus.
+ * </p>
  * <p>
  * Download class.
  * </p>
  *
  * @author ryzen
  */
-public class Download implements Sync, Export {
+public abstract class Download {
     // more download sources
     // qobuz
     // deezer
     // tidal
     private static final Logger logger = new Logger(Download.class);
     private ExecutorService executor;
-    // currently needed to prevent infinite looping of constructors
-    private static boolean initiation = false;
-    private DownloadInterface downloadClass;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo"));
     static {
@@ -63,45 +64,35 @@ public class Download implements Sync, Export {
     private static final int retries = 3;
 
     /**
-     * <p>
-     * Constructor for Download.
-     * </p>
-     *
-     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
-     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+     * shared setup for every download method, download methods validate their own
+     * settings and binaries in their own constructors
      */
-    public Download() throws MissingSettingException, AuthenticationException {
-        if (initiation) {
-            return;
-        }
-        if (Settings.downloadIntegration.isEmpty()) {
-            throw new MissingSettingException("Missing downloadIntegration");
-        }
-        try {
-            Class<? extends DownloadInterface> downloadClass = ClassLoader.load().getSubClass(DownloadInterface.class,
-                    Settings.downloadIntegration);
-            try {
-                logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
-                initiation = true;
-                this.downloadClass = downloadClass.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof MissingSettingException) {
-                    throw new MissingSettingException(e);
-                }
-                if (cause instanceof AuthenticationException) {
-                    throw new AuthenticationException(e);
-                }
-                logger.error("Exception while setting up download class '" + downloadClass.getSimpleName() + "'", e);
-                throw new InvalidDownloadException(downloadClass.getName());
-            }
-        } catch (InvalidDownloadException e) {
-            logger.error("Invalid or missing download class set in settings", e);
-            throw new AuthenticationException(e);
-        } finally {
-            initiation = false;
-        }
+    protected Download() {
     }
+
+    /**
+     * build the command of the download binary for a single song
+     *
+     * @param song         - song to download
+     * @param downloadFile - temporary file the binary must write to, it gets moved
+     *                     to its collection path once done
+     * @return             the command to run, null if the song cannot be downloaded
+     * @throws java.lang.InterruptedException if any.
+     */
+    public abstract ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException;
+
+    /**
+     * interpret a non zero exit code of the download binary
+     *
+     * @param exitCode - exit code of the download binary
+     * @throws ryzen.ownitall.integrations.download.Download.DownloadException if the
+     *                                                                         exit
+     *                                                                         code
+     *                                                                         makes
+     *                                                                         retrying
+     *                                                                         pointless
+     */
+    public abstract void handleError(int exitCode) throws DownloadException;
 
     /**
      * <p>
@@ -177,7 +168,7 @@ public class Download implements Sync, Export {
         try {
             File downloadFile = new File(Settings.localFolder,
                     String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
-            ArrayList<String> command = this.downloadClass.createCommand(song, downloadFile);
+            ArrayList<String> command = this.createCommand(song, downloadFile);
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
@@ -198,7 +189,7 @@ public class Download implements Sync, Export {
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     logger.debug("Attempt: " + i);
-                    this.downloadClass.handleError(exitCode);
+                    this.handleError(exitCode);
                     logger.debug(
                             "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
                 }
@@ -221,7 +212,7 @@ public class Download implements Sync, Export {
             logger.debug("Interrupted while downloading song");
             InterruptionHandler.forceInterruption();
         } catch (IOException e) {
-            logger.error("Exception preparing " + this.downloadClass.getClass().getSimpleName() + ": ", e);
+            logger.error("Exception preparing " + this.getClass().getSimpleName() + ": ", e);
         } catch (DownloadException e) {
             logger.warn("Exception while downloading: " + e.getMessage());
         }
@@ -365,11 +356,12 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * clean up local liked songs before downloading
+     *
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    @Override
     public void syncLikedSongs() throws InterruptedException, AuthenticationException, MissingSettingException {
         logger.debug("Getting local liked songs to remove mismatches");
         LikedSongs likedSongs = new Upload().getLikedSongs();
@@ -393,11 +385,10 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * orchestrator of DownloadSong for all standalone liked songs
+     *
+     * @throws java.lang.InterruptedException if any.
      */
-    @Override
     public void uploadLikedSongs() throws InterruptedException {
         ArrayList<Song> songs = Collection.getStandaloneLikedSongs();
         Playlist likedSongsPlaylist = new Playlist(Settings.likedSongName);
@@ -416,11 +407,12 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * deletes entire playlists which are not in collection
+     *
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    @Override
     public void syncPlaylists() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.debug("Getting local playlists to remove mismatches");
         ArrayList<Playlist> playlists = new Upload().getPlaylists();
@@ -443,11 +435,10 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * orchestrator of downloadPlaylist
+     *
+     * @throws java.lang.InterruptedException if any.
      */
-    @Override
     public void uploadPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = Collection.getPlaylists();
         for (Playlist playlist : IPIterator.wrap(playlists, "Playlists", playlists.size())) {
@@ -456,11 +447,13 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * cleans up individual songs in a playlist
+     *
+     * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    @Override
     public void syncPlaylist(Playlist playlist) throws InterruptedException, MissingSettingException,
             AuthenticationException {
         if (playlist == null) {
@@ -495,11 +488,11 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * orchestrator for downloading a playlist
+     *
+     * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+     * @throws java.lang.InterruptedException if any.
      */
-    @Override
     public void uploadPlaylist(Playlist playlist) throws InterruptedException {
         if (playlist == null) {
             logger.debug("null playlist provided in downloadPlaylist");
@@ -520,11 +513,12 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * deletes entire albums which are not in collection
+     *
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    @Override
     public void syncAlbums() throws InterruptedException, MissingSettingException, AuthenticationException {
         logger.debug("Getting local albums to remove mismatches");
         ArrayList<Album> albums = new Upload().getAlbums();
@@ -546,11 +540,10 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * orchestrator for downloadAlbum
+     *
+     * @throws java.lang.InterruptedException if any.
      */
-    @Override
     public void uploadAlbums() throws InterruptedException {
         ArrayList<Album> albums = Collection.getAlbums();
         for (Album album : IPIterator.wrap(albums, "Albums", albums.size())) {
@@ -558,8 +551,14 @@ public class Download implements Sync, Export {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * cleans up individual songs in an album
+     *
+     * @param album a {@link ryzen.ownitall.classes.Album} object
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+     */
     public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException {
         if (album == null) {
             logger.debug("null album provided in albumSync");
@@ -587,12 +586,12 @@ public class Download implements Sync, Export {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * download an album
      * has its own folder
+     *
+     * @param album a {@link ryzen.ownitall.classes.Album} object
+     * @throws java.lang.InterruptedException if any.
      */
-    @Override
     public void uploadAlbum(Album album) throws InterruptedException {
         if (album == null) {
             logger.debug("null album provided in downloadAlbum");
@@ -612,14 +611,30 @@ public class Download implements Sync, Export {
         this.cleanFolder();
     }
 
-    public static class InvalidDownloadException extends Exception {
-
-        public InvalidDownloadException() {
-            super();
+    /**
+     * <p>
+     * DownloadException class.
+     * </p>
+     */
+    public static class DownloadException extends Exception {
+        /**
+         * <p>
+         * Constructor for DownloadException.
+         * </p>
+         *
+         * @param message a {@link java.lang.String} object
+         */
+        public DownloadException(String message) {
+            super(message);
         }
 
-        public InvalidDownloadException(String message) {
-            super(message);
+        /**
+         * <p>
+         * Constructor for DownloadException.
+         * </p>
+         */
+        public DownloadException() {
+            super();
         }
     }
 }

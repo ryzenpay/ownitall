@@ -7,18 +7,20 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.integrations.Youtube;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>
- * YT_dl class.
+ * YTdlp class.
  * </p>
  *
  * @author ryzen
  */
-public class YT_dl implements DownloadInterface {
-    private static final Logger logger = new Logger(YT_dl.class);
+public class YTdlp extends Download implements Sync, Export {
+    private static final Logger logger = new Logger(YTdlp.class);
     private Youtube youtube;
 
     /**
@@ -28,15 +30,15 @@ public class YT_dl implements DownloadInterface {
      * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
      * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    public YT_dl() throws MissingSettingException, AuthenticationException {
-        if (Settings.load().isGroupEmpty(YT_dl.class)) {
-            logger.debug("Empty YT_dl credentials found");
-            throw new MissingSettingException(YT_dl.class);
+    public YTdlp() throws MissingSettingException, AuthenticationException {
+        if (Settings.load().isGroupEmpty(YTdlp.class)) {
+            logger.debug("Empty YTdlp credentials found");
+            throw new MissingSettingException(YTdlp.class);
         }
-        if (!Settings.yt_dlFile.exists()) {
-            throw new AuthenticationException("YT_DL missing yt_dl binary");
+        if (!Settings.ytdlpFile.exists()) {
+            throw new AuthenticationException("YTdlp missing yt_dlp binary");
         }
-        if (Settings.ytdlUseYoutube) {
+        if (Settings.ytdlpUseYoutube) {
             this.youtube = new Youtube();
         }
     }
@@ -48,7 +50,7 @@ public class YT_dl implements DownloadInterface {
         }
         ArrayList<String> command = new ArrayList<>();
         // executables
-        command.add(Settings.yt_dlFile.getAbsolutePath());
+        command.add(Settings.ytdlpFile.getAbsolutePath());
         command.add("--ffmpeg-location");
         command.add(Settings.ffmpegFile.getAbsolutePath());
         // command.add("--concurrent-fragments");
@@ -69,18 +71,18 @@ public class YT_dl implements DownloadInterface {
         command.add("--audio-format");
         command.add(Settings.downloadFormat);
         command.add("--audio-quality");
-        command.add(Integer.toString(Settings.yt_dlQuality));
+        command.add(Integer.toString(Settings.ytdlpQuality));
         // command.add("--embed-metadata"); // metadata we have overwrites this
         // command.add("--no-write-comments");
         // download location
         command.add("--paths");
         command.add(downloadFile.getParent());
-        if (Settings.yt_dlCookieFile != null && Settings.yt_dlCookieFile.exists()) {
+        if (Settings.ytdlpCookieFile != null && Settings.ytdlpCookieFile.exists()) {
             command.add(1, "--cookies");
-            command.add(2, Settings.yt_dlCookieFile.getAbsolutePath());
-        } else if (!Settings.yt_dlCookieBrowser.isEmpty()) {
+            command.add(2, Settings.ytdlpCookieFile.getAbsolutePath());
+        } else if (!Settings.ytdlpCookieBrowser.isEmpty()) {
             command.add(1, "--cookies-from-browser");
-            command.add(2, Settings.yt_dlCookieBrowser);
+            command.add(2, Settings.ytdlpCookieBrowser);
         }
         command.add("--output");
         command.add("\"" + downloadFile.getName() + "\""); // https://github.com/ytdl-org/youtube-dl/issues/23115
@@ -120,7 +122,7 @@ public class YT_dl implements DownloadInterface {
         } else if (exitCode == 101) {
             throw new DownloadException("Download cancelled due to boundary criteria (101)");
         } else {
-            logger.warn("Unkown error while downloading yt_dlp song (" + exitCode + ")");
+            logger.warn("Unknown error while downloading yt_dlp song (" + exitCode + ")");
         }
     }
 }
