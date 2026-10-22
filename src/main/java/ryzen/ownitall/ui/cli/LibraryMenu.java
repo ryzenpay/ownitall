@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.library.Library.InvalidLibraryException;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
@@ -63,7 +64,7 @@ public class LibraryMenu {
                             + "': " + e.getMessage());
                     Library.clearCredentials(libraryClass);
                     setCredentials(libraryClass);
-                } catch (NoSuchMethodException e) {
+                } catch (InvalidLibraryException e) {
                     logger.error("library '" + libraryClass.getSimpleName() + "' does not exist", e);
                     break;
                 }

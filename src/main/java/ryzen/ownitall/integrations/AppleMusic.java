@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,7 +13,7 @@ import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Import;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.WebTools.AuthenticationException;

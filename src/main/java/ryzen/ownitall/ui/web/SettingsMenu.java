@@ -62,7 +62,7 @@ public class SettingsMenu {
      * optionChange.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      * @param choices  a {@link java.util.LinkedHashSet} object
      * @param callback a {@link java.lang.String} object
@@ -100,7 +100,7 @@ public class SettingsMenu {
      * login.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model     a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
      * @param variables a {@link java.util.LinkedHashMap} object
      */

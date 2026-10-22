@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -34,8 +34,8 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.integrations.interfaces.Import;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.method.interfaces.Import;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
@@ -57,8 +57,8 @@ public class Youtube implements Import {
     /**
      * default youtube constructor asking for user input
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public Youtube() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Youtube.class)) {
@@ -123,7 +123,7 @@ public class Youtube implements Import {
         String pageToken = null;
         try (IPIterator<?> pb = IPIterator.manual("Liked Songs", -1)) {
             do {
-                YouTube.Videos.List request = youtubeApi.videos()
+                YouTube.Videos.List request = this.youtubeApi.videos()
                         .list("snippet,contentDetails");
                 VideoListResponse response = request.setMyRating("like")
                         .setVideoCategoryId("10") // Category ID 10 is for Music
@@ -179,7 +179,7 @@ public class Youtube implements Import {
         ArrayList<Playlist> playlists = new ArrayList<>();
         try (IPIterator<?> pb = IPIterator.manual("Playlists", -1)) {
             do {
-                YouTube.Playlists.List playlistRequest = youtubeApi.playlists()
+                YouTube.Playlists.List playlistRequest = this.youtubeApi.playlists()
                         .list("snippet,contentDetails")
                         .setMine(true)
                         .setMaxResults(Settings.youtubePlaylistLimit)
@@ -207,7 +207,6 @@ public class Youtube implements Import {
      * get all songs from a playlist
      * 
      * @param playlistId - youtube id of playlist
-     * @param pageToken  - optional token to continue from (default to 0)
      * @return - arraylist of constructed Song
      * @throws InterruptedException - when user interrupts
      */
@@ -220,7 +219,7 @@ public class Youtube implements Import {
         String pageToken = null;
         try (IPIterator<?> pb = IPIterator.manual(playlistId, -1)) {
             do {
-                YouTube.PlaylistItems.List itemRequest = youtubeApi.playlistItems()
+                YouTube.PlaylistItems.List itemRequest = this.youtubeApi.playlistItems()
                         .list("snippet,contentDetails")
                         .setPlaylistId(playlistId)
                         .setMaxResults(Settings.youtubeSongLimit)
@@ -289,7 +288,7 @@ public class Youtube implements Import {
             return false;
         }
         try {
-            YouTube.Videos.List videoRequest = youtubeApi.videos()
+            YouTube.Videos.List videoRequest = this.youtubeApi.videos()
                     .list("snippet")
                     .setId(videoId);
 
@@ -316,7 +315,7 @@ public class Youtube implements Import {
             return null;
         }
         try {
-            YouTube.Videos.List videoRequest = youtubeApi.videos()
+            YouTube.Videos.List videoRequest = this.youtubeApi.videos()
                     .list("snippet")
                     .setId(videoId);
             VideoListResponse videoResponse = videoRequest.execute();

@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.download;
+package ryzen.ownitall.integrations.download;
 
 import java.io.File;
 import java.util.ArrayList;

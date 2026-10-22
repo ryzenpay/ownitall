@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.download;
+package ryzen.ownitall.integrations.download;
 
 public class DownloadException extends Exception {
 

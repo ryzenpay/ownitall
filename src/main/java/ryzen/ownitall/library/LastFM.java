@@ -35,7 +35,7 @@ public class LastFM extends Library {
      * default LastFM constructor
      * initializes all values and loads from cache
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException if any.
      */
     public LastFM() throws MissingSettingException {
         super();

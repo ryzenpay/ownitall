@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.download;
+package ryzen.ownitall.integrations.download;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.Youtube;
+import ryzen.ownitall.integrations.Youtube;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 
@@ -25,8 +25,8 @@ public class YT_dl implements DownloadInterface {
      * default download constructor
      * setting all settings / credentials
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public YT_dl() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(YT_dl.class)) {
@@ -92,8 +92,8 @@ public class YT_dl implements DownloadInterface {
         String searchQuery = null;
         if (song.getId("youtube") != null) {
             searchQuery = "https://youtube.com/watch?v=" + song.getId("youtube");
-        } else if (youtube != null) {
-            String id = youtube.getSongId(song);
+        } else if (this.youtube != null) {
+            String id = this.youtube.getSongId(song);
             if (id != null) {
                 searchQuery = "https://youtube.com/watch?v=" + id;
                 song.addId("youtube", id);

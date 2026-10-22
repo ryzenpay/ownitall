@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,10 +23,10 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
@@ -53,8 +53,8 @@ public class Jellyfin implements Import, Export, Sync {
      * Constructor for Jellyfin.
      * </p>
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public Jellyfin() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Jellyfin.class)) {

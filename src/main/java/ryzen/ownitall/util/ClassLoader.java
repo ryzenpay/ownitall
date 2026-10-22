@@ -11,7 +11,7 @@ public class ClassLoader {
     private static ClassLoader instance;
 
     private ClassLoader(String packageName) {
-        reflections = new Reflections(packageName);
+        this.reflections = new Reflections(packageName);
     }
 
     public static void init(String packageName) {
@@ -44,7 +44,7 @@ public class ClassLoader {
             logger.debug("null class provided in getSubClass");
             return null;
         }
-        for (Class<? extends T> subClass : reflections.getSubTypesOf(clazz)) {
+        for (Class<? extends T> subClass : this.reflections.getSubTypesOf(clazz)) {
             if (subClass.getSimpleName().equals(className)) {
                 return subClass;
             }

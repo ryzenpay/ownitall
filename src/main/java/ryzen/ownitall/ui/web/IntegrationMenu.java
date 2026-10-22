@@ -25,10 +25,11 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.Method;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.integrations.Integration;
+import ryzen.ownitall.integrations.Integration.InvalidIntegrationException;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
 import ryzen.ownitall.util.ProgressBar;
@@ -36,33 +37,33 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>
- * MethodMenu class.
+ * IntegrationMenu class.
  * </p>
  *
  * @author ryzen
  */
 @Controller
-public class MethodMenu {
-    private static final Logger logger = new Logger(MethodMenu.class);
+public class IntegrationMenu {
+    private static final Logger logger = new Logger(IntegrationMenu.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     // read by the interceptor and the progress poll from other request threads
-    private static volatile Method method;
+    private static volatile Integration integration;
 
-    public static Method getMethod() {
-        return method;
+    public static Integration getIntegration() {
+        return integration;
     }
 
     /**
      * <p>
-     * methodMenu.
+     * IntegrationMenu.
      * </p>
      *
      * @param model    a {@link org.springframework.ui.Model} object
      * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method")
-    public String methodMenu(Model model,
+    @GetMapping("/integration")
+    public String integrationMenu(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
         Class<?> filter;
@@ -73,47 +74,47 @@ public class MethodMenu {
         } else {
             filter = Sync.class;
         }
-        for (Class<?> currMethod : Method.getMethods(filter)) {
-            String methodName = currMethod.getSimpleName();
-            options.put(methodName, "/method/" + methodName + "?callback=" + callback);
+        for (Class<?> clazz : Integration.getIntegrations(filter)) {
+            String name = clazz.getSimpleName();
+            options.put(name, "/integration/" + name + "?callback=" + callback);
         }
-        return Templates.menu(model, "Method Menu", options, "/method/return");
+        return Templates.menu(model, "Integration Menu", options, "/integration/return");
     }
 
     /**
      * <p>
-     * Setter for the field <code>method</code>.
+     * Setter for the field <code>integration</code>.
      * </p>
      *
      * @param model    a {@link org.springframework.ui.Model} object
-     * @param method   a {@link java.lang.String} object
+     * @param name     a {@link java.lang.String} object
      * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/{method}")
-    public String setMethod(Model model, @PathVariable(value = "method") String methodName,
+    @GetMapping("/integration/{integration}")
+    public String setIntegration(Model model, @PathVariable(value = "integration") String name,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<?> methodClass = Method.getMethod(methodName);
-        if (methodClass != null) {
+        Class<?> clazz = Integration.getIntegration(name);
+        if (clazz != null) {
             try {
-                method = new Method(methodClass);
+                integration = new Integration(clazz);
                 return "redirect:" + callback;
             } catch (MissingSettingException e) {
-                logger.warn(model, "Missing settings to set up '" + methodClass.getSimpleName() + "': "
+                logger.warn(model, "Missing settings to set up '" + clazz.getSimpleName() + "': "
                         + e.getMessage());
-                return this.loginForm(model, methodName, "/method/" + methodName + "?callback=" + callback);
+                return this.loginForm(model, name, "/integration/" + name + "?callback=" + callback);
             } catch (AuthenticationException e) {
-                logger.warn(model, "Failed to authenticate into method '" + method + "': " + e.getMessage());
-                return this.loginForm(model, methodClass
+                logger.warn(model, "Failed to authenticate into integration '" + integration + "': " + e.getMessage());
+                return this.loginForm(model, clazz
                         .getSimpleName(),
-                        "/method/" + method + "?callback=" + callback);
-            } catch (NoSuchMethodException e) {
-                logger.error(model, "Invalid method '" + method + "' provided", e);
+                        "/integration/" + integration + "?callback=" + callback);
+            } catch (InvalidIntegrationException e) {
+                logger.error(model, "Invalid integration '" + integration + "' provided", e);
             }
         } else {
-            logger.warn(model, "Unsupported method class '" + method + "'");
+            logger.warn(model, "Unsupported integration class '" + integration + "'");
         }
-        return methodMenu(model, callback);
+        return integrationMenu(model, callback);
     }
 
     /**
@@ -122,23 +123,23 @@ public class MethodMenu {
      * </p>
      *
      * @param model    a {@link org.springframework.ui.Model} object
+     * @param name     a {@link java.lang.String} object
      * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
-     * @param method a {@link java.lang.String} object
      */
-    @GetMapping("/method/login/{method}")
+    @GetMapping("/integration/login/{integration}")
     public String loginForm(Model model,
-            @PathVariable(value = "method") String methodName,
+            @PathVariable(value = "integration") String name,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<?> methodClass = Method.getMethod(methodName);
-        if (methodClass == null) {
-            logger.warn(model, "Unsupported method '" + methodName + "'provided");
-            return methodMenu(model, callback);
+        Class<?> clazz = Integration.getIntegration(name);
+        if (clazz == null) {
+            logger.warn(model, "Unsupported integration '" + name + "'provided");
+            return integrationMenu(model, callback);
         }
         Settings settings = Settings.load();
-        LinkedHashSet<String> credentials = settings.getGroup(methodClass);
+        LinkedHashSet<String> credentials = settings.getGroup(clazz);
         if (credentials == null || credentials.isEmpty()) {
-            logger.info(model, "Method '" + methodClass.getSimpleName() + "' does not have credentials");
+            logger.info(model, "Integration '" + clazz.getSimpleName() + "' does not have credentials");
             return "redirect:" + callback;
         }
         return SettingsMenu.changeSettingForm(model, credentials, callback);
@@ -149,18 +150,19 @@ public class MethodMenu {
      * importMenu.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/import")
+    @GetMapping("/integration/import")
     public String importMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
-        logger.info(model, "Current method: " + method.getMethodName());
+            @RequestParam(value = "callback", defaultValue = "/integration/return") String callback) {
+        logger.info(model, "Current integration: " + integration.getIntegrationName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import Library", "/method/import/collection");
-        options.put("Import Liked Songs", "/method/import/likedsongs");
-        options.put("Import Album(s)", "/method/import/albums/menu");
-        options.put("Import Playlist(s)", "/method/import/playlists/menu");
+        options.put("Import Library", "/integration/import/collection");
+        options.put("Import Liked Songs", "/integration/import/likedsongs");
+        options.put("Import Album(s)", "/integration/import/albums/menu");
+        options.put("Import Playlist(s)", "/integration/import/playlists/menu");
         return Templates.menu(model, "Import Menu", options, callback);
     }
 
@@ -169,14 +171,15 @@ public class MethodMenu {
      * optionImportCollection.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/import/collection")
+    @GetMapping("/integration/import/collection")
     public String optionImportCollection(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
-        return Templates.process(model, "Importing '" + method.getMethodName() + "' collection",
-                "/method/import/collection", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
+        return Templates.process(model, "Importing '" + integration.getIntegrationName() + "' collection",
+                "/integration/import/collection", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -186,9 +189,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/collection")
+    @PostMapping("/integration/import/collection")
     public ResponseEntity<Void> importCollection() {
-        method.importCollection();
+        integration.importCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -197,14 +200,15 @@ public class MethodMenu {
      * optionImportLikedSongs.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/import/likedsongs")
+    @GetMapping("/integration/import/likedsongs")
     public String optionImportLikedSongs(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
-        return Templates.process(model, "Importing '" + method.getMethodName() + "' liked songs",
-                "/method/import/likedsongs", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
+        return Templates.process(model, "Importing '" + integration.getIntegrationName() + "' liked songs",
+                "/integration/import/likedsongs", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -214,19 +218,19 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/likedsongs")
+    @PostMapping("/integration/import/likedsongs")
     public ResponseEntity<Void> importLikedSongs() {
-        method.importLikedSongs();
+        integration.importLikedSongs();
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/method/import/albums/menu")
+    @GetMapping("/integration/import/albums/menu")
     public String importAlbumsMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All " + method.getMethodName() + " Albums", "/method/import/albums");
-        options.put("Single " + method.getMethodName() + " Album",
-                "/method/import/album/form?callback=/method/import");
+        options.put("All " + integration.getIntegrationName() + " Albums", "/integration/import/albums");
+        options.put("Single " + integration.getIntegrationName() + " Album",
+                "/integration/import/album/form?callback=/integration/import");
         return Templates.menu(model, "Import Album(s) Menu", options, callback);
     }
 
@@ -235,14 +239,15 @@ public class MethodMenu {
      * optionImportAlbums.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/import/albums")
+    @GetMapping("/integration/import/albums")
     public String optionImportAlbums(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
-        return Templates.process(model, "Importing '" + method.getMethodName() + "' albums",
-                "/method/import/albums", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
+        return Templates.process(model, "Importing '" + integration.getIntegrationName() + "' albums",
+                "/integration/import/albums", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -252,18 +257,18 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/albums")
+    @PostMapping("/integration/import/albums")
     public ResponseEntity<Void> importAlbums() {
-        method.importAlbums();
+        integration.importAlbums();
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/method/import/album/form")
+    @GetMapping("/integration/import/album/form")
     public String importAlbumForm(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable id = new FormVariable("id");
-        id.setName(method.getMethodName() + " Album ID");
+        id.setName(integration.getIntegrationName() + " Album ID");
         id.setRequired(true);
         fields.add(id);
         FormVariable name = new FormVariable("name");
@@ -272,7 +277,7 @@ public class MethodMenu {
         FormVariable artistName = new FormVariable("artistName");
         artistName.setName("Album Main Artist Name");
         fields.add(artistName);
-        return Templates.form(model, "Get Album", fields, "/method/import/album", callback);
+        return Templates.form(model, "Get Album", fields, "/integration/import/album", callback);
     }
 
     /**
@@ -280,28 +285,29 @@ public class MethodMenu {
      * importAlbum.
      * </p>
      *
-     * @param id a {@link java.lang.String} object
+     * @param model     a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/album")
+    @PostMapping("/integration/import/album")
     public ResponseEntity<Void> importAlbum(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         if (variables.get("id") == null) {
             logger.warn(model, "Missing album id in variables");
             return ResponseEntity.badRequest().build();
         }
-        method.importAlbum(variables.get("id"), variables.get("name"), variables.get("artistName"));
+        integration.importAlbum(variables.get("id"), variables.get("name"), variables.get("artistName"));
         logger.info(model,
-                "Successfully imported " + method.getMethodName() + " album '" + variables.get("id") + "'");
+                "Successfully imported " + integration.getIntegrationName() + " album '" + variables.get("id") + "'");
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/method/import/playlists/menu")
+    @GetMapping("/integration/import/playlists/menu")
     public String importPlaylistsMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All " + method.getMethodName() + " Playlists", "/method/import/playlists");
-        options.put("Single " + method.getMethodName() + " Playlist",
-                "/method/import/playlist/form?callback=/method/import");
+        options.put("All " + integration.getIntegrationName() + " Playlists", "/integration/import/playlists");
+        options.put("Single " + integration.getIntegrationName() + " Playlist",
+                "/integration/import/playlist/form?callback=/integration/import");
         return Templates.menu(model, "Import Album(s) Menu", options, callback);
     }
 
@@ -310,14 +316,15 @@ public class MethodMenu {
      * optionImportPlaylists.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/import/playlists")
+    @GetMapping("/integration/import/playlists")
     public String optionImportPlaylists(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/import") String callback) {
-        return Templates.process(model, "Importing '" + method.getMethodName() + "' playlists",
-                "/method/import/playlists", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/import") String callback) {
+        return Templates.process(model, "Importing '" + integration.getIntegrationName() + "' playlists",
+                "/integration/import/playlists", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -327,24 +334,24 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/playlists")
+    @PostMapping("/integration/import/playlists")
     public ResponseEntity<Void> importPlaylists() {
-        method.importPlaylists();
+        integration.importPlaylists();
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/method/import/playlist/form")
+    @GetMapping("/integration/import/playlist/form")
     public String importPlaylistForm(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
         LinkedHashSet<FormVariable> fields = new LinkedHashSet<>();
         FormVariable id = new FormVariable("id");
-        id.setName(method.getMethodName() + " Playlist ID");
+        id.setName(integration.getIntegrationName() + " Playlist ID");
         id.setRequired(true);
         fields.add(id);
         FormVariable name = new FormVariable("name");
         name.setName("Playlist Name");
         fields.add(name);
-        return Templates.form(model, "Get Playlist", fields, "/method/import/playlist", callback);
+        return Templates.form(model, "Get Playlist", fields, "/integration/import/playlist", callback);
     }
 
     /**
@@ -352,18 +359,20 @@ public class MethodMenu {
      * importPlaylists.
      * </p>
      *
-     * @param id a {@link java.lang.String} object
+     * @param model     a {@link org.springframework.ui.Model} object
+     * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/import/playlist")
+    @PostMapping("/integration/import/playlist")
     public ResponseEntity<Void> importPlaylist(Model model, @RequestBody LinkedHashMap<String, String> variables) {
         if (variables.get("id") == null) {
             logger.warn(model, "missing playlist id in variables");
             return ResponseEntity.badRequest().build();
         }
-        method.importPlaylist(variables.get("id"), variables.get("name"));
+        integration.importPlaylist(variables.get("id"), variables.get("name"));
         logger.info(model,
-                "Successfully imported " + method.getMethodName() + " playlist '" + variables.get("id") + "'");
+                "Successfully imported " + integration.getIntegrationName() + " playlist '" + variables.get("id")
+                        + "'");
         return ResponseEntity.ok().build();
     }
 
@@ -372,18 +381,19 @@ public class MethodMenu {
      * exportMenu.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/export")
+    @GetMapping("/integration/export")
     public String exportMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
-        logger.info(model, "Current method: " + method.getMethodName());
+            @RequestParam(value = "callback", defaultValue = "/integration/return") String callback) {
+        logger.info(model, "Current Integration: " + integration.getIntegrationName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Export Library", "/method/export/collection");
-        options.put("Export Liked Songs", "/method/export/likedsongs");
-        options.put("Export Album(s)", "/method/export/albums");
-        options.put("Export Playlist(s)", "/method/export/playlists");
+        options.put("Export Library", "/integration/export/collection");
+        options.put("Export Liked Songs", "/integration/export/likedsongs");
+        options.put("Export Album(s)", "/integration/export/albums");
+        options.put("Export Playlist(s)", "/integration/export/playlists");
         return Templates.menu(model, "Export Menu", options, callback);
     }
 
@@ -392,14 +402,15 @@ public class MethodMenu {
      * optionExportCollection.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/export/collection")
+    @GetMapping("/integration/export/collection")
     public String optionExportCollection(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
-        return Templates.process(model, "Exporting '" + method.getMethodName() + "' collection",
-                "/method/export/collection", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/export") String callback) {
+        return Templates.process(model, "Exporting '" + integration.getIntegrationName() + "' collection",
+                "/integration/export/collection", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -409,9 +420,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/collection")
+    @PostMapping("/integration/export/collection")
     public ResponseEntity<Void> exportCollection() {
-        method.exportCollection();
+        integration.exportCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -420,14 +431,15 @@ public class MethodMenu {
      * optionExportLikedSongs.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/export/likedsongs")
+    @GetMapping("/integration/export/likedsongs")
     public String optionExportLikedSongs(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
-        return Templates.process(model, "Exporting '" + method.getMethodName() + "' liked songs",
-                "/method/export/likedsongs", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/export") String callback) {
+        return Templates.process(model, "Exporting '" + integration.getIntegrationName() + "' liked songs",
+                "/integration/export/likedsongs", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -437,9 +449,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/likedsongs")
+    @PostMapping("/integration/export/likedsongs")
     public ResponseEntity<Void> exportLikedSongs() {
-        method.exportLikedSongs();
+        integration.exportLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -448,20 +460,21 @@ public class MethodMenu {
      * optionExportAlbums.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/export/albums")
+    @GetMapping("/integration/export/albums")
     public String optionExportAlbums(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/export") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/export") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All", "/method/process?processName=Exporting all Albums from "
-                + method.getMethodName() + "&processFunction=/method/export/albums&callback=" + callback);
+        options.put("All", "/integration/process?processName=Exporting all Albums from "
+                + integration.getIntegrationName() + "&processFunction=/integration/export/albums&callback="
+                + callback);
         for (Album album : Collection.getAlbums()) {
-            options.put(album.toString(), "/method/process?processName=Exporting '" + album.getName() + "' from "
-                    + method
-                            .getMethodName()
-                    + "&processFunction=/method/export/album/" + album.hashCode()
+            options.put(album.toString(), "/integration/process?processName=Exporting '" + album.getName() + "' from "
+                    + integration.getIntegrationName()
+                    + "&processFunction=/integration/export/album/" + album.hashCode()
                     + "&callback=" + callback);
         }
         return Templates.menu(model, "Album Export Menu", options, callback);
@@ -474,9 +487,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/albums")
+    @PostMapping("/integration/export/albums")
     public ResponseEntity<Void> exportAlbums() {
-        method.exportAlbums();
+        integration.exportAlbums();
         return ResponseEntity.ok().build();
     }
 
@@ -485,15 +498,15 @@ public class MethodMenu {
      * exportAlbums.
      * </p>
      *
-     * @param name a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/album/{album}")
+    @PostMapping("/integration/export/album/{album}")
     public ResponseEntity<Void> exportAlbum(
             @PathVariable(value = "album") int hashCode) {
         Album album = Collection.getAlbum(hashCode);
         if (album != null) {
-            method.exportAlbum(album);
+            integration.exportAlbum(album);
         } else {
             logger.warn("Unable to find album '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -506,21 +519,23 @@ public class MethodMenu {
      * optionExportPlaylists.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/export/playlists")
+    @GetMapping("/integration/export/playlists")
     public String optionExportPlaylists(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/return") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All", "/method/process?processName=Exporting all playlists from "
-                + method.getMethodName() + "&processFunction=/method/export/playlists&callback=" + callback);
+        options.put("All", "/integration/process?processName=Exporting all playlists from "
+                + integration.getIntegrationName() + "&processFunction=/integration/export/playlists&callback="
+                + callback);
         for (Playlist playlist : Collection.getPlaylists()) {
-            options.put(playlist.toString(), "/method/process?processName=Exporting '" + playlist.getName() + "' from "
-                    + method
-                            .getMethodName()
-                    + "&processFunction=/method/export/playlist/" + playlist.hashCode()
-                    + "&callback=" + callback);
+            options.put(playlist.toString(),
+                    "/integration/process?processName=Exporting '" + playlist.getName() + "' from "
+                            + integration.getIntegrationName()
+                            + "&processFunction=/integration/export/playlist/" + playlist.hashCode()
+                            + "&callback=" + callback);
         }
         return Templates.menu(model, "Playlist Export Menu", options, callback);
     }
@@ -532,9 +547,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/playlists")
+    @PostMapping("/integration/export/playlists")
     public ResponseEntity<Void> exportPlaylists() {
-        method.exportPlaylists();
+        integration.exportPlaylists();
         return ResponseEntity.ok().build();
     }
 
@@ -543,15 +558,15 @@ public class MethodMenu {
      * exportPlaylists.
      * </p>
      *
-     * @param name a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/export/playlist/{playlist}")
+    @PostMapping("/integration/export/playlist/{playlist}")
     public ResponseEntity<Void> exportPlaylist(
             @PathVariable(value = "playlist") int hashCode) {
         Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
-            method.exportPlaylist(playlist);
+            integration.exportPlaylist(playlist);
         } else {
             logger.warn("Unable to find playlist '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -564,18 +579,19 @@ public class MethodMenu {
      * syncMenu.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/sync")
+    @GetMapping("/integration/sync")
     public String syncMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/return") String callback) {
-        logger.info(model, "Current method: " + method.getMethodName());
+            @RequestParam(value = "callback", defaultValue = "/integration/return") String callback) {
+        logger.info(model, "Current Integration: " + integration.getIntegrationName());
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Sync Library", "/method/sync/collection");
-        options.put("Sync Liked Songs", "/method/sync/likedsongs");
-        options.put("Sync Albums", "/method/sync/albums");
-        options.put("Sync Playlists", "/method/sync/playlists/menu");
+        options.put("Sync Library", "/integration/sync/collection");
+        options.put("Sync Liked Songs", "/integration/sync/likedsongs");
+        options.put("Sync Albums", "/integration/sync/albums");
+        options.put("Sync Playlists", "/integration/sync/playlists/menu");
         return Templates.menu(model, "Sync Menu", options, callback);
     }
 
@@ -584,14 +600,15 @@ public class MethodMenu {
      * optionSyncCollection.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/sync/collection")
+    @GetMapping("/integration/sync/collection")
     public String optionSyncCollection(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
-        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' collection",
-                "/method/sync/collection", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + integration.getIntegrationName() + "' collection",
+                "/integration/sync/collection", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -601,9 +618,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/sync/collection")
+    @PostMapping("/integration/sync/collection")
     public ResponseEntity<Void> syncCollection() {
-        method.syncCollection();
+        integration.syncCollection();
         return ResponseEntity.ok().build();
     }
 
@@ -612,14 +629,15 @@ public class MethodMenu {
      * optionSyncLikedSongs.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/sync/likedsongs")
+    @GetMapping("/integration/sync/likedsongs")
     public String optionSyncLikedSongs(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
-        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' liked songs",
-                "/method/sync/likedsongs", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + integration.getIntegrationName() + "' liked songs",
+                "/integration/sync/likedsongs", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -629,9 +647,9 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/sync/likedsongs")
+    @PostMapping("/integration/sync/likedsongs")
     public ResponseEntity<Void> syncLikedSongs() {
-        method.syncLikedSongs();
+        integration.syncLikedSongs();
         return ResponseEntity.ok().build();
     }
 
@@ -640,14 +658,15 @@ public class MethodMenu {
      * optionSyncAlbums.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/sync/albums")
+    @GetMapping("/integration/sync/albums")
     public String optionSyncAlbums(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
-        return Templates.process(model, "Syncronizing '" + method.getMethodName() + "' albums",
-                "/method/sync/albums", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
+        return Templates.process(model, "Syncronizing '" + integration.getIntegrationName() + "' albums",
+                "/integration/sync/albums", "/integration/progress", "/integration/logs", callback);
     }
 
     /**
@@ -657,19 +676,19 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/sync/albums")
+    @PostMapping("/integration/sync/albums")
     public ResponseEntity<Void> syncAlbums() {
-        method.syncAlbums();
+        integration.syncAlbums();
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/method/sync/playlists/menu")
+    @GetMapping("/integration/sync/playlists/menu")
     public String syncPlaylistsMenu(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("All", "/method/sync/playlists");
+        options.put("All", "/integration/sync/playlists");
         for (Playlist playlist : Collection.getPlaylists()) {
-            options.put(playlist.getName(), "/method/sync/playlist/" + playlist.hashCode());
+            options.put(playlist.getName(), "/integration/sync/playlist/" + playlist.hashCode());
         }
         return Templates.menu(model, "Sync Playlist(s)", options, callback);
     }
@@ -679,25 +698,27 @@ public class MethodMenu {
      * optionSyncPlaylists.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/sync/playlists")
+    @GetMapping("/integration/sync/playlists")
     public String optionSyncPlaylists(Model model,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
-        return Templates.process(model, "Exporting '" + method.getMethodName() + "' playlists",
-                "/method/sync/playlists", "/method/progress", "/method/logs", callback);
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
+        return Templates.process(model, "Exporting '" + integration.getIntegrationName() + "' playlists",
+                "/integration/sync/playlists", "/integration/progress", "/integration/logs", callback);
     }
 
-    @GetMapping("/method/sync/playlists/{playlist}")
+    @GetMapping("/integration/sync/playlists/{playlist}")
     public String optionSyncPlaylist(Model model,
             @PathVariable(value = "playlist") int hashCode,
-            @RequestParam(value = "callback", defaultValue = "/method/sync") String callback) {
+            @RequestParam(value = "callback", defaultValue = "/integration/sync") String callback) {
         Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
             return Templates.process(model,
-                    "Exporting '" + method.getMethodName() + "' playlist '" + playlist.getName() + "'",
-                    "/method/sync/playlist/" + playlist.hashCode(), "/method/progress", "/method/logs", callback);
+                    "Exporting '" + integration.getIntegrationName() + "' playlist '" + playlist.getName() + "'",
+                    "/integration/sync/playlist/" + playlist.hashCode(), "/integration/progress", "/integration/logs",
+                    callback);
         } else {
             logger.warn(model, "Unable to find playlist '" + hashCode + "' in collection");
             return "redirect:" + callback;
@@ -711,17 +732,17 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/sync/playlists")
+    @PostMapping("/integration/sync/playlists")
     public ResponseEntity<Void> syncPlaylists() {
-        method.syncPlaylists();
+        integration.syncPlaylists();
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/method/sync/playlist/{playlist}")
+    @PostMapping("/integration/sync/playlist/{playlist}")
     public ResponseEntity<Void> syncPlaylist(@PathVariable(value = "playlist") int hashCode) {
         Playlist playlist = Collection.getPlaylist(hashCode);
         if (playlist != null) {
-            method.syncPlaylist(playlist);
+            integration.syncPlaylist(playlist);
         } else {
             logger.warn("Unable to find playlist '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
@@ -731,14 +752,14 @@ public class MethodMenu {
 
     /**
      * <p>
-     * methodProgress.
+     * integrationProgress.
      * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @GetMapping("/method/progress")
+    @GetMapping("/integration/progress")
     @ResponseBody
-    public ResponseEntity<String> methodProgress() {
+    public ResponseEntity<String> integrationProgress() {
         ObjectNode rootNode = mapper.createObjectNode();
         Stack<ProgressBar> pbs = ProgressBar.getInstances();
         if (!pbs.isEmpty()) {
@@ -762,14 +783,14 @@ public class MethodMenu {
 
     /**
      * <p>
-     * methodLogs.
+     * integrationLogs.
      * </p>
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @GetMapping("/method/logs")
+    @GetMapping("/integration/logs")
     @ResponseBody
-    public ResponseEntity<String> methodLogs() {
+    public ResponseEntity<String> integrationLogs() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();
         ArrayNode logsArray = rootNode.putArray("logs");
@@ -791,7 +812,7 @@ public class MethodMenu {
      *
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
-    @PostMapping("/method/cancel")
+    @PostMapping("/integration/cancel")
     public ResponseEntity<Void> cancel() {
         InterruptionHandler.forceInterruption();
         return ResponseEntity.ok().build();
@@ -804,9 +825,9 @@ public class MethodMenu {
      *
      * @return a {@link java.lang.String} object
      */
-    @GetMapping("/method/return")
+    @GetMapping("/integration/return")
     public String optionReturn() {
-        method = null;
+        integration = null;
         logger.debug("Done cleaning albums");
         return "redirect:/collection";
     }

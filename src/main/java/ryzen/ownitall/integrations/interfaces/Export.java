@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.interfaces;
+package ryzen.ownitall.integrations.interfaces;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;

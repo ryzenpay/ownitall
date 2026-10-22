@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,10 +19,10 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.library.Library;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.method.interfaces.Sync;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
@@ -80,8 +80,8 @@ public class Spotify implements Import, Export, Sync {
     /**
      * Default spotify constructor asking for user input
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public Spotify() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(Spotify.class)) {
@@ -116,7 +116,7 @@ public class Spotify implements Import, Export, Sync {
      */
     public String getCode() throws InterruptedException {
         AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
-                .scope(scope)
+                .scope(this.scope)
                 .show_dialog(Settings.interactive)
                 .build();
         URI authUri = authorizationCodeUriRequest.execute();
@@ -126,7 +126,6 @@ public class Spotify implements Import, Export, Sync {
     /**
      * set the spotifyApi access token
      * 
-     * @param code - the authentication code provided in the oauth
      */
     private void authenticate() throws AuthenticationException, InterruptedException {
         AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.getCode()).build();
@@ -150,7 +149,7 @@ public class Spotify implements Import, Export, Sync {
                 .build();
         try {
             AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             return true;
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             logger.error("Exception refreshing token", e);
@@ -260,7 +259,7 @@ public class Spotify implements Import, Export, Sync {
                 while (hasMore) {
                     String[] currentIds = songIds.subList(offset,
                             Math.min(offset + limit, songIds.size())).toArray(new String[0]);
-                    RemoveUsersSavedTracksRequest removeUsersSavedTracksRequest = spotifyApi
+                    RemoveUsersSavedTracksRequest removeUsersSavedTracksRequest = this.spotifyApi
                             .removeUsersSavedTracks(currentIds)
                             .build();
                     try {
@@ -310,7 +309,7 @@ public class Spotify implements Import, Export, Sync {
             while (hasMore) {
                 String[] currentIds = songIds.subList(offset,
                         Math.min(offset + limit, songIds.size())).toArray(new String[0]);
-                SaveTracksForUserRequest saveTracksForUserRequest = spotifyApi
+                SaveTracksForUserRequest saveTracksForUserRequest = this.spotifyApi
                         .saveTracksForUser(
                                 currentIds)
                         .build();
@@ -502,7 +501,7 @@ public class Spotify implements Import, Export, Sync {
                 while (hasMore) {
                     String[] currentIds = albumIds.subList(offset,
                             Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
-                    RemoveAlbumsForCurrentUserRequest removeAlbumsForCurrentUserRequest = spotifyApi
+                    RemoveAlbumsForCurrentUserRequest removeAlbumsForCurrentUserRequest = this.spotifyApi
                             .removeAlbumsForCurrentUser(currentIds)
                             .build();
                     try {
@@ -546,7 +545,7 @@ public class Spotify implements Import, Export, Sync {
             while (hasMore) {
                 String[] currentAlbumIds = albumIds.subList(offset,
                         Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
-                SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = spotifyApi
+                SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = this.spotifyApi
                         .saveAlbumsForCurrentUser(currentAlbumIds)
                         .build();
                 try {
@@ -810,7 +809,7 @@ public class Spotify implements Import, Export, Sync {
                             track.addProperty("uri", "spotify:track:" + id);
                             tracks.add(track);
                         }
-                        RemoveItemsFromPlaylistRequest removeItemsFromPlaylistRequest = spotifyApi
+                        RemoveItemsFromPlaylistRequest removeItemsFromPlaylistRequest = this.spotifyApi
                                 .removeItemsFromPlaylist(playlistId, tracks)
                                 .build();
                         try {
@@ -849,10 +848,10 @@ public class Spotify implements Import, Export, Sync {
         ArrayList<Song> songs = new ArrayList<>(playlist.getSongs());
         if (currentSongs.isEmpty()) {
             try {
-                GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = spotifyApi.getCurrentUsersProfile()
+                GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = this.spotifyApi.getCurrentUsersProfile()
                         .build();
                 User user = getCurrentUsersProfileRequest.execute();
-                CreatePlaylistRequest createPlaylistRequest = spotifyApi
+                CreatePlaylistRequest createPlaylistRequest = this.spotifyApi
                         .createPlaylist(user.getId(), playlist.getName())
                         .public_(false)
                         .build();
@@ -881,7 +880,7 @@ public class Spotify implements Import, Export, Sync {
             while (hasMore) {
                 String[] currentSongUris = songUris.subList(offset,
                         Math.min(offset + limit, songUris.size())).toArray(new String[0]);
-                AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
+                AddItemsToPlaylistRequest addItemsToPlaylistRequest = this.spotifyApi
                         .addItemsToPlaylist(playlistId, currentSongUris)
                         .build();
                 try {
@@ -1015,7 +1014,7 @@ public class Spotify implements Import, Export, Sync {
         if (album.getId("spotify") != null) {
             return album.getId("spotify");
         }
-        SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums(album.toString())
+        SearchAlbumsRequest searchAlbumsRequest = this.spotifyApi.searchAlbums(album.toString())
                 .limit(1)
                 .build();
         while (true) {

@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.download;
+package ryzen.ownitall.integrations.download;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,9 +23,9 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.Upload;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.integrations.Upload;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.IPIterator;
@@ -67,19 +67,19 @@ public class Download implements Sync, Export {
      * Constructor for Download.
      * </p>
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public Download() throws MissingSettingException, AuthenticationException {
         if (initiation) {
             return;
         }
-        if (Settings.downloadMethod.isEmpty()) {
-            throw new MissingSettingException("Missing downloadMethod");
+        if (Settings.downloadIntegration.isEmpty()) {
+            throw new MissingSettingException("Missing downloadIntegration");
         }
         try {
             Class<? extends DownloadInterface> downloadClass = ClassLoader.load().getSubClass(DownloadInterface.class,
-                    Settings.downloadMethod);
+                    Settings.downloadIntegration);
             try {
                 logger.debug("Initializing '" + downloadClass.getSimpleName() + "' download class");
                 initiation = true;
@@ -93,9 +93,9 @@ public class Download implements Sync, Export {
                     throw new AuthenticationException(e);
                 }
                 logger.error("Exception while setting up download class '" + downloadClass.getSimpleName() + "'", e);
-                throw new NoSuchMethodException(downloadClass.getName());
+                throw new InvalidDownloadException(downloadClass.getName());
             }
-        } catch (NoSuchMethodException e) {
+        } catch (InvalidDownloadException e) {
             logger.error("Invalid or missing download class set in settings", e);
             throw new AuthenticationException(e);
         } finally {
@@ -109,7 +109,6 @@ public class Download implements Sync, Export {
      * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
-     * @param path a {@link java.io.File} object
      * @throws java.lang.InterruptedException if any.
      */
     public void threadDownload(Song song) throws InterruptedException {
@@ -173,13 +172,12 @@ public class Download implements Sync, Export {
      * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
-     * @param path a {@link java.io.File} object
      */
     public void exportSong(Song song) {
         try {
             File downloadFile = new File(Settings.localFolder,
                     String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
-            ArrayList<String> command = downloadClass.createCommand(song, downloadFile);
+            ArrayList<String> command = this.downloadClass.createCommand(song, downloadFile);
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
@@ -200,7 +198,7 @@ public class Download implements Sync, Export {
                 int exitCode = process.waitFor();
                 if (exitCode != 0) {
                     logger.debug("Attempt: " + i);
-                    downloadClass.handleError(exitCode);
+                    this.downloadClass.handleError(exitCode);
                     logger.debug(
                             "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
                 }
@@ -223,7 +221,7 @@ public class Download implements Sync, Export {
             logger.debug("Interrupted while downloading song");
             InterruptionHandler.forceInterruption();
         } catch (IOException e) {
-            logger.error("Exception preparing " + downloadClass.getClass().getSimpleName() + ": ", e);
+            logger.error("Exception preparing " + this.downloadClass.getClass().getSimpleName() + ": ", e);
         } catch (DownloadException e) {
             logger.warn("Exception while downloading: " + e.getMessage());
         }
@@ -278,7 +276,6 @@ public class Download implements Sync, Export {
      * write playlist m3u data including coverimage
      *
      * @param playlist - playlist to get data from
-     * @param folder   - folder to place m3u file in
      */
     public void writePlaylistData(Playlist playlist) {
         if (playlist == null) {
@@ -304,8 +301,7 @@ public class Download implements Sync, Export {
     /**
      * write album nfo data including coverimage
      *
-     * @param album  - album to get data from
-     * @param folder - folder to place nfo file in
+     * @param album - album to get data from
      */
     public void writeAlbumData(Album album) {
         if (album == null) {
@@ -352,7 +348,6 @@ public class Download implements Sync, Export {
      * - nfo
      * these are specified in "whitelist"
      *
-     * @param folder - folder to clean up files from
      */
     public void cleanFolder() {
         for (File file : Settings.localFolder.listFiles()) {
@@ -615,5 +610,16 @@ public class Download implements Sync, Export {
         }
         this.threadShutdown();
         this.cleanFolder();
+    }
+
+    public static class InvalidDownloadException extends Exception {
+
+        public InvalidDownloadException() {
+            super();
+        }
+
+        public InvalidDownloadException(String message) {
+            super(message);
+        }
     }
 }

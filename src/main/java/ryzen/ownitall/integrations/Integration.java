@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -9,9 +9,9 @@ import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
@@ -19,35 +19,35 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>
- * Abstract Method class.
+ * Abstract Integration class.
  * </p>
  *
  * @author ryzen
  */
-public class Method {
-    private static final Logger logger = new Logger(Method.class);
-    /** Constant <code>methods</code> */
-    private Object method;
+public class Integration {
+    private static final Logger logger = new Logger(Integration.class);
+    /** Constant <code>integrations</code> */
+    private Object integration;
 
     /**
      * <p>
-     * initMethod.
+     * Integration
      * </p>
      *
-     * @param methodClass a {@link java.lang.Class} object
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
-     * @throws java.lang.NoSuchMethodException                        if any.
+     * @param clazz a {@link java.lang.Class} object
+     * @throws ryzen.ownitall.Settings.MissingSettingException                     if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException                if any.
+     * @throws ryzen.ownitall.integrations.Integration.InvalidIntegrationException if any.
      */
-    public Method(Class<?> methodClass) throws MissingSettingException, AuthenticationException,
-            NoSuchMethodException {
-        if (methodClass == null) {
-            logger.debug("null method class provided in initMethod");
-            throw new NoSuchMethodException();
+    public Integration(Class<?> clazz) throws MissingSettingException, AuthenticationException,
+            InvalidIntegrationException {
+        if (clazz == null) {
+            logger.debug("null integration class provided in Integration");
+            throw new InvalidIntegrationException();
         }
         try {
-            logger.debug("Initializing '" + methodClass.getSimpleName() + "' method");
-            this.method = methodClass.getDeclaredConstructor().newInstance();
+            logger.debug("Initializing '" + clazz.getSimpleName() + "' integration");
+            this.integration = clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Throwable cause = e.getCause();
             if (cause instanceof MissingSettingException) {
@@ -56,26 +56,26 @@ public class Method {
             if (cause instanceof AuthenticationException) {
                 throw new AuthenticationException(e);
             }
-            logger.error("Exception while setting up method '" + methodClass.getSimpleName() + "'", e);
-            throw new NoSuchMethodException(methodClass.getName());
+            logger.error("Exception while setting up integration '" + clazz.getSimpleName() + "'", e);
+            throw new InvalidIntegrationException(clazz.getName());
         }
     }
 
-    public String getMethodName() {
-        if (this.method == null) {
+    public String getIntegrationName() {
+        if (this.integration == null) {
             return "";
         }
-        return this.method.getClass().getSimpleName();
+        return this.integration.getClass().getSimpleName();
     }
 
     /**
      * <p>
-     * Getter for the field <code>methods</code>.
+     * Getter for the field <code>integrations</code>.
      * </p>
      *
      * @return a {@link java.util.LinkedHashSet} object
      */
-    public static LinkedHashSet<Class<?>> getMethods() {
+    public static LinkedHashSet<Class<?>> getIntegrations() {
         LinkedHashSet<Class<?>> classes = new LinkedHashSet<>();
         ClassLoader loader = ClassLoader.load();
         classes.addAll(loader.getSubClasses(Import.class));
@@ -86,33 +86,33 @@ public class Method {
 
     /**
      * <p>
-     * Getter for the field <code>methods</code>.
+     * Getter for the field <code>integrations</code>.
      * </p>
      *
-     * @param filter a type object
-     * @param <type> a type class
-     * @return a {@link java.util.LinkedHashSet} object
+     * @param <T>   a type class
+     * @param clazz a {@link java.lang.Class} object
+     * @return      a {@link java.util.LinkedHashSet} object
      */
-    public static <T> LinkedHashSet<Class<? extends T>> getMethods(Class<T> type) {
-        return ClassLoader.load().getSubClasses(type);
+    public static <T> LinkedHashSet<Class<? extends T>> getIntegrations(Class<T> clazz) {
+        return ClassLoader.load().getSubClasses(clazz);
     }
 
     /**
      * <p>
-     * Getter for the field <code>method</code>.
+     * Getter for the field <code>integration</code>.
      * </p>
      *
      * @param name a {@link java.lang.String} object
      * @return a {@link java.lang.Class} object
      */
-    public static Class<?> getMethod(String name) {
+    public static Class<?> getIntegration(String name) {
         if (name == null) {
-            logger.debug("null name provided in getMethod");
+            logger.debug("null name provided in getIntegration");
             return null;
         }
-        for (Class<?> method : getMethods()) {
-            if (method.getSimpleName().equals(name)) {
-                return method;
+        for (Class<?> integration : getIntegrations()) {
+            if (integration.getSimpleName().equals(name)) {
+                return integration;
             }
         }
         return null;
@@ -121,22 +121,22 @@ public class Method {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        if (this.method == null) {
+        if (this.integration == null) {
             return "";
         }
-        return this.method.getClass().getSimpleName();
+        return this.integration.getClass().getSimpleName();
     }
 
     private Import getImport() {
-        return (Import) this.method;
+        return (Import) this.integration;
     }
 
     private Export getExport() {
-        return (Export) this.method;
+        return (Export) this.integration;
     }
 
     private Sync getSync() {
-        return (Sync) this.method;
+        return (Sync) this.integration;
     }
 
     /**
@@ -144,27 +144,27 @@ public class Method {
      * clearCredentials.
      * </p>
      *
-     * @param type a {@link java.lang.Class} object
+     * @param clazz a {@link java.lang.Class} object
      */
-    public static void clearCredentials(Class<?> type) {
-        if (type == null) {
+    public static void clearCredentials(Class<?> clazz) {
+        if (clazz == null) {
             logger.debug("null type provided in clearCredentials");
             return;
         }
         Settings settings = Settings.load();
-        LinkedHashSet<String> credentials = settings.getGroup(type);
+        LinkedHashSet<String> credentials = settings.getGroup(clazz);
         if (credentials == null) {
-            logger.debug("Unable to find credentials for '" + type.getSimpleName() + "'");
+            logger.debug("Unable to find credentials for '" + clazz.getSimpleName() + "'");
             return;
         }
         for (String credential : credentials) {
             try {
                 settings.set(credential, "");
             } catch (NoSuchFieldException e) {
-                logger.warn("Unable to find method setting '" + credential + "'");
+                logger.warn("Unable to find integration setting '" + credential + "'");
             }
         }
-        logger.warn("Cleared credentials for '" + type.getSimpleName() + "'");
+        logger.warn("Cleared credentials for '" + clazz.getSimpleName() + "'");
     }
 
     /**
@@ -509,6 +509,17 @@ public class Method {
         } catch (AuthenticationException e) {
             logger.warn(
                     "Failed to Authenticate while syncronizing '" + this + "' collection: " + e.getMessage());
+        }
+    }
+
+    public static class InvalidIntegrationException extends Exception {
+
+        public InvalidIntegrationException() {
+            super();
+        }
+
+        public InvalidIntegrationException(String message) {
+            super(message);
         }
     }
 }

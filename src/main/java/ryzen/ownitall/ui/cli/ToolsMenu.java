@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Storage;
-import ryzen.ownitall.method.Method;
+import ryzen.ownitall.integrations.Integration;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
@@ -77,8 +77,8 @@ public class ToolsMenu {
             System.out.print("Are you sure you wan to clear Credentials (y/N): ");
             if (Input.request().getAgreement()) {
                 logger.info("Clearing Credentials...");
-                for (Class<?> methodClass : Method.getMethods()) {
-                    Method.clearCredentials(methodClass);
+                for (Class<?> clazz : Integration.getIntegrations()) {
+                    Integration.clearCredentials(clazz);
                 }
                 logger.info("Done clearing Credentials");
             }

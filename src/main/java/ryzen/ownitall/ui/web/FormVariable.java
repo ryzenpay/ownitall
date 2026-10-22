@@ -104,7 +104,7 @@ public class FormVariable {
      * @return a {@link java.lang.Object} object
      */
     public Object getValue() {
-        return value;
+        return this.value;
     }
 
     /**
@@ -126,7 +126,7 @@ public class FormVariable {
      * @return a boolean
      */
     public boolean getSecret() {
-        return secret;
+        return this.secret;
     }
 
     /**

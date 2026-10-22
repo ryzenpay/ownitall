@@ -7,18 +7,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class MethodMiddleware implements HandlerInterceptor {
-    private static final Logger logger = new Logger(MethodMiddleware.class);
+public class IntegrationMiddleware implements HandlerInterceptor {
+    private static final Logger logger = new Logger(IntegrationMiddleware.class);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (MethodMenu.getMethod() == null) {
-            logger.info("method not initialized, redirecting...");
-            response.sendRedirect("/method?callback=" + request.getRequestURI());
+        if (IntegrationMenu.getIntegration() == null) {
+            logger.info("integration not initialized, redirecting...");
+            response.sendRedirect("/integration?callback=" + request.getRequestURI());
             return false;
         } else {
-            logger.debug("current method '" + MethodMenu.getMethod().getMethodName() + "'");
+            logger.debug("current integration '" + IntegrationMenu.getIntegration().getIntegrationName() + "'");
         }
         return true;
     }

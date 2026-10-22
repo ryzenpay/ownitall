@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.download;
+package ryzen.ownitall.integrations.download;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class SoulSeek implements DownloadInterface {
      * Constructor for SoulSeek.
      * </p>
      *
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public SoulSeek() throws MissingSettingException, AuthenticationException {
         if (Settings.load().isGroupEmpty(SoulSeek.class)) {

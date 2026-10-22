@@ -1,4 +1,4 @@
-package ryzen.ownitall.method;
+package ryzen.ownitall.integrations;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -17,7 +17,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Import;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
@@ -184,7 +184,7 @@ public class Tidal implements Import {
         String pageCursor = null;
         try (IPIterator<?> pb = IPIterator.manual("Liked Songs", -1)) {
             while (true) {
-                JsonNode response = this.query("/userCollections/" + userID + "/relationships/tracks", pageCursor,
+                JsonNode response = this.query("/userCollections/" + this.userID + "/relationships/tracks", pageCursor,
                         new ArrayList<>(Arrays.asList("tracks")));
                 if (response == null) {
                     logger.warn("null response received in tidal likedsongs query");
@@ -265,7 +265,7 @@ public class Tidal implements Import {
         String pageCursor = null;
         try (IPIterator<?> pb = IPIterator.manual("Albums", -1)) {
             while (true) {
-                JsonNode response = this.query("/userCollections/" + userID + "/relationships/albums", pageCursor,
+                JsonNode response = this.query("/userCollections/" + this.userID + "/relationships/albums", pageCursor,
                         new ArrayList<>(Arrays.asList("albums")));
                 if (response == null) {
                     logger.debug("null response received in getAlbums");
@@ -344,7 +344,7 @@ public class Tidal implements Import {
         String pageCursor = null;
         try (IPIterator<?> pb = IPIterator.manual("Playlists", -1)) {
             while (true) {
-                JsonNode response = this.query("/userCollections/" + userID + "/relationships/playlists", pageCursor,
+                JsonNode response = this.query("/userCollections/" + this.userID + "/relationships/playlists", pageCursor,
                         new ArrayList<>(Arrays.asList("playlists")));
                 if (response == null) {
                     logger.debug("null response received in getPlaylists");

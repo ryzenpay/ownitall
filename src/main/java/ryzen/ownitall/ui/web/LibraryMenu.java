@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.library.Library;
+import ryzen.ownitall.library.Library.InvalidLibraryException;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
@@ -86,7 +87,7 @@ public class LibraryMenu {
                             + "': " + e.getMessage());
             Library.clearCredentials(libraryClass);
             return loginForm(model, library, "/library/change/" + library);
-        } catch (NoSuchMethodException e) {
+        } catch (InvalidLibraryException e) {
             logger.error(model, "Unsupported library type '" + library + "'", e);
         }
         return optionChange(model);
@@ -100,7 +101,7 @@ public class LibraryMenu {
      * @param model    a {@link org.springframework.ui.Model} object
      * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
-     * @param library a {@link java.lang.String} object
+     * @param library  a {@link java.lang.String} object
      */
     @GetMapping("/library/login/{library}")
     public String loginForm(Model model,

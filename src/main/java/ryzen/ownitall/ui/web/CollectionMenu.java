@@ -44,9 +44,9 @@ public class CollectionMenu {
     @GetMapping("/collection")
     public String collectionMenu(Model model) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        options.put("Import", "/method/import");
-        options.put("Export", "/method/export");
-        options.put("Sync", "/method/sync");
+        options.put("Import", "/integration/import");
+        options.put("Export", "/integration/export");
+        options.put("Sync", "/integration/sync");
         options.put("Browse & Modify", "/collection/browse");
         return Templates.menu(model, "Collection Menu", options, "/collection/return");
     }
@@ -73,7 +73,8 @@ public class CollectionMenu {
      * addLikedSongForm.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/collection/likedsongs/song")
@@ -190,7 +191,7 @@ public class CollectionMenu {
      * deleteLikedSong.
      * </p>
      *
-     * @param songName a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @DeleteMapping("/collection/likedsongs/{song}")
@@ -210,7 +211,8 @@ public class CollectionMenu {
      * addPlaylistForm.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/collection/playlist")
@@ -306,8 +308,9 @@ public class CollectionMenu {
      * addPlaylistSongForm.
      * </p>
      *
-     * @param model        a {@link org.springframework.ui.Model} object
-     * @param playlistName a {@link java.lang.String} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param hashCode a int
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/collection/playlist/{playlist}/song")
@@ -338,6 +341,7 @@ public class CollectionMenu {
      * </p>
      *
      * @param model     a {@link org.springframework.ui.Model} object
+     * @param hashCode  a int
      * @param variables a {@link java.util.LinkedHashMap} object
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
@@ -454,7 +458,7 @@ public class CollectionMenu {
      * deletePlaylist.
      * </p>
      *
-     * @param playlistName a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @DeleteMapping("/collection/playlist/{playlist}")
@@ -474,8 +478,8 @@ public class CollectionMenu {
      * deletePlaylistSong.
      * </p>
      *
-     * @param playlistName a {@link java.lang.String} object
-     * @param songName     a {@link java.lang.String} object
+     * @param hashCode a int
+     * @param songHash a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @DeleteMapping("/collection/playlist/{playlist}/{song}")
@@ -504,7 +508,8 @@ public class CollectionMenu {
      * addAlbumForm.
      * </p>
      *
-     * @param model a {@link org.springframework.ui.Model} object
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      */
     @GetMapping("/collection/album")
@@ -572,7 +577,7 @@ public class CollectionMenu {
      * deleteAlbum.
      * </p>
      *
-     * @param albumName a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link org.springframework.http.ResponseEntity} object
      */
     @DeleteMapping("/collection/album/{album}")

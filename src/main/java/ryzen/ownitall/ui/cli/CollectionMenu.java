@@ -7,9 +7,9 @@ import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.method.interfaces.Export;
-import ryzen.ownitall.method.interfaces.Import;
-import ryzen.ownitall.method.interfaces.Sync;
+import ryzen.ownitall.integrations.interfaces.Export;
+import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
@@ -47,7 +47,7 @@ public class CollectionMenu {
 
     private void optionImport() {
         try {
-            new MethodMenu(Import.class).importMenu();
+            new IntegrationMenu(Import.class).importMenu();
             logger.debug("Done cleaning albums");
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while setting up import menu");
@@ -56,18 +56,18 @@ public class CollectionMenu {
 
     private void optionExport() {
         try {
-            new MethodMenu(Export.class).exportMenu();
+            new IntegrationMenu(Export.class).exportMenu();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while setting up export menu");
         } catch (MissingSettingException e) {
-            logger.warn("Unable to set up selected method due to missing settings: "
+            logger.warn("Unable to set up selected integration due to missing settings: "
                     + e.getMessage());
         }
     }
 
     private void optionSync() {
         try {
-            new MethodMenu(Sync.class).syncMenu();
+            new IntegrationMenu(Sync.class).syncMenu();
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while setting up sync menu");
         }

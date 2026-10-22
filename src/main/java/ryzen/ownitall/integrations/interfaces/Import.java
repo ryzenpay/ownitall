@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.interfaces;
+package ryzen.ownitall.integrations.interfaces;
 
 import java.util.ArrayList;
 

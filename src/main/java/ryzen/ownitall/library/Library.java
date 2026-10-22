@@ -83,16 +83,16 @@ abstract public class Library implements LibraryInterface {
      *
      * @param libraryClass a {@link java.lang.Class} object
      * @return a {@link ryzen.ownitall.library.Library} object
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
-     * @throws java.lang.NoSuchMethodException                        if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException        if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException   if any.
+     * @throws ryzen.ownitall.library.Library.InvalidLibraryException if any.
      */
     public static Library initLibrary(Class<? extends Library> libraryClass)
             throws MissingSettingException, AuthenticationException,
-            NoSuchMethodException {
+            InvalidLibraryException {
         if (libraryClass == null) {
             logger.debug("null library class provided in initLibrary");
-            throw new NoSuchMethodException();
+            throw new InvalidLibraryException();
         }
         try {
             logger.debug("Initializing '" + libraryClass + "' library");
@@ -106,7 +106,7 @@ abstract public class Library implements LibraryInterface {
             if (cause instanceof AuthenticationException) {
                 throw new AuthenticationException(e);
             }
-            throw new NoSuchMethodException(libraryClass.getName());
+            throw new InvalidLibraryException(libraryClass.getName());
         }
     }
 
@@ -128,7 +128,7 @@ abstract public class Library implements LibraryInterface {
         } catch (AuthenticationException e) {
             logger.warn("Library '" + Settings.libraryType + "' had an exception authenticating: "
                     + e.getMessage());
-        } catch (NoSuchMethodException e) {
+        } catch (InvalidLibraryException e) {
             logger.error("Library '" + Settings.libraryType + "' does not exist", e);
         }
         return null;
@@ -156,7 +156,7 @@ abstract public class Library implements LibraryInterface {
             try {
                 settings.set(credential, "");
             } catch (NoSuchFieldException e) {
-                logger.warn("Unable to find method setting '" + credential + "'");
+                logger.warn("Unable to find library setting '" + credential + "'");
             }
         }
         logger.debug("Cleared credentials for '" + type.getSimpleName() + "'");
@@ -209,7 +209,7 @@ abstract public class Library implements LibraryInterface {
             logger.debug("null url provided to query");
             return null;
         }
-        WebTools.queryPacer(queryDiff);
+        WebTools.queryPacer(this.queryDiff);
         try {
             HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
             connection.setRequestMethod("GET");
@@ -277,5 +277,16 @@ abstract public class Library implements LibraryInterface {
      */
     public int getIdCacheSize() {
         return ids.size();
+    }
+
+    public static class InvalidLibraryException extends Exception {
+
+        public InvalidLibraryException() {
+            super();
+        }
+
+        public InvalidLibraryException(String message) {
+            super(message);
+        }
     }
 }

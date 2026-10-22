@@ -164,7 +164,7 @@ public class Collection {
      * getLikedSong.
      * </p>
      *
-     * @param name a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link ryzen.ownitall.classes.Song} object
      */
     public static Song getLikedSong(int hashCode) {
@@ -291,7 +291,7 @@ public class Collection {
      * getAlbum.
      * </p>
      *
-     * @param name a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link ryzen.ownitall.classes.Album} object
      */
     public static Album getAlbum(int hashCode) {
@@ -430,7 +430,7 @@ public class Collection {
      * getPlaylist.
      * </p>
      *
-     * @param name a {@link java.lang.String} object
+     * @param hashCode a int
      * @return a {@link ryzen.ownitall.classes.Playlist} object
      */
     public static Playlist getPlaylist(int hashCode) {

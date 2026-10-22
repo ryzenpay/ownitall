@@ -8,7 +8,8 @@ import java.util.Iterator;
 /**
  * Interruptable - Progress - Iterator
  *
- * @author ryzen
+ * @param <T> a type class
+ * @author   ryzen
  */
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
@@ -21,7 +22,7 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private IPIterator(Iterator<T> iterated, String title, int maxStep) {
         this.iterated = iterated;
         this.pb = new ProgressBar(title, maxStep);
-        interruptionHandler = new InterruptionHandler();
+        this.interruptionHandler = new InterruptionHandler();
     }
 
     /**
@@ -89,19 +90,19 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     public void step(String message) throws InterruptedException {
-        interruptionHandler.checkInterruption();
-        if (iterated != null) {
-            iterated.next();
+        this.interruptionHandler.checkInterruption();
+        if (this.iterated != null) {
+            this.iterated.next();
         } else {
             this.pb.step(message);
         }
     }
 
     public void step(int by) throws InterruptedException {
-        interruptionHandler.checkInterruption();
-        if (iterated != null) {
+        this.interruptionHandler.checkInterruption();
+        if (this.iterated != null) {
             for (int i = 0; i < by; i++) {
-                iterated.next();
+                this.iterated.next();
             }
         } else {
             this.pb.step(by);
@@ -111,7 +112,7 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
-        boolean r = iterated.hasNext();
+        boolean r = this.iterated.hasNext();
         if (!r || InterruptionHandler.isInterrupted()) {
             return false;
         }
@@ -121,16 +122,16 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public T next() {
-        T r = iterated.next();
+        T r = this.iterated.next();
         // this might get funky
-        pb.step(r.toString());
+        this.pb.step(r.toString());
         return r;
     }
 
     /** {@inheritDoc} */
     @Override
     public void remove() {
-        iterated.remove();
+        this.iterated.remove();
     }
 
     /** {@inheritDoc} */
@@ -142,8 +143,8 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     /** {@inheritDoc} */
     @Override
     public void close() {
-        pb.close();
-        interruptionHandler.close();
+        this.pb.close();
+        this.interruptionHandler.close();
         if (this.equals(rootInstance)) {
             rootInstance = null;
         }

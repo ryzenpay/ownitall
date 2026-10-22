@@ -36,9 +36,9 @@ public class Album extends Playlist {
      *
      * @param name       - album name
      * @param songs      - linkedhashset of songs
+     * @param ids        a {@link java.util.LinkedHashMap} object
      * @param coverImage - cover art
      * @param artists    - linkedhashset of artists
-     * @param links      - linkedhasmap of links
      */
 
     @JsonCreator

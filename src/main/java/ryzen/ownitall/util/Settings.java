@@ -77,9 +77,9 @@ public class Settings {
      * check if settings folder exists, if not make it (to prevent errors)
      */
     private void setFolder() {
-        if (!file.getParentFile().exists()) {
-            if (!file.getParentFile().mkdirs()) {
-                logger.warn("Unable to create folder '" + file.getParentFile().getAbsolutePath() + "'");
+        if (!this.file.getParentFile().exists()) {
+            if (!this.file.getParentFile().mkdirs()) {
+                logger.warn("Unable to create folder '" + this.file.getParentFile().getAbsolutePath() + "'");
             }
         }
     }
@@ -93,16 +93,16 @@ public class Settings {
      */
     protected void read() throws IOException {
         setFolder();
-        if (!file.exists()) {
+        if (!this.file.exists()) {
             this.save();
             return;
         }
         LinkedHashMap<String, Object> imported = objectMapper.readValue(
-                file,
+                this.file,
                 new TypeReference<LinkedHashMap<String, Object>>() {
                 });
         if (imported == null) {
-            logger.warn("Failed to import from file '" + file.getAbsolutePath() + "'");
+            logger.warn("Failed to import from file '" + this.file.getAbsolutePath() + "'");
         } else {
             this.setAll(imported);
         }
@@ -114,7 +114,7 @@ public class Settings {
     public void save() {
         this.setFolder();
         try {
-            objectMapper.writeValue(file, this.getAll());
+            objectMapper.writeValue(this.file, this.getAll());
         } catch (IOException e) {
             logger.error("Exception saving", e);
         }
@@ -124,7 +124,7 @@ public class Settings {
      * delete settings of predefined file
      */
     protected void clear() {
-        file.delete();
+        this.file.delete();
     }
 
     /**

@@ -3,16 +3,16 @@ package ryzen.ownitall;
 import java.io.File;
 import java.io.IOException;
 
+import ryzen.ownitall.integrations.AppleMusic;
+import ryzen.ownitall.integrations.Jellyfin;
+import ryzen.ownitall.integrations.Spotify;
+import ryzen.ownitall.integrations.Tidal;
+import ryzen.ownitall.integrations.Upload;
+import ryzen.ownitall.integrations.Youtube;
+import ryzen.ownitall.integrations.download.Download;
+import ryzen.ownitall.integrations.download.SoulSeek;
+import ryzen.ownitall.integrations.download.YT_dl;
 import ryzen.ownitall.library.LastFM;
-import ryzen.ownitall.method.AppleMusic;
-import ryzen.ownitall.method.Jellyfin;
-import ryzen.ownitall.method.Spotify;
-import ryzen.ownitall.method.Tidal;
-import ryzen.ownitall.method.Upload;
-import ryzen.ownitall.method.Youtube;
-import ryzen.ownitall.method.download.Download;
-import ryzen.ownitall.method.download.SoulSeek;
-import ryzen.ownitall.method.download.YT_dl;
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -73,7 +73,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
 
     ///
     ///
-    /// METHODS
+    /// INTEGRATIONS
     ///
     ///
 
@@ -235,8 +235,8 @@ public class Settings extends ryzen.ownitall.util.Settings {
      */
     @Group(Download.class)
     @Options(options = { "YT_dl", "SoulSeek" })
-    @Name("Download Method")
-    public static String downloadMethod = "YT_dl";
+    @Name("Download Integration")
+    public static String downloadIntegration = "YT_dl";
 
     @Group(YT_dl.class)
     @Name("Search Youtube")

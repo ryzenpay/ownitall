@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Storage;
-import ryzen.ownitall.method.Method;
+import ryzen.ownitall.integrations.Integration;
 
 /**
  * <p>
@@ -93,7 +93,7 @@ public class ToolsMenu {
      *
      * @param model a {@link org.springframework.ui.Model} object
      * @return a {@link java.lang.String} object
-     * @param path a {@link java.lang.String} object
+     * @param path  a {@link java.lang.String} object
      */
     @GetMapping("/tools/unarchive/{path}")
     public String unarchive(Model model,
@@ -130,8 +130,8 @@ public class ToolsMenu {
      */
     @GetMapping("/tools/clearcredentials")
     public String optionClearCredentials(Model model) {
-        for (Class<?> methodClass : Method.getMethods()) {
-            Method.clearCredentials(methodClass);
+        for (Class<?> clazz : Integration.getIntegrations()) {
+            Integration.clearCredentials(clazz);
         }
         logger.info(model, "Successfully cleared credentials");
         return toolsMenu(model);

@@ -35,7 +35,7 @@ public class Logger {
      * @param clazz a {@link java.lang.Class} object
      */
     public Logger(Class<?> clazz) {
-        logger = LogManager.getLogger(clazz);
+        this.logger = LogManager.getLogger(clazz);
     }
 
     /**
@@ -229,15 +229,15 @@ public class Logger {
      * @return a {@link java.util.LinkedHashSet} object
      */
     public LinkedHashSet<Entry<Level, String>> getLogs() {
-        return filterHistory(history, globalLevel);
+        return filterHistory(this.history, globalLevel);
     }
 
     private void addLog(Entry<Level, String> entry) {
-        synchronized (history) {
-            if (history.size() >= historySize) {
-                history.remove(0);
+        synchronized (this.history) {
+            if (this.history.size() >= historySize) {
+                this.history.remove(0);
             }
-            history.add(entry);
+            this.history.add(entry);
         }
         synchronized (globalHistory) {
             if (globalHistory.size() >= globalHistorySize) {

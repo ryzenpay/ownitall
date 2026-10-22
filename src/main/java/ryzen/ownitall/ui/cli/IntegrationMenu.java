@@ -8,7 +8,8 @@ import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.method.Method;
+import ryzen.ownitall.integrations.Integration;
+import ryzen.ownitall.integrations.Integration.InvalidIntegrationException;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
@@ -17,66 +18,66 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
 
 /**
  * <p>
- * MethodMenu class.
+ * IntegrationMeniu class.
  * </p>
  *
  * @author ryzen
  */
-public class MethodMenu {
-    private static final Logger logger = new Logger(MethodMenu.class);
+public class IntegrationMenu {
+    private static final Logger logger = new Logger(IntegrationMenu.class);
 
-    private Method method;
+    private Integration integration;
 
     /**
      * <p>
-     * Constructor for MethodMenu.
+     * Constructor for IntegrationMenu.
      * </p>
      *
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
+     * @throws java.lang.InterruptedException                  if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException if any.
      * @param filter a {@link java.lang.Class} object
      */
-    public MethodMenu(Class<?> filter)
+    public IntegrationMenu(Class<?> filter)
             throws InterruptedException, MissingSettingException {
         LinkedHashMap<String, Class<?>> options = new LinkedHashMap<>();
-        for (Class<?> method : Method.getMethods(filter)) {
-            options.put(method.getSimpleName(), method);
+        for (Class<?> integration : Integration.getIntegrations(filter)) {
+            options.put(integration.getSimpleName(), integration);
         }
         try {
-            String choice = Menu.optionMenu(options.keySet(), "METHODS");
-            Class<?> methodClass = Method.getMethod(choice);
+            String choice = Menu.optionMenu(options.keySet(), "INTEGRATIONS");
+            Class<?> clazz = Integration.getIntegration(choice);
             while (true) {
                 try {
-                    method = new Method(methodClass);
+                    this.integration = new Integration(clazz);
                     break;
                 } catch (MissingSettingException e) {
                     logger.warn(
-                            "Missing settings to set up method '" + methodClass.getSimpleName() + "': "
+                            "Missing settings to set up integration '" + clazz.getSimpleName() + "': "
                                     + e.getMessage());
-                    setCredentials(methodClass);
+                    setCredentials(clazz);
                 } catch (AuthenticationException e) {
-                    logger.warn("Authentication exception setting up method '" + methodClass.getSimpleName()
+                    logger.warn("Authentication exception setting up integration '" + clazz.getSimpleName()
                             + "': " + e.getMessage());
-                    Method.clearCredentials(methodClass);
-                    setCredentials(methodClass);
-                } catch (NoSuchMethodException e) {
-                    logger.error("method '" + methodClass.getSimpleName() + "' does not exist", e);
+                    Integration.clearCredentials(clazz);
+                    setCredentials(clazz);
+                } catch (InvalidIntegrationException e) {
+                    logger.error("integration '" + clazz.getSimpleName() + "' does not exist", e);
                     break;
                 }
             }
         } catch (MenuClosed e) {
-            throw new InterruptedException("Cancelled method selection");
+            throw new InterruptedException("Cancelled integration selection");
         }
     }
 
-    private static void setCredentials(Class<?> methodClass)
+    private static void setCredentials(Class<?> clazz)
             throws MissingSettingException, InterruptedException {
-        if (methodClass == null) {
-            logger.debug("null methodClass provided in setCredentials");
+        if (clazz == null) {
+            logger.debug("null clazz provided in setCredentials");
             return;
         }
         Settings settings = Settings.load();
-        LinkedHashSet<String> credentials = settings.getGroup(methodClass);
+        LinkedHashSet<String> credentials = settings.getGroup(clazz);
         if (credentials != null) {
             try {
                 SettingsMenu.changeSettings(credentials);
@@ -93,14 +94,14 @@ public class MethodMenu {
      */
     public void importMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Import Library", method::importCollection);
-        options.put("Import liked songs", method::importLikedSongs);
+        options.put("Import Library", this.integration::importCollection);
+        options.put("Import liked songs", this.integration::importLikedSongs);
         options.put("Import Album(s)", this::optionImportAlbumsMenu);
         options.put("Import Playlist(s)", this::optionImportPlaylistsMenu);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT " + method.getMethodName());
+                        "IMPORT " + this.integration.getIntegrationName());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -109,12 +110,12 @@ public class MethodMenu {
 
     private void optionImportAlbumsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("All usersaved albums", method::importAlbums);
+        options.put("All usersaved albums", this.integration::importAlbums);
         options.put("Individual album", this::optionImportAlbum);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT ALBUM" + method.getMethodName().toUpperCase());
+                        "IMPORT ALBUM" + this.integration.getIntegrationName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -127,28 +128,28 @@ public class MethodMenu {
         String artistName = null;
         try {
             while (id == null || id.isEmpty()) {
-                System.out.print("*Enter '" + method.getMethodName() + "' Album ID: ");
+                System.out.print("*Enter '" + this.integration.getIntegrationName() + "' Album ID: ");
                 id = Input.request().getString();
             }
-            System.out.print("Enter '" + method.getMethodName() + "' Album name: ");
+            System.out.print("Enter '" + this.integration.getIntegrationName() + "' Album name: ");
             name = Input.request().getString();
-            System.out.print("Enter '" + method.getMethodName() + "' Album artist name: ");
+            System.out.print("Enter '" + this.integration.getIntegrationName() + "' Album artist name: ");
             artistName = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting album details");
             return;
         }
-        this.method.importAlbum(id, name, artistName);
+        this.integration.importAlbum(id, name, artistName);
     }
 
     private void optionImportPlaylistsMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("All usersaved playlists", method::importPlaylists);
+        options.put("All usersaved playlists", this.integration::importPlaylists);
         options.put("Individual playlist", this::optionImportPlaylist);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "IMPORT PlAYLIST" + method.getMethodName().toUpperCase());
+                        "IMPORT PlAYLIST" + this.integration.getIntegrationName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -160,16 +161,16 @@ public class MethodMenu {
         String name = null;
         try {
             while (id == null || id.isEmpty()) {
-                System.out.print("*Enter '" + method.getMethodName() + "' Playlist ID: ");
+                System.out.print("*Enter '" + this.integration.getIntegrationName() + "' Playlist ID: ");
                 id = Input.request().getString();
             }
-            System.out.print("Enter '" + method.getMethodName() + "' Playlist Name: ");
+            System.out.print("Enter '" + this.integration.getIntegrationName() + "' Playlist Name: ");
             name = Input.request().getString();
         } catch (InterruptedException e) {
             logger.debug("Interrupted while getting playlist details");
             return;
         }
-        method.importPlaylist(id, name);
+        this.integration.importPlaylist(id, name);
     }
 
     /**
@@ -179,14 +180,14 @@ public class MethodMenu {
      */
     public void exportMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Export Library", method::exportCollection);
-        options.put("Export Liked Songs", method::exportLikedSongs);
+        options.put("Export Library", this.integration::exportCollection);
+        options.put("Export Liked Songs", this.integration::exportLikedSongs);
         options.put("Export Album(s)", this::optionExportAlbums);
         options.put("Export Playlist(s)", this::optionExportPlaylists);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "EXPORT " + method.getMethodName().toUpperCase());
+                        "EXPORT " + this.integration.getIntegrationName().toUpperCase());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -203,9 +204,9 @@ public class MethodMenu {
         try {
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST EXPORT MENU");
             if (choice.equals("All")) {
-                method.exportPlaylists();
+                this.integration.exportPlaylists();
             } else {
-                method.exportPlaylist(options.get(choice));
+                this.integration.exportPlaylist(options.get(choice));
             }
         } catch (MenuClosed e) {
         }
@@ -220,9 +221,9 @@ public class MethodMenu {
         try {
             String choice = Menu.optionMenu(options.keySet(), "ALBUM EXPORT MENU");
             if (choice.equals("All")) {
-                method.exportAlbums();
+                this.integration.exportAlbums();
             } else {
-                method.exportAlbum(options.get(choice));
+                this.integration.exportAlbum(options.get(choice));
             }
         } catch (MenuClosed e) {
         }
@@ -235,14 +236,14 @@ public class MethodMenu {
      */
     public void syncMenu() {
         LinkedHashMap<String, Runnable> options = new LinkedHashMap<>();
-        options.put("Sync Library", method::syncCollection);
-        options.put("Sync liked songs", method::syncLikedSongs);
-        options.put("Sync Album", method::syncAlbums);
+        options.put("Sync Library", this.integration::syncCollection);
+        options.put("Sync liked songs", this.integration::syncLikedSongs);
+        options.put("Sync Album", this.integration::syncAlbums);
         options.put("Sync Playlists", this::optionSyncPlaylists);
         try {
             while (true) {
                 String choice = Menu.optionMenu(options.keySet(),
-                        "SYNC " + method.getMethodName());
+                        "SYNC " + this.integration.getIntegrationName());
                 options.get(choice).run();
             }
         } catch (MenuClosed e) {
@@ -258,9 +259,9 @@ public class MethodMenu {
         try {
             String choice = Menu.optionMenu(options.keySet(), "PLAYLIST SYNC MENU");
             if (choice.equals("All")) {
-                method.syncPlaylists();
+                this.integration.syncPlaylists();
             } else {
-                method.syncPlaylist(options.get(choice));
+                this.integration.syncPlaylist(options.get(choice));
             }
         } catch (MenuClosed e) {
         }

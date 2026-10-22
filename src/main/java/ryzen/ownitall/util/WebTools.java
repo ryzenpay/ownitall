@@ -136,6 +136,10 @@ public class WebTools {
     /**
      * Start an HTTP server to intercept the oauth code
      *
+     * @param authUrl       a {@link java.lang.String} object
+     * @param clientID      a {@link java.lang.String} object
+     * @param scope         a {@link java.util.ArrayList} object
+     * @param codeChallenge a {@link java.lang.String} object
      * @throws java.lang.InterruptedException - if an error occurs
      */
     public static String getOauthCode(String authUrl, String clientID, ArrayList<String> scope,

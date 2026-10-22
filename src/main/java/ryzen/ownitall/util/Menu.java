@@ -66,7 +66,7 @@ public class Menu {
      *                   remember where they are
      *                   linkedhashmap
      * @return - string choice
-     * @throws ryzen.ownitall.util.exceptions.MenuClosed if any.
+     * @throws ryzen.ownitall.util.Menu.MenuClosed if any.
      */
     public static String optionMenu(Set<String> setOptions, String menuName) throws MenuClosed {
         if (setOptions == null) {
@@ -108,7 +108,7 @@ public class Menu {
      * @param setOptions - (linkedhash)map of options with name:value
      * @param menuName   - desired menu name
      * @return - name of selected option
-     * @throws ryzen.ownitall.util.exceptions.MenuClosed if any.
+     * @throws ryzen.ownitall.util.Menu.MenuClosed if any.
      */
     public static String optionMenuWithValue(Map<String, ?> setOptions, String menuName)
             throws MenuClosed {

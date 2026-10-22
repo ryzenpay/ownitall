@@ -1,4 +1,4 @@
-package ryzen.ownitall.method.interfaces;
+package ryzen.ownitall.integrations.interfaces;
 
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
@@ -18,9 +18,9 @@ public interface Sync {
      * syncLikedSongs.
      * </p>
      *
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public void syncLikedSongs() throws InterruptedException, MissingSettingException, AuthenticationException;
 
@@ -29,9 +29,9 @@ public interface Sync {
      * syncPlaylists.
      * </p>
      *
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public void syncPlaylists() throws InterruptedException, MissingSettingException, AuthenticationException;
 
@@ -41,9 +41,9 @@ public interface Sync {
      * </p>
      *
      * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public void syncPlaylist(Playlist playlist)
             throws InterruptedException, MissingSettingException, AuthenticationException;
@@ -53,9 +53,9 @@ public interface Sync {
      * syncAlbums.
      * </p>
      *
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public void syncAlbums() throws InterruptedException, MissingSettingException, AuthenticationException;
 
@@ -65,9 +65,9 @@ public interface Sync {
      * </p>
      *
      * @param album a {@link ryzen.ownitall.classes.Album} object
-     * @throws java.lang.InterruptedException                         if any.
-     * @throws ryzen.ownitall.util.exceptions.MissingSettingException if any.
-     * @throws ryzen.ownitall.util.exceptions.AuthenticationException if any.
+     * @throws java.lang.InterruptedException                       if any.
+     * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+     * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
     public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException;
 }

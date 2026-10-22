@@ -8,11 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Component
 public class WebConfig implements WebMvcConfigurer {
     @Autowired
-    private MethodMiddleware methodMiddleware;
+    private IntegrationMiddleware integrationMiddleware;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(methodMiddleware).addPathPatterns("/method/import/**", "/method/export/**",
-                "/method/sync/**");
+        registry.addInterceptor(
+                this.integrationMiddleware).addPathPatterns("/integration/import/**", "/integration/export/**",
+                        "/integration/sync/**");
     }
 }
