@@ -1,4 +1,4 @@
-package ryzen.ownitall.integrations;
+package ryzen.ownitall.integrations.local;
 
 import java.io.BufferedReader;
 import java.io.File;

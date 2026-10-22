@@ -7,11 +7,11 @@ import ryzen.ownitall.integrations.AppleMusic;
 import ryzen.ownitall.integrations.Jellyfin;
 import ryzen.ownitall.integrations.Spotify;
 import ryzen.ownitall.integrations.Tidal;
-import ryzen.ownitall.integrations.Upload;
 import ryzen.ownitall.integrations.Youtube;
-import ryzen.ownitall.integrations.download.Download;
-import ryzen.ownitall.integrations.download.SoulSeek;
-import ryzen.ownitall.integrations.download.YTdlp;
+import ryzen.ownitall.integrations.local.Local;
+import ryzen.ownitall.integrations.local.SoulSeek;
+import ryzen.ownitall.integrations.local.Upload;
+import ryzen.ownitall.integrations.local.YTdlp;
 import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.util.Logger;
 
@@ -218,7 +218,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * local library path
      */
-    @Group({ Download.class, Upload.class, YTdlp.class, SoulSeek.class })
+    @Group({ Local.class, Upload.class, YTdlp.class, SoulSeek.class })
     @Name("Local Library")
     public static File localFolder = null;
 
@@ -226,7 +226,7 @@ public class Settings extends ryzen.ownitall.util.Settings {
      * format of music to download
      * current supported: "mp3", "flac", "wav"
      */
-    @Group({ Download.class, YTdlp.class, SoulSeek.class })
+    @Group({ Local.class, YTdlp.class, SoulSeek.class })
     @Options(options = { "mp3", "flac", "wav" })
     @Name("Format (ex: mp3)")
     public static String downloadFormat = "mp3";

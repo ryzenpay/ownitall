@@ -1,4 +1,4 @@
-package ryzen.ownitall.integrations.download;
+package ryzen.ownitall.integrations.local;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
  *
  * @author ryzen
  */
-public class SoulSeek extends Download implements Sync, Export {
+public class SoulSeek extends Local implements Sync, Export {
     private static final Logger logger = new Logger(SoulSeek.class);
 
     /**
@@ -43,7 +43,7 @@ public class SoulSeek extends Download implements Sync, Export {
         // unable to thread due to ports
         // using multiple ports also doesnt work because soulseek doesnt allow multiple
         // usersessions with same account
-        Download.downloadThreads = 1;
+        Local.downloadThreads = 1;
     }
 
     public ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException {

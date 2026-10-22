@@ -1,4 +1,4 @@
-package ryzen.ownitall.integrations.download;
+package ryzen.ownitall.integrations.local;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
  *
  * @author ryzen
  */
-public class YTdlp extends Download implements Sync, Export {
+public class YTdlp extends Local implements Sync, Export {
     private static final Logger logger = new Logger(YTdlp.class);
     private Youtube youtube;
 

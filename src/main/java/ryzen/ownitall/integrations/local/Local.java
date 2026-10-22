@@ -1,4 +1,4 @@
-package ryzen.ownitall.integrations.download;
+package ryzen.ownitall.integrations.local;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,7 +23,6 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.integrations.Upload;
 import ryzen.ownitall.util.FileTools;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
@@ -41,17 +40,17 @@ import ryzen.ownitall.util.WebTools.AuthenticationException;
  * deliberately implements no interface to keep it out of the method menus.
  * </p>
  * <p>
- * Download class.
+ * Local class.
  * </p>
  *
  * @author ryzen
  */
-public abstract class Download {
+public abstract class Local {
     // more download sources
     // qobuz
     // deezer
     // tidal
-    private static final Logger logger = new Logger(Download.class);
+    private static final Logger logger = new Logger(Local.class);
     private ExecutorService executor;
     private static final ArrayList<String> whiteList = new ArrayList<>(
             Arrays.asList("m3u", "png", "nfo"));
@@ -67,7 +66,7 @@ public abstract class Download {
      * shared setup for every download method, download methods validate their own
      * settings and binaries in their own constructors
      */
-    protected Download() {
+    protected Local() {
     }
 
     /**
@@ -85,12 +84,10 @@ public abstract class Download {
      * interpret a non zero exit code of the download binary
      *
      * @param exitCode - exit code of the download binary
-     * @throws ryzen.ownitall.integrations.download.Download.DownloadException if the
-     *                                                                         exit
-     *                                                                         code
-     *                                                                         makes
-     *                                                                         retrying
-     *                                                                         pointless
+     * @throws ryzen.ownitall.integrations.local.Local.DownloadException if the exit
+     *                                                                   code makes
+     *                                                                   retrying
+     *                                                                   pointless
      */
     public abstract void handleError(int exitCode) throws DownloadException;
 
