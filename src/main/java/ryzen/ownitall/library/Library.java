@@ -1,14 +1,12 @@
 package ryzen.ownitall.library;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.LinkedHashSet;
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
@@ -31,8 +29,9 @@ import ryzen.ownitall.util.WebTools.QueryException;
  */
 abstract public class Library implements LibraryInterface {
     private static final Logger logger = new Logger(Library.class);
+    private static final Map<String, String> headers = Map.of("User-Agent",
+            "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
 
-    protected long queryDiff;
     /**
      * arrays to cache api queries
      */
@@ -198,26 +197,28 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * query the specified url, catch errors or return response
+     * query the specified url and bind the response to an api bean
      *
-     * @param url - url to query
-     * @return - JsonNode response or null if error
-     * @throws java.lang.InterruptedException - if user interrupts timeout
+     * @param <T>          the bean the response binds to
+     * @param url          - url to query
+     * @param responseType - the bean class to bind the response to
+     * @return - bound response or null if error
+     * @throws java.lang.InterruptedException - when the user interrupts a
+     *                                        pacing or retry wait, rethrown so
+     *                                        callers abort instead of mistaking
+     *                                        the interrupt for a missing entry
      */
-    protected JsonNode query(URI url) throws InterruptedException {
+    protected <T> T query(URI url, Class<T> responseType) throws InterruptedException {
         if (url == null) {
             logger.debug("null url provided to query");
             return null;
         }
-        WebTools.queryPacer(this.queryDiff);
         try {
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
-            return WebTools.query(connection);
-        } catch (ProtocolException e) {
-            throw new RuntimeException(e);
-        } catch (IOException | QueryException e) {
+            return WebTools.query(WebTools.target(url), "GET", Library.headers, null, responseType);
+        } catch (QueryException e) {
+            if (e.getCause() instanceof InterruptedException) {
+                throw (InterruptedException) e.getCause();
+            }
             logger.warn("Received error code while querying: " + e.getMessage());
             return null;
         }

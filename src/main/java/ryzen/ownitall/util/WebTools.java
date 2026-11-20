@@ -1,113 +1,276 @@
 package ryzen.ownitall.util;
 
-import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpServer;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
 public class WebTools {
     private static final Logger logger = new Logger(WebTools.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String redirectUri = "http%3A%2F%2Flocalhost%3A8081%2Foauth";
-    public static long retries = 5;
-    public static long timeout = 20; // timeout in seconds
-    // read by queryPacer on every request thread, written by whichever thread last
-    // completed a query
-    private static volatile long lastQueryTime = 0;
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    private static Client client;
+    private static int retries = 5;
+    private static int timeout = 20; // seconds to sleep on a 429
+    private static final Map<String, Long> paces = new ConcurrentHashMap<>();
+    private static final Map<String, Long> lastQueryByHost = new ConcurrentHashMap<>();
 
-    public static String generateCodeVerifier() {
-        SecureRandom sr = new SecureRandom();
-        byte[] codeVerifierBytes = new byte[32];
-        sr.nextBytes(codeVerifierBytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifierBytes);
+    /**
+     * <p>
+     * client. every line of client.properties lands on the client
+     * configuration as a jersey client property, so any key jersey or its
+     * apache connector understands (proxy, timeouts, cookies) configures
+     * itself without code; pace.<host> keys instead feed the per host pacer.
+     * </p>
+     *
+     * @return a {@link jakarta.ws.rs.client.Client} object
+     */
+    public static synchronized Client client() {
+        if (client == null) {
+            ClientConfig config = new ClientConfig().connectorProvider(new ApacheConnectorProvider());
+            Properties properties = new Properties();
+            try (InputStream in = WebTools.class.getClassLoader().getResourceAsStream("client.properties")) {
+                if (in == null) {
+                    logger.debug("no client.properties found, using jersey defaults");
+                } else {
+                    properties.load(in);
+                    for (String key : properties.stringPropertyNames()) {
+                        if (key.startsWith("pace.")) {
+                            paces.put(key.substring("pace.".length()), Long.parseLong(properties.getProperty(key)));
+                        } else {
+                            config.property(key, properties.getProperty(key));
+                        }
+                    }
+                    logger.debug("Configured the http client with " + properties.size()
+                            + " properties from client.properties");
+                }
+            } catch (IOException e) {
+                logger.error("Unable to read client.properties, using jersey defaults", e);
+            }
+            retries = Integer.parseInt(properties.getProperty("retries", String.valueOf(retries)));
+            timeout = Integer.parseInt(properties.getProperty("timeout", String.valueOf(timeout)));
+            config.register(new JacksonJsonProvider(objectMapper));
+            client = ClientBuilder.newClient(config);
+        }
+        return client;
     }
 
-    public static String generateCodeChallenge(String codeVerifier) {
-        try {
-            byte[] bytes = codeVerifier.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(bytes, 0, bytes.length);
-            byte[] digest = md.digest();
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+    /**
+     * <p>
+     * timeout. seconds loaded from client.properties, used both to sleep on a
+     * 429 and to wait on the oauth code redirect; asks for the client first
+     * so the properties are read no matter who reads the timeout first.
+     * </p>
+     *
+     * @return a int
+     */
+    public static int timeout() {
+        client();
+        return timeout;
+    }
+
+    public static WebTarget target(URI url) {
+        if (url == null) {
+            logger.debug("null url provided in target");
+            return null;
+        }
+        return client().target(url);
+    }
+
+    public static WebTarget target(String url) {
+        if (url == null) {
+            logger.debug("null url provided in target");
+            return null;
+        }
+        return client().target(url);
+    }
+
+    /**
+     * <p>
+     * redirect. Follows nothing: returns the Location of a 3xx instead, or null
+     * when the url answers without one.
+     * </p>
+     *
+     * @param url a {@link java.net.URI} object
+     * @return a {@link java.net.URI} object
+     */
+    public static URI redirect(URI url) {
+        if (url == null) {
+            logger.debug("null url provided in redirect");
+            return null;
+        }
+        try (Response response = client().target(url).request()
+                .property(ClientProperties.FOLLOW_REDIRECTS, false)
+                .buildGet().invoke()) {
+            return response.getLocation();
+        } catch (ProcessingException e) {
+            logger.error("Exception while getting redirect of: " + url.toString(), e);
+            return null;
         }
     }
 
     /**
-     * ensure requests are not sent faster than the query
-     * 
-     * @param queryDiff - milliseconds of timeout between requests
-     * @throws InterruptedException
+     * <p>
+     * query. the request stated as data: a target, a method, headers, an
+     * optional body, and the type wanted back. every caller uses this: the
+     * response binds to the named type on the way in, and every non-2xx
+     * answer comes back as a webapplicationexception, handled here once
+     * instead of as a status code each caller switches over.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param method       the http method, ex: get, post
+     * @param headers      headers to send, may be null
+     * @param entity       the request body, null when the method goes without one
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
      */
-    public static void queryPacer(long queryDiff) throws InterruptedException {
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastQueryTime;
-        if (elapsedTime < queryDiff) {
-            TimeUnit.MILLISECONDS.sleep(queryDiff - elapsedTime);
+    public static <T> T query(WebTarget target, String method, Map<String, ?> headers,
+            Entity<?> entity, Class<T> responseType) throws QueryException {
+        Invocation.Builder builder = target.request();
+        if (headers != null) {
+            for (Map.Entry<String, ?> header : headers.entrySet()) {
+                builder = builder.header(header.getKey(), header.getValue());
+            }
         }
+        Invocation invocation = entity == null ? builder.build(method.toUpperCase())
+                : builder.build(method.toUpperCase(), entity);
+        return query(target, invocation, responseType, 0);
     }
 
-    public static JsonNode query(HttpURLConnection connection) throws QueryException {
-        return query(connection, 0);
-    }
-
-    public static JsonNode query(HttpURLConnection connection, int attempt) throws QueryException {
+    private static <T> T query(WebTarget target, Invocation invocation, Class<T> responseType, int attempt)
+            throws QueryException {
+        URI url = target.getUri();
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            JsonNode rootNode = objectMapper.readTree(response.toString());
-            if (rootNode.has("error") || rootNode.has("failed")) {
-                throw new QueryException(rootNode.toString());
-            }
-            lastQueryTime = System.currentTimeMillis();
-            return rootNode;
-        } catch (IOException e) {
-            try {
-                switch (connection.getResponseCode()) {
-                    case 429: // too many requests
-                        if (attempt >= retries) {
-                            throw new QueryException("Reached " + retries + " retries");
-                        }
-                        logger.debug("Too many requests, trying again in " + timeout + " seconds...");
+            WebTools.pace(url.getHost());
+            T entity = invocation.invoke(responseType);
+            return entity;
+        } catch (WebApplicationException e) {
+            Response response = e.getResponse();
+            int status = response == null ? 0 : response.getStatus();
+            switch (status) {
+                case 429: { // too many requests
+                    if (attempt >= retries) {
+                        throw new QueryException("Reached " + retries + " retries");
+                    }
+                    logger.debug("Too many requests, trying again in " + timeout + " seconds...");
+                    try {
                         TimeUnit.SECONDS.sleep(timeout);
-                        return query(connection, attempt + 1);
-                    case 404:
-                        logger.debug("Requested page '" + connection.getURL().toString() + "'does not exist");
-                        return null;
-                    default:
-                        logger.error("Unknown exception processing: " + connection.getURL().toString(), e);
-                        throw new QueryException(e);
+                    } catch (InterruptedException e2) {
+                        logger.error("Interrupted while retrying: " + url.toString(), e2);
+                        throw new QueryException(e2);
+                    }
+                    return query(target, invocation, responseType, attempt + 1);
                 }
-            } catch (IOException | InterruptedException f) {
-                logger.error("Exception retreiving response code from request", e);
-                throw new QueryException(e);
+                case 404: {
+                    logger.debug("Requested page '" + url.toString() + "'does not exist");
+                    return null;
+                }
+                default: {
+                    String body = response == null || !response.hasEntity() ? null : response.readEntity(String.class);
+                    logger.error("Unknown status processing: " + url.toString() + " (" + status + ")");
+                    throw new QueryException(String.valueOf(status), body);
+                }
             }
+        } catch (ProcessingException e) {
+            logger.error("Exception while processing: " + url.toString(), e);
+            throw new QueryException(e);
         }
+    }
+
+    /**
+     * <p>
+     * pace. holds a request until the host's configured minimum gap since the
+     * last one has passed, so a host like musicbrainz that counts requests
+     * per second sees what it asked for; a host with no pace line is not
+     * held at all.
+     * </p>
+     *
+     * @param host the host about to receive the request
+     * @throws ryzen.ownitall.util.WebTools.QueryException if the wait is
+     *                                                     interrupted.
+     */
+    private static void pace(String host) throws QueryException {
+        Long gap = paces.get(host);
+        if (gap == null) {
+            return;
+        }
+        synchronized (lastQueryByHost) {
+            try {
+                long wait = gap - (System.currentTimeMillis() - lastQueryByHost.getOrDefault(host, 0L));
+                if (wait > 0) {
+                    TimeUnit.MILLISECONDS.sleep(wait);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new QueryException("Interrupted while pacing requests to " + host, e);
+            }
+            lastQueryByHost.put(host, System.currentTimeMillis());
+        }
+    }
+
+    /**
+     * <p>
+     * json. Serialises a bean into a request body, leaving out every field that
+     * was never set.
+     * </p>
+     *
+     * @param payload a {@link java.lang.Object} object
+     * @return a {@link java.lang.String} object
+     * @throws com.fasterxml.jackson.core.JsonProcessingException if any.
+     */
+    public static String json(Object payload) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(payload);
+    }
+
+    /**
+     * <p>
+     * convert. Rebinds an already parsed value with the project's mapper. Only
+     * union members need it: tidal's items documents answer with an included
+     * list the spec types as more than one resource, the provider parses each
+     * member as a map, and the caller picks the bean each member is.
+     * </p>
+     *
+     * @param from         an already parsed value, usually one member of a union
+     *                     list
+     * @param responseType the bean the value describes
+     * @param <T>          the bean the value describes
+     * @return a T object
+     */
+    public static <T> T convert(Object from, Class<T> responseType) {
+        if (from == null || responseType.isInstance(from)) {
+            return responseType.cast(from);
+        }
+        return objectMapper.convertValue(from, responseType);
     }
 
     /**
@@ -130,138 +293,6 @@ public class WebTools {
             Files.copy(in, file.toPath());
         } catch (FileNotFoundException e) {
             logger.debug("Image at url '" + url + "' not found");
-        }
-    }
-
-    /**
-     * Start an HTTP server to intercept the oauth code
-     *
-     * @param authUrl       a {@link java.lang.String} object
-     * @param clientID      a {@link java.lang.String} object
-     * @param scope         a {@link java.util.ArrayList} object
-     * @param codeChallenge a {@link java.lang.String} object
-     * @throws java.lang.InterruptedException - if an error occurs
-     */
-    public static String getOauthCode(String authUrl, String clientID, ArrayList<String> scope,
-            String codeChallenge) throws InterruptedException {
-        String url = authUrl;
-        if (url.contains("?")) {
-            url += "&client_id=" + clientID;
-        } else {
-            url += "?client_id=" + clientID;
-        }
-        url += "&redirect_uri=" + redirectUri;
-        if (scope != null) {
-            url += "&scope=" + String.join("%20", scope);
-        }
-        url += "&code_challenge_method=S256&code_challenge=" + codeChallenge;
-        URI authUri = URI.create(url);
-        return getOauthCode(authUri);
-    }
-
-    public static String getOauthCode(URI authUri) throws InterruptedException {
-        AtomicReference<String> codeRef = new AtomicReference<>();
-        try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
-            server.createContext("/oauth", exchange -> {
-                logger.debug("request received on /oauth");
-                URI requestURI = exchange.getRequestURI();
-                String query = requestURI.getQuery();
-                String code = null;
-                if (query != null && query.contains("code=")) {
-                    String[] queryParams = query.split("&");
-                    for (String param : queryParams) {
-                        String[] keyValue = param.split("=");
-                        if (keyValue.length == 2 && "code".equals(keyValue[0])) {
-                            code = keyValue[1];
-                        }
-                    }
-                }
-
-                String responseText;
-                if (code != null) {
-                    codeRef.set(code);
-                    logger.debug("Authorization code received: " + code);
-                    responseText = "Code received, you can now close this tab";
-                    exchange.sendResponseHeaders(200, responseText.getBytes().length);
-                } else {
-                    logger.warn("Failed to retrieve authorization code. Query: " + query);
-                    responseText = "an error occurred, check logs for more";
-                    exchange.sendResponseHeaders(404, responseText.getBytes().length);
-                }
-
-                OutputStream responseBody = exchange.getResponseBody();
-                responseBody.write(responseText.getBytes());
-                responseBody.close();
-            });
-            server.start();
-            logger.debug("Awaiting response at " + redirectUri);
-            try {
-                interactiveSetCode(authUri, codeRef);
-            } catch (InterruptedException e) {
-                logger.debug("Interrupted while interactively getting code");
-            }
-            server.stop(0);
-        } catch (IOException e) {
-            logger.error("Failed to start local server", e);
-        }
-        if (codeRef.get() == null) {
-            logger.info("Unable to get code automatically, provide it manually");
-            System.out.println("Open this url: " + authUri);
-            System.out.print("Provide the code found in response url: ");
-            return Input.request().getString();
-        } else {
-            return codeRef.get();
-        }
-    }
-
-    private static void interactiveSetCode(URI url, AtomicReference<String> codeRef) throws InterruptedException {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {
-                Desktop.getDesktop().browse(url);
-            } catch (IOException e) {
-                logger.error("Exception opening web browser", e);
-            }
-        }
-        logger.debug("Waiting " + timeout + " seconds for code or interrupt to manually provide");
-        for (int i = 0; i < timeout; i++) {
-            if (codeRef.get() != null) {
-                break;
-            }
-            Thread.sleep(1000);
-        }
-    }
-
-    public static String getOauthToken(String tokenUrl, String codeUrl, String clientID, String clientSecret,
-            ArrayList<String> scope) throws AuthenticationException {
-        String codeVerifier = WebTools.generateCodeVerifier();
-        String codeChallenge = WebTools.generateCodeChallenge(codeVerifier);
-        try {
-            String code = getOauthCode(codeUrl, clientID, scope, codeChallenge);
-            String url = tokenUrl;
-            if (url.contains("?")) {
-                url += "&client_id=" + clientID;
-            } else {
-                url += "?client_id=" + clientID;
-            }
-            if (clientSecret != null) {
-                url += "&client_secret=" + clientSecret;
-            }
-            url += "&redirect_uri=" + redirectUri;
-            url += "&code=" + code;
-            url += "&code_verifier=" + codeVerifier;
-            URI uri = URI.create(url);
-            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            JsonNode response = WebTools.query(connection);
-            if (response.has("access_token")) {
-                return response.path("access_token").asText();
-            } else {
-                throw new AuthenticationException("no access token in response: " + response.toString());
-            }
-        } catch (IOException | QueryException | InterruptedException e) {
-            throw new AuthenticationException(e);
         }
     }
 

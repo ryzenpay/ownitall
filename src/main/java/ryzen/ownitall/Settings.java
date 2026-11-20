@@ -3,7 +3,6 @@ package ryzen.ownitall;
 import java.io.File;
 import java.io.IOException;
 
-import ryzen.ownitall.integrations.AppleMusic;
 import ryzen.ownitall.integrations.Jellyfin;
 import ryzen.ownitall.integrations.Spotify;
 import ryzen.ownitall.integrations.Tidal;
@@ -163,21 +162,6 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Secret
     @Name("Tidal Client ID")
     public static String tidalClientID = "";
-
-    ///
-    ///
-    /// APPLE MUSIC
-    ///
-    ///
-    @Group(AppleMusic.class)
-    @Secret
-    @Name("Apple Client ID")
-    public static String appleClientID = "";
-
-    @Group(AppleMusic.class)
-    @Secret
-    @Name("Apple Client Secret")
-    public static String appleClientSecret = "";
 
     ///
     ///

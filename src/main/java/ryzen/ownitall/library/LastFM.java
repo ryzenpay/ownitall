@@ -8,16 +8,21 @@ import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
+
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.superbeans.lastfm.Albums;
+import ryzen.superbeans.lastfm.Artists;
+import ryzen.superbeans.lastfm.Commons;
+import ryzen.superbeans.lastfm.Search;
+import ryzen.superbeans.lastfm.Tracks;
 
 /**
  * <p>
@@ -30,7 +35,6 @@ public class LastFM extends Library {
     private static final Logger logger = new Logger(LastFM.class);
     private static final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
     private static final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
-
     /**
      * default LastFM constructor
      * initializes all values and loads from cache
@@ -43,7 +47,6 @@ public class LastFM extends Library {
             logger.debug("Empty LastFM credentials");
             throw new MissingSettingException(LastFM.class);
         }
-        this.queryDiff = 10;
     }
 
     /**
@@ -60,10 +63,11 @@ public class LastFM extends Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("album", album.getName());
+        Artist albumArtist = null;
         if (album.getMainArtist() != null) {
-            Artist artist = this.getArtist(album.getMainArtist());
-            if (artist != null) {
-                params.put("artist", artist.getName());
+            albumArtist = this.getArtist(album.getMainArtist());
+            if (albumArtist != null) {
+                params.put("artist", albumArtist.getName());
             }
         } else {
             logger.debug(album.toString() + ": Album requires atleast one artist");
@@ -73,67 +77,56 @@ public class LastFM extends Library {
         if (albums.containsKey(params.toString())) {
             return albums.get(params.toString());
         }
-        JsonNode response = this.query("album.getInfo", this.queryBuilder(params));
-        if (response != null) {
-            JsonNode albumNode = response.path("album");
-            if (!albumNode.isMissingNode()) {
-                // new album here so the songs are the correction version + complete
-                album = new Album(albumNode.path("name").asText());
-                Artist artist = this.getArtist(new Artist(albumNode.path("artist").asText()));
-                if (artist != null) {
-                    album.addArtist(artist);
-                }
-                JsonNode idNode = albumNode.path("id");
-                if (!idNode.isMissingNode()) {
-                    album.addId("lastfm", idNode.asText());
-                }
-                JsonNode mbidNode = albumNode.path("mbid");
-                if (!mbidNode.isMissingNode()) {
-                    // only needed for albums
-                    if (!mbidNode.asText().isEmpty()) {
-                        album.addId("mbid", mbidNode.asText());
+        Albums.AlbumGetinfo envelope = this.query("album.getInfo", this.queryBuilder(params),
+                Albums.AlbumGetinfo.class);
+        Albums.Album foundAlbum = envelope == null ? null : envelope.album;
+        if (foundAlbum == null) {
+            foundAlbum = this.searchAlbum(params.get("album"), params.get("artist"));
+        }
+        if (foundAlbum != null) {
+            // new album here so the songs are the correction version + complete
+            album = new Album(foundAlbum.name);
+            Artist artist = this.getArtist(new Artist(foundAlbum.artist));
+            if (artist != null) {
+                album.addArtist(artist);
+            }
+            if (foundAlbum.mbid != null && !foundAlbum.mbid.isEmpty()) {
+                // only needed for albums
+                album.addId("mbid", foundAlbum.mbid);
+            }
+            String coverImage = this.coverImage(foundAlbum.image);
+            if (coverImage != null) {
+                album.setCoverImage(coverImage);
+            } else {
+                logger.debug(album.toString() + ": album missing images");
+            }
+            if (foundAlbum.tracks != null && foundAlbum.tracks.track != null
+                    && !foundAlbum.tracks.track.isEmpty()) {
+                for (Tracks.Track trackNode : foundAlbum.tracks.track) {
+                    Song song = new Song(trackNode.name);
+                    Artist songArtist = null;
+                    if (trackNode.artist != null) {
+                        songArtist = this.getArtist(new Artist(trackNode.artist.name));
+                    } else {
+                        logger.debug(album.toString() + " track missing artist");
                     }
-                }
-                JsonNode imageNode = albumNode.path("image");
-                if (imageNode.isArray() && !imageNode.isEmpty()) {
-                    String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                    if (coverImage != null && !coverImage.isEmpty()) {
-                        if (!defaultImg.equals(coverImage)) {
-                            album.setCoverImage(coverImage);
-                        }
+                    if (songArtist != null) {
+                        song.addArtist(artist);
                     }
-                } else {
-                    logger.debug(album.toString() + ": album missing images");
-                }
-                JsonNode trackNodes = albumNode.path("tracks").path("track");
-                if (trackNodes != null && trackNodes.isArray() && !trackNodes.isEmpty()) {
-                    for (JsonNode trackNode : trackNodes) {
-                        Song song = new Song(trackNode.path("name").asText());
-                        Artist songArtist = null;
-                        JsonNode artistNode = trackNode.path("artist");
-                        if (!artistNode.isMissingNode()) {
-                            songArtist = this.getArtist(new Artist(artistNode.path("name").asText()));
-                        } else {
-                            logger.debug(album.toString() + " track missing artist");
-                        }
-                        if (songArtist != null) {
-                            song.addArtist(artist);
-                        }
-                        song = this.getSong(song);
-                        if (song != null) {
-                            album.addSong(song);
-                        }
+                    song = this.getSong(song);
+                    if (song != null) {
+                        album.addSong(song);
                     }
-                } else {
-                    logger.debug(album.toString() + ": album missing tracks");
-                }
-                if (!album.isEmpty()) {
-                    albums.put(params.toString(), album);
-                    return album;
                 }
             } else {
-                logger.debug(album.toString() + ": album.getInfo missing album");
+                logger.debug(album.toString() + ": album missing tracks");
             }
+            if (!album.isEmpty()) {
+                albums.put(params.toString(), album);
+                return album;
+            }
+        } else {
+            logger.debug(album.toString() + ": album.getInfo missing album");
         }
         if (!album.getName().equals(MusicTools.removeBrackets(album.getName()))) {
             logger.debug("Trying album '" + album.getName() + "' again with trimmed brackets");
@@ -167,51 +160,47 @@ public class LastFM extends Library {
         if (songs.containsKey(params.toString())) {
             return songs.get(params.toString());
         }
-        JsonNode response = this.query("track.getInfo", this.queryBuilder(params));
-        if (response != null) {
-            JsonNode trackNode = response.path("track");
-            if (!trackNode.isMissingNode()) {
-                song.setName(trackNode.path("name").asText());
-                JsonNode idNode = trackNode.path("id");
-                if (!idNode.isMissingNode()) {
-                    song.addId("lastfm", idNode.asText());
-                }
-                JsonNode mbidNode = trackNode.path("mbid");
-                if (!mbidNode.isMissingNode()) {
-                    song.addId("mbid", mbidNode.asText());
-                }
-                song.setDuration(trackNode.path("duration").asLong(), ChronoUnit.MILLIS);
-                JsonNode artistNode = trackNode.path("artist");
-                if (!artistNode.isMissingNode()) {
-                    Artist artist = this.getArtist(new Artist(artistNode.path("name").asText()));
-                    if (artist != null) {
-                        song.addArtist(artist);
-                    }
-                } else {
-                    logger.debug(song.toString() + ": track missing artist");
-                }
-                JsonNode albumNode = trackNode.path("album");
-                if (!albumNode.isMissingNode()) {
-                    song.setAlbumName(albumNode.path("title").asText());
-                    JsonNode imageNode = albumNode.path("image");
-                    if (imageNode.isArray() && !imageNode.isEmpty()) {
-                        String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                        if (coverImage != null && !coverImage.isEmpty()) {
-                            if (!defaultImg.equals(coverImage)) {
-                                song.setCoverImage(coverImage);
-                            }
-                        }
-                    } else {
-                        logger.debug(song.toString() + ": song missing images");
-                    }
-                } else {
-                    logger.debug(song.toString() + ": track missing album");
-                }
-                songs.put(params.toString(), song);
-                return song;
-            } else {
-                logger.debug(song.toString() + ": track.getInfo missing track");
+        Tracks.TrackGetinfo envelope = this.query("track.getInfo", this.queryBuilder(params),
+                Tracks.TrackGetinfo.class);
+        Tracks.Track foundTrack = envelope == null ? null : envelope.track;
+        if (foundTrack == null) {
+            foundTrack = this.searchTrack(params.get("track"), params.get("artist"));
+        }
+        if (foundTrack != null) {
+            song.setName(foundTrack.name);
+            if (foundTrack.mbid != null) {
+                song.addId("mbid", foundTrack.mbid);
             }
+            if (foundTrack.duration != null) {
+                try {
+                    song.setDuration(Long.parseLong(foundTrack.duration), ChronoUnit.MILLIS);
+                } catch (NumberFormatException e) {
+                    logger.debug(song.toString() + ": unparseable track duration '" + foundTrack.duration + "'");
+                }
+            }
+            if (foundTrack.artist != null) {
+                Artist artist = this.getArtist(new Artist(foundTrack.artist.name));
+                if (artist != null) {
+                    song.addArtist(artist);
+                }
+            } else {
+                logger.debug(song.toString() + ": track missing artist");
+            }
+            if (foundTrack.album != null) {
+                song.setAlbumName(foundTrack.album.title);
+                String coverImage = this.coverImage(foundTrack.album.image);
+                if (coverImage != null) {
+                    song.setCoverImage(coverImage);
+                } else {
+                    logger.debug(song.toString() + ": song missing images");
+                }
+            } else {
+                logger.debug(song.toString() + ": track missing album");
+            }
+            songs.put(params.toString(), song);
+            return song;
+        } else {
+            logger.debug(song.toString() + ": track.getInfo missing track");
         }
         if (!song.getName().equals(MusicTools.removeBrackets(song.getName()))) {
             logger.debug("Trying song '" + song.getName() + "' again with trimmed brackets");
@@ -238,35 +227,27 @@ public class LastFM extends Library {
         if (artists.containsKey(params.toString())) {
             return artists.get(params.toString());
         }
-        JsonNode response = this.query("artist.getInfo", this.queryBuilder(params));
-        if (response != null) {
-            JsonNode artistNode = response.path("artist");
-            if (!artistNode.isMissingNode()) {
-                artist.setName(artistNode.path("name").asText());
-                JsonNode idNode = artistNode.path("id");
-                if (!idNode.isMissingNode()) {
-                    artist.addId("lastfm", idNode.asText());
-                }
-                JsonNode mbidNode = artistNode.path("mbid");
-                if (!mbidNode.isMissingNode()) {
-                    artist.addId("mbid", mbidNode.asText());
-                }
-                JsonNode imageNode = artistNode.path("image");
-                if (imageNode.isArray() && !imageNode.isEmpty()) {
-                    String coverImage = imageNode.get(imageNode.size() - 1).path("#text").asText();
-                    if (coverImage != null && !coverImage.isEmpty()) {
-                        if (!defaultImg.equals(coverImage)) {
-                            artist.setCoverImage(coverImage);
-                        }
-                    }
-                } else {
-                    logger.debug(artist.toString() + ": artist missing images");
-                }
-                artists.put(params.toString(), artist);
-                return artist;
-            } else {
-                logger.debug(artist.toString() + ": artist.getInfo missing artist");
+        Artists.ArtistGetinfo envelope = this.query("artist.getInfo", this.queryBuilder(params),
+                Artists.ArtistGetinfo.class);
+        Artists.Artist foundArtist = envelope == null ? null : envelope.artist;
+        if (foundArtist == null) {
+            foundArtist = this.searchArtist(params.get("artist"));
+        }
+        if (foundArtist != null) {
+            artist.setName(foundArtist.name);
+            if (foundArtist.mbid != null) {
+                artist.addId("mbid", foundArtist.mbid);
             }
+            String coverImage = this.coverImage(foundArtist.image);
+            if (coverImage != null) {
+                artist.setCoverImage(coverImage);
+            } else {
+                logger.debug(artist.toString() + ": artist missing images");
+            }
+            artists.put(params.toString(), artist);
+            return artist;
+        } else {
+            logger.debug(artist.toString() + ": artist.getInfo missing artist");
         }
         logger.info("Unable to find artist " + artist.toString() + " in Library");
         return null;
@@ -290,26 +271,24 @@ public class LastFM extends Library {
         ArrayList<Album> albums = new ArrayList<>();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
-        JsonNode response = this.query("artist.getTopAlbums", this.queryBuilder(params));
-        if (response != null) {
-            JsonNode topAlbumsNode = response.path("topalbums");
-            if (!topAlbumsNode.isMissingNode()) {
-                JsonNode albumNodes = topAlbumsNode.path("album");
-                if (albumNodes.isArray() && !albumNodes.isEmpty()) {
-                    for (JsonNode albumNode : albumNodes) {
-                        Album album = new Album(albumNode.path("name").asText());
-                        album.addArtist(artist);
-                        album = this.getAlbum(album);
-                        if (album != null) {
-                            albums.add(album);
-                        }
+        Artists.ArtistGettopalbums envelope = this.query("artist.getTopAlbums", this.queryBuilder(params),
+                Artists.ArtistGettopalbums.class);
+        Artists.Topalbums topalbums = envelope == null ? null : envelope.topalbums;
+        if (topalbums != null) {
+            if (topalbums.album != null && !topalbums.album.isEmpty()) {
+                for (Artists.TopalbumsAlbum topAlbum : topalbums.album) {
+                    Album album = new Album(topAlbum.name);
+                    album.addArtist(artist);
+                    album = this.getAlbum(album);
+                    if (album != null) {
+                        albums.add(album);
                     }
-                } else {
-                    logger.debug(artist.toString() + ": missing data in artist albums");
                 }
             } else {
-                logger.debug(artist.toString() + ": missing data getting top albums");
+                logger.debug(artist.toString() + ": missing data in artist albums");
             }
+        } else {
+            logger.debug(artist.toString() + ": missing data getting top albums");
         }
         if (albums.isEmpty()) {
             logger.info("Unable to find albums for '" + artist.getName() + "' in Library");
@@ -319,8 +298,137 @@ public class LastFM extends Library {
     }
 
     /**
+     * track.getInfo only finds the exact spelling it is given, track.search
+     * finds a close one: the best match is fed back through getInfo, by mbid
+     * when the search found one because the name it returns may still differ
+     *
+     * @param track  - the track name getInfo did not find
+     * @param artist - the artist name the query used, may be null
+     * @return - the bound track or null if the search found nothing either
+     * @throws java.lang.InterruptedException if any.
+     */
+    private Tracks.Track searchTrack(String track, String artist) throws InterruptedException {
+        LinkedHashMap<String, String> searchParams = new LinkedHashMap<>();
+        searchParams.put("track", track);
+        if (artist != null) {
+            searchParams.put("artist", artist);
+        }
+        Search.TrackSearch envelope = this.query("track.search", this.queryBuilder(searchParams),
+                Search.TrackSearch.class);
+        Search.Results results = envelope == null ? null : envelope.results;
+        if (results == null || results.trackmatches == null || results.trackmatches.track == null
+                || results.trackmatches.track.isEmpty()) {
+            logger.debug("track.search found no match for '" + track + "'");
+            return null;
+        }
+        Search.TrackmatchesTrack match = results.trackmatches.track.get(0);
+        logger.debug("track.search matched '" + track + "' as '" + match.name + "' by " + match.artist);
+        LinkedHashMap<String, String> infoParams = new LinkedHashMap<>();
+        if (match.mbid != null && !match.mbid.isEmpty()) {
+            infoParams.put("mbid", match.mbid);
+        } else {
+            infoParams.put("track", match.name);
+            if (match.artist != null) {
+                infoParams.put("artist", match.artist);
+            }
+        }
+        infoParams.put("autocorrect", "1");
+        Tracks.TrackGetinfo info = this.query("track.getInfo", this.queryBuilder(infoParams),
+                Tracks.TrackGetinfo.class);
+        return info == null ? null : info.track;
+    }
+
+    /**
+     * album.search rescue for an album getInfo could not find by spelling
+     *
+     * @param album  - the album name getInfo did not find
+     * @param artist - the artist name the query used, may be null
+     * @return - the bound album or null if the search found nothing either
+     * @throws java.lang.InterruptedException if any.
+     */
+    private Albums.Album searchAlbum(String album, String artist) throws InterruptedException {
+        LinkedHashMap<String, String> searchParams = new LinkedHashMap<>();
+        searchParams.put("album", album);
+        if (artist != null) {
+            searchParams.put("artist", artist);
+        }
+        Search.AlbumSearch envelope = this.query("album.search", this.queryBuilder(searchParams),
+                Search.AlbumSearch.class);
+        Search.Results results = envelope == null ? null : envelope.results;
+        if (results == null || results.albummatches == null || results.albummatches.album == null
+                || results.albummatches.album.isEmpty()) {
+            logger.debug("album.search found no match for '" + album + "'");
+            return null;
+        }
+        Albums.Album match = results.albummatches.album.get(0);
+        logger.debug("album.search matched '" + album + "' as '" + match.name + "' by " + match.artist);
+        LinkedHashMap<String, String> infoParams = new LinkedHashMap<>();
+        if (match.mbid != null && !match.mbid.isEmpty()) {
+            infoParams.put("mbid", match.mbid);
+        } else {
+            infoParams.put("album", match.name);
+            if (match.artist != null) {
+                infoParams.put("artist", match.artist);
+            }
+        }
+        infoParams.put("autocorrect", "1");
+        Albums.AlbumGetinfo info = this.query("album.getInfo", this.queryBuilder(infoParams),
+                Albums.AlbumGetinfo.class);
+        return info == null ? null : info.album;
+    }
+
+    /**
+     * artist.search rescue for an artist getInfo could not find by spelling
+     *
+     * @param artist - the artist name getInfo did not find
+     * @return - the bound artist or null if the search found nothing either
+     * @throws java.lang.InterruptedException if any.
+     */
+    private Artists.Artist searchArtist(String artist) throws InterruptedException {
+        LinkedHashMap<String, String> searchParams = new LinkedHashMap<>();
+        searchParams.put("artist", artist);
+        Search.ArtistSearch envelope = this.query("artist.search", this.queryBuilder(searchParams),
+                Search.ArtistSearch.class);
+        Search.Results results = envelope == null ? null : envelope.results;
+        if (results == null || results.artistmatches == null || results.artistmatches.artist == null
+                || results.artistmatches.artist.isEmpty()) {
+            logger.debug("artist.search found no match for '" + artist + "'");
+            return null;
+        }
+        Artists.Artist match = results.artistmatches.artist.get(0);
+        logger.debug("artist.search matched '" + artist + "' as '" + match.name + "'");
+        LinkedHashMap<String, String> infoParams = new LinkedHashMap<>();
+        if (match.mbid != null && !match.mbid.isEmpty()) {
+            infoParams.put("mbid", match.mbid);
+        } else {
+            infoParams.put("artist", match.name);
+        }
+        Artists.ArtistGetinfo info = this.query("artist.getInfo", this.queryBuilder(infoParams),
+                Artists.ArtistGetinfo.class);
+        return info == null ? null : info.artist;
+    }
+
+    /**
+     * lastfm orders an image list small to large, so the last entry is the biggest,
+     * and the placeholder it hands back for an artist with no art is not a cover
+     *
+     * @param images - list of sized image urls
+     * @return - the cover url or null if there is none
+     */
+    private String coverImage(List<Commons.Image> images) {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+        String coverImage = images.get(images.size() - 1)._text;
+        if (coverImage == null || coverImage.isEmpty() || defaultImg.equals(coverImage)) {
+            return null;
+        }
+        return coverImage;
+    }
+
+    /**
      * build lastfm query in their format
-     * 
+     *
      * @param params - linkedhashmap with param:value
      * @return - string of url to query
      */
@@ -340,13 +448,15 @@ public class LastFM extends Library {
 
     /**
      * query lastfm with the build query and the request type
-     * 
-     * @param type  - ex: getTrack
-     * @param query - built string query using queryBuilder
-     * @return - JsonNode of lastfm response
+     *
+     * @param <T>          the response bean type
+     * @param type         - ex: getTrack
+     * @param query        - built string query using queryBuilder
+     * @param responseType - the superbeans bean the whole response binds to
+     * @return - bound response or null if error
      * @throws InterruptedException - thrown when user interrupts
      */
-    private JsonNode query(String type, String query) throws InterruptedException {
+    private <T> T query(String type, String query, Class<T> responseType) throws InterruptedException {
         if (type == null || type.isEmpty()) {
             logger.debug("null or empty type provided in lastFMQuery");
             return null;
@@ -362,10 +472,7 @@ public class LastFM extends Library {
             urlBuilder.append("&format=json");
             urlBuilder.append(query);
             URI url = new URI(urlBuilder.toString());
-            JsonNode rootNode = this.query(url);
-            if (rootNode != null) {
-                return rootNode;
-            }
+            return this.query(url, responseType);
         } catch (URISyntaxException e) {
             logger.error("Exception querying LastFM", e);
         }

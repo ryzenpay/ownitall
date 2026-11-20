@@ -1,19 +1,16 @@
 package ryzen.ownitall.integrations;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -28,10 +25,18 @@ import ryzen.ownitall.integrations.interfaces.Import;
 import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.IPIterator;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
-import ryzen.ownitall.util.WebTools.QueryException;;
+import ryzen.ownitall.util.WebTools.QueryException;
+import ryzen.superbeans.jellyfin.Items.BaseItemDto;
+import ryzen.superbeans.jellyfin.Items.BaseItemDtoQueryResult;
+import ryzen.superbeans.jellyfin.Playlists.CreatePlaylistDto;
+import ryzen.superbeans.jellyfin.Playlists.PlaylistCreationResult;
+import ryzen.superbeans.jellyfin.Playlists.PlaylistDto;
+import ryzen.superbeans.jellyfin.Users.AuthenticateUserByName;
+import ryzen.superbeans.jellyfin.Users.AuthenticationResult;
 
 /**
  * <p>
@@ -43,9 +48,16 @@ import ryzen.ownitall.util.WebTools.QueryException;;
 public class Jellyfin implements Import, Export, Sync {
     private static final Logger logger = new Logger(Jellyfin.class);
     private static final Library library = Library.load();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    // /Items answers a page at a time, playlist item add/remove accepts an id list at a time
+    private static final int pageSize = 500;
+    private static final int batchSize = 100;
     private String userId;
     private String accessToken;
+    // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
+    private Map<String, String> headers;
+    private LinkedHashMap<String, BaseItemDto> itemsById;
+    private LinkedHashMap<String, String> idByArtistAndName;
+    private LinkedHashMap<String, String> idByName;
 
     // https://api.jellyfin.org/
     /**
@@ -67,17 +79,164 @@ public class Jellyfin implements Import, Export, Sync {
 
     // https://api.jellyfin.org/#tag/User/operation/AuthenticateUserByName
     private void authenticate() throws AuthenticationException {
-        ObjectNode credsNode = objectMapper.createObjectNode();
-        credsNode.put("Username", Settings.jellyfinUsername);
-        credsNode.put("Pw", Settings.jellyfinPassword);
-        JsonNode response = this.payloadQuery("post", "/Users/AuthenticateByName", credsNode);
-        if (response == null) {
+        AuthenticateUserByName creds = new AuthenticateUserByName();
+        creds.Username = Settings.jellyfinUsername;
+        creds.Pw = Settings.jellyfinPassword;
+        AuthenticationResult response = this.payloadQuery("post", "/Users/AuthenticateByName", creds, AuthenticationResult.class);
+        if (response == null || response.User == null) {
             throw new AuthenticationException("Failed to authenticate with jellyfin");
         } else {
-            logger.debug("Authenticated into jellyfin with user " + response.get("User").get("Name").asText());
-            this.userId = response.get("User").get("Id").asText();
-            this.accessToken = response.get("AccessToken").asText();
+            logger.debug("Authenticated into jellyfin with user " + response.User.Name);
+            this.userId = response.User.Id;
+            this.accessToken = response.AccessToken;
+            String authHeader = String.format(
+                    "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
+                    "ownitall",
+                    "Java",
+                    Settings.jellyfinUsername + "ownitall",
+                    "10.10.6",
+                    this.accessToken);
+            this.headers = Map.of("Authorization", authHeader, "Accept", "application/json");
         }
+    }
+
+    /**
+     * build the library index: one paged /Items pass instead of one query per
+     * song name later on, sized by the TotalRecordCount the first page carries
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
+    private void ensureIndex() throws InterruptedException {
+        if (this.itemsById != null) {
+            return;
+        }
+        LinkedHashMap<String, BaseItemDto> byId = new LinkedHashMap<>();
+        LinkedHashMap<String, String> byArtistAndName = new LinkedHashMap<>();
+        LinkedHashMap<String, String> byName = new LinkedHashMap<>();
+        int startIndex = 0;
+        int total = -1;
+        IPIterator<?> pb = null;
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (total < 0 || startIndex < total) {
+                interruptionHandler.checkInterruption();
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("IncludeItemTypes", "Audio");
+                params.put("recursive", "true");
+                params.put("StartIndex", String.valueOf(startIndex));
+                params.put("Limit", String.valueOf(pageSize));
+                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+                if (page == null || page.Items == null || page.Items.isEmpty()) {
+                    break;
+                }
+                if (total < 0) {
+                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                    pb = IPIterator.manual("Indexing Jellyfin", total);
+                }
+                for (BaseItemDto item : page.Items) {
+                    if (item.Id == null || item.Name == null) {
+                        continue;
+                    }
+                    byId.putIfAbsent(item.Id, item);
+                    byName.putIfAbsent(this.normalize(item.Name), item.Id);
+                    if (item.Artists != null) {
+                        for (String artist : item.Artists) {
+                            byArtistAndName.putIfAbsent(this.normalize(artist) + "|" + this.normalize(item.Name),
+                                    item.Id);
+                        }
+                    }
+                }
+                startIndex += page.Items.size();
+                if (pb != null) {
+                    pb.step(page.Items.size());
+                }
+                if (page.Items.size() < pageSize) {
+                    break;
+                }
+            }
+        } finally {
+            if (pb != null) {
+                pb.close();
+            }
+        }
+        logger.debug("Indexed " + startIndex + " jellyfin audio items");
+        this.itemsById = byId;
+        this.idByArtistAndName = byArtistAndName;
+        this.idByName = byName;
+    }
+
+    private String normalize(String value) {
+        return value == null ? "" : value.trim().toLowerCase();
+    }
+
+    /**
+     * the song as the list query already describes it, so a page of items does
+     * not refetch itself item by item: artists and album ride along, the length
+     * rides in RunTimeTicks (100ns ticks) and the musicbrainz id the server
+     * stored rides in ProviderIds
+     *
+     * @param item a {@link ryzen.superbeans.jellyfin.Items.BaseItemDto} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     */
+    private Song songFrom(BaseItemDto item) {
+        Song song = new Song(item.Name);
+        if (item.Artists != null && !item.Artists.isEmpty()) {
+            song.addArtist(new Artist(item.Artists.get(0)));
+        }
+        if (item.Album != null && !item.Album.isEmpty()) {
+            song.setAlbumName(item.Album);
+        }
+        if (item.RunTimeTicks != null && item.RunTimeTicks > 0) {
+            song.setDuration(item.RunTimeTicks / 10000, ChronoUnit.MILLIS);
+        }
+        String mbid = this.musicBrainzId(item.ProviderIds, "recording", "track");
+        if (mbid != null) {
+            song.addId("mbid", mbid);
+        }
+        return song;
+    }
+
+    /**
+     * pull the musicbrainz id out of the provider ids a server stored on an
+     * item, preferring the token that names the entity we are after
+     *
+     * @param providerIds a {@link java.util.Map} object
+     * @param tokens      provider names to prefer, most wanted first
+     * @return a {@link java.lang.String} object
+     */
+    private String musicBrainzId(Map<String, String> providerIds, String... tokens) {
+        if (providerIds == null || providerIds.isEmpty()) {
+            return null;
+        }
+        for (String token : tokens) {
+            for (Map.Entry<String, String> entry : providerIds.entrySet()) {
+                String key = entry.getKey().toLowerCase().replaceAll("[^a-z0-9]", "");
+                if (key.startsWith("musicbrainz") && key.substring("musicbrainz".length()).equals(token)
+                        && entry.getValue() != null && !entry.getValue().isEmpty()) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * hand the song to the library for correction, the way getSong always has
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    private Song matchedSong(Song song) throws InterruptedException {
+        if (library == null) {
+            return song;
+        }
+        Song foundSong = library.getSong(song);
+        if (foundSong != null) {
+            return foundSong;
+        } else if (Settings.libraryVerified) {
+            return null;
+        }
+        return song;
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
@@ -89,22 +248,20 @@ public class Jellyfin implements Import, Export, Sync {
         params.put("mediaTypes", "Audio");
         params.put("recursive", "true");
         params.put("isFavorite", "true");
-        JsonNode response = this.paramQuery("get", "/Items", params);
-        if (response != null) {
-            JsonNode itemsNode = response.get("Items");
-            if (itemsNode != null && itemsNode.isArray()) {
-                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Liked Songs", -1)) {
-                    String id = itemNode.get("Id").asText();
-                    if (id != null && !id.isEmpty()) {
-                        Song song = this.getSong(id);
-                        if (song != null) {
-                            likedSongs.addSong(song);
-                        }
+        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+        if (response != null && response.Items != null) {
+            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Liked Songs", total)) {
+                String id = item.Id;
+                if (id != null && !id.isEmpty()) {
+                    Song song = this.matchedSong(this.songFrom(item));
+                    if (song != null) {
+                        likedSongs.addSong(song);
                     }
                 }
-                if (!likedSongs.isEmpty()) {
-                    return likedSongs;
-                }
+            }
+            if (!likedSongs.isEmpty()) {
+                return likedSongs;
             }
         }
         logger.debug("Unable to get ids of favorite items");
@@ -121,7 +278,8 @@ public class Jellyfin implements Import, Export, Sync {
             for (Song song : IPIterator.wrap(likedSongs.getSongs(), "Liked Songs", likedSongs.size())) {
                 String songId = this.getSongId(song);
                 if (songId != null) {
-                    this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                    this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>(),
+                            Void.class);
                     logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
                 }
             }
@@ -136,7 +294,7 @@ public class Jellyfin implements Import, Export, Sync {
         for (Song song : IPIterator.wrap(likedSongs.getSongs().iterator(), "Liked Songs", likedSongs.size())) {
             String songId = this.getSongId(song);
             if (songId != null) {
-                this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>());
+                this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>(), Void.class);
             }
         }
     }
@@ -149,20 +307,17 @@ public class Jellyfin implements Import, Export, Sync {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("IncludeItemTypes", "Playlist");
         params.put("recursive", "true");
-        JsonNode response = this.paramQuery("get", "/Items", params);
-        if (response != null) {
-            JsonNode itemsNode = response.get("Items");
-            if (itemsNode != null && itemsNode.isArray()) {
-                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Playlists", -1)) {
-                    Playlist playlist = this.getPlaylist(itemNode.get("Id").asText(),
-                            itemNode.get("Name").asText());
-                    if (playlist != null && !playlist.isEmpty()) {
-                        playlists.add(playlist);
-                    }
+        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+        if (response != null && response.Items != null) {
+            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Playlists", total)) {
+                Playlist playlist = this.getPlaylist(item.Id, item.Name);
+                if (playlist != null && !playlist.isEmpty()) {
+                    playlists.add(playlist);
                 }
-                if (!playlists.isEmpty()) {
-                    return playlists;
-                }
+            }
+            if (!playlists.isEmpty()) {
+                return playlists;
             }
         }
         logger.debug("Unable to get ids of playlists");
@@ -188,10 +343,12 @@ public class Jellyfin implements Import, Export, Sync {
         return playlist;
     }
 
-    // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylist
+    // https://api.jellyfin.org/#tag/Playlists/operation/GetPlaylistItems
     /**
      * <p>
-     * getPlaylistSongs.
+     * getPlaylistSongs. the playlist items endpoint answers with whole items a
+     * page at a time, so no song is refetched by id and the TotalRecordCount of
+     * the first page sizes the progress bar.
      * </p>
      *
      * @param playlistId a {@link java.lang.String} object
@@ -204,15 +361,52 @@ public class Jellyfin implements Import, Export, Sync {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        JsonNode response = this.paramQuery("get", "/Playlists/" + playlistId, new LinkedHashMap<>());
-        if (response != null) {
-            JsonNode itemIdsNode = response.get("ItemIds");
-            if (itemIdsNode != null && itemIdsNode.isArray()) {
-                for (JsonNode itemIdNode : IPIterator.wrap(itemIdsNode.iterator(), playlistId, -1)) {
-                    Song song = this.getSong(itemIdNode.asText());
+        int startIndex = 0;
+        int total = -1;
+        IPIterator<?> pb = null;
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (total < 0 || startIndex < total) {
+                interruptionHandler.checkInterruption();
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("StartIndex", String.valueOf(startIndex));
+                params.put("Limit", String.valueOf(pageSize));
+                BaseItemDtoQueryResult page = this.paramQuery("get", "/Playlists/" + playlistId + "/Items", params, BaseItemDtoQueryResult.class);
+                if (page == null || page.Items == null || page.Items.isEmpty()) {
+                    break;
+                }
+                if (total < 0) {
+                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                    pb = IPIterator.manual(playlistId, total);
+                }
+                for (BaseItemDto item : page.Items) {
+                    Song song = this.matchedSong(this.songFrom(item));
                     if (song != null) {
                         songs.add(song);
                     }
+                }
+                startIndex += page.Items.size();
+                if (pb != null) {
+                    pb.step(page.Items.size());
+                }
+                if (page.Items.size() < pageSize) {
+                    break;
+                }
+            }
+        } finally {
+            if (pb != null) {
+                pb.close();
+            }
+        }
+        if (!songs.isEmpty()) {
+            return songs;
+        }
+        PlaylistDto response = this.paramQuery("get", "/Playlists/" + playlistId, new LinkedHashMap<>(), PlaylistDto.class);
+        if (response != null && response.ItemIds != null) {
+            for (String itemId : IPIterator.wrap(response.ItemIds.iterator(), playlistId,
+                    response.ItemIds.size())) {
+                Song song = this.getSong(itemId);
+                if (song != null) {
+                    songs.add(song);
                 }
             }
             if (!songs.isEmpty()) {
@@ -223,28 +417,282 @@ public class Jellyfin implements Import, Export, Sync {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void uploadPlaylists() {
-        logger.debug("Unsupported method uploadPlaylists called");
+    /**
+     * <p>
+     * getPlaylistEntries. the playlist as (entry id, item id) pairs: the entry
+     * is what deletion asks for, and both ids are already in the item the list
+     * query returns.
+     * </p>
+     *
+     * @param playlistId a {@link java.lang.String} object
+     * @return a {@link java.util.ArrayList} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    public ArrayList<BaseItemDto> getPlaylistEntries(String playlistId) throws InterruptedException {
+        if (playlistId == null) {
+            logger.debug("null playlist id provided in getPlaylistEntries");
+            return null;
+        }
+        ArrayList<BaseItemDto> entries = new ArrayList<>();
+        int startIndex = 0;
+        int total = -1;
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (total < 0 || startIndex < total) {
+                interruptionHandler.checkInterruption();
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("StartIndex", String.valueOf(startIndex));
+                params.put("Limit", String.valueOf(pageSize));
+                BaseItemDtoQueryResult page = this.paramQuery("get", "/Playlists/" + playlistId + "/Items", params, BaseItemDtoQueryResult.class);
+                if (page == null || page.Items == null || page.Items.isEmpty()) {
+                    break;
+                }
+                if (total < 0) {
+                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                }
+                entries.addAll(page.Items);
+                startIndex += page.Items.size();
+                if (page.Items.size() < pageSize) {
+                    break;
+                }
+            }
+        }
+        return entries;
     }
 
+    // https://api.jellyfin.org/#tag/Playlists/operation/CreatePlaylist
     /** {@inheritDoc} */
     @Override
-    public void uploadPlaylist(Playlist playlist) {
-        logger.debug("Unsupported method uploadPlaylist called");
+    public void uploadPlaylists() throws InterruptedException {
+        ArrayList<Playlist> playlists = Collection.getPlaylists();
+        for (Playlist playlist : IPIterator.wrap(playlists, "Uploading Playlists", playlists.size())) {
+            this.uploadPlaylist(playlist);
+        }
     }
 
+    // https://api.jellyfin.org/#tag/Playlists/operation/CreatePlaylist
     /** {@inheritDoc} */
     @Override
-    public void syncPlaylists() {
-        logger.debug("Unsupported method syncPlaylists called");
+    public void uploadPlaylist(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided in uploadPlaylist");
+            return;
+        }
+        ArrayList<String> songIds = new ArrayList<>();
+        LinkedHashSet<String> seen = new LinkedHashSet<>();
+        for (Song song : playlist.getSongs()) {
+            String songId = this.getSongId(song);
+            if (songId != null && seen.add(songId)) {
+                songIds.add(songId);
+            }
+        }
+        if (songIds.isEmpty()) {
+            logger.debug("Playlist '" + playlist.toString() + "' has no songs findable in jellyfin");
+            return;
+        }
+        String playlistId = this.getPlaylistId(playlist);
+        if (playlistId == null) {
+            CreatePlaylistDto create = new CreatePlaylistDto();
+            create.Name = playlist.getName();
+            create.Ids = songIds;
+            create.UserId = this.userId;
+            create.MediaType = "Audio";
+            create.IsPublic = false;
+            LinkedHashMap<String, String> params = new LinkedHashMap<>();
+            params.put("name", playlist.getName());
+            params.put("userId", this.userId);
+            params.put("mediaType", "Audio");
+            if (songIds.size() <= batchSize) {
+                params.put("ids", String.join(",", songIds));
+            }
+            PlaylistCreationResult created = this.payloadQuery("post", "/Playlists", create, params, PlaylistCreationResult.class);
+            if (created != null && created.Id != null) {
+                playlist.addId("jellyfin", created.Id);
+                logger.debug("Created jellyfin playlist '" + playlist.getName() + "' with " + songIds.size()
+                        + " songs");
+            } else {
+                logger.debug("Unable to create jellyfin playlist '" + playlist.getName() + "'");
+            }
+            return;
+        }
+        LinkedHashSet<String> remoteIds = new LinkedHashSet<>();
+        for (BaseItemDto entry : this.getPlaylistEntries(playlistId)) {
+            if (entry.Id != null) {
+                remoteIds.add(entry.Id);
+            }
+        }
+        ArrayList<String> missing = new ArrayList<>();
+        for (String songId : songIds) {
+            if (!remoteIds.contains(songId)) {
+                missing.add(songId);
+            }
+        }
+        if (missing.isEmpty()) {
+            logger.debug("Playlist '" + playlist.toString() + "' is up to date on jellyfin");
+            return;
+        }
+        this.addToPlaylist(playlistId, missing);
     }
 
+    // https://api.jellyfin.org/#tag/Playlists/operation/AddItemToPlaylist
+    private void addToPlaylist(String playlistId, ArrayList<String> songIds) throws InterruptedException {
+        try (IPIterator<?> pb = IPIterator.manual("Adding to playlist", songIds.size())) {
+            for (int offset = 0; offset < songIds.size(); offset += batchSize) {
+                ArrayList<String> batch = new ArrayList<>(
+                        songIds.subList(offset, Math.min(offset + batchSize, songIds.size())));
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("ids", String.join(",", batch));
+                this.paramQuery("post", "/Playlists/" + playlistId + "/Items", params, Void.class);
+                pb.step(batch.size());
+            }
+        }
+        logger.debug("Added " + songIds.size() + " songs to jellyfin playlist '" + playlistId + "'");
+    }
+
+    /**
+     * <p>
+     * getPlaylistId. finds a playlist by name without building any of them,
+     * paging the item list the way getPlaylists pages the songs.
+     * </p>
+     *
+     * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    public String getPlaylistId(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided in getPlaylistId");
+            return null;
+        }
+        String name = this.normalize(playlist.getName());
+        int startIndex = 0;
+        int total = -1;
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (total < 0 || startIndex < total) {
+                interruptionHandler.checkInterruption();
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("IncludeItemTypes", "Playlist");
+                params.put("recursive", "true");
+                params.put("StartIndex", String.valueOf(startIndex));
+                params.put("Limit", String.valueOf(pageSize));
+                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+                if (page == null || page.Items == null || page.Items.isEmpty()) {
+                    break;
+                }
+                if (total < 0) {
+                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                }
+                for (BaseItemDto item : page.Items) {
+                    if (item.Name != null && this.normalize(item.Name).equals(name) && item.Id != null) {
+                        playlist.addId("jellyfin", item.Id);
+                        return item.Id;
+                    }
+                }
+                startIndex += page.Items.size();
+                if (page.Items.size() < pageSize) {
+                    break;
+                }
+            }
+        }
+        logger.debug("Could not find playlist '" + playlist.getName() + "' in jellyfin");
+        return null;
+    }
+
+    // https://api.jellyfin.org/#tag/Playlists/operation/RemoveItemFromPlaylist
     /** {@inheritDoc} */
     @Override
-    public void syncPlaylist(Playlist playlist) {
-        logger.debug("Unsupported method syncPlaylist called");
+    public void syncPlaylists() throws InterruptedException {
+        logger.debug("Getting jellyfin playlists to remove mismatches");
+        ArrayList<String> playlistNames = new ArrayList<>();
+        int startIndex = 0;
+        int total = -1;
+        try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
+            while (total < 0 || startIndex < total) {
+                interruptionHandler.checkInterruption();
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("IncludeItemTypes", "Playlist");
+                params.put("recursive", "true");
+                params.put("StartIndex", String.valueOf(startIndex));
+                params.put("Limit", String.valueOf(pageSize));
+                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+                if (page == null || page.Items == null || page.Items.isEmpty()) {
+                    break;
+                }
+                if (total < 0) {
+                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                }
+                for (BaseItemDto item : page.Items) {
+                    if (item.Id != null) {
+                        playlistNames.add(item.Name);
+                    }
+                }
+                startIndex += page.Items.size();
+                if (page.Items.size() < pageSize) {
+                    break;
+                }
+            }
+        }
+        ArrayList<Playlist> collection = Collection.getPlaylists();
+        for (Playlist local : IPIterator.wrap(collection, "Syncing Playlists", collection.size())) {
+            this.syncPlaylist(local);
+        }
+        for (String remoteName : playlistNames) {
+            boolean found = false;
+            for (Playlist local : collection) {
+                if (this.normalize(local.getName()).equals(this.normalize(remoteName))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                logger.warn("Playlist '" + remoteName
+                        + "' was found on jellyfin but not in collection, delete it to stay up to date");
+            }
+        }
+    }
+
+    // https://api.jellyfin.org/#tag/Playlists/operation/RemoveItemFromPlaylist
+    /** {@inheritDoc} */
+    @Override
+    public void syncPlaylist(Playlist playlist) throws InterruptedException {
+        if (playlist == null) {
+            logger.debug("null playlist provided in syncPlaylist");
+            return;
+        }
+        logger.debug("Getting jellyfin playlist '" + playlist.getName() + "' to remove mismatches");
+        String playlistId = this.getPlaylistId(playlist);
+        if (playlistId == null) {
+            return;
+        }
+        LinkedHashSet<String> localIds = new LinkedHashSet<>();
+        for (Song song : playlist.getSongs()) {
+            String songId = this.getSongId(song);
+            if (songId != null) {
+                localIds.add(songId);
+            }
+        }
+        ArrayList<String> entryIds = new ArrayList<>();
+        for (BaseItemDto entry : this.getPlaylistEntries(playlistId)) {
+            // deletion asks for the playlist entry, not the item it points at
+            if (entry.Id != null && entry.PlaylistItemId != null && !localIds.contains(entry.Id)) {
+                entryIds.add(entry.PlaylistItemId);
+            }
+        }
+        if (entryIds.isEmpty()) {
+            logger.debug("Playlist '" + playlist.getName() + "' has no mismatches on jellyfin");
+            return;
+        }
+        try (IPIterator<?> pb = IPIterator.manual("Removing from playlist", entryIds.size())) {
+            for (int offset = 0; offset < entryIds.size(); offset += batchSize) {
+                ArrayList<String> batch = new ArrayList<>(
+                        entryIds.subList(offset, Math.min(offset + batchSize, entryIds.size())));
+                LinkedHashMap<String, String> params = new LinkedHashMap<>();
+                params.put("entryIds", String.join(",", batch));
+                this.paramQuery("delete", "/Playlists/" + playlistId + "/Items", params, Void.class);
+                pb.step(batch.size());
+            }
+        }
+        logger.debug("Removed " + entryIds.size() + " mismatched songs from jellyfin playlist '"
+                + playlist.getName() + "'");
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
@@ -255,25 +703,22 @@ public class Jellyfin implements Import, Export, Sync {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("IncludeItemTypes", "MusicAlbum");
         params.put("recursive", "true");
-        JsonNode response = this.paramQuery("get", "/Items", params);
-        if (response != null) {
-            JsonNode itemsNode = response.get("Items");
-            if (itemsNode != null && itemsNode.isArray()) {
-                for (JsonNode itemNode : IPIterator.wrap(itemsNode.iterator(), "Albums", -1)) {
-                    String artistName = null;
-                    JsonNode artistNode = response.get("Artists").get(0);
-                    if (artistNode != null) {
-                        artistName = artistNode.asText();
-                    }
-                    Album album = this.getAlbum(itemNode.get("Id").asText(), itemNode.get("Name").asText(),
-                            artistName);
-                    if (album != null && !album.isEmpty()) {
-                        albums.add(album);
-                    }
+        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+        if (response != null && response.Items != null) {
+            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Albums", total)) {
+                String artistName = null;
+                if (item.AlbumArtists != null && !item.AlbumArtists.isEmpty()) {
+                    artistName = item.AlbumArtists.get(0).Name;
                 }
-                if (!albums.isEmpty()) {
-                    return albums;
+                String mbid = this.musicBrainzId(item.ProviderIds, "release");
+                Album album = this.getAlbum(item.Id, item.Name, artistName, mbid);
+                if (album != null && !album.isEmpty()) {
+                    albums.add(album);
                 }
+            }
+            if (!albums.isEmpty()) {
+                return albums;
             }
         }
         logger.debug("Unable to get ids of albums");
@@ -283,6 +728,11 @@ public class Jellyfin implements Import, Export, Sync {
     /** {@inheritDoc} */
     @Override
     public Album getAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException {
+        return this.getAlbum(albumId, albumName, albumArtistName, null);
+    }
+
+    private Album getAlbum(String albumId, String albumName, String albumArtistName, String mbid)
+            throws InterruptedException {
         if (albumId == null) {
             logger.debug("null album id provided in getAlbum");
             return null;
@@ -290,6 +740,9 @@ public class Jellyfin implements Import, Export, Sync {
         Album album = new Album(albumName);
         if (albumArtistName != null) {
             album.addArtist(new Artist(albumArtistName));
+        }
+        if (mbid != null) {
+            album.addId("mbid", mbid);
         }
         ArrayList<Song> songs = this.getAlbumSongs(albumId);
         if (songs != null) {
@@ -309,7 +762,8 @@ public class Jellyfin implements Import, Export, Sync {
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
     /**
      * <p>
-     * getAlbumSongs.
+     * getAlbumSongs. the query already answers with whole items, so no song is
+     * refetched by id.
      * </p>
      *
      * @param albumId a {@link java.lang.String} object
@@ -326,22 +780,23 @@ public class Jellyfin implements Import, Export, Sync {
         params.put("IncludeItemTypes", "Audio");
         params.put("albumIds", albumId);
         params.put("recursive", "true");
-        JsonNode response = this.paramQuery("get", "/Items", params);
-        if (response != null) {
-            JsonNode itemsNode = response.get("Items");
-            if (itemsNode != null && itemsNode.isArray()) {
-                for (JsonNode itemNode : itemsNode) {
-                    String id = itemNode.get("Id").asText();
+        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+        if (response != null && response.Items != null) {
+            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+            try (IPIterator<?> pb = IPIterator.manual(albumId, total)) {
+                for (BaseItemDto item : response.Items) {
+                    String id = item.Id;
                     if (id != null && !id.isEmpty()) {
-                        Song song = this.getSong(id);
+                        Song song = this.matchedSong(this.songFrom(item));
                         if (song != null) {
                             songs.add(song);
                         }
                     }
+                    pb.step(item.Name != null ? item.Name : id);
                 }
-                if (!songs.isEmpty()) {
-                    return songs;
-                }
+            }
+            if (!songs.isEmpty()) {
+                return songs;
             }
         }
         logger.debug("Unable to get ids of album songs: " + albumId);
@@ -375,7 +830,8 @@ public class Jellyfin implements Import, Export, Sync {
     // https://api.jellyfin.org/#tag/UserLibrary/operation/GetItem
     /**
      * <p>
-     * getSong.
+     * getSong. answered from the index once it exists, the single item query is
+     * only sent before the first name had to be resolved.
      * </p>
      *
      * @param songId a {@link java.lang.String} object
@@ -387,29 +843,15 @@ public class Jellyfin implements Import, Export, Sync {
             logger.debug("empty or null songId provided in getSong");
             return null;
         }
-        JsonNode response = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>());
+        BaseItemDto response = null;
+        if (this.itemsById != null) {
+            response = this.itemsById.get(songId);
+        }
+        if (response == null) {
+            response = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>(), BaseItemDto.class);
+        }
         if (response != null) {
-            Song song = new Song(response.get("Name").asText());
-            JsonNode artistNode = response.get("Artists").get(0);
-            if (artistNode != null) {
-                song.addArtist(new Artist(artistNode.asText()));
-            }
-            JsonNode albumNode = response.get("Album");
-            if (albumNode != null) {
-                String albumName = albumNode.asText();
-                if (albumName != null && !albumName.isEmpty()) {
-                    song.setAlbumName(albumName);
-                }
-            }
-            if (library != null) {
-                Song foundSong = library.getSong(song);
-                if (foundSong != null) {
-                    song = foundSong;
-                } else if (Settings.libraryVerified) {
-                    song = null;
-                }
-            }
-            return song;
+            return this.matchedSong(this.songFrom(response));
         }
         logger.debug("Unable to find song '" + songId + "' in jellyfin");
         return null;
@@ -418,17 +860,51 @@ public class Jellyfin implements Import, Export, Sync {
     // https://api.jellyfin.org/#tag/Items/operation/GetItems
     /**
      * <p>
-     * getSongId.
+     * getSongId. resolved from the library index instead of one search query
+     * per song; the searchTerm query is only the fallback for names the index
+     * does not hold.
      * </p>
      *
      * @param song a {@link ryzen.ownitall.classes.Song} object
      * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException if any.
      */
-    public String getSongId(Song song) {
+    public String getSongId(Song song) throws InterruptedException {
         if (song == null) {
             logger.debug("null song provided in getSongId");
             return null;
         }
+        if (song.getId("jellyfin") != null) {
+            return song.getId("jellyfin");
+        }
+        this.ensureIndex();
+        String songId = this.lookupId(song);
+        if (songId == null) {
+            songId = this.searchSongId(song);
+        }
+        if (songId != null) {
+            song.addId("jellyfin", songId);
+            return songId;
+        }
+        logger.debug("Could not find song '" + song.getName() + "' in jellyfin library");
+        return null;
+    }
+
+    private String lookupId(Song song) {
+        String name = this.normalize(song.getName());
+        if (name.isEmpty()) {
+            return null;
+        }
+        for (Artist artist : song.getArtists()) {
+            String id = this.idByArtistAndName.get(this.normalize(artist.getName()) + "|" + name);
+            if (id != null) {
+                return id;
+            }
+        }
+        return this.idByName.get(name);
+    }
+
+    private String searchSongId(Song song) {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("searchTerm", song.getName());
         if (!song.getArtists().isEmpty()) {
@@ -438,30 +914,18 @@ public class Jellyfin implements Import, Export, Sync {
             }
             params.put("artists", artists);
         }
-        // this limits songs being found?
-        // if (song.getAlbumName() != null) {
-        // params.put("albums", song.getAlbumName());
-        // }
         params.put("mediaTypes", "Audio");
         params.put("recursive", "true");
         params.put("limit", "1");
-        JsonNode response = this.paramQuery("get", "/Items", params);
-        if (response != null) {
-            JsonNode responseNode = response.get("Items").get(0);
-            if (responseNode != null) {
-                // add id to song's id's?
-                // not going to implement as lots of files are moved and their id's might not be
-                // persistant
-                // and might turn out being 2 queries (checking if song still same id, and then
-                // performing action)
-                return responseNode.path("Id").asText();
-            }
+        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
+        if (response != null && response.Items != null && !response.Items.isEmpty()) {
+            return response.Items.get(0).Id;
         }
-        logger.debug("Could not find song '" + song.getName() + "' in jellyfin library");
         return null;
     }
 
-    private JsonNode paramQuery(String method, String type, LinkedHashMap<String, String> params) {
+    private <T> T paramQuery(String method, String type, LinkedHashMap<String, String> params,
+            Class<T> responseType) {
         if (method == null) {
             logger.debug("null or invalid method provided in paramQuery");
             return null;
@@ -474,43 +938,25 @@ public class Jellyfin implements Import, Export, Sync {
             logger.debug("null or invalid parameters provided in paramQuery");
             return null;
         }
-        StringBuilder builder = new StringBuilder();
         try {
-            builder.append('?').append("userId").append('=').append(this.userId);
+            WebTarget target = WebTools.target(Settings.jellyfinURL + type)
+                    .queryParam("userId", this.userId);
             for (String key : params.keySet()) {
-                builder.append("&").append(key).append('=')
-                        .append(URLEncoder.encode(params.get(key), StandardCharsets.UTF_8.toString()));
+                target = target.queryParam(key, params.get(key));
             }
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Exception while encoding query", e);
-            return null;
-        }
-        try {
-            URI url = new URI(Settings.jellyfinURL + type + builder.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod(method.toUpperCase());
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Accept", "application/json");
-            // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
-            String authHeader = String.format(
-                    "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
-                    "ownitall",
-                    "Java",
-                    Settings.jellyfinUsername + "ownitall",
-                    "10.10.6",
-                    this.accessToken);
-            connection.setRequestProperty("Authorization", authHeader);
-            return WebTools.query(connection);
-        } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin paramQuery", e);
-            return null;
-        } catch (QueryException | IOException e) {
+            return WebTools.query(target, method, this.headers, null, responseType);
+        } catch (QueryException e) {
             logger.error("Exception while paramQuery jellyfin", e);
             return null;
         }
     }
 
-    private JsonNode payloadQuery(String method, String type, JsonNode payload) {
+    private <T> T payloadQuery(String method, String type, Object payload, Class<T> responseType) {
+        return this.payloadQuery(method, type, payload, new LinkedHashMap<>(), responseType);
+    }
+
+    private <T> T payloadQuery(String method, String type, Object payload, LinkedHashMap<String, String> params,
+            Class<T> responseType) {
         if (method == null) {
             logger.debug("null or invalid method provided in payloadQuery");
             return null;
@@ -524,29 +970,14 @@ public class Jellyfin implements Import, Export, Sync {
             return null;
         }
         try {
-            URI url = new URI(Settings.jellyfinURL + type);
-            HttpURLConnection connection = (HttpURLConnection) url.toURL().openConnection();
-            connection.setRequestMethod(method.toUpperCase());
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Accept", "application/json");
-            // https://gist.github.com/nielsvanvelzen/ea047d9028f676185832e51ffaf12a6f
-            String authHeader = String.format(
-                    "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
-                    "ownitall",
-                    "Java",
-                    Settings.jellyfinUsername + "ownitall",
-                    "10.10.6",
-                    this.accessToken);
-            connection.setRequestProperty("Authorization", authHeader);
-            connection.setDoOutput(true);
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = payload.toString().getBytes("utf-8");
-                os.write(input, 0, input.length);
+            WebTarget target = WebTools.target(Settings.jellyfinURL + type);
+            if (params != null) {
+                for (String key : params.keySet()) {
+                    target = target.queryParam(key, params.get(key));
+                }
             }
-            return WebTools.query(connection);
-        } catch (URISyntaxException e) {
-            logger.error("Exception while constructing jellyfin payloadQuery", e);
-            return null;
+            Entity<String> body = Entity.entity(WebTools.json(payload), MediaType.APPLICATION_JSON);
+            return WebTools.query(target, method, this.headers, body, responseType);
         } catch (QueryException | IOException e) {
             logger.error("Exception while querying jellyfin", e);
             return null;

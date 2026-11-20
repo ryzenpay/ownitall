@@ -26,7 +26,7 @@ import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
-import ryzen.ownitall.util.WebTools;
+import ryzen.ownitall.util.OAuth;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -120,7 +120,7 @@ public class Spotify implements Import, Export, Sync {
                 .show_dialog(Settings.interactive)
                 .build();
         URI authUri = authorizationCodeUriRequest.execute();
-        return WebTools.getOauthCode(authUri);
+        return OAuth.getOauthCode(authUri);
     }
 
     /**
