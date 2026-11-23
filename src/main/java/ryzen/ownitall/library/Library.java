@@ -1,12 +1,11 @@
 package ryzen.ownitall.library;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
-
+import jakarta.ws.rs.client.WebTarget;
 
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
@@ -27,7 +26,7 @@ import ryzen.ownitall.util.WebTools.QueryException;
  *
  * @author ryzen
  */
-abstract public class Library implements LibraryInterface {
+abstract public class Library implements Interface {
     private static final Logger logger = new Logger(Library.class);
     private static final Map<String, String> headers = Map.of("User-Agent",
             "OwnItAll/1.0 (https://github.com/ryzenpay/ownitall)");
@@ -197,10 +196,12 @@ abstract public class Library implements LibraryInterface {
     }
 
     /**
-     * query the specified url and bind the response to an api bean
+     * query a target a library built out of path segments and parameters rather
+     * than a url string: nothing here joins a '/' or a '?' by hand, so an id with
+     * a reserved character in it lands encoded the way the server reads it
      *
      * @param <T>          the bean the response binds to
-     * @param url          - url to query
+     * @param target       - the built request, no headers or body of its own
      * @param responseType - the bean class to bind the response to
      * @return - bound response or null if error
      * @throws java.lang.InterruptedException - when the user interrupts a
@@ -208,13 +209,13 @@ abstract public class Library implements LibraryInterface {
      *                                        callers abort instead of mistaking
      *                                        the interrupt for a missing entry
      */
-    protected <T> T query(URI url, Class<T> responseType) throws InterruptedException {
-        if (url == null) {
-            logger.debug("null url provided to query");
+    protected <T> T query(WebTarget target, Class<T> responseType) throws InterruptedException {
+        if (target == null) {
+            logger.debug("null target provided to query");
             return null;
         }
         try {
-            return WebTools.query(WebTools.target(url), "GET", Library.headers, null, responseType);
+            return WebTools.get(target, Library.headers, responseType);
         } catch (QueryException e) {
             if (e.getCause() instanceof InterruptedException) {
                 throw (InterruptedException) e.getCause();
@@ -290,4 +291,39 @@ abstract public class Library implements LibraryInterface {
             super(message);
         }
     }
+}
+
+interface Interface {
+    /**
+     * <p>
+     * getAlbum.
+     * </p>
+     *
+     * @param album a {@link ryzen.ownitall.classes.Album} object
+     * @return a {@link ryzen.ownitall.classes.Album} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    public Album getAlbum(Album album) throws InterruptedException;
+
+    /**
+     * <p>
+     * getSong.
+     * </p>
+     *
+     * @param song a {@link ryzen.ownitall.classes.Song} object
+     * @return a {@link ryzen.ownitall.classes.Song} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    public Song getSong(Song song) throws InterruptedException;
+
+    /**
+     * <p>
+     * getArtist.
+     * </p>
+     *
+     * @param artist a {@link ryzen.ownitall.classes.Artist} object
+     * @return a {@link ryzen.ownitall.classes.Artist} object
+     * @throws java.lang.InterruptedException if any.
+     */
+    public Artist getArtist(Artist artist) throws InterruptedException;
 }

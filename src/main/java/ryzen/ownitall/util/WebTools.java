@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import jakarta.ws.rs.ProcessingException;
@@ -35,6 +36,7 @@ public class WebTools {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     private static Client client;
     private static int retries = 5;
@@ -126,35 +128,258 @@ public class WebTools {
             logger.debug("null url provided in redirect");
             return null;
         }
-        try (Response response = client().target(url).request()
-                .property(ClientProperties.FOLLOW_REDIRECTS, false)
-                .buildGet().invoke()) {
-            return response.getLocation();
-        } catch (ProcessingException e) {
-            logger.error("Exception while getting redirect of: " + url.toString(), e);
-            return null;
-        }
+        return redirect(client().target(url));
     }
 
     /**
      * <p>
-     * query. the request stated as data: a target, a method, headers, an
-     * optional body, and the type wanted back. every caller uses this: the
-     * response binds to the named type on the way in, and every non-2xx
-     * answer comes back as a webapplicationexception, handled here once
-     * instead of as a status code each caller switches over.
+     * redirect. the same, asked of a target built out of path segments rather
+     * than a url string.
+     * </p>
+     *
+     * @param target a {@link jakarta.ws.rs.client.WebTarget} object
+     * @return a {@link java.net.URI} object
+     */
+    public static URI redirect(WebTarget target) {
+        if (target == null) {
+            logger.debug("null target provided in redirect");
+            return null;
+        }
+        try (Response response = target.request()
+                .property(ClientProperties.FOLLOW_REDIRECTS, false)
+                .buildGet().invoke()) {
+            return response.getLocation();
+        } catch (ProcessingException e) {
+            logger.error("Exception while getting redirect of: " + target.getUri(), e);
+            return null;
+        }
+    }
+
+    // verbs
+    /**
+     * <p>
+     * get. asks for what the path holds.
      * </p>
      *
      * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
-     * @param method       the http method, ex: get, post
      * @param headers      headers to send, may be null
-     * @param entity       the request body, null when the method goes without one
      * @param responseType the bean the response binds to
      * @param <T>          the bean the response binds to
      * @return a T object
      * @throws ryzen.ownitall.util.WebTools.QueryException if any.
      */
-    public static <T> T query(WebTarget target, String method, Map<String, ?> headers,
+    public static <T> T get(WebTarget target, Map<String, ?> headers, Class<T> responseType) throws QueryException {
+        return query(target, "GET", headers, responseType);
+    }
+
+    /**
+     * <p>
+     * head. a get that answers with headers only, what a caller asks when it
+     * wants to know a document exists, changed, or is worth downloading before it
+     * asks for the document.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to, Void when the headers
+     *                     are all that is wanted
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T head(WebTarget target, Map<String, ?> headers, Class<T> responseType) throws QueryException {
+        return query(target, "HEAD", headers, responseType);
+    }
+
+    /**
+     * <p>
+     * options. asks a path what may be asked of it.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T options(WebTarget target, Map<String, ?> headers, Class<T> responseType)
+            throws QueryException {
+        return query(target, "OPTIONS", headers, responseType);
+    }
+
+    /**
+     * <p>
+     * trace. asks a path to echo the request back, mostly a diagnostic for
+     * whatever sits between here and the server.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T trace(WebTarget target, Map<String, ?> headers, Class<T> responseType) throws QueryException {
+        return query(target, "TRACE", headers, responseType);
+    }
+
+    /**
+     * <p>
+     * post. creates what the body describes.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param entity       the request body
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T post(WebTarget target, Map<String, ?> headers, Entity<?> entity, Class<T> responseType)
+            throws QueryException {
+        return query(target, "POST", headers, entity, responseType);
+    }
+
+    /**
+     * <p>
+     * post. no body: asks the endpoint to do the thing its path already names,
+     * marking a track favorite the way jellyfin wants it asked.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T post(WebTarget target, Map<String, ?> headers, Class<T> responseType) throws QueryException {
+        return query(target, "POST", headers, responseType);
+    }
+
+    /**
+     * <p>
+     * put. writes the body over what the path names, whole. jersey will not build
+     * a put without one, so there is no bodiless shape of this to ask for.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param entity       the request body
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T put(WebTarget target, Map<String, ?> headers, Entity<?> entity, Class<T> responseType)
+            throws QueryException {
+        return query(target, "PUT", headers, entity, responseType);
+    }
+
+    /**
+     * <p>
+     * patch. changes part of what the path names, the body holding only the
+     * fields that move, which is why it always has one.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param entity       the request body
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T patch(WebTarget target, Map<String, ?> headers, Entity<?> entity, Class<T> responseType)
+            throws QueryException {
+        return query(target, "PATCH", headers, entity, responseType);
+    }
+
+    /**
+     * <p>
+     * delete. removes what the path names, the way {@link #get} asks for it.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    public static <T> T delete(WebTarget target, Map<String, ?> headers, Class<T> responseType) throws QueryException {
+        return query(target, "DELETE", headers, responseType);
+    }
+
+    /**
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param headers      headers to send, may be null
+     * @param entity       the request body
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     * @throws java.lang.IllegalStateException             when jersey refuses the
+     *                                                     pairing
+     */
+    public static <T> T delete(WebTarget target, Map<String, ?> headers, Entity<?> entity, Class<T> responseType)
+            throws QueryException {
+        return query(target, "DELETE", headers, entity, responseType);
+    }
+
+    /**
+     * <p>
+     * query. a request that goes without a body: the method, the headers, and the
+     * type wanted back. the bodiless verbs are all this with their method already
+     * picked.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param method       the http method, ex: GET, DELETE
+     * @param headers      headers to send, may be null
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    private static <T> T query(WebTarget target, String method, Map<String, ?> headers, Class<T> responseType)
+            throws QueryException {
+        Invocation.Builder builder = target.request();
+        if (headers != null) {
+            for (Map.Entry<String, ?> header : headers.entrySet()) {
+                builder = builder.header(header.getKey(), header.getValue());
+            }
+        }
+        Invocation invocation = builder.build(method.toUpperCase());
+        return query(target, invocation, responseType, 0);
+    }
+
+    /**
+     * <p>
+     * query. the request stated as data: a target, a method, headers, a body, and
+     * the type wanted back. the verbs above are all this, and this stays the one
+     * place a request is sent: every caller uses it through them, the response
+     * binds to the named type on the way in, and every non-2xx answer comes back as
+     * a webapplicationexception, handled here once instead of as a status code each
+     * caller switches over.
+     * </p>
+     *
+     * @param target       a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param method       the http method, ex: GET, POST
+     * @param headers      headers to send, may be null
+     * @param entity       the request body, null leaving the method to go without
+     *                     one, {@link #query(WebTarget, String, Map, Class)} being
+     *                     that shape spelled out
+     * @param responseType the bean the response binds to
+     * @param <T>          the bean the response binds to
+     * @return a T object
+     * @throws ryzen.ownitall.util.WebTools.QueryException if any.
+     */
+    private static <T> T query(WebTarget target, String method, Map<String, ?> headers,
             Entity<?> entity, Class<T> responseType) throws QueryException {
         Invocation.Builder builder = target.request();
         if (headers != null) {
@@ -162,8 +387,7 @@ public class WebTools {
                 builder = builder.header(header.getKey(), header.getValue());
             }
         }
-        Invocation invocation = entity == null ? builder.build(method.toUpperCase())
-                : builder.build(method.toUpperCase(), entity);
+        Invocation invocation = builder.build(method.toUpperCase(), entity);
         return query(target, invocation, responseType, 0);
     }
 

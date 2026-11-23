@@ -67,17 +67,22 @@ public class OAuth {
     }
 
     /**
-     * Start an HTTP server to intercept the oauth code
+     * <p>
+     * getOauthCode. the pkce code flow stated as data: the caller owns the
+     * endpoint (its host, its path, its own params), everything every flow
+     * repeats is added here as a parameter rather than joined onto a url.
+     * </p>
      *
-     * @param authUrl       a {@link java.lang.String} object
+     * @param auth          a {@link jakarta.ws.rs.client.WebTarget} object
      * @param clientID      a {@link java.lang.String} object
      * @param scope         a {@link java.util.ArrayList} object
      * @param codeChallenge a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
      * @throws java.lang.InterruptedException - if an error occurs
      */
-    public static String getOauthCode(String authUrl, String clientID, ArrayList<String> scope,
+    public static String getOauthCode(WebTarget auth, String clientID, ArrayList<String> scope,
             String codeChallenge) throws InterruptedException {
-        WebTarget target = WebTools.target(authUrl)
+        WebTarget target = auth.queryParam("response_type", "code")
                 .queryParam("client_id", clientID)
                 .queryParam("redirect_uri", redirectUri);
         if (scope != null) {
@@ -85,7 +90,21 @@ public class OAuth {
         }
         target = target.queryParam("code_challenge_method", "S256")
                 .queryParam("code_challenge", codeChallenge);
-        return getOauthCode(target.getUri());
+        return getOauthCode(target);
+    }
+
+    /**
+     * <p>
+     * getOauthCode. an authorization request stated in full already, opened in
+     * the browser to catch its redirect.
+     * </p>
+     *
+     * @param auth a {@link jakarta.ws.rs.client.WebTarget} object
+     * @return a {@link java.lang.String} object
+     * @throws java.lang.InterruptedException - if an error occurs
+     */
+    public static String getOauthCode(WebTarget auth) throws InterruptedException {
+        return getOauthCode(auth.getUri());
     }
 
     /**
@@ -178,15 +197,15 @@ public class OAuth {
      * code exchanged for a token.
      * </p>
      *
-     * @param tokenUrl     a {@link java.lang.String} object
-     * @param codeUrl      a {@link java.lang.String} object
+     * @param tokenUrl     a {@link jakarta.ws.rs.client.WebTarget} object
+     * @param codeUrl      a {@link jakarta.ws.rs.client.WebTarget} object
      * @param clientID     a {@link java.lang.String} object
      * @param clientSecret a {@link java.lang.String} object
      * @param scope        a {@link java.util.ArrayList} object
      * @return a {@link java.lang.String} object
      * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
      */
-    public static String getOauthToken(String tokenUrl, String codeUrl, String clientID, String clientSecret,
+    public static String getOauthToken(WebTarget tokenUrl, WebTarget codeUrl, String clientID, String clientSecret,
             ArrayList<String> scope) throws AuthenticationException {
         String codeVerifier = generateCodeVerifier();
         String codeChallenge = generateCodeChallenge(codeVerifier);
@@ -203,11 +222,9 @@ public class OAuth {
             if (clientSecret != null) {
                 form.param("client_secret", clientSecret);
             }
-            WebTarget target = WebTools.target(tokenUrl);
-            TokenResponse token = WebTools.query(target, "post", null,
-                    Entity.form(form), TokenResponse.class);
+            TokenResponse token = WebTools.post(tokenUrl, null, Entity.form(form), TokenResponse.class);
             if (token == null || token.access_token == null) {
-                throw new AuthenticationException("no access token in response from: " + target.getUri());
+                throw new AuthenticationException("no access token in response from: " + tokenUrl.getUri());
             }
             return token.access_token;
         } catch (QueryException | InterruptedException e) {

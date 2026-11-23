@@ -7,11 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
@@ -20,9 +18,9 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.integrations.interfaces.Export;
-import ryzen.ownitall.integrations.interfaces.Import;
-import ryzen.ownitall.integrations.interfaces.Sync;
+import ryzen.ownitall.integrations.Integration.Export;
+import ryzen.ownitall.integrations.Integration.Import;
+import ryzen.ownitall.integrations.Integration.Sync;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
@@ -48,7 +46,8 @@ import ryzen.superbeans.jellyfin.Users.AuthenticationResult;
 public class Jellyfin implements Import, Export, Sync {
     private static final Logger logger = new Logger(Jellyfin.class);
     private static final Library library = Library.load();
-    // /Items answers a page at a time, playlist item add/remove accepts an id list at a time
+    // /Items answers a page at a time, playlist item add/remove accepts an id list
+    // at a time
     private static final int pageSize = 500;
     private static final int batchSize = 100;
     private String userId;
@@ -82,22 +81,30 @@ public class Jellyfin implements Import, Export, Sync {
         AuthenticateUserByName creds = new AuthenticateUserByName();
         creds.Username = Settings.jellyfinUsername;
         creds.Pw = Settings.jellyfinPassword;
-        AuthenticationResult response = this.payloadQuery("post", "/Users/AuthenticateByName", creds, AuthenticationResult.class);
-        if (response == null || response.User == null) {
-            throw new AuthenticationException("Failed to authenticate with jellyfin");
-        } else {
-            logger.debug("Authenticated into jellyfin with user " + response.User.Name);
-            this.userId = response.User.Id;
-            this.accessToken = response.AccessToken;
-            String authHeader = String.format(
-                    "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
-                    "ownitall",
-                    "Java",
-                    Settings.jellyfinUsername + "ownitall",
-                    "10.10.6",
-                    this.accessToken);
-            this.headers = Map.of("Authorization", authHeader, "Accept", "application/json");
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Users").path("AuthenticateByName");
+        try {
+            AuthenticationResult response = WebTools.post(target, null,
+                    Entity.entity(WebTools.json(creds), MediaType.APPLICATION_JSON), AuthenticationResult.class);
+            if (response != null && response.User != null) {
+                logger.debug("Authenticated into jellyfin with user " + response.User.Name);
+                this.userId = response.User.Id;
+                this.accessToken = response.AccessToken;
+                this.headers = Map.of(
+                        "Authorization",
+                        String.format(
+                                "MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\", Token=\"%s\"",
+                                "ownitall",
+                                "Java",
+                                Settings.jellyfinUsername + "ownitall",
+                                "10.10.6",
+                                this.accessToken),
+                        "Accept", "application/json");
+                return;
+            }
+        } catch (QueryException | IOException e) {
+            logger.error("Exception while authenticating into jellyfin", e);
         }
+        throw new AuthenticationException("Failed to authenticate with jellyfin");
     }
 
     /**
@@ -119,37 +126,42 @@ public class Jellyfin implements Import, Export, Sync {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (total < 0 || startIndex < total) {
                 interruptionHandler.checkInterruption();
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("IncludeItemTypes", "Audio");
-                params.put("recursive", "true");
-                params.put("StartIndex", String.valueOf(startIndex));
-                params.put("Limit", String.valueOf(pageSize));
-                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-                if (page == null || page.Items == null || page.Items.isEmpty()) {
-                    break;
-                }
-                if (total < 0) {
-                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
-                    pb = IPIterator.manual("Indexing Jellyfin", total);
-                }
-                for (BaseItemDto item : page.Items) {
-                    if (item.Id == null || item.Name == null) {
-                        continue;
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items")
+                        .queryParam("userId", this.userId).queryParam("IncludeItemTypes", "Audio")
+                        .queryParam("recursive", "true").queryParam("StartIndex", startIndex)
+                        .queryParam("Limit", pageSize);
+                try {
+                    BaseItemDtoQueryResult page = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+                    if (page == null || page.Items == null || page.Items.isEmpty()) {
+                        break;
                     }
-                    byId.putIfAbsent(item.Id, item);
-                    byName.putIfAbsent(this.normalize(item.Name), item.Id);
-                    if (item.Artists != null) {
-                        for (String artist : item.Artists) {
-                            byArtistAndName.putIfAbsent(this.normalize(artist) + "|" + this.normalize(item.Name),
-                                    item.Id);
+                    if (total < 0) {
+                        total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                        pb = IPIterator.manual("Indexing Jellyfin", total);
+                    }
+                    for (BaseItemDto item : page.Items) {
+                        if (item.Id == null || item.Name == null) {
+                            continue;
+                        }
+                        byId.putIfAbsent(item.Id, item);
+                        byName.putIfAbsent(this.normalize(item.Name), item.Id);
+                        if (item.Artists != null) {
+                            for (String artist : item.Artists) {
+                                byArtistAndName.putIfAbsent(
+                                        this.normalize(artist) + "|" + this.normalize(item.Name),
+                                        item.Id);
+                            }
                         }
                     }
-                }
-                startIndex += page.Items.size();
-                if (pb != null) {
-                    pb.step(page.Items.size());
-                }
-                if (page.Items.size() < pageSize) {
+                    startIndex += page.Items.size();
+                    if (pb != null) {
+                        pb.step(page.Items.size());
+                    }
+                    if (page.Items.size() < pageSize) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.error("Exception while indexing jellyfin items", e);
                     break;
                 }
             }
@@ -244,25 +256,28 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public LikedSongs getLikedSongs() throws InterruptedException {
         LikedSongs likedSongs = new LikedSongs();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("mediaTypes", "Audio");
-        params.put("recursive", "true");
-        params.put("isFavorite", "true");
-        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-        if (response != null && response.Items != null) {
-            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
-            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Liked Songs", total)) {
-                String id = item.Id;
-                if (id != null && !id.isEmpty()) {
-                    Song song = this.matchedSong(this.songFrom(item));
-                    if (song != null) {
-                        likedSongs.addSong(song);
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items").queryParam("userId", this.userId)
+                .queryParam("mediaTypes", "Audio").queryParam("recursive", "true")
+                .queryParam("isFavorite", "true");
+        try {
+            BaseItemDtoQueryResult response = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+            if (response != null && response.Items != null) {
+                int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+                for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Liked Songs", total)) {
+                    String id = item.Id;
+                    if (id != null && !id.isEmpty()) {
+                        Song song = this.matchedSong(this.songFrom(item));
+                        if (song != null) {
+                            likedSongs.addSong(song);
+                        }
                     }
                 }
+                if (!likedSongs.isEmpty()) {
+                    return likedSongs;
+                }
             }
-            if (!likedSongs.isEmpty()) {
-                return likedSongs;
-            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin liked songs", e);
         }
         logger.debug("Unable to get ids of favorite items");
         return null;
@@ -278,9 +293,14 @@ public class Jellyfin implements Import, Export, Sync {
             for (Song song : IPIterator.wrap(likedSongs.getSongs(), "Liked Songs", likedSongs.size())) {
                 String songId = this.getSongId(song);
                 if (songId != null) {
-                    this.paramQuery("delete", "/UserFavoriteItems/" + songId, new LinkedHashMap<>(),
-                            Void.class);
-                    logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
+                    WebTarget target = WebTools.target(Settings.jellyfinURL).path("UserFavoriteItems").path(songId)
+                            .queryParam("userId", this.userId);
+                    try {
+                        WebTools.delete(target, this.headers, Void.class);
+                        logger.debug("removed '" + song.toString() + "' favorite from jellyfin");
+                    } catch (QueryException e) {
+                        logger.error("Exception while removing jellyfin favorite '" + songId + "'", e);
+                    }
                 }
             }
         }
@@ -294,7 +314,13 @@ public class Jellyfin implements Import, Export, Sync {
         for (Song song : IPIterator.wrap(likedSongs.getSongs().iterator(), "Liked Songs", likedSongs.size())) {
             String songId = this.getSongId(song);
             if (songId != null) {
-                this.paramQuery("post", "/UserFavoriteItems/" + songId, new LinkedHashMap<>(), Void.class);
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("UserFavoriteItems").path(songId)
+                        .queryParam("userId", this.userId);
+                try {
+                    WebTools.post(target, this.headers, Void.class);
+                } catch (QueryException e) {
+                    logger.error("Exception while adding jellyfin favorite '" + songId + "'", e);
+                }
             }
         }
     }
@@ -304,21 +330,24 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public ArrayList<Playlist> getPlaylists() throws InterruptedException {
         ArrayList<Playlist> playlists = new ArrayList<>();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("IncludeItemTypes", "Playlist");
-        params.put("recursive", "true");
-        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-        if (response != null && response.Items != null) {
-            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
-            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Playlists", total)) {
-                Playlist playlist = this.getPlaylist(item.Id, item.Name);
-                if (playlist != null && !playlist.isEmpty()) {
-                    playlists.add(playlist);
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items").queryParam("userId", this.userId)
+                .queryParam("IncludeItemTypes", "Playlist").queryParam("recursive", "true");
+        try {
+            BaseItemDtoQueryResult response = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+            if (response != null && response.Items != null) {
+                int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+                for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Playlists", total)) {
+                    Playlist playlist = this.getPlaylist(item.Id, item.Name);
+                    if (playlist != null && !playlist.isEmpty()) {
+                        playlists.add(playlist);
+                    }
+                }
+                if (!playlists.isEmpty()) {
+                    return playlists;
                 }
             }
-            if (!playlists.isEmpty()) {
-                return playlists;
-            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin playlists", e);
         }
         logger.debug("Unable to get ids of playlists");
         return null;
@@ -367,28 +396,33 @@ public class Jellyfin implements Import, Export, Sync {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (total < 0 || startIndex < total) {
                 interruptionHandler.checkInterruption();
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("StartIndex", String.valueOf(startIndex));
-                params.put("Limit", String.valueOf(pageSize));
-                BaseItemDtoQueryResult page = this.paramQuery("get", "/Playlists/" + playlistId + "/Items", params, BaseItemDtoQueryResult.class);
-                if (page == null || page.Items == null || page.Items.isEmpty()) {
-                    break;
-                }
-                if (total < 0) {
-                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
-                    pb = IPIterator.manual(playlistId, total);
-                }
-                for (BaseItemDto item : page.Items) {
-                    Song song = this.matchedSong(this.songFrom(item));
-                    if (song != null) {
-                        songs.add(song);
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Playlists").path(playlistId)
+                        .path("Items").queryParam("userId", this.userId)
+                        .queryParam("StartIndex", startIndex).queryParam("Limit", pageSize);
+                try {
+                    BaseItemDtoQueryResult page = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+                    if (page == null || page.Items == null || page.Items.isEmpty()) {
+                        break;
                     }
-                }
-                startIndex += page.Items.size();
-                if (pb != null) {
-                    pb.step(page.Items.size());
-                }
-                if (page.Items.size() < pageSize) {
+                    if (total < 0) {
+                        total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                        pb = IPIterator.manual(playlistId, total);
+                    }
+                    for (BaseItemDto item : page.Items) {
+                        Song song = this.matchedSong(this.songFrom(item));
+                        if (song != null) {
+                            songs.add(song);
+                        }
+                    }
+                    startIndex += page.Items.size();
+                    if (pb != null) {
+                        pb.step(page.Items.size());
+                    }
+                    if (page.Items.size() < pageSize) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.error("Exception while getting jellyfin playlist '" + playlistId + "' items", e);
                     break;
                 }
             }
@@ -400,18 +434,24 @@ public class Jellyfin implements Import, Export, Sync {
         if (!songs.isEmpty()) {
             return songs;
         }
-        PlaylistDto response = this.paramQuery("get", "/Playlists/" + playlistId, new LinkedHashMap<>(), PlaylistDto.class);
-        if (response != null && response.ItemIds != null) {
-            for (String itemId : IPIterator.wrap(response.ItemIds.iterator(), playlistId,
-                    response.ItemIds.size())) {
-                Song song = this.getSong(itemId);
-                if (song != null) {
-                    songs.add(song);
+        WebTarget target2 = WebTools.target(Settings.jellyfinURL).path("Playlists").path(playlistId)
+                .queryParam("userId", this.userId);
+        try {
+            PlaylistDto response = WebTools.get(target2, this.headers, PlaylistDto.class);
+            if (response != null && response.ItemIds != null) {
+                for (String itemId : IPIterator.wrap(response.ItemIds.iterator(), playlistId,
+                        response.ItemIds.size())) {
+                    Song song = this.getSong(itemId);
+                    if (song != null) {
+                        songs.add(song);
+                    }
+                }
+                if (!songs.isEmpty()) {
+                    return songs;
                 }
             }
-            if (!songs.isEmpty()) {
-                return songs;
-            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin playlist '" + playlistId + "'", e);
         }
         logger.debug("Unable to find playlist songs '" + playlistId + "' in jellyfin");
         return null;
@@ -439,19 +479,24 @@ public class Jellyfin implements Import, Export, Sync {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (total < 0 || startIndex < total) {
                 interruptionHandler.checkInterruption();
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("StartIndex", String.valueOf(startIndex));
-                params.put("Limit", String.valueOf(pageSize));
-                BaseItemDtoQueryResult page = this.paramQuery("get", "/Playlists/" + playlistId + "/Items", params, BaseItemDtoQueryResult.class);
-                if (page == null || page.Items == null || page.Items.isEmpty()) {
-                    break;
-                }
-                if (total < 0) {
-                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
-                }
-                entries.addAll(page.Items);
-                startIndex += page.Items.size();
-                if (page.Items.size() < pageSize) {
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Playlists").path(playlistId)
+                        .path("Items").queryParam("userId", this.userId)
+                        .queryParam("StartIndex", startIndex).queryParam("Limit", pageSize);
+                try {
+                    BaseItemDtoQueryResult page = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+                    if (page == null || page.Items == null || page.Items.isEmpty()) {
+                        break;
+                    }
+                    if (total < 0) {
+                        total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                    }
+                    entries.addAll(page.Items);
+                    startIndex += page.Items.size();
+                    if (page.Items.size() < pageSize) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.error("Exception while getting jellyfin playlist '" + playlistId + "' items", e);
                     break;
                 }
             }
@@ -497,20 +542,25 @@ public class Jellyfin implements Import, Export, Sync {
             create.UserId = this.userId;
             create.MediaType = "Audio";
             create.IsPublic = false;
-            LinkedHashMap<String, String> params = new LinkedHashMap<>();
-            params.put("name", playlist.getName());
-            params.put("userId", this.userId);
-            params.put("mediaType", "Audio");
+            WebTarget target = WebTools.target(Settings.jellyfinURL).path("Playlists")
+                    .queryParam("name", playlist.getName())
+                    .queryParam("userId", this.userId)
+                    .queryParam("mediaType", "Audio");
             if (songIds.size() <= batchSize) {
-                params.put("ids", String.join(",", songIds));
+                target = target.queryParam("ids", String.join(",", songIds));
             }
-            PlaylistCreationResult created = this.payloadQuery("post", "/Playlists", create, params, PlaylistCreationResult.class);
-            if (created != null && created.Id != null) {
-                playlist.addId("jellyfin", created.Id);
-                logger.debug("Created jellyfin playlist '" + playlist.getName() + "' with " + songIds.size()
-                        + " songs");
-            } else {
-                logger.debug("Unable to create jellyfin playlist '" + playlist.getName() + "'");
+            try {
+                PlaylistCreationResult created = WebTools.post(target, this.headers,
+                        Entity.entity(WebTools.json(create), MediaType.APPLICATION_JSON), PlaylistCreationResult.class);
+                if (created != null && created.Id != null) {
+                    playlist.addId("jellyfin", created.Id);
+                    logger.debug("Created jellyfin playlist '" + playlist.getName() + "' with " + songIds.size()
+                            + " songs");
+                } else {
+                    logger.debug("Unable to create jellyfin playlist '" + playlist.getName() + "'");
+                }
+            } catch (QueryException | IOException e) {
+                logger.error("Exception while creating jellyfin playlist '" + playlist.getName() + "'", e);
             }
             return;
         }
@@ -539,9 +589,14 @@ public class Jellyfin implements Import, Export, Sync {
             for (int offset = 0; offset < songIds.size(); offset += batchSize) {
                 ArrayList<String> batch = new ArrayList<>(
                         songIds.subList(offset, Math.min(offset + batchSize, songIds.size())));
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("ids", String.join(",", batch));
-                this.paramQuery("post", "/Playlists/" + playlistId + "/Items", params, Void.class);
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Playlists").path(playlistId)
+                        .path("Items").queryParam("userId", this.userId)
+                        .queryParam("ids", String.join(",", batch));
+                try {
+                    WebTools.post(target, this.headers, Void.class);
+                } catch (QueryException e) {
+                    logger.error("Exception while adding to jellyfin playlist '" + playlistId + "'", e);
+                }
                 pb.step(batch.size());
             }
         }
@@ -569,26 +624,30 @@ public class Jellyfin implements Import, Export, Sync {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (total < 0 || startIndex < total) {
                 interruptionHandler.checkInterruption();
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("IncludeItemTypes", "Playlist");
-                params.put("recursive", "true");
-                params.put("StartIndex", String.valueOf(startIndex));
-                params.put("Limit", String.valueOf(pageSize));
-                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-                if (page == null || page.Items == null || page.Items.isEmpty()) {
-                    break;
-                }
-                if (total < 0) {
-                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
-                }
-                for (BaseItemDto item : page.Items) {
-                    if (item.Name != null && this.normalize(item.Name).equals(name) && item.Id != null) {
-                        playlist.addId("jellyfin", item.Id);
-                        return item.Id;
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items")
+                        .queryParam("userId", this.userId).queryParam("IncludeItemTypes", "Playlist")
+                        .queryParam("recursive", "true").queryParam("StartIndex", startIndex)
+                        .queryParam("Limit", pageSize);
+                try {
+                    BaseItemDtoQueryResult page = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+                    if (page == null || page.Items == null || page.Items.isEmpty()) {
+                        break;
                     }
-                }
-                startIndex += page.Items.size();
-                if (page.Items.size() < pageSize) {
+                    if (total < 0) {
+                        total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                    }
+                    for (BaseItemDto item : page.Items) {
+                        if (item.Name != null && this.normalize(item.Name).equals(name) && item.Id != null) {
+                            playlist.addId("jellyfin", item.Id);
+                            return item.Id;
+                        }
+                    }
+                    startIndex += page.Items.size();
+                    if (page.Items.size() < pageSize) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.error("Exception while getting jellyfin playlists", e);
                     break;
                 }
             }
@@ -608,25 +667,29 @@ public class Jellyfin implements Import, Export, Sync {
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
             while (total < 0 || startIndex < total) {
                 interruptionHandler.checkInterruption();
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("IncludeItemTypes", "Playlist");
-                params.put("recursive", "true");
-                params.put("StartIndex", String.valueOf(startIndex));
-                params.put("Limit", String.valueOf(pageSize));
-                BaseItemDtoQueryResult page = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-                if (page == null || page.Items == null || page.Items.isEmpty()) {
-                    break;
-                }
-                if (total < 0) {
-                    total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
-                }
-                for (BaseItemDto item : page.Items) {
-                    if (item.Id != null) {
-                        playlistNames.add(item.Name);
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items")
+                        .queryParam("userId", this.userId).queryParam("IncludeItemTypes", "Playlist")
+                        .queryParam("recursive", "true").queryParam("StartIndex", startIndex)
+                        .queryParam("Limit", pageSize);
+                try {
+                    BaseItemDtoQueryResult page = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+                    if (page == null || page.Items == null || page.Items.isEmpty()) {
+                        break;
                     }
-                }
-                startIndex += page.Items.size();
-                if (page.Items.size() < pageSize) {
+                    if (total < 0) {
+                        total = page.TotalRecordCount != null ? page.TotalRecordCount : page.Items.size();
+                    }
+                    for (BaseItemDto item : page.Items) {
+                        if (item.Id != null) {
+                            playlistNames.add(item.Name);
+                        }
+                    }
+                    startIndex += page.Items.size();
+                    if (page.Items.size() < pageSize) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.error("Exception while getting jellyfin playlists", e);
                     break;
                 }
             }
@@ -685,9 +748,14 @@ public class Jellyfin implements Import, Export, Sync {
             for (int offset = 0; offset < entryIds.size(); offset += batchSize) {
                 ArrayList<String> batch = new ArrayList<>(
                         entryIds.subList(offset, Math.min(offset + batchSize, entryIds.size())));
-                LinkedHashMap<String, String> params = new LinkedHashMap<>();
-                params.put("entryIds", String.join(",", batch));
-                this.paramQuery("delete", "/Playlists/" + playlistId + "/Items", params, Void.class);
+                WebTarget target = WebTools.target(Settings.jellyfinURL).path("Playlists").path(playlistId)
+                        .path("Items").queryParam("userId", this.userId)
+                        .queryParam("entryIds", String.join(",", batch));
+                try {
+                    WebTools.delete(target, this.headers, Void.class);
+                } catch (QueryException e) {
+                    logger.error("Exception while removing from jellyfin playlist '" + playlistId + "'", e);
+                }
                 pb.step(batch.size());
             }
         }
@@ -700,26 +768,29 @@ public class Jellyfin implements Import, Export, Sync {
     @Override
     public ArrayList<Album> getAlbums() throws InterruptedException {
         ArrayList<Album> albums = new ArrayList<>();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("IncludeItemTypes", "MusicAlbum");
-        params.put("recursive", "true");
-        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-        if (response != null && response.Items != null) {
-            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
-            for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Albums", total)) {
-                String artistName = null;
-                if (item.AlbumArtists != null && !item.AlbumArtists.isEmpty()) {
-                    artistName = item.AlbumArtists.get(0).Name;
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items").queryParam("userId", this.userId)
+                .queryParam("IncludeItemTypes", "MusicAlbum").queryParam("recursive", "true");
+        try {
+            BaseItemDtoQueryResult response = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+            if (response != null && response.Items != null) {
+                int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+                for (BaseItemDto item : IPIterator.wrap(response.Items.iterator(), "Albums", total)) {
+                    String artistName = null;
+                    if (item.AlbumArtists != null && !item.AlbumArtists.isEmpty()) {
+                        artistName = item.AlbumArtists.get(0).Name;
+                    }
+                    String mbid = this.musicBrainzId(item.ProviderIds, "release");
+                    Album album = this.getAlbum(item.Id, item.Name, artistName, mbid);
+                    if (album != null && !album.isEmpty()) {
+                        albums.add(album);
+                    }
                 }
-                String mbid = this.musicBrainzId(item.ProviderIds, "release");
-                Album album = this.getAlbum(item.Id, item.Name, artistName, mbid);
-                if (album != null && !album.isEmpty()) {
-                    albums.add(album);
+                if (!albums.isEmpty()) {
+                    return albums;
                 }
             }
-            if (!albums.isEmpty()) {
-                return albums;
-            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin albums", e);
         }
         logger.debug("Unable to get ids of albums");
         return null;
@@ -776,28 +847,31 @@ public class Jellyfin implements Import, Export, Sync {
             return null;
         }
         ArrayList<Song> songs = new ArrayList<>();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("IncludeItemTypes", "Audio");
-        params.put("albumIds", albumId);
-        params.put("recursive", "true");
-        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-        if (response != null && response.Items != null) {
-            int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
-            try (IPIterator<?> pb = IPIterator.manual(albumId, total)) {
-                for (BaseItemDto item : response.Items) {
-                    String id = item.Id;
-                    if (id != null && !id.isEmpty()) {
-                        Song song = this.matchedSong(this.songFrom(item));
-                        if (song != null) {
-                            songs.add(song);
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items").queryParam("userId", this.userId)
+                .queryParam("IncludeItemTypes", "Audio").queryParam("albumIds", albumId)
+                .queryParam("recursive", "true");
+        try {
+            BaseItemDtoQueryResult response = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+            if (response != null && response.Items != null) {
+                int total = response.TotalRecordCount != null ? response.TotalRecordCount : response.Items.size();
+                try (IPIterator<?> pb = IPIterator.manual(albumId, total)) {
+                    for (BaseItemDto item : response.Items) {
+                        String id = item.Id;
+                        if (id != null && !id.isEmpty()) {
+                            Song song = this.matchedSong(this.songFrom(item));
+                            if (song != null) {
+                                songs.add(song);
+                            }
                         }
+                        pb.step(item.Name != null ? item.Name : id);
                     }
-                    pb.step(item.Name != null ? item.Name : id);
+                }
+                if (!songs.isEmpty()) {
+                    return songs;
                 }
             }
-            if (!songs.isEmpty()) {
-                return songs;
-            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin album songs: " + albumId, e);
         }
         logger.debug("Unable to get ids of album songs: " + albumId);
         return null;
@@ -843,15 +917,21 @@ public class Jellyfin implements Import, Export, Sync {
             logger.debug("empty or null songId provided in getSong");
             return null;
         }
-        BaseItemDto response = null;
         if (this.itemsById != null) {
-            response = this.itemsById.get(songId);
+            BaseItemDto indexed = this.itemsById.get(songId);
+            if (indexed != null) {
+                return this.matchedSong(this.songFrom(indexed));
+            }
         }
-        if (response == null) {
-            response = this.paramQuery("get", "/Items/" + songId, new LinkedHashMap<>(), BaseItemDto.class);
-        }
-        if (response != null) {
-            return this.matchedSong(this.songFrom(response));
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items").path(songId)
+                .queryParam("userId", this.userId);
+        try {
+            BaseItemDto response = WebTools.get(target, this.headers, BaseItemDto.class);
+            if (response != null) {
+                return this.matchedSong(this.songFrom(response));
+            }
+        } catch (QueryException e) {
+            logger.error("Exception while getting jellyfin song '" + songId + "'", e);
         }
         logger.debug("Unable to find song '" + songId + "' in jellyfin");
         return null;
@@ -905,82 +985,27 @@ public class Jellyfin implements Import, Export, Sync {
     }
 
     private String searchSongId(Song song) {
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        params.put("searchTerm", song.getName());
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Items")
+                .queryParam("userId", this.userId)
+                .queryParam("searchTerm", song.getName());
         if (!song.getArtists().isEmpty()) {
             String artists = "";
             for (Artist artist : song.getArtists()) {
                 artists += artist.getName() + " | ";
             }
-            params.put("artists", artists);
+            target = target.queryParam("artists", artists);
         }
-        params.put("mediaTypes", "Audio");
-        params.put("recursive", "true");
-        params.put("limit", "1");
-        BaseItemDtoQueryResult response = this.paramQuery("get", "/Items", params, BaseItemDtoQueryResult.class);
-        if (response != null && response.Items != null && !response.Items.isEmpty()) {
-            return response.Items.get(0).Id;
+        target = target.queryParam("mediaTypes", "Audio")
+                .queryParam("recursive", "true")
+                .queryParam("limit", 1);
+        try {
+            BaseItemDtoQueryResult response = WebTools.get(target, this.headers, BaseItemDtoQueryResult.class);
+            if (response != null && response.Items != null && !response.Items.isEmpty()) {
+                return response.Items.get(0).Id;
+            }
+        } catch (QueryException e) {
+            logger.error("Exception while searching jellyfin for '" + song.getName() + "'", e);
         }
         return null;
-    }
-
-    private <T> T paramQuery(String method, String type, LinkedHashMap<String, String> params,
-            Class<T> responseType) {
-        if (method == null) {
-            logger.debug("null or invalid method provided in paramQuery");
-            return null;
-        }
-        if (type == null) {
-            logger.debug("null or invalid type provided in paramQuery");
-            return null;
-        }
-        if (params == null) {
-            logger.debug("null or invalid parameters provided in paramQuery");
-            return null;
-        }
-        try {
-            WebTarget target = WebTools.target(Settings.jellyfinURL + type)
-                    .queryParam("userId", this.userId);
-            for (String key : params.keySet()) {
-                target = target.queryParam(key, params.get(key));
-            }
-            return WebTools.query(target, method, this.headers, null, responseType);
-        } catch (QueryException e) {
-            logger.error("Exception while paramQuery jellyfin", e);
-            return null;
-        }
-    }
-
-    private <T> T payloadQuery(String method, String type, Object payload, Class<T> responseType) {
-        return this.payloadQuery(method, type, payload, new LinkedHashMap<>(), responseType);
-    }
-
-    private <T> T payloadQuery(String method, String type, Object payload, LinkedHashMap<String, String> params,
-            Class<T> responseType) {
-        if (method == null) {
-            logger.debug("null or invalid method provided in payloadQuery");
-            return null;
-        }
-        if (type == null) {
-            logger.debug("null or invalid type provided in payloadQuery");
-            return null;
-        }
-        if (payload == null) {
-            logger.debug("null or invalid parameters provided in payloadQuery");
-            return null;
-        }
-        try {
-            WebTarget target = WebTools.target(Settings.jellyfinURL + type);
-            if (params != null) {
-                for (String key : params.keySet()) {
-                    target = target.queryParam(key, params.get(key));
-                }
-            }
-            Entity<String> body = Entity.entity(WebTools.json(payload), MediaType.APPLICATION_JSON);
-            return WebTools.query(target, method, this.headers, body, responseType);
-        } catch (QueryException | IOException e) {
-            logger.error("Exception while querying jellyfin", e);
-            return null;
-        }
     }
 }

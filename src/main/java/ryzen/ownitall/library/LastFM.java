@@ -1,23 +1,19 @@
 package ryzen.ownitall.library;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import jakarta.ws.rs.client.WebTarget;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.Song;
-
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.MusicTools;
+import ryzen.ownitall.util.WebTools;
 import ryzen.superbeans.lastfm.Albums;
 import ryzen.superbeans.lastfm.Artists;
 import ryzen.superbeans.lastfm.Commons;
@@ -33,8 +29,9 @@ import ryzen.superbeans.lastfm.Tracks;
  */
 public class LastFM extends Library {
     private static final Logger logger = new Logger(LastFM.class);
-    private static final String baseUrl = "http://ws.audioscrobbler.com/2.0/";
+    private static final String baseUrl = "http://ws.audioscrobbler.com/2.0";
     private static final String defaultImg = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+
     /**
      * default LastFM constructor
      * initializes all values and loads from cache
@@ -63,22 +60,19 @@ public class LastFM extends Library {
         }
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("album", album.getName());
-        Artist albumArtist = null;
-        if (album.getMainArtist() != null) {
-            albumArtist = this.getArtist(album.getMainArtist());
-            if (albumArtist != null) {
-                params.put("artist", albumArtist.getName());
-            }
-        } else {
+        if (album.getMainArtist() == null) {
             logger.debug(album.toString() + ": Album requires atleast one artist");
             return null;
+        }
+        Artist albumArtist = this.getArtist(album.getMainArtist());
+        if (albumArtist != null) {
+            params.put("artist", albumArtist.getName());
         }
         params.put("autocorrect", "1");
         if (albums.containsKey(params.toString())) {
             return albums.get(params.toString());
         }
-        Albums.AlbumGetinfo envelope = this.query("album.getInfo", this.queryBuilder(params),
-                Albums.AlbumGetinfo.class);
+        Albums.AlbumGetinfo envelope = this.query("album.getInfo", params, Albums.AlbumGetinfo.class);
         Albums.Album foundAlbum = envelope == null ? null : envelope.album;
         if (foundAlbum == null) {
             foundAlbum = this.searchAlbum(params.get("album"), params.get("artist"));
@@ -104,14 +98,13 @@ public class LastFM extends Library {
                     && !foundAlbum.tracks.track.isEmpty()) {
                 for (Tracks.Track trackNode : foundAlbum.tracks.track) {
                     Song song = new Song(trackNode.name);
-                    Artist songArtist = null;
                     if (trackNode.artist != null) {
-                        songArtist = this.getArtist(new Artist(trackNode.artist.name));
+                        Artist songArtist = this.getArtist(new Artist(trackNode.artist.name));
+                        if (songArtist != null) {
+                            song.addArtist(artist);
+                        }
                     } else {
                         logger.debug(album.toString() + " track missing artist");
-                    }
-                    if (songArtist != null) {
-                        song.addArtist(artist);
                     }
                     song = this.getSong(song);
                     if (song != null) {
@@ -160,8 +153,7 @@ public class LastFM extends Library {
         if (songs.containsKey(params.toString())) {
             return songs.get(params.toString());
         }
-        Tracks.TrackGetinfo envelope = this.query("track.getInfo", this.queryBuilder(params),
-                Tracks.TrackGetinfo.class);
+        Tracks.TrackGetinfo envelope = this.query("track.getInfo", params, Tracks.TrackGetinfo.class);
         Tracks.Track foundTrack = envelope == null ? null : envelope.track;
         if (foundTrack == null) {
             foundTrack = this.searchTrack(params.get("track"), params.get("artist"));
@@ -227,8 +219,7 @@ public class LastFM extends Library {
         if (artists.containsKey(params.toString())) {
             return artists.get(params.toString());
         }
-        Artists.ArtistGetinfo envelope = this.query("artist.getInfo", this.queryBuilder(params),
-                Artists.ArtistGetinfo.class);
+        Artists.ArtistGetinfo envelope = this.query("artist.getInfo", params, Artists.ArtistGetinfo.class);
         Artists.Artist foundArtist = envelope == null ? null : envelope.artist;
         if (foundArtist == null) {
             foundArtist = this.searchArtist(params.get("artist"));
@@ -271,7 +262,7 @@ public class LastFM extends Library {
         ArrayList<Album> albums = new ArrayList<>();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         params.put("artist", artist.getName());
-        Artists.ArtistGettopalbums envelope = this.query("artist.getTopAlbums", this.queryBuilder(params),
+        Artists.ArtistGettopalbums envelope = this.query("artist.getTopAlbums", params,
                 Artists.ArtistGettopalbums.class);
         Artists.Topalbums topalbums = envelope == null ? null : envelope.topalbums;
         if (topalbums != null) {
@@ -313,8 +304,7 @@ public class LastFM extends Library {
         if (artist != null) {
             searchParams.put("artist", artist);
         }
-        Search.TrackSearch envelope = this.query("track.search", this.queryBuilder(searchParams),
-                Search.TrackSearch.class);
+        Search.TrackSearch envelope = this.query("track.search", searchParams, Search.TrackSearch.class);
         Search.Results results = envelope == null ? null : envelope.results;
         if (results == null || results.trackmatches == null || results.trackmatches.track == null
                 || results.trackmatches.track.isEmpty()) {
@@ -333,8 +323,7 @@ public class LastFM extends Library {
             }
         }
         infoParams.put("autocorrect", "1");
-        Tracks.TrackGetinfo info = this.query("track.getInfo", this.queryBuilder(infoParams),
-                Tracks.TrackGetinfo.class);
+        Tracks.TrackGetinfo info = this.query("track.getInfo", infoParams, Tracks.TrackGetinfo.class);
         return info == null ? null : info.track;
     }
 
@@ -352,8 +341,7 @@ public class LastFM extends Library {
         if (artist != null) {
             searchParams.put("artist", artist);
         }
-        Search.AlbumSearch envelope = this.query("album.search", this.queryBuilder(searchParams),
-                Search.AlbumSearch.class);
+        Search.AlbumSearch envelope = this.query("album.search", searchParams, Search.AlbumSearch.class);
         Search.Results results = envelope == null ? null : envelope.results;
         if (results == null || results.albummatches == null || results.albummatches.album == null
                 || results.albummatches.album.isEmpty()) {
@@ -372,8 +360,7 @@ public class LastFM extends Library {
             }
         }
         infoParams.put("autocorrect", "1");
-        Albums.AlbumGetinfo info = this.query("album.getInfo", this.queryBuilder(infoParams),
-                Albums.AlbumGetinfo.class);
+        Albums.AlbumGetinfo info = this.query("album.getInfo", infoParams, Albums.AlbumGetinfo.class);
         return info == null ? null : info.album;
     }
 
@@ -387,8 +374,7 @@ public class LastFM extends Library {
     private Artists.Artist searchArtist(String artist) throws InterruptedException {
         LinkedHashMap<String, String> searchParams = new LinkedHashMap<>();
         searchParams.put("artist", artist);
-        Search.ArtistSearch envelope = this.query("artist.search", this.queryBuilder(searchParams),
-                Search.ArtistSearch.class);
+        Search.ArtistSearch envelope = this.query("artist.search", searchParams, Search.ArtistSearch.class);
         Search.Results results = envelope == null ? null : envelope.results;
         if (results == null || results.artistmatches == null || results.artistmatches.artist == null
                 || results.artistmatches.artist.isEmpty()) {
@@ -403,8 +389,7 @@ public class LastFM extends Library {
         } else {
             infoParams.put("artist", match.name);
         }
-        Artists.ArtistGetinfo info = this.query("artist.getInfo", this.queryBuilder(infoParams),
-                Artists.ArtistGetinfo.class);
+        Artists.ArtistGetinfo info = this.query("artist.getInfo", infoParams, Artists.ArtistGetinfo.class);
         return info == null ? null : info.artist;
     }
 
@@ -427,55 +412,34 @@ public class LastFM extends Library {
     }
 
     /**
-     * build lastfm query in their format
-     *
-     * @param params - linkedhashmap with param:value
-     * @return - string of url to query
-     */
-    private String queryBuilder(LinkedHashMap<String, String> params) {
-        try {
-            StringBuilder builder = new StringBuilder();
-            for (String param : params.keySet()) {
-                builder.append('&').append(param).append('=')
-                        .append(URLEncoder.encode(params.get(param), StandardCharsets.UTF_8.toString()));
-            }
-            return builder.toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to build a query", e);
-            return null;
-        }
-    }
-
-    /**
-     * query lastfm with the build query and the request type
+     * state a lastfm request: the method it asks for, the credentials every call
+     * needs, and the params of the call itself, each as a parameter rather than
+     * a joined query string
      *
      * @param <T>          the response bean type
-     * @param type         - ex: getTrack
-     * @param query        - built string query using queryBuilder
+     * @param type         - ex: track.getInfo
+     * @param params       - the params of that method, may be empty
      * @param responseType - the superbeans bean the whole response binds to
      * @return - bound response or null if error
      * @throws InterruptedException - thrown when user interrupts
      */
-    private <T> T query(String type, String query, Class<T> responseType) throws InterruptedException {
+    private <T> T query(String type, LinkedHashMap<String, String> params, Class<T> responseType)
+            throws InterruptedException {
         if (type == null || type.isEmpty()) {
-            logger.debug("null or empty type provided in lastFMQuery");
+            logger.debug("null or empty type provided in query");
             return null;
         }
-        if (query == null || query.isEmpty()) {
-            logger.debug("null or empty query provided in lastFMQuery");
+        if (params == null) {
+            logger.debug("null params provided in query");
             return null;
         }
-        try {
-            StringBuilder urlBuilder = new StringBuilder(baseUrl);
-            urlBuilder.append("?method=").append(type);
-            urlBuilder.append("&api_key=").append(Settings.lastFMApiKey);
-            urlBuilder.append("&format=json");
-            urlBuilder.append(query);
-            URI url = new URI(urlBuilder.toString());
-            return this.query(url, responseType);
-        } catch (URISyntaxException e) {
-            logger.error("Exception querying LastFM", e);
+        WebTarget target = WebTools.target(baseUrl)
+                .queryParam("method", type)
+                .queryParam("api_key", Settings.lastFMApiKey)
+                .queryParam("format", "json");
+        for (String param : params.keySet()) {
+            target = target.queryParam(param, params.get(param));
         }
-        return null;
+        return this.query(target, responseType);
     }
 }

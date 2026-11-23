@@ -458,26 +458,25 @@ public abstract class Local {
             return;
         }
         logger.debug("Getting local playlist '" + playlist.getName() + "' to remove mismatches");
-        Playlist localPlaylist = null;
         File m3uFile = new File(Settings.localFolder, FileTools.sanitizeFileName(playlist.getName()) + ".m3u");
         if (m3uFile.exists()) {
-            localPlaylist = Upload.getM3UPlaylist(m3uFile);
-        }
-        if (localPlaylist != null && !localPlaylist.isEmpty()) {
-            localPlaylist.removeSongs(playlist.getSongs());
-            for (Song song : IPIterator.wrap(localPlaylist.getSongs(), localPlaylist.getName(),
-                    localPlaylist.size())) {
-                if (Collection.isLiked(song)) {
-                    continue;
-                }
-                File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
-                if (songFile.exists()) {
-                    if (songFile.delete()) {
-                        logger.info("Deleted playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
-                    } else {
-                        logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
-                                + songFile.getAbsolutePath());
+            Playlist localPlaylist = Upload.getM3UPlaylist(m3uFile);
+            if (localPlaylist != null && !localPlaylist.isEmpty()) {
+                localPlaylist.removeSongs(playlist.getSongs());
+                for (Song song : IPIterator.wrap(localPlaylist.getSongs(), localPlaylist.getName(),
+                        localPlaylist.size())) {
+                    if (Collection.isLiked(song)) {
+                        continue;
+                    }
+                    File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
+                    if (songFile.exists()) {
+                        if (songFile.delete()) {
+                            logger.info("Deleted playlist '" + playlist.getName() + "' song: "
+                                    + songFile.getAbsolutePath());
+                        } else {
+                            logger.debug("could not delete playlist '" + playlist.getName() + "' song: "
+                                    + songFile.getAbsolutePath());
+                        }
                     }
                 }
             }

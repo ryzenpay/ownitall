@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Level;
 import ryzen.ownitall.Settings;
 import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.integrations.interfaces.Export;
-import ryzen.ownitall.integrations.interfaces.Sync;
+import ryzen.ownitall.integrations.Integration.Export;
+import ryzen.ownitall.integrations.Integration.Sync;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
 

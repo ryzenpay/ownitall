@@ -126,13 +126,6 @@
       <version>2.18.2</version>
     </dependency>
 
-    <!-- Spotify -->
-    <dependency>
-      <groupId>se.michaelthelin.spotify</groupId>
-      <artifactId>spotify-web-api-java</artifactId>
-      <version>9.2.0</version>
-    </dependency>
-
     <!-- Metadata -->
     <dependency>
       <groupId>net.jthink</groupId>
@@ -268,7 +261,7 @@
     <dependency>
       <groupId>ryzen.superbeans</groupId>
       <artifactId>superbeans</artifactId>
-      <version>0.5.2</version>
+      <version>0.5.5</version>
     </dependency>
 
   </dependencies>

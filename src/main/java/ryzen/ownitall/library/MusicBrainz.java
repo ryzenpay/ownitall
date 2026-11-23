@@ -1,15 +1,12 @@
 package ryzen.ownitall.library;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import jakarta.ws.rs.client.WebTarget;
 
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.Artist;
@@ -32,8 +29,8 @@ import ryzen.superbeans.musicbrainz.Search;
  */
 public class MusicBrainz extends Library {
     private static final Logger logger = new Logger(MusicBrainz.class);
-    private static final String baseUrl = "https://musicbrainz.org/ws/2/";
-    private static final String coverArtUrl = "https://coverartarchive.org/";
+    private static final String baseUrl = "https://musicbrainz.org/ws/2";
+    private static final String coverArtUrl = "https://coverartarchive.org";
     /**
      * default MusicBrainz constructor
      * initializes all values and loads from cache
@@ -75,7 +72,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        Search.ReleaseSearch response = this.query("release", this.searchQueryBuilder(params),
+        Search.ReleaseSearch response = this.query(this.searchTarget("release", params),
                 Search.ReleaseSearch.class);
         if (response != null) {
             if (response.releases != null && !response.releases.isEmpty()) {
@@ -118,7 +115,7 @@ public class MusicBrainz extends Library {
         inclusions.add("recordings");
         inclusions.add("artists");
         // check cache
-        Releases.ReleaseLookup response = this.query("release", this.directQueryBuilder(id, inclusions),
+        Releases.ReleaseLookup response = this.query(this.lookupTarget("release", id, inclusions),
                 Releases.ReleaseLookup.class);
         if (response != null) {
             Album album = new Album(response.title);
@@ -210,7 +207,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        Search.RecordingSearch response = this.query("recording", this.searchQueryBuilder(params),
+        Search.RecordingSearch response = this.query(this.searchTarget("recording", params),
                 Search.RecordingSearch.class);
         if (response != null) {
             if (response.recordings != null && !response.recordings.isEmpty()) {
@@ -253,7 +250,7 @@ public class MusicBrainz extends Library {
         inclusions.add("artists");
         inclusions.add("url-rels");
         inclusions.add("releases");
-        Recordings.RecordingLookup response = this.query("recording", this.directQueryBuilder(id, inclusions),
+        Recordings.RecordingLookup response = this.query(this.lookupTarget("recording", id, inclusions),
                 Recordings.RecordingLookup.class);
         if (response != null) {
             Song song = new Song(response.title);
@@ -387,7 +384,7 @@ public class MusicBrainz extends Library {
         if (foundId != null) {
             return foundId;
         }
-        Search.ArtistSearch response = this.query("artist", this.searchQueryBuilder(params),
+        Search.ArtistSearch response = this.query(this.searchTarget("artist", params),
                 Search.ArtistSearch.class);
         if (response != null) {
             if (response.artists != null && !response.artists.isEmpty()) {
@@ -420,7 +417,7 @@ public class MusicBrainz extends Library {
         }
         LinkedHashSet<String> inclusions = new LinkedHashSet<>();
         inclusions.add("aliases");
-        Artists.ArtistLookup response = this.query("artist", this.directQueryBuilder(id, inclusions),
+        Artists.ArtistLookup response = this.query(this.lookupTarget("artist", id, inclusions),
                 Artists.ArtistLookup.class);
         if (response != null) {
             Artist artist = new Artist(response.name);
@@ -459,83 +456,70 @@ public class MusicBrainz extends Library {
             logger.debug("null or empty id provided in getCoverArt");
             return null;
         }
-        StringBuilder urlBuilder = new StringBuilder(coverArtUrl);
-        urlBuilder.append("release").append('/');
-        urlBuilder.append(id).append('/');
-        urlBuilder.append("front");
-        try {
-            URI url = new URI(urlBuilder.toString());
-            String redirectUrl = null;
-            URI redirect = WebTools.redirect(url);
-            if (redirect != null) {
-                redirectUrl = redirect.toString();
-            }
-            if (redirectUrl != null) {
-                return new URI(redirectUrl);
-            }
-        } catch (URISyntaxException e) {
-            logger.error("Exception while getting coverArt", e);
+        WebTarget target = WebTools.target(coverArtUrl).path("release").path(id).path("front");
+        URI redirect = WebTools.redirect(target);
+        if (redirect != null) {
+            return redirect;
         }
         logger.debug("No coverart found for: '" + id + "'");
         return null;
     }
 
-    private String searchQueryBuilder(LinkedHashMap<String, String> params) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("?query=");
-        StringBuilder paramBuilder = new StringBuilder();
-        for (String param : params.keySet()) {
-            paramBuilder.append(param).append(':').append('"').append(params.get(param)).append('"');
-        }
-        try {
-            builder.append(URLEncoder.encode(paramBuilder.toString(), StandardCharsets.UTF_8.toString()));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Exception while encoding query", e);
-            return null;
-        }
-        builder.append("&fmt=json");
-        builder.append("&limit=1");
-        return builder.toString();
-    }
-
-    private String directQueryBuilder(String mbid, LinkedHashSet<String> inclusions) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("/").append(mbid);
-        StringBuilder incBuilder = new StringBuilder("?inc=");
-        for (String inc : inclusions) {
-            if (!incBuilder.toString().isEmpty()) {
-                incBuilder.append("+");
-            }
-            incBuilder.append(inc);
-        }
-        builder.append(incBuilder.toString());
-        builder.append("&fmt=json");
-        return builder.toString();
-    }
-
-    private URI requestUrl(String type, String query) {
+    /**
+     * a search of one type: every param becomes a field:"value" pair of one
+     * lucene filter, in the order they are cached under
+     *
+     * @param type   - ex: recording
+     * @param params - field names to filter on
+     * @return a {@link jakarta.ws.rs.client.WebTarget} object
+     */
+    private WebTarget searchTarget(String type, LinkedHashMap<String, String> params) {
         if (type == null || type.isEmpty()) {
-            logger.debug("null or empty type provided in musicBeeQuery");
+            logger.debug("null or empty type provided in searchTarget");
             return null;
         }
-        if (query == null || query.isEmpty()) {
-            logger.debug("null or empty query provided in musicBeeQuery");
+        if (params == null || params.isEmpty()) {
+            logger.debug("no params provided in searchTarget");
             return null;
         }
-        try {
-            StringBuilder urlBuilder = new StringBuilder(baseUrl);
-            urlBuilder.append(type);
-            urlBuilder.append(query);
-            return new URI(urlBuilder.toString());
-        } catch (URISyntaxException e) {
-            logger.error("Exception querying MusicBee", e);
+        StringBuilder filter = new StringBuilder();
+        for (String param : params.keySet()) {
+            if (params.get(param) == null) {
+                continue;
+            }
+            filter.append(param).append(':').append('"').append(params.get(param)).append('"');
         }
-        return null;
+        WebTarget target = WebTools.target(baseUrl).path(type)
+                .queryParam("query", filter.toString())
+                .queryParam("fmt", "json")
+                .queryParam("limit", 1);
+        return target;
     }
 
-    private <T> T query(String type, String query, Class<T> responseType) throws InterruptedException {
-        URI url = this.requestUrl(type, query);
-        return url == null ? null : this.query(url, responseType);
+    /**
+     * a lookup of one id: the relations to ride along come as one '+' separated
+     * list, which webtools encodes as %2B, the only form musicbrainz takes
+     * (a comma is read as one long relation name and answered with a 400)
+     *
+     * @param type       - ex: release
+     * @param id         - the musicbrainz id
+     * @param inclusions - relations to ask for, may be empty
+     * @return a {@link jakarta.ws.rs.client.WebTarget} object
+     */
+    private WebTarget lookupTarget(String type, String id, LinkedHashSet<String> inclusions) {
+        if (type == null || type.isEmpty()) {
+            logger.debug("null or empty type provided in lookupTarget");
+            return null;
+        }
+        if (id == null || id.isEmpty()) {
+            logger.debug("null or empty id provided in lookupTarget");
+            return null;
+        }
+        WebTarget target = WebTools.target(baseUrl).path(type).path(id);
+        if (inclusions != null && !inclusions.isEmpty()) {
+            target = target.queryParam("inc", String.join("+", inclusions));
+        }
+        return target.queryParam("fmt", "json");
     }
 
 }

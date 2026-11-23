@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ryzen.ownitall.integrations.Jellyfin;
+import ryzen.ownitall.integrations.Lidarr;
 import ryzen.ownitall.integrations.Spotify;
 import ryzen.ownitall.integrations.Tidal;
 import ryzen.ownitall.integrations.Youtube;
@@ -94,6 +95,35 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("JellyFin Password")
     /** Constant <code>jellyfinPassword=""</code> */
     public static String jellyfinPassword = "";
+
+    ///
+    ///
+    /// LIDARR
+    ///
+    ///
+    @Group(Lidarr.class)
+    @Name("Lidarr URL")
+    /** Constant <code>lidarrURL=""</code> */
+    public static String lidarrURL = "";
+    @Group(Lidarr.class)
+    @Secret
+    @Name("Lidarr API Key")
+    /** Constant <code>lidarrApiKey=""</code> */
+    public static String lidarrApiKey = "";
+
+    // optional
+    @Group(Lidarr.class)
+    @Name("Lidarr Root Folder Path")
+    /** Constant <code>lidarrRootFolderPath=""</code> */
+    public static String lidarrRootFolderPath = "";
+    @Group(Lidarr.class)
+    @Name("Lidarr Quality Profile ID")
+    /** Constant <code>lidarrQualityProfileId=0</code> */
+    public static int lidarrQualityProfileId = 0;
+    @Group(Lidarr.class)
+    @Name("Lidarr Metadata Profile ID")
+    /** Constant <code>lidarrMetadataProfileId=0</code> */
+    public static int lidarrMetadataProfileId = 0;
 
     ///
     ///

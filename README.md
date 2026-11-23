@@ -103,6 +103,15 @@ will need:
     - soulseek password  
 Due to the soulseek binary and soulseek limits, it is hard encoded to 1 thread and can therefore take a long time to download an entire library  
 
+## Lidarr
+will need:  
+    - lidarr url  
+    - api key (found in `settings -> general -> api key`)  
+    - optional: root folder path, quality profile id and metadata profile id for albums ownitall adds, anything left empty or 0 falls back to the server's own defaults  
+imports the artists and albums your lidarr server has (with their tracks), lidarr has no liked songs or playlists so those stay empty  
+export/sync works the other way around: every collection album is posted to lidarr as a monitored album (a download request), its artist is added too when lidarr does not know it yet (with the root folder and profiles from settings, or the server's own defaults); sync unmonitors lidarr albums missing from the collection, it never deletes files  
+an album needs a musicbrainz id (the library provides one) to be requested, else it is looked up on lidarr by album + artist name first  
+
 ## Tidal
 will need (read below):
     - client id 
@@ -115,6 +124,7 @@ Tidal will provide you with the client id and secret, to get the client id and s
     5. add a redirect url to http://localhost:8081/oauth
         - add the scopes: collection.read%20collection.write%20playlists.read%20playlists.read
     6. save the client id and client secret  
+export/sync works the other way around: collection liked songs, albums and playlists are added to tidal (songs without a tidal id are searched for and the first match is taken); sync removes tidal items missing from the collection and deletes tidal playlists missing from the collection outright  
 
 ## Apple Music
 currently not supported as its paid (didnt know till halfway done)

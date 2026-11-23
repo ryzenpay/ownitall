@@ -34,7 +34,7 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.integrations.interfaces.Import;
+import ryzen.ownitall.integrations.Integration.Import;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.Logger;

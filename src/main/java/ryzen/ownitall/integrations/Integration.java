@@ -9,9 +9,6 @@ import ryzen.ownitall.Settings.MissingSettingException;
 import ryzen.ownitall.classes.Album;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
-import ryzen.ownitall.integrations.interfaces.Export;
-import ryzen.ownitall.integrations.interfaces.Import;
-import ryzen.ownitall.integrations.interfaces.Sync;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.ProgressBar;
@@ -521,5 +518,194 @@ public class Integration {
         public InvalidIntegrationException(String message) {
             super(message);
         }
+    }
+
+    /**
+     * <p>
+     * Export interface.
+     * </p>
+     *
+     * @author ryzen
+     */
+    public static interface Export {
+
+        /**
+         * <p>
+         * uploadLikedSongs.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException if any.
+         */
+        public void uploadLikedSongs() throws InterruptedException;
+
+        /**
+         * <p>
+         * uploadPlaylists.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException if any.
+         */
+        public void uploadPlaylists() throws InterruptedException;
+
+        /**
+         * <p>
+         * uploadPlaylist.
+         * </p>
+         *
+         * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public void uploadPlaylist(Playlist playlist) throws InterruptedException;
+
+        /**
+         * <p>
+         * uploadAlbums.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException if any.
+         */
+        public void uploadAlbums() throws InterruptedException;
+
+        /**
+         * <p>
+         * uploadAlbum.
+         * </p>
+         *
+         * @param album a {@link ryzen.ownitall.classes.Album} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public void uploadAlbum(Album album) throws InterruptedException;
+
+    }
+
+    /**
+     * <p>
+     * Import interface.
+     * </p>
+     *
+     * @author ryzen
+     */
+    public static interface Import {
+        /**
+         * <p>
+         * getLikedSongs.
+         * </p>
+         *
+         * @return a {@link ryzen.ownitall.classes.LikedSongs} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public LikedSongs getLikedSongs() throws InterruptedException;
+
+        /**
+         * <p>
+         * getPlaylists.
+         * </p>
+         *
+         * @return a {@link java.util.ArrayList} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public ArrayList<Playlist> getPlaylists() throws InterruptedException;
+
+        /**
+         * <p>
+         * getPlaylist.
+         * </p>
+         *
+         * @param playlistId   a {@link java.lang.String} object
+         * @param playlistName a {@link java.lang.String} object
+         * @return a {@link ryzen.ownitall.classes.Playlist} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public Playlist getPlaylist(String playlistId, String playlistName) throws InterruptedException;
+
+        /**
+         * <p>
+         * getAlbums.
+         * </p>
+         *
+         * @return a {@link java.util.ArrayList} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public ArrayList<Album> getAlbums() throws InterruptedException;
+
+        /**
+         * <p>
+         * getAlbum.
+         * </p>
+         *
+         * @param albumId         a {@link java.lang.String} object
+         * @param albumName       a {@link java.lang.String} object
+         * @param albumArtistName a {@link java.lang.String} object
+         * @return a {@link ryzen.ownitall.classes.Album} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public Album getAlbum(String albumId, String albumName, String albumArtistName) throws InterruptedException;
+    }
+
+    /**
+     * <p>
+     * Sync interface.
+     * </p>
+     *
+     * @author ryzen
+     */
+    public static interface Sync {
+        /**
+         * <p>
+         * syncLikedSongs.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException                       if any.
+         * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+         * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+         */
+        public void syncLikedSongs() throws InterruptedException, MissingSettingException, AuthenticationException;
+
+        /**
+         * <p>
+         * syncPlaylists.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException                       if any.
+         * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+         * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+         */
+        public void syncPlaylists() throws InterruptedException, MissingSettingException, AuthenticationException;
+
+        /**
+         * <p>
+         * syncPlaylist.
+         * </p>
+         *
+         * @param playlist a {@link ryzen.ownitall.classes.Playlist} object
+         * @throws java.lang.InterruptedException                       if any.
+         * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+         * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+         */
+        public void syncPlaylist(Playlist playlist)
+                throws InterruptedException, MissingSettingException, AuthenticationException;
+
+        /**
+         * <p>
+         * syncAlbums.
+         * </p>
+         *
+         * @throws java.lang.InterruptedException                       if any.
+         * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+         * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+         */
+        public void syncAlbums() throws InterruptedException, MissingSettingException, AuthenticationException;
+
+        /**
+         * <p>
+         * syncAlbum.
+         * </p>
+         *
+         * @param album a {@link ryzen.ownitall.classes.Album} object
+         * @throws java.lang.InterruptedException                       if any.
+         * @throws ryzen.ownitall.Settings.MissingSettingException      if any.
+         * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
+         */
+        public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException;
     }
 }

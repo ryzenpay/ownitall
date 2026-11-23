@@ -1,15 +1,17 @@
 package ryzen.ownitall.integrations;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import org.apache.hc.core5.http.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MediaType;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -19,49 +21,24 @@ import ryzen.ownitall.classes.Artist;
 import ryzen.ownitall.classes.LikedSongs;
 import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
-import ryzen.ownitall.integrations.interfaces.Export;
-import ryzen.ownitall.integrations.interfaces.Import;
-import ryzen.ownitall.integrations.interfaces.Sync;
+import ryzen.ownitall.integrations.Integration.Export;
+import ryzen.ownitall.integrations.Integration.Import;
+import ryzen.ownitall.integrations.Integration.Sync;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.IPIterator;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.OAuth;
+import ryzen.ownitall.util.WebTools;
 import ryzen.ownitall.util.WebTools.AuthenticationException;
-import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.exceptions.detailed.TooManyRequestsException;
-import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.specification.AlbumSimplified;
-import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
-import se.michaelthelin.spotify.model_objects.specification.Episode;
-import se.michaelthelin.spotify.model_objects.specification.Image;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
-import se.michaelthelin.spotify.model_objects.specification.SavedAlbum;
-import se.michaelthelin.spotify.model_objects.specification.SavedTrack;
-import se.michaelthelin.spotify.model_objects.specification.Track;
-import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
-import se.michaelthelin.spotify.model_objects.specification.User;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
-import se.michaelthelin.spotify.requests.data.albums.GetAlbumsTracksRequest;
-import se.michaelthelin.spotify.requests.data.library.GetCurrentUsersSavedAlbumsRequest;
-import se.michaelthelin.spotify.requests.data.library.GetUsersSavedTracksRequest;
-import se.michaelthelin.spotify.requests.data.library.RemoveAlbumsForCurrentUserRequest;
-import se.michaelthelin.spotify.requests.data.library.RemoveUsersSavedTracksRequest;
-import se.michaelthelin.spotify.requests.data.library.SaveAlbumsForCurrentUserRequest;
-import se.michaelthelin.spotify.requests.data.library.SaveTracksForUserRequest;
-import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
-import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
-import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
-import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
-import se.michaelthelin.spotify.requests.data.playlists.RemoveItemsFromPlaylistRequest;
-import se.michaelthelin.spotify.requests.data.search.simplified.SearchAlbumsRequest;
-import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
-import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
+import ryzen.ownitall.util.WebTools.QueryException;
+import ryzen.superbeans.spotify.Albums;
+import ryzen.superbeans.spotify.Artists;
+import ryzen.superbeans.spotify.Commons;
+import ryzen.superbeans.spotify.Episodes;
+import ryzen.superbeans.spotify.Playlists;
+import ryzen.superbeans.spotify.Tracks;
+import ryzen.superbeans.spotify.Users;
 
 /**
  * <p>
@@ -73,9 +50,14 @@ import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfi
 public class Spotify implements Import, Export, Sync {
     private static final Logger logger = new Logger(Spotify.class);
     private static final Library library = Library.load();
+    private static final String baseUrl = "https://api.spotify.com/v1";
+    private static final String authUrl = "https://accounts.spotify.com";
+    private static final String redirectUri = "http://localhost:8081/oauth";
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
-    private SpotifyApi spotifyApi;
+    private String accessToken;
+    private String refreshToken;
+    private Map<String, String> authHeaders;
 
     /**
      * Default spotify constructor asking for user input
@@ -87,18 +69,6 @@ public class Spotify implements Import, Export, Sync {
         if (Settings.load().isGroupEmpty(Spotify.class)) {
             logger.debug("Empty spotify credentials");
             throw new MissingSettingException(Spotify.class);
-        }
-        try {
-            this.spotifyApi = new SpotifyApi.Builder()
-                    .setClientId(
-                            Settings.spotifyClientID)
-                    .setClientSecret(
-                            Settings.spotifyClientSecret)
-                    .setRedirectUri(new URI(
-                            "http://localhost:8081/oauth"))
-                    .build();
-        } catch (URISyntaxException e) {
-            throw new AuthenticationException(e);
         }
         try {
             this.authenticate();
@@ -114,28 +84,41 @@ public class Spotify implements Import, Export, Sync {
      *
      * @throws java.lang.InterruptedException - if an error occurs
      */
-    public String getCode() throws InterruptedException {
-        AuthorizationCodeUriRequest authorizationCodeUriRequest = this.spotifyApi.authorizationCodeUri()
-                .scope(this.scope)
-                .show_dialog(Settings.interactive)
-                .build();
-        URI authUri = authorizationCodeUriRequest.execute();
-        return OAuth.getOauthCode(authUri);
+    private String getCode() throws InterruptedException {
+        WebTarget target = WebTools.target(authUrl).path("authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", Settings.spotifyClientID)
+                .queryParam("redirect_uri", redirectUri)
+                .queryParam("scope", this.scope)
+                .queryParam("show_dialog", String.valueOf(Settings.interactive));
+        return OAuth.getOauthCode(target);
     }
 
     /**
-     * set the spotifyApi access token
-     * 
+     * set the access token from the code exchanged through the browser
      */
     private void authenticate() throws AuthenticationException, InterruptedException {
-        AuthorizationCodeRequest authorizationCodeRequest = this.spotifyApi.authorizationCode(this.getCode()).build();
+        Form form = new Form()
+                .param("grant_type", "authorization_code")
+                // the code and secret ride in the form body, not the url, so
+                // they never end up in server or proxy access logs
+                .param("client_id", Settings.spotifyClientID)
+                .param("client_secret", Settings.spotifyClientSecret)
+                .param("redirect_uri", redirectUri)
+                .param("code", this.getCode());
+        WebTarget target = WebTools.target(authUrl).path("api").path("token");
         try {
-            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
-            this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            this.spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
-            logger.error("Exception logging in", e);
-            throw new AuthenticationException(e);
+            OAuth.TokenResponse token = WebTools.post(target, null, Entity.form(form), OAuth.TokenResponse.class);
+            if (token == null || token.access_token == null) {
+                throw new AuthenticationException("no access token in response from: "
+                        + target.getUri());
+            }
+            this.accessToken = token.access_token;
+            this.refreshToken = token.refresh_token;
+            this.authHeaders = Map.of("Authorization", "Bearer " + this.accessToken);
+        } catch (QueryException e) {
+            throw new AuthenticationException("failed to get access token from: "
+                    + target.getUri(), e);
         }
     }
 
@@ -145,28 +128,125 @@ public class Spotify implements Import, Export, Sync {
      * @return - true if succesfully refreshed, false if not
      */
     public boolean refreshToken() {
-        AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = this.spotifyApi.authorizationCodeRefresh()
-                .build();
+        if (this.refreshToken == null) {
+            logger.debug("No refresh token to refresh the spotify access token with");
+            return false;
+        }
+        Form form = new Form()
+                .param("grant_type", "refresh_token")
+                .param("refresh_token", this.refreshToken)
+                .param("client_id", Settings.spotifyClientID)
+                .param("client_secret", Settings.spotifyClientSecret);
+        WebTarget target = WebTools.target(authUrl).path("api").path("token");
         try {
-            AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
-            this.spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            OAuth.TokenResponse token = WebTools.post(target, null, Entity.form(form), OAuth.TokenResponse.class);
+            if (token == null || token.access_token == null) {
+                logger.error("Exception refreshing token");
+                return false;
+            }
+            // spotify hands back a new access token and keeps the refresh token valid
+            this.accessToken = token.access_token;
+            this.authHeaders = Map.of("Authorization", "Bearer " + this.accessToken);
             return true;
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
+        } catch (QueryException e) {
             logger.error("Exception refreshing token", e);
             return false;
         }
     }
 
+    private ArrayList<Artist> getArtists(List<Artists.SimplifiedArtistObject> artistObjects) {
+        ArrayList<Artist> artists = new ArrayList<>();
+        if (artistObjects == null) {
+            return artists;
+        }
+        for (Artists.SimplifiedArtistObject artistObject : artistObjects) {
+            if (artistObject == null || artistObject.name == null
+                    || artistObject.name.equals("Various Artists")) {
+                continue;
+            }
+            artists.add(new Artist(artistObject.name));
+        }
+        return artists;
+    }
+
+    private Song getSong(Tracks.TrackObject track) {
+        Song song = new Song(track.name);
+        song.addArtists(this.getArtists(track.artists));
+        if (track.duration_ms != null) {
+            song.setDuration(track.duration_ms, ChronoUnit.MILLIS);
+        }
+        if (track.id != null) {
+            song.addId("spotify", track.id);
+        }
+        String coverImage = this.lastImage(track.album == null ? null : track.album.images);
+        if (coverImage != null) {
+            song.setCoverImage(coverImage);
+        }
+        return song;
+    }
+
+    private Song getSong(Tracks.SimplifiedTrackObject track) {
+        Song song = new Song(track.name);
+        song.addArtists(this.getArtists(track.artists));
+        if (track.duration_ms != null) {
+            song.setDuration(track.duration_ms, ChronoUnit.MILLIS);
+        }
+        if (track.id != null) {
+            song.addId("spotify", track.id);
+        }
+        return song;
+    }
+
+    private Song getSong(Episodes.EpisodeObject episode) {
+        Song song = new Song(episode.name);
+        if (episode.duration_ms != null) {
+            song.setDuration(episode.duration_ms, ChronoUnit.MILLIS);
+        }
+        if (episode.id != null) {
+            song.addId("spotify", episode.id);
+        }
+        String coverImage = this.lastImage(episode.images);
+        if (coverImage != null) {
+            song.setCoverImage(coverImage);
+        }
+        return song;
+    }
+
     /**
-     * sleep function for when API limit is hit
-     * 
-     * @param seconds - long amount of seconds to sleep for
-     * @throws InterruptedException - when user interrupts
+     * spotify orders its images small to large, the old wrapper callers always
+     * took the last one
      */
-    private void sleep(long seconds) throws InterruptedException {
-        logger.debug("Spotify timeout sleeping for: " + seconds + "s");
-        long msec = seconds * 1000;
-        Thread.sleep(msec);
+    private String lastImage(List<Commons.ImageObject> images) {
+        if (images == null || images.isEmpty() || images.get(images.size() - 1) == null) {
+            return null;
+        }
+        return images.get(images.size() - 1).url;
+    }
+
+    private Song getPlaylistSong(Object rawTrack, IPIterator<?> pb, String playlistId) throws InterruptedException {
+        Tracks.TrackObject track = WebTools.convert(rawTrack, Tracks.TrackObject.class);
+        if (track != null && "track".equals(track.type)) {
+            pb.step(track.name);
+            return this.getSong(track);
+        }
+        Episodes.EpisodeObject episode = WebTools.convert(rawTrack, Episodes.EpisodeObject.class);
+        if (episode != null && "episode".equals(episode.type)) {
+            pb.step(episode.name);
+            return this.getSong(episode);
+        }
+        logger.debug("skipped non track '" + rawTrack.toString() + "' in playlist: " + playlistId);
+        logger.info("Skipping non-Track in playlist: " + playlistId);
+        return null;
+    }
+
+    private Song fromLibrary(Song song) throws InterruptedException {
+        if (library != null) {
+            Song foundSong = library.getSong(song);
+            if (foundSong != null) {
+                return foundSong;
+            }
+        }
+        return song;
     }
 
     /**
@@ -179,56 +259,32 @@ public class Spotify implements Import, Export, Sync {
         LikedSongs likedSongs = new LikedSongs();
         int limit = Settings.spotifySongLimit;
         int offset = 0;
-        boolean hasMore = true;
         try (IPIterator<?> pb = IPIterator.manual("Liked Songs", -1)) {
-            while (hasMore) {
-                GetUsersSavedTracksRequest getUsersSavedTracksRequest = this.spotifyApi.getUsersSavedTracks()
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
+            while (true) {
+                WebTarget target = WebTools.target(baseUrl).path("me").path("tracks").queryParam("limit", limit)
+                        .queryParam("offset", offset);
                 try {
-                    final Paging<SavedTrack> savedTrackPaging = getUsersSavedTracksRequest.execute();
-                    SavedTrack[] items = savedTrackPaging.getItems();
-
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (SavedTrack savedTrack : items) {
-                            Track track = savedTrack.getTrack();
-                            Song song = new Song(track.getName());
-                            for (ArtistSimplified artist : track.getArtists()) {
-                                if (artist.getName().equals("Various Artists")) {
-                                    continue;
-                                }
-                                song.addArtist(new Artist(artist.getName()));
-
-                            }
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addId("spotify", track.getId());
-                            Image[] images = track.getAlbum().getImages();
-                            if (images != null && images.length > 0) {
-                                song.setCoverImage(images[images.length - 1].getUrl());
-                            }
-                            if (library != null) {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                }
-                            }
-                            likedSongs.addSong(song);
-                            pb.step(song.getName());
-                        }
-                        offset += limit;
-                        if (limit > items.length) {
-                            hasMore = false;
-                        }
+                    Tracks.PagingSavedTrackObject response = WebTools.get(target, this.authHeaders,
+                            Tracks.PagingSavedTrackObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching liked songs", e);
-                    hasMore = false;
+                    for (Tracks.SavedTrackObject savedTrack : response.items) {
+                        if (savedTrack == null || savedTrack.track == null) {
+                            // spotify keeps a null track for removed ones
+                            continue;
+                        }
+                        Song song = this.fromLibrary(this.getSong(savedTrack.track));
+                        likedSongs.addSong(song);
+                        pb.step(song.getName());
+                    }
+                    offset += limit;
+                    if (response.next == null) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.warn("Exception fetching liked songs: " + e);
+                    break;
                 }
             }
         }
@@ -239,9 +295,6 @@ public class Spotify implements Import, Export, Sync {
     @Override
     public void syncLikedSongs() throws InterruptedException {
         logger.debug("Getting spotify liked songs to remove mismatches");
-        int limit = Settings.spotifySongLimit;
-        int offset = 0;
-        boolean hasMore = true;
         LikedSongs likedSongs = this.getLikedSongs();
         if (likedSongs != null && !likedSongs.isEmpty()) {
             likedSongs.removeSongs(Collection.getLikedSongs().getSongs());
@@ -255,29 +308,9 @@ public class Spotify implements Import, Export, Sync {
             if (songIds.isEmpty()) {
                 return;
             }
-            try (IPIterator<?> pb = IPIterator.manual("Liked Songs", likedSongs.size())) {
-                while (hasMore) {
-                    String[] currentIds = songIds.subList(offset,
-                            Math.min(offset + limit, songIds.size())).toArray(new String[0]);
-                    RemoveUsersSavedTracksRequest removeUsersSavedTracksRequest = this.spotifyApi
-                            .removeUsersSavedTracks(currentIds)
-                            .build();
-                    try {
-                        removeUsersSavedTracksRequest.execute();
-                        logger.debug("deleted liked songs (" + currentIds.length + "): " + currentIds.toString());
-                        pb.step(currentIds.length);
-                        offset += limit;
-                        if (offset >= currentIds.length) {
-                            hasMore = false;
-                        }
-                    } catch (TooManyRequestsException e) {
-                        logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                        this.sleep(e.getRetryAfter());
-                    } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        logger.error("Exception adding users saved tracks", e);
-                    }
-                }
-            }
+            WebTarget target = WebTools.target(baseUrl).path("me").path("tracks");
+            this.sendIds(target, WebTools::delete, "Liked Songs", songIds,
+                    Settings.spotifySongLimit, Spotify::removeTracks);
         }
     }
 
@@ -302,33 +335,72 @@ public class Spotify implements Import, Export, Sync {
             logger.debug("No liked songs in collection");
             return;
         }
-        int limit = Settings.spotifySongLimit;
-        int offset = 0;
-        boolean hasMore = true;
-        try (IPIterator<?> pb = IPIterator.manual("Liked Songs", songIds.size())) {
-            while (hasMore) {
-                String[] currentIds = songIds.subList(offset,
-                        Math.min(offset + limit, songIds.size())).toArray(new String[0]);
-                SaveTracksForUserRequest saveTracksForUserRequest = this.spotifyApi
-                        .saveTracksForUser(
-                                currentIds)
-                        .build();
+        WebTarget target = WebTools.target(baseUrl).path("me").path("tracks");
+        this.sendIds(target, WebTools::put, "Liked Songs", songIds,
+                Settings.spotifySongLimit, Spotify::saveTracks);
+    }
+
+    /**
+     * send a batch of spotify ids against one library endpoint, the saved tracks
+     * and saved albums routes both answering with an empty body, and both of
+     * them wanting the ids in a body of their own: put to add, delete to remove
+     */
+    private void sendIds(WebTarget target, IdsVerb verb, String label, ArrayList<String> ids, int limit,
+            Function<List<String>, Object> request) throws InterruptedException {
+        try (IPIterator<?> pb = IPIterator.manual(label, ids.size())) {
+            for (int offset = 0; offset < ids.size(); offset += limit) {
+                List<String> currentIds = ids.subList(offset, Math.min(offset + limit, ids.size()));
                 try {
-                    saveTracksForUserRequest.execute();
-                    pb.step(currentIds.length);
-                    logger.debug("added liked songs (" + currentIds.length + "): " + currentIds.toString());
-                    offset += limit;
-                    if (offset > currentIds.length) {
-                        hasMore = false;
-                    }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users saved tracks", e);
+                    verb.send(target, this.authHeaders,
+                            Entity.entity(WebTools.json(request.apply(currentIds)), MediaType.APPLICATION_JSON),
+                            Object.class);
+                    logger.debug("sent " + currentIds.size() + " ids to " + target.getUri());
+                } catch (QueryException | JsonProcessingException e) {
+                    logger.warn("Exception while sending ids to " + target.getUri() + ": " + e);
                 }
+                pb.step(currentIds.size());
             }
         }
+    }
+
+    /**
+     * the four superbeans library request beans, one per route and direction,
+     * each of them nothing but an ids list
+     */
+    private static Users.SaveTracksUserRequest saveTracks(List<String> ids) {
+        Users.SaveTracksUserRequest request = new Users.SaveTracksUserRequest();
+        request.ids = ids;
+        return request;
+    }
+
+    private static Users.RemoveTracksUserRequest removeTracks(List<String> ids) {
+        Users.RemoveTracksUserRequest request = new Users.RemoveTracksUserRequest();
+        request.ids = ids;
+        return request;
+    }
+
+    private static Users.SaveAlbumsUserRequest saveAlbums(List<String> ids) {
+        Users.SaveAlbumsUserRequest request = new Users.SaveAlbumsUserRequest();
+        request.ids = ids;
+        return request;
+    }
+
+    private static Users.RemoveAlbumsUserRequest removeAlbums(List<String> ids) {
+        Users.RemoveAlbumsUserRequest request = new Users.RemoveAlbumsUserRequest();
+        request.ids = ids;
+        return request;
+    }
+
+    /**
+     * <p>
+     * IdsVerb, the one webtools verb that carries the batch: {@link WebTools#put}
+     * or {@link WebTools#delete}, whichever way the ids are meant to move.
+     * </p>
+     */
+    @FunctionalInterface
+    private interface IdsVerb {
+        <T> T send(WebTarget target, Map<String, ?> headers, Entity<?> body, Class<T> responseType)
+                throws QueryException;
     }
 
     /**
@@ -341,46 +413,38 @@ public class Spotify implements Import, Export, Sync {
         ArrayList<Album> albums = new ArrayList<>();
         int limit = Settings.spotifyAlbumLimit;
         int offset = 0;
-        boolean hasMore = true;
         try (IPIterator<?> pb = IPIterator.manual("Albums", -1)) {
-            while (hasMore) {
-                GetCurrentUsersSavedAlbumsRequest getCurrentUsersSavedAlbumsRequest = this.spotifyApi
-                        .getCurrentUsersSavedAlbums()
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
+            while (true) {
+                WebTarget target = WebTools.target(baseUrl).path("me").path("albums").queryParam("limit", limit)
+                        .queryParam("offset", offset);
                 try {
-                    final Paging<SavedAlbum> savedAlbumPaging = getCurrentUsersSavedAlbumsRequest.execute();
-                    SavedAlbum[] items = savedAlbumPaging.getItems();
-
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (SavedAlbum savedAlbum : items) {
-                            String albumId = savedAlbum.getAlbum().getId();
-                            String albumName = savedAlbum.getAlbum().getName();
-                            String albumArtistName = null;
-                            for (ArtistSimplified artistName : savedAlbum.getAlbum().getArtists()) {
-                                if (!artistName.getName().equals("Various Artists")) {
-                                    albumArtistName = artistName.getName();
-                                    break;
-                                }
-                            }
-                            Album album = this.getAlbum(albumId, albumName, albumArtistName);
-                            albums.add(album);
-                            pb.step(album.getName());
-                        }
-                        offset += limit;
-                        if (limit > items.length) {
-                            hasMore = false;
-                        }
+                    Albums.PagingSavedAlbumObject response = WebTools.get(target, this.authHeaders,
+                            Albums.PagingSavedAlbumObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception getting albums", e);
-                    hasMore = false;
+                    for (Albums.SavedAlbumObject savedAlbum : response.items) {
+                        if (savedAlbum == null || savedAlbum.album == null) {
+                            continue;
+                        }
+                        String albumId = savedAlbum.album.id;
+                        String albumName = savedAlbum.album.name;
+                        String albumArtistName = null;
+                        for (Artist artist : this.getArtists(savedAlbum.album.artists)) {
+                            albumArtistName = artist.getName();
+                            break;
+                        }
+                        Album album = this.getAlbum(albumId, albumName, albumArtistName);
+                        albums.add(album);
+                        pb.step(album.getName());
+                    }
+                    offset += limit;
+                    if (response.next == null) {
+                        break;
+                    }
+                } catch (QueryException e) {
+                    logger.warn("Exception getting albums: " + e);
+                    break;
                 }
             }
         }
@@ -430,48 +494,30 @@ public class Spotify implements Import, Export, Sync {
         try (IPIterator<?> pb = IPIterator.manual(albumId, -1)) {
             ArrayList<Song> songs = new ArrayList<>();
             int limit = Settings.spotifySongLimit;
-            boolean hasMore = true;
-            while (hasMore) {
-                GetAlbumsTracksRequest getAlbumsTracksRequest = this.spotifyApi.getAlbumsTracks(albumId)
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
+            while (true) {
+                WebTarget target = WebTools.target(baseUrl).path("albums").path(albumId).path("tracks")
+                        .queryParam("limit", limit).queryParam("offset", offset);
                 try {
-                    Paging<TrackSimplified> trackSimplifiedPaging = getAlbumsTracksRequest.execute();
-                    TrackSimplified[] items = trackSimplifiedPaging.getItems();
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (TrackSimplified track : items) {
-                            Song song = new Song(track.getName());
-                            for (ArtistSimplified artist : track.getArtists()) {
-                                if (artist.getName().equals("Various Artists")) {
-                                    continue;
-                                }
-                                song.addArtist(new Artist(artist.getName()));
-                            }
-                            song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                            song.addId("spotify", track.getId());
-                            if (library != null) {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                }
-                            }
-                            songs.add(song);
-                            pb.step(song.getName());
+                    Tracks.PagingSimplifiedTrackObject response = WebTools.get(target, this.authHeaders,
+                            Tracks.PagingSimplifiedTrackObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
+                    }
+                    for (Tracks.SimplifiedTrackObject track : response.items) {
+                        if (track == null) {
+                            continue;
                         }
+                        Song song = this.fromLibrary(this.getSong(track));
+                        songs.add(song);
+                        pb.step(song.getName());
                     }
                     offset += limit;
-                    if (limit > items.length) {
-                        hasMore = false;
+                    if (response.next == null) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching songs for album: " + albumId + "", e);
-                    hasMore = false;
+                } catch (QueryException e) {
+                    logger.error("Exception fetching songs for album: " + albumId, e);
+                    break;
                 }
             }
             return songs;
@@ -494,32 +540,9 @@ public class Spotify implements Import, Export, Sync {
             if (albumIds.isEmpty()) {
                 return;
             }
-            int limit = Settings.spotifyAlbumLimit;
-            int offset = 0;
-            boolean hasMore = true;
-            try (IPIterator<?> pb = IPIterator.manual("Albums", albums.size())) {
-                while (hasMore) {
-                    String[] currentIds = albumIds.subList(offset,
-                            Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
-                    RemoveAlbumsForCurrentUserRequest removeAlbumsForCurrentUserRequest = this.spotifyApi
-                            .removeAlbumsForCurrentUser(currentIds)
-                            .build();
-                    try {
-                        removeAlbumsForCurrentUserRequest.execute();
-                        logger.debug("removed albums (" + currentIds.length + "): " + currentIds.toString());
-                        pb.step(currentIds.length);
-                        offset += limit;
-                        if (limit > currentIds.length) {
-                            hasMore = false;
-                        }
-                    } catch (TooManyRequestsException e) {
-                        logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                        this.sleep(e.getRetryAfter());
-                    } catch (IOException | SpotifyWebApiException | ParseException e) {
-                        logger.error("Exception adding users saved tracks", e);
-                    }
-                }
-            }
+            WebTarget target = WebTools.target(baseUrl).path("me").path("albums");
+            this.sendIds(target, WebTools::delete, "Albums", albumIds,
+                    Settings.spotifyAlbumLimit, Spotify::removeAlbums);
         }
     }
 
@@ -538,31 +561,9 @@ public class Spotify implements Import, Export, Sync {
             logger.debug("No Saved albums in collection");
             return;
         }
-        int limit = Settings.spotifyAlbumLimit;
-        int offset = 0;
-        boolean hasMore = true;
-        try (IPIterator<?> pb = IPIterator.manual("Albums", albumIds.size());) {
-            while (hasMore) {
-                String[] currentAlbumIds = albumIds.subList(offset,
-                        Math.min(offset + limit, albumIds.size())).toArray(new String[0]);
-                SaveAlbumsForCurrentUserRequest saveAlbumsForCurrentUserRequest = this.spotifyApi
-                        .saveAlbumsForCurrentUser(currentAlbumIds)
-                        .build();
-                try {
-                    pb.step(currentAlbumIds.length);
-                    saveAlbumsForCurrentUserRequest.execute();
-                    offset += limit;
-                    if (limit > currentAlbumIds.length) {
-                        hasMore = false;
-                    }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users Albums", e);
-                }
-            }
-        }
+        WebTarget target = WebTools.target(baseUrl).path("me").path("albums");
+        this.sendIds(target, WebTools::put, "Albums", albumIds,
+                Settings.spotifyAlbumLimit, Spotify::saveAlbums);
     }
 
     /** {@inheritDoc} */
@@ -588,48 +589,37 @@ public class Spotify implements Import, Export, Sync {
         ArrayList<Playlist> playlists = new ArrayList<>();
         int limit = Settings.spotifyPlaylistLimit;
         int offset = 0;
-        boolean hasMore = true;
-        try (IPIterator<?> pb = IPIterator.manual("Playlists", -1);) {
-            while (hasMore) {
-                GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
-                        .getListOfCurrentUsersPlaylists()
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
-
+        try (IPIterator<?> pb = IPIterator.manual("Playlists", -1)) {
+            while (true) {
+                WebTarget target = WebTools.target(baseUrl).path("me").path("playlists").queryParam("limit", limit)
+                        .queryParam("offset", offset);
                 try {
-                    final Paging<PlaylistSimplified> playlistSimplifiedPaging = getListOfCurrentUsersPlaylistsRequest
-                            .execute();
-                    PlaylistSimplified[] items = playlistSimplifiedPaging.getItems();
-
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (PlaylistSimplified spotifyPlaylist : items) {
-                            String coverImageUrl = null;
-                            Image[] images = spotifyPlaylist.getImages();
-                            if (images != null && images.length > 0) {
-                                coverImageUrl = images[images.length - 1].getUrl();
-                            }
-                            pb.step(spotifyPlaylist.getName());
-                            Playlist playlist = this.getPlaylist(spotifyPlaylist.getId(),
-                                    spotifyPlaylist.getName());
-                            if (playlist != null) {
+                    Playlists.PagingPlaylistObject response = WebTools.get(target, this.authHeaders,
+                            Playlists.PagingPlaylistObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
+                    }
+                    for (Playlists.SimplifiedPlaylistObject spotifyPlaylist : response.items) {
+                        if (spotifyPlaylist == null) {
+                            continue;
+                        }
+                        String coverImageUrl = this.lastImage(spotifyPlaylist.images);
+                        pb.step(spotifyPlaylist.name);
+                        Playlist playlist = this.getPlaylist(spotifyPlaylist.id, spotifyPlaylist.name);
+                        if (playlist != null) {
+                            if (coverImageUrl != null) {
                                 playlist.setCoverImage(coverImageUrl);
-                                playlists.add(playlist);
                             }
+                            playlists.add(playlist);
                         }
                     }
                     offset += limit;
-                    if (limit > items.length) {
-                        hasMore = false;
+                    if (response.next == null) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching playlists", e);
-                    hasMore = false;
+                } catch (QueryException e) {
+                    logger.warn("Exception fetching playlists: " + e);
+                    break;
                 }
             }
         }
@@ -671,72 +661,38 @@ public class Spotify implements Import, Export, Sync {
         ArrayList<Song> songs = new ArrayList<>();
         int limit = Settings.spotifySongLimit;
         int offset = 0;
-        boolean hasMore = true;
-        try (IPIterator<?> pb = IPIterator.manual(playlistId, -1);) {
-            while (hasMore) {
-                GetPlaylistsItemsRequest getPlaylistsItemsRequest = this.spotifyApi.getPlaylistsItems(playlistId)
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
+        try (IPIterator<?> pb = IPIterator.manual(playlistId, -1)) {
+            while (true) {
+                WebTarget target = WebTools.target(baseUrl).path("playlists").path(playlistId).path("tracks")
+                        .queryParam("limit", limit).queryParam("offset", offset);
                 try {
-                    final Paging<PlaylistTrack> playlistTrackPaging = getPlaylistsItemsRequest.execute();
-                    PlaylistTrack[] items = playlistTrackPaging.getItems();
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (PlaylistTrack playlistTrack : items) {
-                            Song song = null;
-                            if (playlistTrack.getTrack() instanceof Track) {
-                                Track track = (Track) playlistTrack.getTrack();
-                                pb.step(track.getName());
-                                song = new Song(track.getName());
-                                for (ArtistSimplified artist : track.getArtists()) {
-                                    if (artist.getName().equals("Various Artists")) {
-                                        continue;
-                                    }
-                                    song.addArtist(new Artist(artist.getName()));
-                                }
-                                song.setDuration(track.getDurationMs(), ChronoUnit.MILLIS);
-                                Image[] images = track.getAlbum().getImages();
-                                if (images != null && images.length > 0) {
-                                    song.setCoverImage(images[images.length - 1].getUrl());
-                                }
-                                song.addId("spotify", track.getId());
-                            } else if (playlistTrack.getTrack() instanceof Episode) {
-                                Episode episode = (Episode) playlistTrack.getTrack();
-                                pb.step(episode.getName());
-                                song = new Song(episode.getName());
-                                song.setDuration(episode.getDurationMs(), ChronoUnit.MILLIS);
-                                Image[] images = episode.getImages();
-                                if (images != null && images.length > 0) {
-                                    song.setCoverImage(images[images.length - 1].getUrl());
-                                }
-                                song.addId("spotify", episode.getId());
-                            } else {
-                                logger.debug("skipped non track '" + playlistTrack.toString() + "' in playlist: "
-                                        + playlistId);
-                                logger.info("Skipping non-Track in playlist: " + playlistId);
-                                continue;
-                            }
-                            if (library != null) {
-                                Song foundSong = library.getSong(song);
-                                if (foundSong != null) {
-                                    song = foundSong;
-                                }
-                            }
-                            songs.add(song);
+                    Playlists.PagingPlaylistTrackObject response = WebTools.get(target, this.authHeaders,
+                            Playlists.PagingPlaylistTrackObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
+                    }
+                    for (Playlists.PlaylistTrackObject playlistTrack : response.items) {
+                        if (playlistTrack == null) {
+                            continue;
+                        }
+                        // the track field is a union of tracks and episodes, the
+                        // provider parses it as a map and the type decides the bean
+                        Object rawTrack = playlistTrack.track != null ? playlistTrack.track : playlistTrack.item;
+                        if (rawTrack == null) {
+                            continue;
+                        }
+                        Song song = this.getPlaylistSong(rawTrack, pb, playlistId);
+                        if (song != null) {
+                            songs.add(this.fromLibrary(song));
                         }
                     }
                     offset += limit;
-                    if (limit > items.length) {
-                        hasMore = false;
+                    if (response.next == null) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
+                } catch (QueryException e) {
                     logger.error("Exception fetching playlist tracks", e);
-                    hasMore = false;
+                    break;
                 }
             }
             return songs;
@@ -751,7 +707,7 @@ public class Spotify implements Import, Export, Sync {
         if (playlists != null && !playlists.isEmpty()) {
             playlists.removeAll(Collection.getPlaylists());
             for (Playlist playlist : playlists) {
-                // currently not suported by spotify wrapper to delete playlists
+                // spotify offers no endpoint to delete playlists
                 logger.warn("Playlist '" + playlist.getName()
                         + "' was found on spotify but not in collection, delete it to stay up to date");
             }
@@ -780,53 +736,34 @@ public class Spotify implements Import, Export, Sync {
             ArrayList<Song> songs = this.getPlaylistSongs(playlistId);
             if (songs != null && !songs.isEmpty()) {
                 // only delete one when there are duplicate songs
-                for (int i = 0; i < songs.size(); i++) {
-                    if (playlist.contains(songs.get(i))) {
-                        songs.remove(i);
-                    }
-                }
-                // songs.removeAll(playlist.getSongs());
-                ArrayList<String> songIds = new ArrayList<>();
+                songs.removeIf(playlist::contains);
+                ArrayList<Map<String, Object>> trackRefs = new ArrayList<>();
                 for (Song song : songs) {
                     String id = this.getTrackId(song);
                     if (id != null) {
-                        songIds.add(id);
+                        trackRefs.add(Map.of("uri", "spotify:track:" + id));
                     }
                 }
-                if (songIds.isEmpty()) {
+                if (trackRefs.isEmpty()) {
                     return;
                 }
                 int limit = Settings.spotifySongLimit;
-                int offset = 0;
-                boolean hasMore = true;
                 try (IPIterator<?> pb = IPIterator.manual(playlist.getName(), playlist.size())) {
-                    while (hasMore) {
-                        String[] currentIds = songIds.subList(offset,
-                                Math.min(offset + limit, songIds.size())).toArray(new String[0]);
-                        JsonArray tracks = new JsonArray();
-                        for (String id : currentIds) {
-                            JsonObject track = new JsonObject();
-                            track.addProperty("uri", "spotify:track:" + id);
-                            tracks.add(track);
-                        }
-                        RemoveItemsFromPlaylistRequest removeItemsFromPlaylistRequest = this.spotifyApi
-                                .removeItemsFromPlaylist(playlistId, tracks)
-                                .build();
+                    for (int offset = 0; offset < trackRefs.size(); offset += limit) {
+                        List<Map<String, Object>> currentRefs = trackRefs.subList(offset,
+                                Math.min(offset + limit, trackRefs.size()));
+                        Playlists.RemoveTracksPlaylistRequest body = new Playlists.RemoveTracksPlaylistRequest();
+                        body.tracks = currentRefs;
+                        WebTarget target = WebTools.target(baseUrl).path("playlists").path(playlistId).path("tracks");
                         try {
-                            removeItemsFromPlaylistRequest.execute();
-                            logger.debug("removed playlist '" + playlist.getName() + "'' songs (" + currentIds.length
-                                    + "): " + currentIds.toString());
-                            pb.step(currentIds.length);
-                            offset += limit;
-                            if (limit > currentIds.length) {
-                                hasMore = false;
-                            }
-                        } catch (TooManyRequestsException e) {
-                            logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                            this.sleep(e.getRetryAfter());
-                        } catch (IOException | SpotifyWebApiException | ParseException e) {
-                            logger.error("Exception adding users saved tracks", e);
+                            WebTools.delete(target, this.authHeaders,
+                                    Entity.entity(WebTools.json(body), MediaType.APPLICATION_JSON), Object.class);
+                            logger.debug("removed playlist '" + playlist.getName() + "'' songs ("
+                                    + currentRefs.size() + ")");
+                        } catch (QueryException | JsonProcessingException e) {
+                            logger.warn("Exception removing playlist '" + playlist.getName() + "' songs: " + e);
                         }
+                        pb.step(currentRefs.size());
                     }
                 }
             }
@@ -847,55 +784,60 @@ public class Spotify implements Import, Export, Sync {
         }
         ArrayList<Song> songs = new ArrayList<>(playlist.getSongs());
         if (currentSongs.isEmpty()) {
+            Playlists.CreatePlaylistRequest body = new Playlists.CreatePlaylistRequest();
+            body.name = playlist.getName();
+            body.public_ = false;
+            WebTarget target = WebTools.target(baseUrl).path("me");
+            WebTarget target2 = WebTools.target(baseUrl).path("me").path("playlists");
             try {
-                GetCurrentUsersProfileRequest getCurrentUsersProfileRequest = this.spotifyApi.getCurrentUsersProfile()
-                        .build();
-                User user = getCurrentUsersProfileRequest.execute();
-                CreatePlaylistRequest createPlaylistRequest = this.spotifyApi
-                        .createPlaylist(user.getId(), playlist.getName())
-                        .public_(false)
-                        .build();
-                playlistId = createPlaylistRequest.execute().getId();
-                logger.debug("Created new playlist: " + playlist.getName());
-                playlist.addId("spotify", playlistId);
-            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                Users.PrivateUserObject user = WebTools.get(target, this.authHeaders, Users.PrivateUserObject.class);
+                if (user != null) {
+                    Playlists.PlaylistObject created = WebTools.post(target2, this.authHeaders,
+                            Entity.entity(WebTools.json(body), MediaType.APPLICATION_JSON),
+                            Playlists.PlaylistObject.class);
+                    if (created != null && created.id != null) {
+                        playlistId = created.id;
+                        logger.debug("Created new playlist: " + playlist.getName());
+                        playlist.addId("spotify", playlistId);
+                    }
+                }
+            } catch (QueryException | JsonProcessingException e) {
                 logger.debug("Exception creating user playlist");
             }
         } else {
             // filter out the existing playlist songs
             songs.removeAll(currentSongs);
         }
+        if (playlistId == null) {
+            logger.debug("No playlist to upload '" + playlist.toString() + "' to");
+            return;
+        }
         ArrayList<String> songUris = new ArrayList<>();
         for (Song song : songs) {
-            songUris.add("spotify:track:" + this.getTrackId(song));
+            String id = this.getTrackId(song);
+            if (id != null) {
+                songUris.add("spotify:track:" + id);
+            }
         }
         if (songUris.isEmpty()) {
             logger.debug("Playlist '" + playlist.toString() + "' is empty / no update");
             return;
         }
         int limit = Settings.spotifySongLimit;
-        int offset = 0;
-        boolean hasMore = true;
         try (IPIterator<?> pb = IPIterator.manual(playlist.getName(), playlist.size())) {
-            while (hasMore) {
-                String[] currentSongUris = songUris.subList(offset,
-                        Math.min(offset + limit, songUris.size())).toArray(new String[0]);
-                AddItemsToPlaylistRequest addItemsToPlaylistRequest = this.spotifyApi
-                        .addItemsToPlaylist(playlistId, currentSongUris)
-                        .build();
+            for (int offset = 0; offset < songUris.size(); offset += limit) {
+                List<String> currentSongUris = songUris.subList(offset,
+                        Math.min(offset + limit, songUris.size()));
+                Playlists.AddItemsToPlaylistRequest body = new Playlists.AddItemsToPlaylistRequest();
+                body.uris = currentSongUris;
+                WebTarget target3 = WebTools.target(baseUrl).path("playlists").path(playlistId).path("tracks");
                 try {
-                    addItemsToPlaylistRequest.execute();
-                    offset += limit;
-                    pb.step(currentSongUris.length);
-                    if (limit > currentSongUris.length) {
-                        hasMore = false;
-                    }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception adding users saved tracks", e);
+                    WebTools.put(target3, this.authHeaders,
+                            Entity.entity(WebTools.json(body), MediaType.APPLICATION_JSON), Object.class);
+                } catch (QueryException | JsonProcessingException e) {
+                    logger.warn("Exception adding songs to playlist '" + playlist.getName() + "': " + e);
                 }
+                pb.step(currentSongUris.size());
             }
         }
     }
@@ -917,25 +859,21 @@ public class Spotify implements Import, Export, Sync {
         if (song.getId("spotify") != null) {
             return song.getId("spotify");
         }
-        SearchTracksRequest searchTracksRequest = this.spotifyApi.searchTracks(song.toString())
-                .limit(1)
-                .build();
-        while (true) {
-            try {
-                Track[] items = searchTracksRequest.execute().getItems();
-                if (items.length == 0) {
-                    logger.debug("Song '" + song.toString() + "' not found");
-                    return null;
-                }
-                song.addId("spotify", items[0].getId());
-                return items[0].getId();
-            } catch (TooManyRequestsException e) {
-                logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                this.sleep(e.getRetryAfter());
-            } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Exception searching for song", e);
+        WebTarget target = WebTools.target(baseUrl).path("search").queryParam("type", "track")
+                .queryParam("q", song.toString()).queryParam("limit", 1);
+        try {
+            SearchResponse response = WebTools.get(target, this.authHeaders, SearchResponse.class);
+            if (response == null || response.tracks == null || response.tracks.items == null
+                    || response.tracks.items.isEmpty()) {
+                logger.debug("Song '" + song.toString() + "' not found");
                 return null;
             }
+            String id = response.tracks.items.get(0).id;
+            song.addId("spotify", id);
+            return id;
+        } catch (QueryException e) {
+            logger.error("Exception searching for song", e);
+            return null;
         }
     }
 
@@ -956,41 +894,31 @@ public class Spotify implements Import, Export, Sync {
         // do not use cached playlist id because the playlist might have been deleted
         int limit = Settings.spotifyPlaylistLimit;
         int offset = 0;
-        boolean hasMore = true;
         try (InterruptionHandler interruptionHandler = new InterruptionHandler()) {
-            while (hasMore) {
+            while (true) {
                 interruptionHandler.checkInterruption();
-                GetListOfCurrentUsersPlaylistsRequest getListOfCurrentUsersPlaylistsRequest = this.spotifyApi
-                        .getListOfCurrentUsersPlaylists()
-                        .limit(limit)
-                        .offset(offset)
-                        .build();
+                WebTarget target = WebTools.target(baseUrl).path("me").path("playlists").queryParam("limit", limit)
+                        .queryParam("offset", offset);
                 try {
-                    final Paging<PlaylistSimplified> playlistSimplifiedPaging = getListOfCurrentUsersPlaylistsRequest
-                            .execute();
-                    PlaylistSimplified[] items = playlistSimplifiedPaging.getItems();
-
-                    if (items.length == 0) {
-                        hasMore = false;
-                    } else {
-                        for (PlaylistSimplified spotifyPlaylist : items) {
-                            interruptionHandler.checkInterruption();
-                            if (spotifyPlaylist.getName().equalsIgnoreCase(playlist.getName())) {
-                                playlist.addId("spotify", spotifyPlaylist.getId());
-                                return spotifyPlaylist.getId();
-                            }
+                    Playlists.PagingPlaylistObject response = WebTools.get(target, this.authHeaders,
+                            Playlists.PagingPlaylistObject.class);
+                    if (response == null || response.items == null || response.items.isEmpty()) {
+                        break;
+                    }
+                    for (Playlists.SimplifiedPlaylistObject spotifyPlaylist : response.items) {
+                        interruptionHandler.checkInterruption();
+                        if (spotifyPlaylist.name != null && spotifyPlaylist.name.equalsIgnoreCase(playlist.getName())) {
+                            playlist.addId("spotify", spotifyPlaylist.id);
+                            return spotifyPlaylist.id;
                         }
                     }
                     offset += limit;
-                    if (limit > items.length) {
-                        hasMore = false;
+                    if (response.next == null) {
+                        break;
                     }
-                } catch (TooManyRequestsException e) {
-                    logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                    this.sleep(e.getRetryAfter());
-                } catch (IOException | SpotifyWebApiException | ParseException e) {
-                    logger.error("Exception fetching playlists", e);
-                    hasMore = false;
+                } catch (QueryException e) {
+                    logger.warn("Exception fetching playlists: " + e);
+                    break;
                 }
             }
         }
@@ -1014,25 +942,27 @@ public class Spotify implements Import, Export, Sync {
         if (album.getId("spotify") != null) {
             return album.getId("spotify");
         }
-        SearchAlbumsRequest searchAlbumsRequest = this.spotifyApi.searchAlbums(album.toString())
-                .limit(1)
-                .build();
-        while (true) {
-            try {
-                AlbumSimplified[] items = searchAlbumsRequest.execute().getItems();
-                if (items.length == 0) {
-                    logger.debug("Album '" + album.toString() + "' not found");
-                    return null;
-                }
-                album.addId("spotify", items[0].getId());
-                return items[0].getId();
-            } catch (TooManyRequestsException e) {
-                logger.warn("Spotify API too many requests, waiting " + e.getRetryAfter() + " seconds");
-                this.sleep(e.getRetryAfter());
-            } catch (IOException | SpotifyWebApiException | ParseException e) {
-                logger.error("Exception searching for Album", e);
+        WebTarget target = WebTools.target(baseUrl).path("search").queryParam("type", "album")
+                .queryParam("q", album.toString()).queryParam("limit", 1);
+        try {
+            SearchResponse response = WebTools.get(target, this.authHeaders, SearchResponse.class);
+            if (response == null || response.albums == null || response.albums.items == null
+                    || response.albums.items.isEmpty()) {
+                logger.debug("Album '" + album.toString() + "' not found");
                 return null;
             }
+            String id = response.albums.items.get(0).id;
+            album.addId("spotify", id);
+            return id;
+        } catch (QueryException e) {
+            logger.error("Exception searching for Album", e);
+            return null;
         }
+    }
+
+    // the search envelope, the one document superbeans has no bean for yet
+    public static class SearchResponse {
+        public Tracks.PagingTrackObject tracks;
+        public Albums.PagingSimplifiedAlbumObject albums;
     }
 }
