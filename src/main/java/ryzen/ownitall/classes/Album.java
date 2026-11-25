@@ -46,7 +46,7 @@ public class Album extends Playlist {
             @JsonProperty("songs") ArrayList<Song> songs,
             @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage,
             @JsonProperty("artists") ArrayList<Artist> artists) {
-        super(name, songs, ids, coverImage);
+        super(name, songs, ids, coverImage, null);
         this.artists = new ArrayList<>();
         if (artists != null) {
             this.addArtists(artists);

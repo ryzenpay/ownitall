@@ -1,7 +1,10 @@
 package ryzen.ownitall.integrations;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 
 import ryzen.ownitall.Collection;
 import ryzen.ownitall.Settings;
@@ -78,6 +81,7 @@ public class Integration {
         classes.addAll(loader.getSubClasses(Import.class));
         classes.addAll(loader.getSubClasses(Export.class));
         classes.addAll(loader.getSubClasses(Sync.class));
+        classes.addAll(loader.getSubClasses(Discover.class));
         return classes;
     }
 
@@ -115,6 +119,28 @@ public class Integration {
         return null;
     }
 
+    /**
+     * <p>
+     * Getter for the field <code>integration</code>.
+     * </p>
+     *
+     * @param name   a {@link java.lang.String} object
+     * @param filter only integrations implementing this capability are considered
+     * @return a {@link java.lang.Class} object
+     */
+    public static Class<?> getIntegration(String name, Class<?> filter) {
+        if (name == null) {
+            logger.debug("null name provided in getIntegration");
+            return null;
+        }
+        for (Class<?> integration : getIntegrations(filter)) {
+            if (integration.getSimpleName().equals(name)) {
+                return integration;
+            }
+        }
+        return null;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -134,6 +160,10 @@ public class Integration {
 
     private Sync getSync() {
         return (Sync) this.integration;
+    }
+
+    private Discover getDiscover() {
+        return (Discover) this.integration;
     }
 
     /**
@@ -509,6 +539,61 @@ public class Integration {
         }
     }
 
+    /**
+     * <p>
+     * getDiscoveries.
+     * </p>
+     *
+     * @param limit maximum number of songs to request
+     * @return a {@link ryzen.ownitall.classes.Playlist} object
+     */
+    public Playlist getDiscoveries(int limit) {
+        try {
+            Playlist playlist = this.getDiscover().getDiscoveries(limit);
+            if (playlist != null) {
+                logger.info("Got " + playlist.size() + " discoveries from '" + this + "'");
+            }
+            return playlist;
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while getting '" + this + "' discoveries");
+            return null;
+        }
+    }
+
+    /**
+     * <p>
+     * importDiscoveries.
+     * </p>
+     *
+     * @param limit maximum number of songs to request
+     */
+    public void importDiscoveries(int limit) {
+        try {
+            Playlist playlist = this.getDiscover().getDiscoveries(limit);
+            if (playlist == null || playlist.isEmpty()) {
+                return;
+            }
+            // one dated playlist per source per day, dated so every pull keeps
+            // its own pick-through list, same day reruns merge into the one
+            // playlist because addPlaylist merges by name
+            String name = playlist.getName() == null || playlist.getName().isEmpty()
+                    ? this.getIntegrationName().toLowerCase(Locale.ROOT) + " discoveries"
+                    : playlist.getName();
+            String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+            if (!name.endsWith(date)) {
+                name = name + " " + date;
+            }
+            playlist.setName(name);
+            if (playlist.getDescription() == null || playlist.getDescription().isEmpty()) {
+                playlist.setDescription(this.getIntegrationName() + " - " + date);
+            }
+            Collection.addPlaylist(playlist);
+            logger.info("Imported " + playlist.size() + " discoveries from '" + this + "' into playlist '" + name + "'");
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted while importing '" + this + "' discoveries");
+        }
+    }
+
     public static class InvalidIntegrationException extends Exception {
 
         public InvalidIntegrationException() {
@@ -707,5 +792,30 @@ public class Integration {
          * @throws ryzen.ownitall.util.WebTools.AuthenticationException if any.
          */
         public void syncAlbum(Album album) throws InterruptedException, MissingSettingException, AuthenticationException;
+    }
+
+    /**
+     * <p>
+     * Discover interface, integrations that can suggest new songs from the
+     * user's own taste data. unlike Import, the result is not a collection the
+     * user owns yet, so the user picks through it: discoveries come back as a
+     * playlist the integration builds (name, songs, cover of its choosing) and
+     * the importDiscoveries wrapper dates it before adding it, only the songs
+     * kept there make it into liked songs and sync from there
+     * </p>
+     *
+     * @author ryzen
+     */
+    public static interface Discover {
+        /**
+         * <p>
+         * getDiscoveries.
+         * </p>
+         *
+         * @param limit maximum number of songs to request
+         * @return a {@link ryzen.ownitall.classes.Playlist} object
+         * @throws java.lang.InterruptedException if any.
+         */
+        public Playlist getDiscoveries(int limit) throws InterruptedException;
     }
 }

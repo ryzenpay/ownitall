@@ -47,6 +47,7 @@ public class CollectionMenu {
         options.put("Import", "/integration/import");
         options.put("Export", "/integration/export");
         options.put("Sync", "/integration/sync");
+        options.put("Discover", "/integration/discoveries");
         options.put("Browse & Modify", "/collection/browse");
         return Templates.menu(model, "Collection Menu", options, "/collection/return");
     }

@@ -75,21 +75,60 @@ public abstract class Local {
      * @param song         - song to download
      * @param downloadFile - temporary file the binary must write to, it gets moved
      *                     to its collection path once done
+     * @param attempt      - which download attempt this is (0 based), implementations that can
+     *                     widen their search use it to loosen their criteria
      * @return             the command to run, null if the song cannot be downloaded
      * @throws java.lang.InterruptedException if any.
      */
-    public abstract ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException;
+    public abstract ArrayList<String> createCommand(Song song, File downloadFile, int attempt)
+            throws InterruptedException;
 
     /**
      * interpret a non zero exit code of the download binary
      *
      * @param exitCode - exit code of the download binary
+     * @param log      - everything the binary printed during every attempt so far, implementations
+     *                 matching on error text rather than exit codes read it here
      * @throws ryzen.ownitall.integrations.local.Local.DownloadException if the exit
      *                                                                   code makes
      *                                                                   retrying
      *                                                                   pointless
      */
-    public abstract void handleError(int exitCode) throws DownloadException;
+    public abstract void handleError(int exitCode, String log) throws DownloadException;
+
+    /**
+     * the file the binary ended up writing, defaults to the one it was told to write,
+     * implementations letting the binary decide the name (ex: yt-dlp templates) return the path
+     * it printed instead
+     *
+     * @param expected - file the binary was told to write
+     * @param log      - everything the binary printed during every attempt so far
+     * @return the file to move into the collection
+     */
+    protected File getDownloadedFile(File expected, String log) {
+        return expected;
+    }
+
+    /**
+     * called once a download landed on disk but before it is moved into the collection,
+     * implementations use it to remember what they actually matched
+     *
+     * @param song - song being downloaded
+     * @param log  - everything the binary printed during every attempt so far
+     */
+    protected void onDownloaded(Song song, String log) {
+    }
+
+    /**
+     * one line describing what the binary matched (or last tried), appended to the warning of a
+     * failed download so a wrong or missing song can be diagnosed from the logs
+     *
+     * @param log - everything the binary printed during every attempt so far
+     * @return a {@link java.lang.String} object, null if the implementation has nothing to report
+     */
+    protected String getMatchDetails(String log) {
+        return null;
+    }
 
     /**
      * <p>
@@ -165,16 +204,20 @@ public abstract class Local {
         try {
             File downloadFile = new File(Settings.localFolder,
                     String.valueOf(song.hashCode()) + "." + Settings.downloadFormat);
-            ArrayList<String> command = this.createCommand(song, downloadFile);
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
-            processBuilder.redirectErrorStream(true); // Merge stdout and stderr
             File songFile = new File(Settings.localFolder, Collection.getRelativeSongPath(song).toString());
             StringBuilder completeLog = new StringBuilder();
-            for (int i = 0; i < retries; i++) {
+            String failure = null;
+            for (int attempt = 0; attempt < retries; attempt++) {
                 if (songFile.exists()) {
                     logger.debug("Skipping song '" + song.getName() + "', already exists");
                     break;
                 }
+                ArrayList<String> command = this.createCommand(song, downloadFile, attempt);
+                if (command == null) {
+                    return;
+                }
+                ProcessBuilder processBuilder = new ProcessBuilder(command);
+                processBuilder.redirectErrorStream(true); // Merge stdout and stderr
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
@@ -184,25 +227,35 @@ public abstract class Local {
                     }
                 }
                 int exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    logger.debug("Attempt: " + i);
-                    this.handleError(exitCode);
-                    logger.debug(
-                            "Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
-                }
-                if (downloadFile.exists()) {
+                File downloadedFile = this.getDownloadedFile(downloadFile, completeLog.toString());
+                if (downloadedFile.exists()) {
+                    this.onDownloaded(song, completeLog.toString());
                     songFile.getParentFile().mkdirs();
-                    if (!downloadFile.renameTo(songFile)) {
+                    if (!downloadedFile.renameTo(songFile)) {
                         logger.warn("Unable to move downloaded song '" + song.getName() + "' from '"
-                                + downloadFile.getAbsolutePath() + "'");
+                                + downloadedFile.getAbsolutePath() + "'");
                     }
                     break;
+                }
+                if (exitCode != 0) {
+                    logger.debug("Attempt: " + attempt + " exited with code " + exitCode);
+                    logger.debug("Command: " + command.toString() + "\n Complete log \n: " + completeLog.toString());
+                    try {
+                        this.handleError(exitCode, completeLog.toString());
+                    } catch (DownloadException e) {
+                        // the binary told us another attempt cannot help, do not waste them
+                        failure = e.getMessage();
+                        break;
+                    }
                 }
             }
             if (songFile.exists()) {
                 writeMetaData(song, songFile);
             } else {
-                logger.warn("song '" + song.toString() + "' failed to download, check logs");
+                String matched = this.getMatchDetails(completeLog.toString());
+                logger.warn("song '" + song.toString() + "' failed to download ("
+                        + (failure != null ? failure : "no file was written")
+                        + (matched == null ? "" : ", last match '" + matched + "'") + ", check logs)");
                 logger.debug("Complete download log: " + completeLog.toString());
             }
         } catch (InterruptedException e) {
@@ -210,8 +263,6 @@ public abstract class Local {
             InterruptionHandler.forceInterruption();
         } catch (IOException e) {
             logger.error("Exception preparing " + this.getClass().getSimpleName() + ": ", e);
-        } catch (DownloadException e) {
-            logger.warn("Exception while downloading: " + e.getMessage());
         }
     }
 

@@ -10,6 +10,7 @@ import org.apache.commons.cli.ParseException;
 import ryzen.ownitall.library.Library;
 import ryzen.ownitall.util.ClassLoader;
 import ryzen.ownitall.util.Input;
+import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
@@ -68,9 +69,8 @@ public class Main {
                 ProgressBar.output = false;
                 ryzen.ownitall.ui.web.MainMenu.main(args);
             } else {
-                // swallow SIGINT so ctrl c spam doesnt kill app
-                Signal.handle(new Signal("INT"), signal -> {
-                });
+                // swallow SIGINT so ctrl c spam doesnt kill app, but flag it
+                Signal.handle(new Signal("INT"), signal -> InterruptionHandler.forceInterruption());
                 Menu.setLogo(Settings.logo);
                 new ryzen.ownitall.ui.cli.MainMenu();
             }

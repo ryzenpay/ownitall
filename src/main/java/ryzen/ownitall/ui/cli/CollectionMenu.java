@@ -9,6 +9,7 @@ import ryzen.ownitall.classes.Playlist;
 import ryzen.ownitall.classes.Song;
 import ryzen.ownitall.integrations.Integration.Export;
 import ryzen.ownitall.integrations.Integration.Import;
+import ryzen.ownitall.integrations.Integration.Discover;
 import ryzen.ownitall.integrations.Integration.Sync;
 import ryzen.ownitall.util.Input;
 import ryzen.ownitall.util.Logger;
@@ -34,6 +35,7 @@ public class CollectionMenu {
         options.put("Import", this::optionImport);
         options.put("Export", this::optionExport);
         options.put("Sync", this::optionSync);
+        options.put("Discover", this::optionDiscover);
         options.put("Modify", this::optionModify);
         options.put("Browse", this::printCollection);
         try {
@@ -70,6 +72,14 @@ public class CollectionMenu {
             new IntegrationMenu(Sync.class).syncMenu();
         } catch (InterruptedException | MissingSettingException e) {
             logger.debug("Interrupted while setting up sync menu");
+        }
+    }
+
+    private void optionDiscover() {
+        try {
+            new IntegrationMenu(Discover.class).discover();
+        } catch (InterruptedException | MissingSettingException e) {
+            logger.debug("Interrupted while setting up discoveries");
         }
     }
 

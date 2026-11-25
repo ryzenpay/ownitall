@@ -29,6 +29,7 @@ import ryzen.ownitall.integrations.Integration;
 import ryzen.ownitall.integrations.Integration.Export;
 import ryzen.ownitall.integrations.Integration.Import;
 import ryzen.ownitall.integrations.Integration.InvalidIntegrationException;
+import ryzen.ownitall.integrations.Integration.Discover;
 import ryzen.ownitall.integrations.Integration.Sync;
 import ryzen.ownitall.util.InterruptionHandler;
 import ryzen.ownitall.util.MusicTools;
@@ -66,19 +67,33 @@ public class IntegrationMenu {
     public String integrationMenu(Model model,
             @RequestParam(value = "callback", required = true) String callback) {
         LinkedHashMap<String, String> options = new LinkedHashMap<>();
-        Class<?> filter;
-        if (callback.contains("import")) {
-            filter = Import.class;
-        } else if (callback.contains("export")) {
-            filter = Export.class;
-        } else {
-            filter = Sync.class;
-        }
-        for (Class<?> clazz : Integration.getIntegrations(filter)) {
+        for (Class<?> clazz : Integration.getIntegrations(getFilter(callback))) {
             String name = clazz.getSimpleName();
             options.put(name, "/integration/" + name + "?callback=" + callback);
         }
         return Templates.menu(model, "Integration Menu", options, "/integration/return");
+    }
+
+    /**
+     * the capability a callback route asks for, the source picker only lists
+     * integrations implementing it
+     *
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.Class} object
+     */
+    private static Class<?> getFilter(String callback) {
+        if (callback == null) {
+            return Import.class;
+        }
+        if (callback.contains("import")) {
+            return Import.class;
+        } else if (callback.contains("export")) {
+            return Export.class;
+        } else if (callback.contains("discover")) {
+            return Discover.class;
+        } else {
+            return Sync.class;
+        }
     }
 
     /**
@@ -94,7 +109,7 @@ public class IntegrationMenu {
     @GetMapping("/integration/{integration}")
     public String setIntegration(Model model, @PathVariable(value = "integration") String name,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<?> clazz = Integration.getIntegration(name);
+        Class<?> clazz = Integration.getIntegration(name, getFilter(callback));
         if (clazz != null) {
             try {
                 integration = new Integration(clazz);
@@ -131,7 +146,7 @@ public class IntegrationMenu {
     public String loginForm(Model model,
             @PathVariable(value = "integration") String name,
             @RequestParam(value = "callback", required = true) String callback) {
-        Class<?> clazz = Integration.getIntegration(name);
+        Class<?> clazz = Integration.getIntegration(name, getFilter(callback));
         if (clazz == null) {
             logger.warn(model, "Unsupported integration '" + name + "'provided");
             return integrationMenu(model, callback);
@@ -747,6 +762,37 @@ public class IntegrationMenu {
             logger.warn("Unable to find playlist '" + hashCode + "' in collection");
             return ResponseEntity.badRequest().build();
         }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * <p>
+     * optionDiscoveries, discoveries only ever import as one dated playlist,
+     * the pick through happens on that playlist like on any other
+     * </p>
+     *
+     * @param model    a {@link org.springframework.ui.Model} object
+     * @param callback a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     */
+    @GetMapping("/integration/discoveries")
+    public String optionDiscoveries(Model model,
+            @RequestParam(value = "callback", defaultValue = "/integration/return") String callback) {
+        logger.info(model, "Current integration: " + integration.getIntegrationName());
+        return Templates.process(model, "Importing '" + integration.getIntegrationName() + "' discoveries to a playlist",
+                "/integration/discoveries", "/integration/progress", "/integration/logs", callback);
+    }
+
+    /**
+     * <p>
+     * importDiscoveries.
+     * </p>
+     *
+     * @return a {@link org.springframework.http.ResponseEntity} object
+     */
+    @PostMapping("/integration/discoveries")
+    public ResponseEntity<Void> importDiscoveries() {
+        integration.importDiscoveries(Settings.discoveryLimit);
         return ResponseEntity.ok().build();
     }
 

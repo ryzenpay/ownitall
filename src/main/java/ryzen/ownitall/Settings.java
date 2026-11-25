@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ryzen.ownitall.integrations.Jellyfin;
+import ryzen.ownitall.integrations.LastFM;
 import ryzen.ownitall.integrations.Lidarr;
 import ryzen.ownitall.integrations.Spotify;
 import ryzen.ownitall.integrations.Tidal;
@@ -12,7 +13,6 @@ import ryzen.ownitall.integrations.local.Local;
 import ryzen.ownitall.integrations.local.SoulSeek;
 import ryzen.ownitall.integrations.local.Upload;
 import ryzen.ownitall.integrations.local.YTdlp;
-import ryzen.ownitall.library.LastFM;
 import ryzen.ownitall.util.Logger;
 
 /**
@@ -168,6 +168,14 @@ public class Settings extends ryzen.ownitall.util.Settings {
     @Name("Youtube API playlist limit")
     public static Long youtubePlaylistLimit = 20L;
 
+    /**
+     * channel playlists are created in, playlists.insert rejects without it,
+     * in the credential group so the constructor requires it like the rest
+     */
+    @Group(Youtube.class)
+    @Name("Youtube Channel ID")
+    public static String youtubeChannelId = "";
+
     @Group(Youtube.class)
     @Name("Google Application Name")
     /** Constant <code>youtubeApplicatioName=""</code> */
@@ -217,11 +225,20 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /// LASTFM
     ///
     ///
-    @Group(LastFM.class)
+    // the group is shared between the metadata library and the integration of
+    // the same name, the integration additionally requires the username below
+    @Group({ ryzen.ownitall.library.LastFM.class, LastFM.class })
     @Secret
     @Name("LastFM API Key")
     /** Constant <code>lastFMApiKey=""</code> */
     public static String lastFMApiKey = "";
+
+    @Group(LastFM.class)
+    @Name("LastFM Username")
+    public static String lastFMUsername = "";
+
+    @Name("Discovery Limit")
+    public static int discoveryLimit = 50;
 
     ///
     ///
@@ -291,9 +308,12 @@ public class Settings extends ryzen.ownitall.util.Settings {
     /**
      * download quality of music
      * 0 - best, 10 - worst
+     * 5 is around 170kbps for mp3 rather than 'good enough')
      * also respectfully increases file size
      */
-    public static int ytdlpQuality = 5;
+    @Group(YTdlp.class)
+    @Name("YTdlp quality")
+    public static int ytdlpQuality = 0;
 
     ///
     ///

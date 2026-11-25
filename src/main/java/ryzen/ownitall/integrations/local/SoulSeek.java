@@ -46,7 +46,14 @@ public class SoulSeek extends Local implements Sync, Export {
         Local.downloadThreads = 1;
     }
 
-    public ArrayList<String> createCommand(Song song, File downloadFile) throws InterruptedException {
+    /**
+     * {@inheritDoc}
+     * <p>
+     * slsk-batchdl picks the closest match itself, so the attempt is ignored
+     * </p>
+     */
+    public ArrayList<String> createCommand(Song song, File downloadFile, int attempt)
+            throws InterruptedException {
         if (song == null || downloadFile == null) {
             logger.debug("null song or downloadFile provided in downloadSong");
             return null;
@@ -93,7 +100,13 @@ public class SoulSeek extends Local implements Sync, Export {
         return command;
     }
 
-    public void handleError(int exitCode) {
+    /**
+     * {@inheritDoc}
+     * <p>
+     * slsk-batchdl only exits non zero on connection loss, which is always worth another attempt
+     * </p>
+     */
+    public void handleError(int exitCode, String log) {
         logger.warn("Unknown exit code while downloading SoulSeek song (" + exitCode + ")");
     }
 }

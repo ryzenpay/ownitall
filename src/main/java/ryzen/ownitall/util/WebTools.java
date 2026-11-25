@@ -415,6 +415,23 @@ public class WebTools {
                     }
                     return query(target, invocation, responseType, attempt + 1);
                 }
+                case 500:
+                case 502:
+                case 503:
+                case 504: {
+                    if (attempt >= retries) {
+                        throw new QueryException("Reached " + retries + " retries on status " + status);
+                    }
+                    logger.debug("Server said " + status + " for " + url.toString() + ", trying again in " + timeout
+                            + " seconds...");
+                    try {
+                        TimeUnit.SECONDS.sleep(timeout);
+                    } catch (InterruptedException e2) {
+                        logger.error("Interrupted while retrying: " + url.toString(), e2);
+                        throw new QueryException(e2);
+                    }
+                    return query(target, invocation, responseType, attempt + 1);
+                }
                 case 404: {
                     logger.debug("Requested page '" + url.toString() + "'does not exist");
                     return null;

@@ -52,7 +52,6 @@ public class Spotify implements Import, Export, Sync {
     private static final Library library = Library.load();
     private static final String baseUrl = "https://api.spotify.com/v1";
     private static final String authUrl = "https://accounts.spotify.com";
-    private static final String redirectUri = "http://localhost:8081/oauth";
     // read and write scope
     private final String scope = "playlist-read-private,playlist-read-collaborative,user-library-read,user-library-modify,playlist-modify-private,playlist-modify-public";
     private String accessToken;
@@ -88,7 +87,7 @@ public class Spotify implements Import, Export, Sync {
         WebTarget target = WebTools.target(authUrl).path("authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", Settings.spotifyClientID)
-                .queryParam("redirect_uri", redirectUri)
+                .queryParam("redirect_uri", OAuth.redirectUri)
                 .queryParam("scope", this.scope)
                 .queryParam("show_dialog", String.valueOf(Settings.interactive));
         return OAuth.getOauthCode(target);
@@ -104,7 +103,7 @@ public class Spotify implements Import, Export, Sync {
                 // they never end up in server or proxy access logs
                 .param("client_id", Settings.spotifyClientID)
                 .param("client_secret", Settings.spotifyClientSecret)
-                .param("redirect_uri", redirectUri)
+                .param("redirect_uri", OAuth.redirectUri)
                 .param("code", this.getCode());
         WebTarget target = WebTools.target(authUrl).path("api").path("token");
         try {
@@ -786,6 +785,9 @@ public class Spotify implements Import, Export, Sync {
         if (currentSongs.isEmpty()) {
             Playlists.CreatePlaylistRequest body = new Playlists.CreatePlaylistRequest();
             body.name = playlist.getName();
+            if (playlist.getDescription() != null) {
+                body.description = playlist.getDescription();
+            }
             body.public_ = false;
             WebTarget target = WebTools.target(baseUrl).path("me");
             WebTarget target2 = WebTools.target(baseUrl).path("me").path("playlists");
@@ -862,7 +864,7 @@ public class Spotify implements Import, Export, Sync {
         WebTarget target = WebTools.target(baseUrl).path("search").queryParam("type", "track")
                 .queryParam("q", song.toString()).queryParam("limit", 1);
         try {
-            SearchResponse response = WebTools.get(target, this.authHeaders, SearchResponse.class);
+            Commons.SearchItems response = WebTools.get(target, this.authHeaders, Commons.SearchItems.class);
             if (response == null || response.tracks == null || response.tracks.items == null
                     || response.tracks.items.isEmpty()) {
                 logger.debug("Song '" + song.toString() + "' not found");
@@ -945,7 +947,7 @@ public class Spotify implements Import, Export, Sync {
         WebTarget target = WebTools.target(baseUrl).path("search").queryParam("type", "album")
                 .queryParam("q", album.toString()).queryParam("limit", 1);
         try {
-            SearchResponse response = WebTools.get(target, this.authHeaders, SearchResponse.class);
+            Commons.SearchItems response = WebTools.get(target, this.authHeaders, Commons.SearchItems.class);
             if (response == null || response.albums == null || response.albums.items == null
                     || response.albums.items.isEmpty()) {
                 logger.debug("Album '" + album.toString() + "' not found");
@@ -960,9 +962,4 @@ public class Spotify implements Import, Export, Sync {
         }
     }
 
-    // the search envelope, the one document superbeans has no bean for yet
-    public static class SearchResponse {
-        public Tracks.PagingTrackObject tracks;
-        public Albums.PagingSimplifiedAlbumObject albums;
-    }
 }

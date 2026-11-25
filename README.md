@@ -50,7 +50,7 @@ will need (read below):
     - client secret
 to get the client id and secret:  
     1. log in to spotify develper portal: https://developer.spotify.com/dashboard  
-    2. create an app (with redirect url http://localhost:8081/oauth)
+    2. create an app (with redirect url http://127.0.0.1:8081/oauth, spotify rejects http://localhost as insecure)
     3. go to dashboard -> click on your app  
     4. settings (top right)  
     5. save the client id and client secret  
@@ -121,7 +121,7 @@ Tidal will provide you with the client id and secret, to get the client id and s
     2. create an app
     3. go to dashboard -> click on your app  
     4. settings (top right)  
-    5. add a redirect url to http://localhost:8081/oauth
+    5. add a redirect url to http://127.0.0.1:8081/oauth
         - add the scopes: collection.read%20collection.write%20playlists.read%20playlists.read
     6. save the client id and client secret  
 export/sync works the other way around: collection liked songs, albums and playlists are added to tidal (songs without a tidal id are searched for and the first match is taken); sync removes tidal items missing from the collection and deletes tidal playlists missing from the collection outright  

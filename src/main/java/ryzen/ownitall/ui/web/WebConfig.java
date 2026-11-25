@@ -14,6 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
                 this.integrationMiddleware).addPathPatterns("/integration/import/**", "/integration/export/**",
-                        "/integration/sync/**");
+                        "/integration/sync/**", "/integration/discoveries/**");
     }
 }

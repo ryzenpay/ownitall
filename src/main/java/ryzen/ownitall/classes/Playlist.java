@@ -22,6 +22,7 @@ import ryzen.ownitall.util.Logger;
 public class Playlist {
     private static final Logger logger = new Logger(Playlist.class);
     private String name;
+    private String description;
     private URI coverImage;
 
     private ArrayList<Song> songs;
@@ -41,15 +42,17 @@ public class Playlist {
     /**
      * full playlist contructor
      *
-     * @param name       - playlist name
-     * @param songs      - linkedhashset of song
-     * @param ids        - linkedhashmap of id's
-     * @param coverImage - string playlist coverImage
+     * @param name        - playlist name
+     * @param songs       - linkedhashset of song
+     * @param ids         - linkedhashmap of id's
+     * @param coverImage  - string playlist coverImage
+     * @param description - free form playlist description
      */
     @JsonCreator
     public Playlist(@JsonProperty("name") String name,
             @JsonProperty("songs") ArrayList<Song> songs,
-            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage) {
+            @JsonProperty("ids") LinkedHashMap<String, String> ids, @JsonProperty("coverImage") String coverImage,
+            @JsonProperty("description") String description) {
         this.name = name;
         this.songs = new ArrayList<>();
         this.ids = new LinkedHashMap<>();
@@ -61,6 +64,9 @@ public class Playlist {
         }
         if (coverImage != null) {
             this.setCoverImage(coverImage);
+        }
+        if (description != null) {
+            this.description = description;
         }
     }
 
@@ -77,6 +83,10 @@ public class Playlist {
         }
         this.addSongs(playlist.getSongs());
         this.addIds(playlist.getIds());
+        if ((this.description == null || this.description.isEmpty())
+                && playlist.getDescription() != null && !playlist.getDescription().isEmpty()) {
+            this.setDescription(playlist.getDescription());
+        }
         if (this.getCoverImage() == null && playlist.getCoverImage() != null) {
             this.setCoverImage(playlist.getCoverImage());
         }
@@ -104,6 +114,30 @@ public class Playlist {
             return;
         }
         this.name = name;
+    }
+
+    /**
+     * get the description of the current playlist class
+     *
+     * @return - playlist description
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>description</code>.
+     * </p>
+     *
+     * @param description a {@link java.lang.String} object
+     */
+    public void setDescription(String description) {
+        if (description == null) {
+            logger.debug(this.toString() + ": null playlist description passed to setDescription");
+            return;
+        }
+        this.description = description;
     }
 
     /**

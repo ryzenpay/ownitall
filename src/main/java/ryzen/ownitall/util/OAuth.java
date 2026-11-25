@@ -3,6 +3,7 @@ package ryzen.ownitall.util;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.MessageDigest;
@@ -30,7 +31,7 @@ import ryzen.ownitall.util.WebTools.QueryException;
  */
 public class OAuth {
     private static final Logger logger = new Logger(OAuth.class);
-    private static final String redirectUri = "http://localhost:8081/oauth";
+    public static final String redirectUri = "http://127.0.0.1:8081/oauth";
 
     /**
      * <p>
@@ -120,7 +121,9 @@ public class OAuth {
     public static String getOauthCode(URI authUri) throws InterruptedException {
         AtomicReference<String> codeRef = new AtomicReference<>();
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
+            // the redirect uri is a loopback literal, so the server only ever
+            // needs to listen on loopback, never on the lan interfaces
+            HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8081), 0);
             server.createContext("/oauth", exchange -> {
                 logger.debug("request received on /oauth");
                 URI requestURI = exchange.getRequestURI();
@@ -186,6 +189,10 @@ public class OAuth {
         for (int i = 0; i < timeout; i++) {
             if (codeRef.get() != null) {
                 break;
+            }
+            if (InterruptionHandler.isInterrupted()) {
+                InterruptionHandler.resetInterruption();
+                throw new InterruptedException("Interrupted while waiting for code");
             }
             Thread.sleep(1000);
         }

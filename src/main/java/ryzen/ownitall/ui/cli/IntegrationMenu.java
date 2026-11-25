@@ -45,7 +45,7 @@ public class IntegrationMenu {
         }
         try {
             String choice = Menu.optionMenu(options.keySet(), "INTEGRATIONS");
-            Class<?> clazz = Integration.getIntegration(choice);
+            Class<?> clazz = options.get(choice);
             while (true) {
                 try {
                     this.integration = new Integration(clazz);
@@ -120,6 +120,17 @@ public class IntegrationMenu {
             }
         } catch (MenuClosed e) {
         }
+    }
+
+    /**
+     * <p>
+     * discover, pulls the integrations discoveries and adds them to the
+     * collection as one dated playlist, the pick through happens on that
+     * playlist like on any other
+     * </p>
+     */
+    public void discover() {
+        this.integration.importDiscoveries(Settings.discoveryLimit);
     }
 
     private void optionImportAlbum() {

@@ -948,6 +948,9 @@ public class Tidal implements Import, Export, Sync {
             data.type = "playlists";
             Playlists.PlaylistsCreateOperation_Payload_Data_Attributes attributes = new Playlists.PlaylistsCreateOperation_Payload_Data_Attributes();
             attributes.name = playlist.getName();
+            if (playlist.getDescription() != null) {
+                attributes.description = playlist.getDescription();
+            }
             data.attributes = attributes;
             body.data = data;
             WebTarget target = WebTools.target(baseUrl).path("playlists");

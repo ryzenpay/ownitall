@@ -1,11 +1,16 @@
 package ryzen.ownitall.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -16,15 +21,53 @@ import java.util.Scanner;
  */
 public class Input {
     private static final Logger logger = new Logger(Input.class);
+    /**
+     * sentinel queued when stdin reaches end of input, poll never returns it
+     * confused with a line because the queue can not hold nulls
+     */
+    private static final Object endOfInput = new Object();
+    /**
+     * how long getString waits per poll before re-checking the interruption
+     * flag, controls ctrl c responsiveness while blocked on stdin
+     */
+    private static final long inputPollTimeout = 200;
     private static Input instance;
-    private static Scanner scanner;
+    private static BlockingQueue<Object> lines;
+    private static Thread reader;
     private static Queue<String> nonInteractive;
 
     /**
-     * default input constructor creating system scanner
+     * default input constructor starting the stdin reader thread
      */
     private Input() {
-        scanner = new Scanner(System.in);
+        startReader();
+    }
+
+    /**
+     * spawns the daemon reader thread feeding the line queue, restarting it
+     * when the previous one hit end of input. the queue exists so getString
+     * can poll with a timeout and notice interruptions instead of blocking
+     * forever inside a stdin read that no signal can wake up
+     */
+    private static synchronized void startReader() {
+        if (reader != null && reader.isAlive()) {
+            return;
+        }
+        lines = new LinkedBlockingQueue<>();
+        reader = new Thread(() -> {
+            BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+            String line;
+            try {
+                while ((line = stdin.readLine()) != null) {
+                    lines.add(line);
+                }
+            } catch (IOException e) {
+                logger.debug("stdin read failed: " + e.getMessage());
+            }
+            lines.add(endOfInput);
+        }, "ownitall-input");
+        reader.setDaemon(true);
+        reader.start();
     }
 
     /**
@@ -68,12 +111,24 @@ public class Input {
         if (nonInteractive != null) {
             return nonInteractive.poll();
         }
-        if (scanner.hasNextLine()) {
-            return scanner.nextLine().trim();
-        } else {
-            InterruptionHandler.resetInterruption();
-            scanner = new Scanner(System.in);
-            throw new InterruptedException();
+        startReader();
+        BlockingQueue<Object> queue = lines;
+        while (true) {
+            Object next = queue.poll(inputPollTimeout, TimeUnit.MILLISECONDS);
+            if (next instanceof String) {
+                return ((String) next).trim();
+            }
+            if (next == endOfInput) {
+                InterruptionHandler.resetInterruption();
+                startReader();
+                throw new InterruptedException();
+            }
+            if (InterruptionHandler.isInterrupted()) {
+                InterruptionHandler.resetInterruption();
+                // discard anything typed against the abandoned request
+                queue.clear();
+                throw new InterruptedException("Interruption caught while waiting for input");
+            }
         }
     }
 

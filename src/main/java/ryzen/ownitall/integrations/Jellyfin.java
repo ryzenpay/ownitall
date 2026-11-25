@@ -554,6 +554,7 @@ public class Jellyfin implements Import, Export, Sync {
                         Entity.entity(WebTools.json(create), MediaType.APPLICATION_JSON), PlaylistCreationResult.class);
                 if (created != null && created.Id != null) {
                     playlist.addId("jellyfin", created.Id);
+                    this.setPlaylistDescription(created.Id, playlist.getDescription());
                     logger.debug("Created jellyfin playlist '" + playlist.getName() + "' with " + songIds.size()
                             + " songs");
                 } else {
@@ -564,6 +565,7 @@ public class Jellyfin implements Import, Export, Sync {
             }
             return;
         }
+        this.setPlaylistDescription(playlistId, playlist.getDescription());
         LinkedHashSet<String> remoteIds = new LinkedHashSet<>();
         for (BaseItemDto entry : this.getPlaylistEntries(playlistId)) {
             if (entry.Id != null) {
@@ -581,6 +583,35 @@ public class Jellyfin implements Import, Export, Sync {
             return;
         }
         this.addToPlaylist(playlistId, missing);
+    }
+
+    /**
+     * jellyfin stores a playlist description in the item's generic Overview
+     * metadata rather than in the playlist endpoints, so it rides a
+     * fetch-then-update of the playlist item, the same call the jellyfin web
+     * UI's metadata editor makes
+     *
+     * @param playlistId  - jellyfin id of the playlist item
+     * @param description - description to store, skipped when empty
+     */
+    private void setPlaylistDescription(String playlistId, String description) {
+        if (playlistId == null || description == null || description.isEmpty()) {
+            return;
+        }
+        WebTarget target = WebTools.target(Settings.jellyfinURL).path("Users").path(this.userId).path("Items")
+                .path(playlistId);
+        try {
+            BaseItemDto item = WebTools.get(target, this.headers, BaseItemDto.class);
+            if (item == null || description.equals(item.Overview)) {
+                return;
+            }
+            item.Overview = description;
+            WebTools.post(WebTools.target(Settings.jellyfinURL).path("Items").path(this.userId).path(playlistId),
+                    this.headers, Entity.entity(WebTools.json(item), MediaType.APPLICATION_JSON), Object.class);
+            logger.debug("Set jellyfin playlist '" + playlistId + "' description");
+        } catch (QueryException | IOException e) {
+            logger.warn("Exception while setting jellyfin playlist '" + playlistId + "' description: " + e);
+        }
     }
 
     // https://api.jellyfin.org/#tag/Playlists/operation/AddItemToPlaylist
