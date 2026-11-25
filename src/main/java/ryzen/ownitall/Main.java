@@ -14,7 +14,6 @@ import ryzen.ownitall.util.Logger;
 import ryzen.ownitall.util.Menu;
 import ryzen.ownitall.util.ProgressBar;
 import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 /**
  * <p>
@@ -69,7 +68,9 @@ public class Main {
                 ProgressBar.output = false;
                 ryzen.ownitall.ui.web.MainMenu.main(args);
             } else {
-                Signal.handle(new Signal("INT"), SignalHandler.SIG_IGN);
+                // swallow SIGINT so ctrl c spam doesnt kill app
+                Signal.handle(new Signal("INT"), signal -> {
+                });
                 Menu.setLogo(Settings.logo);
                 new ryzen.ownitall.ui.cli.MainMenu();
             }

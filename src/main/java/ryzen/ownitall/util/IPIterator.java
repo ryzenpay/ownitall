@@ -13,16 +13,13 @@ import java.util.Iterator;
  */
 public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     private static final Logger logger = new Logger(IPIterator.class);
-    private static IPIterator<?> rootInstance;
 
     private Iterator<T> iterated;
     private ProgressBar pb;
-    private InterruptionHandler interruptionHandler;
 
     private IPIterator(Iterator<T> iterated, String title, int maxStep) {
         this.iterated = iterated;
         this.pb = new ProgressBar(title, maxStep);
-        this.interruptionHandler = new InterruptionHandler();
     }
 
     /**
@@ -90,7 +87,7 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     public void step(String message) throws InterruptedException {
-        this.interruptionHandler.checkInterruption();
+        InterruptionHandler.checkGlobalInterruption();
         if (this.iterated != null) {
             this.iterated.next();
         } else {
@@ -99,7 +96,7 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     }
 
     public void step(int by) throws InterruptedException {
-        this.interruptionHandler.checkInterruption();
+        InterruptionHandler.checkGlobalInterruption();
         if (this.iterated != null) {
             for (int i = 0; i < by; i++) {
                 this.iterated.next();
@@ -144,9 +141,5 @@ public class IPIterator<T> implements Iterator<T>, Iterable<T>, AutoCloseable {
     @Override
     public void close() {
         this.pb.close();
-        this.interruptionHandler.close();
-        if (this.equals(rootInstance)) {
-            rootInstance = null;
-        }
     }
 }

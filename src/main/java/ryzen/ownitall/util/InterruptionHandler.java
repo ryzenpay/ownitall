@@ -1,7 +1,5 @@
 package ryzen.ownitall.util;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -14,8 +12,11 @@ import sun.misc.SignalHandler;
  */
 public class InterruptionHandler implements AutoCloseable {
     private static final Logger logger = new Logger(InterruptionHandler.class);
-    private static AtomicBoolean isInterrupted = new AtomicBoolean();
+    private static volatile boolean interrupted;
+    // number of nested interruption handlers
+    private static int scope;
     private SignalHandler signalHandler;
+    private boolean closed;
 
     /**
      * initialize interruption handler
@@ -24,8 +25,13 @@ public class InterruptionHandler implements AutoCloseable {
     public InterruptionHandler() {
         this.signalHandler = Signal.handle(new Signal("INT"), signal -> {
             logger.debug("SIGINT received");
-            isInterrupted.set(true);
+            interrupted = true;
         });
+        synchronized (InterruptionHandler.class) {
+            if (++scope == 1) {
+                resetInterruption();
+            }
+        }
     }
 
     /**
@@ -56,7 +62,7 @@ public class InterruptionHandler implements AutoCloseable {
      * @return a boolean
      */
     public static boolean isInterrupted() {
-        return isInterrupted.get();
+        return interrupted;
     }
 
     /**
@@ -65,7 +71,7 @@ public class InterruptionHandler implements AutoCloseable {
      * </p>
      */
     public static void forceInterruption() {
-        isInterrupted.set(true);
+        interrupted = true;
         logger.debug("Forcibly set interruption to true");
     }
 
@@ -76,14 +82,27 @@ public class InterruptionHandler implements AutoCloseable {
      */
     public static void resetInterruption() {
         // clears interrupted flag
-        isInterrupted.set(false);
+        interrupted = false;
         logger.debug("Reset interruption to false");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * outermost ensures last person leaving turns off the lights
+     */
     @Override
     public void close() {
-        resetInterruption();
+        boolean outermost;
+        synchronized (InterruptionHandler.class) {
+            if (this.closed) {
+                return;
+            }
+            this.closed = true;
+            outermost = --scope <= 0;
+        }
+        if (outermost) {
+            resetInterruption();
+        }
         Signal.handle(new Signal("INT"), this.signalHandler);
     }
 }
